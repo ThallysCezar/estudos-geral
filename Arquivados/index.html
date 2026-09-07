@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Sete documentos de estudo de backend: Java, Spring, Arquitetura, Docker e Kubernetes, Nuvem, Mensageria e Conceitos de Backend. Cada um com trilha visual interativa e conteúdo em profundidade.">
+<meta name="color-scheme" content="dark">
+<title>Estudos · backend em profundidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);
+  background:radial-gradient(ellipse at 4% 0,#8be9fd14,transparent 34rem),radial-gradient(ellipse at 92% 5%,#bd93f91f,transparent 40rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(#f8f8f21a 1px,transparent 1px);background-size:22px 22px;
+  mask-image:linear-gradient(#0007,transparent 65%)}
+.wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+
+/* ---------- topo ---------- */
+.island{position:sticky;top:16px;z-index:5;width:min(1180px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 90%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em}
+.brand i{font-style:normal;color:var(--cyan)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;transition:background .3s var(--ease),color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding:60px 0 30px}
+.eyebrow{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+h1{font:500 clamp(2.6rem,5.6vw,5rem)/.98 Georgia,serif;letter-spacing:-.055em;margin:16px 0 18px}
+h1 em{font-style:normal;color:var(--purple)}
+.lede{max-width:66ch;color:var(--ink2);font-size:1.02rem;line-height:1.65;margin:0}
+.lede b{color:var(--ink)}
+.nums{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.nums span{border:1px solid var(--line);border-radius:999px;padding:9px 15px;
+  font:600 .76rem "Cascadia Code",monospace;color:var(--muted)}
+.nums span b{color:var(--cyan);font-weight:700}
+
+/* ---------- como usar ---------- */
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:38px 0 8px}
+.how div{border:1px solid var(--line);border-radius:18px;padding:17px 19px;background:#ffffff05}
+.how b{display:block;font-size:.9rem;margin-bottom:6px}
+.how span{color:var(--muted);font-size:.81rem;line-height:1.5}
+
+/* ---------- grade de documentos ---------- */
+h2.sec{font:500 1.7rem Georgia,serif;letter-spacing:-.03em;margin:54px 0 4px}
+p.sub{color:var(--muted);font-size:.86rem;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:15px}
+.card{position:relative;display:block;overflow:hidden;text-decoration:none;
+  border:1px solid color-mix(in srgb,var(--c) 26%,transparent);border-radius:22px;padding:22px 22px 20px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--c) 12%,transparent),transparent 55%),var(--panel);
+  transition:transform .5s var(--ease),border-color .5s var(--ease)}
+.card:hover{transform:translateY(-6px);border-color:var(--c)}
+.card:before{content:"";position:absolute;right:-46px;bottom:-56px;width:140px;height:140px;border-radius:44px;
+  background:color-mix(in srgb,var(--c) 20%,transparent);transform:rotate(24deg);transition:transform .5s var(--ease)}
+.card:hover:before{transform:rotate(42deg) scale(1.13)}
+.card .n{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}
+.card .g{display:grid;place-items:center;width:50px;height:50px;border-radius:16px;
+  border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);
+  font:500 1.5rem Georgia,serif;color:var(--c);box-shadow:inset 0 1px #ffffff22}
+.card .num{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--c)}
+.card h3{position:relative;z-index:1;font:500 1.42rem/1.15 Georgia,serif;letter-spacing:-.035em;margin:18px 0 8px}
+.card p{position:relative;z-index:1;color:var(--muted);font-size:.83rem;line-height:1.55;margin:0 0 16px;max-width:44ch}
+.card .meta{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap}
+.card .meta i{font-style:normal;border:1px solid var(--line);border-radius:999px;padding:5px 10px;
+  font:600 .67rem "Cascadia Code",monospace;color:var(--muted)}
+
+/* ---------- faixa obs ---------- */
+.obs{position:relative;display:flex;align-items:center;gap:18px;margin-top:15px;padding:22px;overflow:hidden;
+  text-decoration:none;border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);border-radius:24px;
+  background:linear-gradient(120deg,#f1fa8c14,transparent 62%),var(--panel);
+  transition:border-color .5s var(--ease),transform .5s var(--ease)}
+.obs:hover{border-color:var(--gold);transform:translateY(-3px)}
+.obs:before{content:"";position:absolute;right:-40px;bottom:-52px;width:132px;height:132px;border-radius:42px;
+  background:#f1fa8c26;transform:rotate(22deg);transition:transform .5s var(--ease)}
+.obs:hover:before{transform:rotate(40deg) scale(1.12)}
+.obs .mark{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:19px;
+  border:1px solid #f1fa8c73;background:#f1fa8c1f;font:500 1.6rem Georgia,serif;color:var(--gold)}
+.obs .t{position:relative;z-index:1;flex:1;min-width:0}
+.obs .tag{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.obs h3{margin:5px 0 5px;font:500 1.45rem Georgia,serif;letter-spacing:-.03em}
+.obs p{margin:0;color:var(--muted);font-size:.83rem;max-width:66ch;line-height:1.5}
+
+/* ---------- rodapé ---------- */
+footer{margin:70px 0 40px;padding-top:26px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.78rem;line-height:1.7}
+footer a{color:var(--cyan)}
+footer .av{margin-top:12px;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:#ffffff05}
+
+@media(max-width:900px){.how{grid-template-columns:1fr}}
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}.island{width:calc(100% - 24px)}
+  .hero{padding:34px 0 20px}h1{font-size:2.5rem}
+  .grid{grid-template-columns:1fr}
+  .obs{flex-wrap:wrap;gap:14px;padding:18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <a href="../cronograma.html">cronograma da semana →</a>
+</nav>
+
+<main class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">caderno de estudos · aberto</span>
+    <h1>Backend,<br><em>em profundidade.</em></h1>
+    <p class="lede">Sete documentos que eu escrevo e uso para estudar. Cada um tem duas metades: em cima uma <b>trilha visual</b> no estilo roadmap.sh, para varrer e revisar com modo teste; embaixo o <b>conteúdo em profundidade</b>, onde cada tópico traz a origem do mecanismo, <b>o que ele veio substituir</b>, os diagramas, as armadilhas que custam uma madrugada e uma prova de domínio. Tudo é HTML puro, sem dependência: abre e funciona.</p>
+    <div class="nums">
+      <span><b>7</b> documentos</span>
+      <span><b>578</b> nós de trilha</span>
+      <span><b>296</b> tópicos</span>
+      <span><b>1,9 MB</b> no total</span>
+    </div>
+  </header>
+
+  <section class="how">
+    <div><b>Varra a trilha</b><span>Clique em qualquer nó para abrir o painel lateral. Ligue o <em>modo teste</em>: ele esconde a resposta e monta uma fila com o que você errou.</span></div>
+    <div><b>Desça no que falhou</b><span>Em vez de ler do começo ao fim, vá direto ao tópico correspondente lá embaixo. É onde está a história, o código e as armadilhas.</span></div>
+    <div><b>Faça o laboratório</b><span>Todo tópico termina com um "pratique agora" e uma prova de domínio. Vídeo dá o mapa, doc dá a precisão, lab fixa.</span></div>
+  </section>
+
+  <h2 class="sec">Os documentos</h2>
+  <p class="sub">Um fio conduz os sete: o mesmo sistema — <b>OrderFlow</b> — é implementado em Java, migrado para Spring, projetado em Arquitetura, empacotado em Docker e Kubernetes, implantado numa nuvem e desacoplado com mensageria.</p>
+
+  <div class="grid">
+
+    <a class="card" style="--c:var(--cyan)" href="../java.html">
+      <div class="n"><div class="g">J</div><span class="num">01</span></div>
+      <h3>Java completo</h3>
+      <p>Da plataforma ao runtime em produção: valores e referências, generics e coleções, falhas e recursos, SQL e JDBC sem ORM, os mecanismos por trás dos frameworks, concorrência e o Java Memory Model, JVM e performance.</p>
+      <div class="meta"><i>134 nós</i><i>49 tópicos</i><i>308 KB</i></div>
+    </a>
+
+    <a class="card" style="--c:var(--purple)" href="../spring.html">
+      <div class="n"><div class="g">S</div><span class="num">02</span></div>
+      <h3>Spring completo</h3>
+      <p>Do container de IoC à produção: injeção de dependência, o ciclo de vida do bean, AOP e proxies, a anatomia de uma requisição web, dados e transações, testes e o actuator.</p>
+      <div class="meta"><i>85 nós</i><i>52 tópicos</i><i>292 KB</i></div>
+    </a>
+
+    <a class="card" style="--c:var(--gold)" href="../arquitetura.html">
+      <div class="n"><div class="g">A</div><span class="num">03</span></div>
+      <h3>Arquitetura completa</h3>
+      <p>O que arquitetura é de verdade: anatomia e princípios, SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, segurança e observabilidade, e como decidir, documentar e influenciar.</p>
+      <div class="meta"><i>101 nós</i><i>51 tópicos</i><i>332 KB</i></div>
+    </a>
+
+    <a class="card" style="--c:var(--lime)" href="../docker-kubernetes.html">
+      <div class="n"><div class="g">◇</div><span class="num">04</span></div>
+      <h3>Docker e Kubernetes completo</h3>
+      <p>Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Compose e seus limites, Pod e Deployment, Service e Ingress, probes, recursos, rollout e HPA. Tudo pelo terminal Linux.</p>
+      <div class="meta"><i>74 nós</i><i>36 tópicos</i><i>222 KB</i></div>
+    </a>
+
+    <a class="card" style="--c:var(--orange)" href="../nuvem.html">
+      <div class="n"><div class="g">☁</div><span class="num">05</span></div>
+      <h3>Nuvem completo</h3>
+      <p>Conceitual e sem vendor: cada nó traz o mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage, banco, identidade, mensageria, observabilidade, infraestrutura como código, nuvem privada e custo.</p>
+      <div class="meta"><i>51 nós</i><i>48 tópicos</i><i>285 KB</i></div>
+    </a>
+
+    <a class="card" style="--c:var(--pink)" href="../mensageria.html">
+      <div class="n"><div class="g">✉</div><span class="num">06</span></div>
+      <h3>Mensageria e RabbitMQ completo</h3>
+      <p>Da fila à operação confiável: o modelo AMQP, os quatro tipos de exchange, publisher confirms, ack manual e a janela commit/ack, prefetch, retry com DLQ, idempotência, outbox e saga, Spring AMQP, quorum queues e Kafka.</p>
+      <div class="meta"><i>76 nós</i><i>35 tópicos</i><i>271 KB</i></div>
+    </a>
+
+  </div>
+
+  <a class="obs" href="../conceitos-backend.html">
+    <div class="mark">?</div>
+    <div class="t">
+      <span class="tag">obs · dúvidas</span>
+      <h3>Conceitos de Backend completo</h3>
+      <p>O sétimo fica fora da sequência de propósito: é o caderno de dúvidas. Gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback. <b>57 nós · 25 tópicos</b></p>
+    </div>
+  </a>
+
+  <h2 class="sec">Como estudo com isso</h2>
+  <p class="sub">Um tema por dia útil, e o caderno de dúvidas aberto em qualquer dia.</p>
+  <a class="obs" style="border-color:#8be9fd4d;background:linear-gradient(120deg,#8be9fd14,transparent 62%),var(--panel)" href="../cronograma.html">
+    <div class="mark" style="border-color:#8be9fd73;background:#8be9fd1f;color:var(--cyan)">◆</div>
+    <div class="t">
+      <span class="tag" style="color:var(--cyan)">cronograma</span>
+      <h3>A semana sem ruído</h3>
+      <p>Segunda Java · terça Spring e Mensageria · quarta Nuvem · quinta Docker e Kubernetes · sexta Arquitetura. Sábado é inglês e oratória; domingo é descanso. O calendário marca o dia de hoje e abre o documento correspondente.</p>
+    </div>
+  </a>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a> · desenvolvedor backend Java e Spring.<br>
+    Documentos escritos e mantidos por mim, em tema Dracula. HTML autocontido — sem framework, sem build, sem rastreador.
+    <div class="av"><b style="color:var(--ink2)">Sobre o seu progresso:</b> o "marcar dominado" e a fila de revisão ficam no armazenamento local do <em>seu</em> navegador. Nada é enviado para lugar nenhum — e, por isso mesmo, o progresso não sincroniza entre o celular e o computador.</div>
+  </footer>
+
+</main>
+</body>
+</html>

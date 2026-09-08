@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Painel de estudos de backend: o tema de hoje, o progresso real dos sete documentos, a fila de revisão e o histórico de atividade. Java, Spring, Arquitetura, Docker e Kubernetes, Nuvem, Mensageria e Conceitos de Backend.">
+<meta name="color-scheme" content="dark">
+<title>Estudos · backend em profundidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);
+  background:radial-gradient(ellipse at 4% 0,#8be9fd14,transparent 34rem),radial-gradient(ellipse at 92% 5%,#bd93f91f,transparent 40rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(#f8f8f21a 1px,transparent 1px);background-size:22px 22px;
+  mask-image:linear-gradient(#0007,transparent 65%)}
+.wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+.mono{font-family:"Cascadia Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- topo ---------- */
+.island{position:sticky;top:16px;z-index:5;width:min(1180px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;gap:10px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 90%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em;margin-right:auto}
+.brand i{font-style:normal;color:var(--cyan)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;transition:background .3s var(--ease),color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+
+/* ---------- hoje + margem de números ---------- */
+.today{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:0;margin:34px 0 0;
+  border:1px solid var(--line);border-radius:26px;background:#ffffff05;overflow:hidden}
+.today-main{position:relative;padding:34px 34px 30px;overflow:hidden}
+.today-main:before{content:"";position:absolute;right:-60px;bottom:-90px;width:250px;height:250px;border-radius:78px;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);transform:rotate(24deg)}
+.eyebrow{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.today h1{position:relative;font:500 clamp(2.4rem,4.6vw,4.1rem)/.98 Georgia,serif;letter-spacing:-.055em;margin:15px 0 16px;max-width:22ch}
+.today h1 em{font-style:normal;color:var(--accent)}
+.today .lede{position:relative;max-width:60ch;color:var(--ink2);font-size:.97rem;line-height:1.62;margin:0}
+.acts{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:26px}
+.act{text-decoration:none;font-size:.82rem;padding:10px 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);
+  color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);
+  transition:transform .35s var(--ease),background .35s var(--ease)}
+.act:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.act.ghost{border-color:var(--line2);color:var(--ink);background:transparent}
+.act.ghost:hover{background:#ffffff0a}
+.today-side{border-left:1px solid var(--line);padding:30px 26px;display:grid;gap:22px;align-content:start;background:color-mix(in srgb,var(--panel) 60%,transparent)}
+.ring{display:flex;align-items:center;gap:18px}
+.ring svg{flex:none;transform:rotate(-90deg)}
+.big{font:700 2.15rem/1 "Cascadia Code",monospace;letter-spacing:-.04em;color:var(--purple);font-variant-numeric:tabular-nums}
+.big s{text-decoration:none;font-size:1rem;color:var(--soft)}
+.lbl{font:.63rem "Cascadia Code",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.duo b{display:block;font:700 1.28rem "Cascadia Code",monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- régua da semana ---------- */
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;margin:14px 0 0}
+.wd{display:block;text-decoration:none;padding:14px 15px 15px;border-radius:18px;border:1px solid var(--line);
+  background:#ffffff05;color:var(--muted);transition:transform .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease)}
+.wd:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:#ffffff09}
+.wd small{display:block;font:.62rem "Cascadia Code",monospace;letter-spacing:.14em;text-transform:uppercase}
+.wd b{display:block;margin-top:8px;font:500 1.06rem/1.14 Georgia,serif;letter-spacing:-.02em;color:var(--ink2)}
+.wd i{display:block;margin-top:9px;font:.62rem "Cascadia Code",monospace;font-style:normal}
+.wd.on{border-color:var(--accent);background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 15%,transparent),transparent 60%),var(--panel);color:var(--accent)}
+.wd.on b{color:var(--ink)}
+
+/* ---------- índice dos sete ---------- */
+h2.sec{font:500 1.55rem Georgia,serif;letter-spacing:-.03em;margin:56px 0 3px}
+p.sub{color:var(--muted);font-size:.84rem;margin:0 0 18px;max-width:78ch;line-height:1.6}
+.idx{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) 150px 96px 30px;gap:20px;align-items:center;
+  padding:17px 12px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;
+  transition:background .35s var(--ease)}
+.row:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
+.row .num{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--c)}
+.row h3{margin:0;font:500 1.32rem/1.15 Georgia,serif;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .meta{font:.66rem "Cascadia Code",monospace;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:4px;border-radius:3px;background:#44475a55;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:3px;background:var(--c);transition:width 1.1s var(--ease)}
+.row .pc{font:700 .95rem "Cascadia Code",monospace;text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+.row .go{text-align:right;color:var(--c);font:500 1.05rem Georgia,serif;opacity:.7}
+.row:hover .go{opacity:1}
+
+/* ---------- três painéis ---------- */
+.panels{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:18px}
+.pnl{border:1px solid var(--line);border-radius:22px;padding:20px 21px;background:#ffffff05}
+.pnl .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+.pnl .hd span{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.pnl .hd em{font-style:normal;font:700 .68rem "Cascadia Code",monospace;color:var(--gold)}
+.line{display:flex;align-items:center;gap:11px;padding:8px 0;text-decoration:none;color:inherit;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .t{flex:1;min-width:0;font-size:.85rem;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.line .k{flex:none;font:700 .62rem "Cascadia Code",monospace;color:var(--soft)}
+.pips{display:flex;gap:3px;flex:none}
+.pips i{width:13px;height:5px;border-radius:2px;background:#44475a}
+.empty{color:var(--muted);font-size:.8rem;line-height:1.6;margin:2px 0 0}
+.heat{display:flex;gap:4px;max-width:340px}
+.heat .col{display:grid;grid-auto-rows:11px;gap:4px;flex:1}
+.heat i{display:block;aspect-ratio:1;border-radius:3px;background:#44475a3d}
+.leg{display:flex;align-items:center;gap:6px;margin-top:13px;font:.62rem "Cascadia Code",monospace;color:var(--muted)}
+.leg i{width:11px;height:11px;border-radius:3px;display:block}
+
+/* ---------- faixa dúvidas ---------- */
+.obs{position:relative;display:flex;align-items:center;gap:18px;margin-top:15px;padding:22px;overflow:hidden;
+  text-decoration:none;border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);border-radius:24px;
+  background:linear-gradient(120deg,#f1fa8c14,transparent 62%),var(--panel);
+  transition:border-color .5s var(--ease),transform .5s var(--ease)}
+.obs:hover{border-color:var(--gold);transform:translateY(-3px)}
+.obs:before{content:"";position:absolute;right:-40px;bottom:-52px;width:132px;height:132px;border-radius:42px;
+  background:#f1fa8c26;transform:rotate(22deg);transition:transform .5s var(--ease)}
+.obs:hover:before{transform:rotate(40deg) scale(1.12)}
+.obs .mark{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:19px;
+  border:1px solid #f1fa8c73;background:#f1fa8c1f;font:500 1.6rem Georgia,serif;color:var(--gold)}
+.obs .t{position:relative;z-index:1;flex:1;min-width:0}
+.obs .tag{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.obs h3{margin:5px 0 5px;font:500 1.42rem Georgia,serif;letter-spacing:-.03em}
+.obs p{margin:0;color:var(--muted);font-size:.83rem;max-width:66ch;line-height:1.5}
+
+footer{margin:64px 0 40px;padding-top:26px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.78rem;line-height:1.7}
+footer a{color:var(--cyan)}
+footer .av{margin-top:12px;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:#ffffff05}
+
+@media(max-width:1000px){
+  .today{grid-template-columns:1fr}
+  .today-side{border-left:0;border-top:1px solid var(--line)}
+  .panels{grid-template-columns:1fr}
+  .week{grid-template-columns:repeat(4,1fr)}
+  .row{grid-template-columns:30px minmax(0,1fr) 76px;gap:14px}
+  .row .bar,.row .go{display:none}
+}
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}.island{width:calc(100% - 24px)}
+  .today-main{padding:24px 22px}
+  .week{grid-template-columns:repeat(2,1fr)}
+  .today h1{font-size:2.3rem}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <a href="#indice">os sete documentos</a>
+  <a href="cronograma.html">cronograma da semana →</a>
+</nav>
+
+<main class="wrap">
+
+  <section class="today" id="today" style="--accent:var(--cyan)">
+    <div class="today-main">
+      <span class="eyebrow" id="eyebrow">carregando…</span>
+      <h1 id="h1">—</h1>
+      <p class="lede" id="lede"></p>
+      <div class="acts" id="acts"></div>
+    </div>
+    <aside class="today-side">
+      <div class="ring">
+        <svg width="92" height="92" viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#44475a66" stroke-width="14"></circle>
+          <circle id="arc" cx="100" cy="100" r="84" fill="none" stroke="var(--purple)" stroke-width="14"
+                  stroke-linecap="round" stroke-dasharray="528" stroke-dashoffset="528"
+                  style="transition:stroke-dashoffset 1.2s var(--ease)"></circle>
+        </svg>
+        <div>
+          <div class="big"><span id="pct">0</span><s>%</s></div>
+          <div class="lbl">dominado · <span id="frac" class="mono">0/296</span></div>
+        </div>
+      </div>
+      <div class="duo">
+        <div><b id="streak" style="color:var(--lime)">0</b><div class="lbl">dias seguidos</div></div>
+        <div><b id="week7" style="color:var(--orange)">0</b><div class="lbl">nos últimos 7 dias</div></div>
+      </div>
+      <div class="duo">
+        <div><b id="revn" style="color:var(--gold)">0</b><div class="lbl">na fila de revisão</div></div>
+        <div><b id="nodesn">0</b><div class="lbl">nós marcados</div></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="week" id="week" aria-label="A semana"></section>
+
+  <h2 class="sec" id="indice">Os sete documentos</h2>
+  <p class="sub">Um fio conduz os seis primeiros: o mesmo sistema — <b>OrderFlow</b> — é implementado em Java, migrado para Spring, projetado em Arquitetura, empacotado em Docker e Kubernetes, implantado numa nuvem e desacoplado com mensageria. As barras são o seu progresso real, lido do armazenamento local deste navegador.</p>
+  <div class="idx" id="idx"></div>
+
+  <section class="panels">
+    <div class="pnl">
+      <div class="hd"><span>fila de revisão</span><em id="revTag"></em></div>
+      <div id="revList"></div>
+    </div>
+    <div class="pnl">
+      <div class="hd"><span>onde você trava</span></div>
+      <div id="weakList"></div>
+    </div>
+    <div class="pnl">
+      <div class="hd"><span>atividade · 18 semanas</span></div>
+      <div class="heat" id="heat" aria-label="Histórico de atividade"></div>
+      <div class="leg">
+        <span>menos</span>
+        <i style="background:#44475a3d"></i>
+        <i style="background:#bd93f93d"></i>
+        <i style="background:#bd93f97a"></i>
+        <i style="background:#bd93f9b8"></i>
+        <i style="background:var(--purple)"></i>
+        <span>mais</span>
+      </div>
+      <p class="empty" id="heatNote"></p>
+    </div>
+  </section>
+
+  <a class="obs" href="conceitos-backend.html">
+    <div class="mark">?</div>
+    <div class="t">
+      <span class="tag">obs · dúvidas</span>
+      <h3>Conceitos de Backend completo</h3>
+      <p>O sétimo fica fora da sequência de propósito: é o caderno de dúvidas. Gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa.</p>
+    </div>
+  </a>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a> · desenvolvedor backend Java e Spring.<br>
+    Documentos escritos e mantidos por mim, em tema Dracula. HTML autocontido — sem framework, sem build, sem rastreador.
+    <div class="av"><b style="color:var(--ink2)">Sobre o seu progresso:</b> o "marcar dominado" e a fila de revisão ficam no armazenamento local do <em>seu</em> navegador. Nada é enviado para lugar nenhum — e, por isso mesmo, o progresso não sincroniza entre o celular e o computador. Este painel só lê o que já está aí e guarda um histórico diário de quantos tópicos você dominou.</div>
+  </footer>
+
+</main>
+
+<script>
+/* ---------- os documentos e suas chaves reais ---------- */
+var DOCS=[
+ {n:"01",nome:"Java completo",file:"java.html",cor:"var(--cyan)",nos:134,top:49,
+  kt:"trilha-java-CL-v1",km:"roadmap-java-mestre-CL-v3",kr:"trilha-java-CL-rev-v1"},
+ {n:"02",nome:"Spring completo",file:"spring.html",cor:"var(--purple)",nos:85,top:52,
+  kt:"spring-completo-CL-trilha-v1",km:"spring-completo-CL-conteudo-v1",kr:"spring-completo-CL-rev-v1"},
+ {n:"03",nome:"Arquitetura completa",file:"arquitetura.html",cor:"var(--gold)",nos:101,top:51,
+  kt:"arquitetura-completo-CL-trilha-v1",km:"arquitetura-completo-CL-conteudo-v1",kr:"arquitetura-completo-CL-rev-v1"},
+ {n:"04",nome:"Docker e Kubernetes completo",file:"docker-kubernetes.html",cor:"var(--lime)",nos:74,top:36,
+  kt:"docker-k8s-completo-CL-trilha-v1",km:"docker-k8s-completo-CL-conteudo-v1",kr:"docker-k8s-completo-CL-rev-v1"},
+ {n:"05",nome:"Nuvem completo",file:"nuvem.html",cor:"var(--orange)",nos:51,top:48,
+  kt:"nuvem-completo-CL-trilha-v1",km:"nuvem-completo-CL-conteudo-v1",kr:"nuvem-completo-CL-rev-v1"},
+ {n:"06",nome:"Mensageria e RabbitMQ completo",file:"mensageria.html",cor:"var(--pink)",nos:76,top:35,
+  kt:"mensageria-rabbitmq-completo-CL-trilha-v1",km:"mensageria-rabbitmq-completo-CL-conteudo-v1",kr:"mensageria-rabbitmq-completo-CL-rev-v1"},
+ {n:"07",nome:"Conceitos de Backend completo",file:"conceitos-backend.html",cor:"var(--gold)",nos:57,top:25,
+  kt:"conceitos-backend-completo-CL-trilha-v1",km:"conceitos-backend-completo-CL-conteudo-v1",kr:"conceitos-backend-completo-CL-rev-v1"}
+];
+
+/* ---------- a semana, igual ao cronograma ---------- */
+var SEM=[
+ {sig:"seg",tema:"Java",cor:"var(--cyan)",docs:["java.html"],hora:"19:30 — 22:30",
+  nota:"Da plataforma ao runtime em produção: valores e referências, generics e coleções, falhas e recursos, SQL e JDBC sem ORM, concorrência e o Java Memory Model, JVM e performance."},
+ {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",docs:["spring.html","mensageria.html"],hora:"19:30 — 22:30",
+  nota:"Do container de IoC à produção, e a fila que desacopla o OrderFlow: ciclo de vida do bean, AOP e proxies, publisher confirms, ack manual, retry com DLQ e idempotência."},
+ {sig:"qua",tema:"Nuvem",cor:"var(--orange)",docs:["nuvem.html"],hora:"19:30 — 22:30",
+  nota:"Conceitual e sem vendor: cada nó traz o mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage, identidade, IaC e custo."},
+ {sig:"qui",tema:"Docker e Kubernetes",cor:"var(--lime)",docs:["docker-kubernetes.html"],hora:"19:30 — 22:30",
+  nota:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Pod e Deployment, Service e Ingress, probes, rollout e HPA."},
+ {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",docs:["arquitetura.html"],hora:"19:30 — 21:00",
+  nota:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, consistência, escala e resiliência, e como decidir, documentar e influenciar."},
+ {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",docs:[],hora:"60 — 90 min",
+  nota:"Sábado sai da sequência técnica: inglês e oratória. O caderno de dúvidas continua à mão se aparecer alguma."},
+ {sig:"dom",tema:"Descanso",cor:"var(--soft)",docs:[],hora:"sem pauta",
+  nota:"Domingo é descanso. Nada marcado — e é de propósito."}
+];
+
+var HIST="estudos-home-CL-hist-v1";
+function q(id){return document.getElementById(id)}
+function ler(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{}}catch(e){return{}}}
+function conta(o){var n=0;for(var k in o){if(o[k])n++}return n}
+function iso(d){return d.toISOString().slice(0,10)}
+
+/* progresso real por documento */
+var totTop=0,totFeito=0,totNos=0,totRev=0;
+DOCS.forEach(function(d){
+  d.feito=conta(ler(d.km));
+  d.nosFeitos=conta(ler(d.kt));
+  d.rev=conta(ler(d.kr));
+  d.pct=d.top?Math.round(d.feito/d.top*100):0;
+  totTop+=d.top;totFeito+=d.feito;totNos+=d.nosFeitos;totRev+=d.rev;
+});
+var pctGeral=Math.round(totFeito/totTop*100);
+
+/* histórico diário: guarda o total de dominados por dia */
+var hist=ler(HIST);
+hist[iso(new Date())]=totFeito;
+try{localStorage.setItem(HIST,JSON.stringify(hist))}catch(e){}
+
+/* deltas por dia a partir do histórico */
+var dias=Object.keys(hist).sort();
+var delta={},anterior=null;
+dias.forEach(function(k){
+  delta[k]=anterior===null?0:Math.max(0,hist[k]-anterior);
+  anterior=hist[k];
+});
+
+/* hoje */
+var dow=(new Date().getDay()+6)%7;
+var hoje=SEM[dow];
+var alvo=hoje.docs.length?hoje.docs[0]:"cronograma.html";
+q("today").style.setProperty("--accent",hoje.cor);
+q("eyebrow").textContent="hoje · "+new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"})+" · "+hoje.hora;
+q("h1").innerHTML="Hoje é <em>"+hoje.tema+"</em>.";
+q("lede").textContent=hoje.nota;
+var acts=hoje.docs.map(function(u){
+  var d=DOCS.filter(function(x){return x.file===u})[0];
+  return '<a class="act" href="'+u+'">abrir '+(d?d.nome.replace(" completo","").replace(" completa","").toLowerCase():u)+' →</a>';
+});
+acts.push('<a class="act ghost" href="cronograma.html">ver a semana</a>');
+if(totRev)acts.push('<a class="act ghost" href="'+alvo+'">revisar '+totRev+' na fila</a>');
+q("acts").innerHTML=acts.join("");
+
+/* margem de números */
+q("pct").textContent=pctGeral;
+q("frac").textContent=totFeito+"/"+totTop;
+q("arc").setAttribute("stroke-dashoffset",528-528*(pctGeral/100));
+q("revn").textContent=totRev;
+q("nodesn").textContent=totNos;
+var d7=0;for(var i=0;i<7;i++){var dt=new Date();dt.setDate(dt.getDate()-i);d7+=delta[iso(dt)]||0}
+q("week7").textContent=d7;
+var st=0;for(var j=0;j<400;j++){var dd=new Date();dd.setDate(dd.getDate()-j);if((delta[iso(dd)]||0)>0)st++;else if(j>0)break}
+q("streak").textContent=st;
+
+/* régua da semana */
+q("week").innerHTML=SEM.map(function(d,i){
+  var href=d.docs.length?d.docs[0]:"cronograma.html";
+  return '<a class="wd'+(i===dow?" on":"")+'" href="'+href+'" style="--accent:'+d.cor+'">'
+    +'<small>'+d.sig+'</small><b>'+d.tema+'</b><i>'+d.hora+'</i></a>';
+}).join("");
+
+/* índice dos sete */
+q("idx").innerHTML=DOCS.map(function(d){
+  return '<a class="row" href="'+d.file+'" style="--c:'+d.cor+'">'
+    +'<span class="num">'+d.n+'</span>'
+    +'<span><h3>'+d.nome+'</h3><div class="meta">'+d.feito+' de '+d.top+' tópicos · '+d.nosFeitos+' de '+d.nos+' nós marcados'+(d.rev?' · '+d.rev+' em revisão':'')+'</div></span>'
+    +'<span class="bar"><span style="width:'+Math.max(d.pct,1)+'%"></span></span>'
+    +'<span class="pc">'+d.pct+'%</span>'
+    +'<span class="go">↗</span></a>';
+}).join("");
+
+/* fila de revisão */
+var comRev=DOCS.filter(function(d){return d.rev>0}).sort(function(a,b){return b.rev-a.rev});
+q("revTag").textContent=totRev?totRev+" itens":"";
+q("revList").innerHTML=comRev.length
+  ? comRev.map(function(d){return '<a class="line" href="'+d.file+'"><span class="t">'+d.nome.replace(" completo","").replace(" completa","")+'</span><span class="k">'+d.rev+'</span></a>'}).join("")
+  : '<p class="empty">Nada na fila. Ela enche quando você erra algo no <b>modo teste</b> da trilha — e é por ela que vale começar a revisão.</p>';
+
+/* onde você trava: menor domínio entre os que você já começou */
+var comeco=DOCS.filter(function(d){return d.feito>0||d.rev>0}).sort(function(a,b){return a.pct-b.pct}).slice(0,5);
+q("weakList").innerHTML=comeco.length
+  ? comeco.map(function(d){
+      var n=Math.max(1,Math.min(5,Math.round((100-d.pct)/20)));
+      var pips="";for(var i=0;i<5;i++)pips+='<i'+(i<n?' style="background:'+(n>=4?"var(--red)":"var(--orange)")+'"':'')+'></i>';
+      return '<a class="line" href="'+d.file+'"><span class="t">'+d.nome.replace(" completo","").replace(" completa","")+'</span><span class="pips">'+pips+'</span></a>'})
+    .join("")
+  : '<p class="empty">Ainda sem sinal. Marque tópicos como dominados nos documentos e este painel passa a apontar onde o domínio está mais baixo.</p>';
+
+/* heatmap 18 semanas */
+var cols=[],hj=new Date();hj.setHours(0,0,0,0);
+var fim=new Date(hj);fim.setDate(fim.getDate()+(6-((fim.getDay()+6)%7)));
+for(var w=17;w>=0;w--){
+  var cel="";
+  for(var dd2=0;dd2<7;dd2++){
+    var dia=new Date(fim);dia.setDate(dia.getDate()-(w*7)+(dd2-6));
+    var v=delta[iso(dia)]||0;
+    var bg=v===0?"#44475a3d":v<2?"#bd93f93d":v<4?"#bd93f97a":v<7?"#bd93f9b8":"var(--purple)";
+    var futuro=dia>hj;
+    cel+='<i title="'+iso(dia)+(futuro?"":" · "+v+" tópicos")+'" style="background:'+(futuro?"#44475a1a":bg)+'"></i>';
+  }
+  cols.push('<span class="col">'+cel+'</span>');
+}
+q("heat").innerHTML=cols.join("");
+q("heatNote").textContent=dias.length<2
+  ? "O histórico começa hoje: cada dia que você abrir esta página, ela registra quantos tópicos já estão dominados e pinta o quadradinho."
+  : dias.length+" dias registrados desde "+dias[0].split("-").reverse().join(".")+".";
+</script>
+</body>
+</html>

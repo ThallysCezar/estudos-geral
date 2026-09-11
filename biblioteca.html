@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca completa — os livros que formaram o meu critério</title>
+<meta name="description" content="Estante unificada: Fundamentals of Software Architecture, The Hard Parts, Learning DDD, System Design Interview e Entendendo Algoritmos. Trilha visual de 38 nós em 6 marcos e 17 tópicos em 6 partes, com a síntese de cada livro e onde os autores discordam. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+
+/* ===================== DRACULA — tema único ===================== */
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  /* cores dos grupos da trilha */
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+/* ---------- barra de progresso topo ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+/* ---------- sidebar ---------- */
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+/* ---------- conteúdo ---------- */
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+/* ---------- partes ---------- */
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+/* ================= TRILHA VISUAL (estilo roadmap.sh) ================= */
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+/* ---------- tópico ---------- */
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+/* ---------- painel lateral do nó ---------- */
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+
+/* tabela genérica dentro dos tópicos */
+article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif}
+
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>▤</i><b>Biblioteca</b></div>
+    <p class="sub">Os livros que formaram o critério.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (quantum, agregado, Big-O)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Biblioteca · setembro 2026</span>
+      <h1>Os livros que formaram <em>o meu critério</em>.</h1>
+      <p class="lede">O oitavo da série, e o único que não é sobre uma tecnologia — é sobre <b>como decidir</b>. Reúne os cinco livros que estavam espalhados em três pastas do vault, dois deles com uma versão antiga convivendo com a nova. Em cima, a <b>trilha visual</b>: 38 nós em 6 marcos, um por livro. Embaixo, o <b>conteúdo</b>: 17 tópicos em 6 partes, com a síntese de cada obra, o que ela veio substituir no meu entendimento e as armadilhas. E a parte que só existe porque eles estão lado a lado: <b>onde os autores discordam</b> — que é exatamente onde mora o trade-off.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>as ideias-chave de cada livro</a>
+        <a href="#p1"><b>↓ O conteúdo</b>a síntese, e onde eles divergem</a>
+      </div>
+      <div class="legenda">
+        <div><b>Um marco por livro</b><span>Cada marco reúne as ideias que sobrevivem depois da leitura.</span></div>
+        <div><b>Modo teste</b><span>Esconde a resposta e registra o que você errou.</span></div>
+        <div><b>Onde discordam</b><span>A divergência entre autores é o mapa dos trade-offs.</span></div>
+        <div><b>A estante cresce</b><span>Livro novo entra como marco e parte — nunca como arquivo solto.</span></div>
+      </div>
+    </header>
+
+    <!-- ========================= A TRILHA ========================= -->
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: cinco livros, uma estante</h2><p>Comece por aqui. Cada marco é um livro; cada nó, uma ideia que sobrevive à leitura. Use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ========================= PARTE 01 ========================= -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>Fundamentals of Software Architecture</h2><p>Mark Richards e Neal Ford · o livro que define o vocabulário. Leia primeiro.</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>Não existe melhor prática — existe trade-off</h3><div class="badges"><span class="badge b-ess">a tese</span><span class="badge b-ver">vale pelos 5 livros</span></div></div>
+        <p class="direto"><b>Direto:</b> a frase que abre e fecha o livro é que <em>tudo em arquitetura é uma troca</em>. Se uma solução parece não ter custo, você ainda não achou o custo. O trabalho do arquiteto não é encontrar a resposta certa — é tornar explícito o que se ganha e o que se paga, e escolher conscientemente.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como escolher onde morar.</b> Perto do trabalho custa mais caro e é menor. Longe é maior e barato, e você perde duas horas por dia. Não existe a casa certa — existe a que pesa melhor <em>para você, agora</em>. E quem apresenta um imóvel só listando as qualidades está vendendo, não aconselhando.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o livro existe</h4><p>Os autores observaram que "arquiteto de software" era um cargo sem currículo: cada um aprendia por osmose, e as discussões viravam disputa de preferência porque faltava vocabulário comum. O livro tenta ser a base que a área nunca teve — nomear as características, os estilos e as técnicas de decisão, para que duas pessoas possam discordar <em>sobre a mesma coisa</em>.</p><p class="repl"><b>Veio substituir:</b> a arquitetura transmitida por tradição oral e a discussão em que cada lado defende a tecnologia que domina, sem critério declarado.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao revisar uma proposta que só lista vantagens.</li><li>Ao justificar por que não vai adotar a arquitetura da big tech.</li><li>Em entrevista sênior: a pergunta é sempre sobre o trade-off.</li></ul></div>
+        </div>
+        <div class="cs"><b>A pergunta que muda uma reunião.</b> Quando alguém propõe uma solução, pergunte: <em>"o que isso está nos custando?"</em>. Se ninguém souber responder, a decisão não foi tomada — foi adotada. E note a assimetria: quase todo mundo consegue listar os benefícios da opção que prefere; quase ninguém prepara os custos. Chegar na reunião com os <b>dois lados da sua própria proposta</b> é o que separa quem argumenta de quem convence.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Currículo dirigindo a arquitetura.</b> Escolher a tecnologia que você quer aprender e construir a justificativa depois. Acontece muito mais do que se admite.</li><li><b>Copiar a big tech.</b> Netflix e Uber resolvem problemas de escala e de organização que você não tem — e a solução deles carrega o custo do problema deles.</li><li><b>Trade-off sem prazo.</b> "Por enquanto aceitamos X" sem definir quando será revisto é dívida sem vencimento.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue a última decisão técnica do seu time e escreva os dois lados: o que ganhamos, o que pagamos. Se o segundo lado ficar vazio, você achou uma decisão que ainda não foi examinada.</div><div><b>Prova de domínio</b>Você apresenta propostas com o custo declarado, e pede o custo quando ele não vem.</div></div>
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>Características de arquitetura: escolha três</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> além de fazer o que precisa fazer, o sistema precisa <em>ser</em> certas coisas — disponível, escalável, testável, seguro, rápido. Essas são as características de arquitetura, e elas é que determinam o estilo. O livro insiste num limite que parece arbitrário e não é: <b>no máximo três como prioritárias</b>.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como montar um carro de corrida.</b> Velocidade máxima, aceleração, autonomia, conforto e segurança não cabem todos no mesmo projeto — cada um rouba peso e espaço dos outros. A equipe escolhe duas ou três e assume as consequências. Quem pede "todos" recebe um carro medíocre em tudo.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o limite de três</h4><p>Porque elas competem. Mais segurança custa desempenho; mais elasticidade custa simplicidade; mais testabilidade às vezes custa acoplamento conveniente. Uma lista com quinze itens "importantes" não é uma priorização — é a ausência dela, e o efeito prático é que a decisão volta a ser tomada por gosto. Três forçam a conversa difícil com o negócio, que é justamente o ponto.</p><p class="repl"><b>Veio substituir:</b> o documento de requisitos não funcionais com trinta linhas que ninguém usava para decidir nada.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>No início de um sistema novo, antes de escolher o estilo.</li><li>Ao explicar por que a solução simples é adequada aqui.</li><li>Ao traduzir "tem que ser rápido" numa meta verificável.</li></ul></div>
+        </div>
+        <p>Uma característica só serve se for <b>mensurável</b>. "Escalável" não diz nada; "sustentar 500 requisições por segundo com p99 abaixo de 300 ms" é um alvo que se testa e se defende. Os autores também distinguem as explícitas — que o negócio pediu — das <b>implícitas</b>, que ninguém pede e todo mundo espera: disponibilidade, segurança e usabilidade básica.</p>
+        <div class="cs"><b>O exercício que dói.</b> Liste as características candidatas, dê a lista ao responsável pelo negócio e peça que marque <b>três</b>. A reação mais comum é "todas são importantes" — e é exatamente aí que a conversa fica útil, porque a pessoa precisa dizer o que aceita perder. Sem essa conversa, quem acaba priorizando por omissão é quem escreve o código, geralmente sem perceber.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Característica sem número.</b> Vira opinião e não dá para verificar se foi atendida.</li><li><b>Confundir com requisito funcional.</b> "Emitir nota fiscal" é o que o sistema faz; "emitir em menos de 2 s no p99" é a característica.</li><li><b>Ignorar as implícitas.</b> Ninguém pede segurança na reunião, e a ausência dela derruba o projeto.</li><li><b>Priorizar sozinho.</b> A escolha é de negócio; o arquiteto traduz o custo de cada opção.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Escreva as três características prioritárias do sistema em que você trabalha, cada uma com um número. Depois confira se a arquitetura atual favorece essas três — ou outras.</div><div><b>Prova de domínio</b>Você transforma "tem que ser rápido e seguro" em metas mensuráveis e defende a exclusão do resto.</div></div>
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a3">
+        <div class="th"><h3>Estilos: o que cada um favorece e cobra</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> o livro percorre os estilos clássicos e, para cada um, dá uma pontuação nas características. A mensagem é que não existe escala de pior para melhor — existe adequação às três características que você escolheu.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como tipos de moradia.</b> Kitnet, apartamento, casa e condomínio fechado não formam uma escala de qualidade. Formam uma escala de <em>adequação</em>: a quantas pessoas, com que orçamento, com que necessidade de espaço. Mudar para a casa grande porque "é melhor" costuma resultar em cômodos vazios e conta alta.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu a comparação</h4><p>A ideia de pontuar estilos por característica foi a forma que os autores acharam de tirar a discussão do terreno da preferência. Fica evidente, por exemplo, que microsserviços pontua alto em elasticidade e evolução e <em>baixo</em> em simplicidade e custo — e que arquitetura em camadas é o oposto exato. Posto assim, a escolha vira consequência das prioridades em vez de causa delas.</p><p class="repl"><b>Veio substituir:</b> a régua implícita em que o estilo mais recente era automaticamente o melhor.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao começar um sistema e decidir a forma dele.</li><li>Ao avaliar uma proposta de migração para microsserviços.</li></ul></div>
+        </div>
+        <table>
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Estilo</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Favorece</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Cobra</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Camadas</b></td><td style="padding:9px;color:var(--ink2)">Simplicidade, custo baixo, time pequeno</td><td style="padding:9px;color:var(--ink2)">Escala, implantação independente</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Modular (monólito)</b></td><td style="padding:9px;color:var(--ink2)">Organização e evolução com custo baixo</td><td style="padding:9px;color:var(--ink2)">Disciplina — sem ela, vira camadas de novo</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Microkernel</b></td><td style="padding:9px;color:var(--ink2)">Extensão por plugin, produto customizável</td><td style="padding:9px;color:var(--ink2)">Contrato de plugin difícil de acertar</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Service-based</b></td><td style="padding:9px;color:var(--ink2)">Meio-termo: poucos serviços, banco compartilhado</td><td style="padding:9px;color:var(--ink2)">Não dá implantação nem escala realmente independentes</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Event-driven</b></td><td style="padding:9px;color:var(--ink2)">Desacoplamento, absorção de pico, extensão</td><td style="padding:9px;color:var(--ink2)">Fluxo difícil de seguir, teste e depuração caros</td></tr>
+          <tr><td style="padding:9px"><b>Microsserviços</b></td><td style="padding:9px;color:var(--ink2)">Elasticidade, evolução e times independentes</td><td style="padding:9px;color:var(--ink2)">Complexidade operacional e de dados — a maior conta</td></tr>
+        </table>
+        <div class="cs"><b>O caminho que os autores recomendam na prática.</b> Comece <b>monólito modular</b>. Ele dá organização de domínio com custo de operação quase zero, e mantém aberta a opção de extrair serviços depois — porque os módulos já existem. Ir direto para microsserviços paga a conta de operação, dados distribuídos e observabilidade <em>antes</em> de ter o problema que justifica pagá-la. É o mesmo raciocínio das alavancas de escala: o degrau caro por último.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Microsserviços com um time.</b> Você comprou a solução para um problema de coordenação entre times que não existe.</li><li><b>Event-driven sem observabilidade.</b> Desacoplou e perdeu a capacidade de responder "onde parou?".</li><li><b>Monólito modular sem fronteira imposta.</b> Se nada impede o import, em um ano os módulos se misturaram.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Classifique o seu sistema num dos estilos e confira se ele favorece as três características que você listou no tópico anterior. Se não favorecer, você achou a tensão principal do projeto.</div><div><b>Prova de domínio</b>Você defende um estilo apontando as características que ele favorece e nomeando o que aceita perder.</div></div>
+        <button class="done" type="button" data-k="a3">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a4">
+        <div class="th"><h3>Conway, ADR e o arquiteto que não desenha sozinho</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <p class="direto"><b>Direto:</b> a última parte do livro é sobre o que não cabe no diagrama — a lei de Conway, o registro das decisões e as habilidades que fazem uma arquitetura ser seguida: negociação, apresentação e liderança técnica.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como a planta de uma reforma.</b> Ela só vira casa se o pedreiro entender, concordar com a viabilidade e souber o porquê de cada parede. Planta perfeita entregue sem conversa vira improviso na obra — e ninguém fica sabendo até a parede estar levantada no lugar errado.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Enquanto arquitetura era documento, o papel era normativo: alguém decidia, o time cumpria. Quando as equipes ganharam autonomia e o ciclo de entrega encurtou, esse modelo parou de funcionar — a decisão que não é entendida é contornada em silêncio no código. A literatura moderna formalizou o que os bons arquitetos já faziam: a alavanca é influência, não hierarquia.</p><p class="repl"><b>Veio substituir:</b> o comitê de arquitetura que aprovava desenhos sem participar da implementação — e cujas decisões o time descumpria sem avisar.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao registrar por que escolheram o banco X.</li><li>Ao perceber que o desenho não sobreviveu ao organograma.</li><li>Ao apresentar uma proposta para quem vai implementá-la.</li></ul></div>
+        </div>
+        <p><b>Lei de Conway</b>: o sistema tende a copiar a estrutura de comunicação da organização. Três times, três partes. Se você desenha módulos que atravessam fronteiras de time, a realidade vai corrigir o seu desenho — não o contrário. A manobra inversa é reorganizar os times para que a arquitetura desejada seja a natural, e é por isso que arquitetura também é assunto de gestão.</p>
+        <div class="cs"><b>O ADR e o campo que todo mundo pula.</b> Um registro de decisão tem contexto, alternativas consideradas, escolha e <b>consequências</b>. É o último que carrega o valor — e é o que as pessoas deixam em branco. Sem consequências declaradas, o ADR vira ata de reunião. E sem as <em>alternativas</em>, ninguém daqui a um ano saberá se a opção óbvia de hoje já foi avaliada e descartada por um motivo real. Um ADR de meia página bem feito economiza a mesma discussão acontecendo três vezes.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>ADR só com a escolha.</b> Perde o raciocínio, que é a única coisa que não estava óbvia.</li><li><b>Arquitetura imposta.</b> Quem não entendeu vai contornar, e você só descobre no code review — ou depois.</li><li><b>Arquiteto que parou de programar.</b> Perde o contato com o custo real das próprias decisões.</li><li><b>Ignorar Conway.</b> Você desenha contra a organização e perde, sempre.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Escreva um ADR de meia página para uma decisão já tomada no seu time, incluindo as alternativas descartadas e as consequências. Mostre para alguém que não participou e veja se a pessoa entende o porquê.</div><div><b>Prova de domínio</b>Você registra decisões com alternativas e consequências, e considera a estrutura dos times ao desenhar.</div></div>
+        <button class="done" type="button" data-k="a4">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ========================= PARTE 02 ========================= -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Software Architecture: The Hard Parts</h2><p>Ford, Richards, Sadalage e Dehghani · a continuação. Sobre o que não tem resposta pronta.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>Architecture quantum: onde está a fronteira de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o conceito-chave</span></div></div>
+        <p class="direto"><b>Direto:</b> um <em>quantum</em> é a menor parte do sistema que pode ser implantada de forma independente, com alto acoplamento funcional interno e um contrato de dados próprio. A consequência que morde: <b>se dois serviços compartilham o mesmo banco, eles são um quantum só</b> — por mais que estejam em repositórios e containers separados.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como dois apartamentos com um banheiro compartilhado.</b> As portas são separadas, os endereços são diferentes, e mesmo assim você não consegue reformar o seu sem combinar com o vizinho. Na planta são duas unidades; na prática são uma.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o conceito existe</h4><p>Porque "microsserviço" virou um termo sem definição operacional: qualquer coisa pequena e conteinerizada recebia o nome. O quantum é a tentativa de dar um <em>teste</em> em vez de uma definição estética — você não olha o tamanho do serviço, você pergunta se ele pode ser implantado, escalado e falhar sozinho.</p><p class="repl"><b>Veio substituir:</b> a contagem de serviços como métrica de arquitetura, e a suposição de que separar o código já separou o sistema.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao avaliar se a migração para microsserviços foi real ou cosmética.</li><li>Ao explicar por que uma mudança de esquema derruba três serviços.</li><li>Ao planejar o que precisa ser feito antes de extrair um serviço.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">Microsserviço só no nome</div><pre><code>pedido-service   ──┐
+estoque-service  ──┼──→ MESMO banco
+cobranca-service ──┘
+
+<span class="c"># repositórios separados ✓</span>
+<span class="c"># containers separados  ✓</span>
+<span class="c"># mas:</span>
+<span class="c"># · mudar o esquema quebra os três</span>
+<span class="c"># · um lock pesado trava os três</span>
+<span class="c"># · não dá para implantar um sozinho</span>
+<span class="c">→ UM quantum, com custo de três</span></code></pre></div>
+          <div class="depois"><div class="lab">Três quanta de verdade</div><pre><code>pedido-service   ──→ banco de pedidos
+estoque-service  ──→ banco de estoque
+cobranca-service ──→ banco de cobrança
+
+<span class="c"># cada um:</span>
+<span class="c"># · implanta sozinho</span>
+<span class="c"># · escala sozinho</span>
+<span class="c"># · falha sozinho</span>
+<span class="c"># preço: consistência entre eles</span>
+<span class="c">→ agora você TEM o problema das sagas</span></code></pre></div>
+        </div>
+        <div class="cs"><b>Os dois testes que resolvem a discussão.</b> <em>Consigo implantar A sem implantar B?</em> e <em>consigo mudar o esquema de A sem quebrar B?</em> Se qualquer resposta for não, A e B são um quantum. Isso reposiciona a conversa inteira: em vez de discutir quantos serviços ter, você discute quantas fronteiras <b>reais</b> o sistema tem — e descobre que a maioria das migrações para microsserviços para no meio, exatamente na separação dos dados.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Banco compartilhado "temporário".</b> É o item que nunca sai do backlog, e é o que define o quantum.</li><li><b>Contar serviços como progresso.</b> Trinta serviços num quantum é pior que um monólito.</li><li><b>Extrair o serviço antes dos dados.</b> Você ganha a complexidade distribuída sem nenhum dos benefícios.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Aplique os dois testes aos serviços do seu sistema e desenhe as fronteiras reais. Compare com o diagrama oficial — a diferença costuma ser reveladora.</div><div><b>Prova de domínio</b>Você identifica os quanta reais e explica por que o banco compartilhado é o que mais frequentemente os cola.</div></div>
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b2">
+        <div class="th"><h3>Decompor: a ordem que evita o retrabalho</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> a ordem certa é <b>componentes → serviços → dados</b>, e quase todo mundo faz ao contrário. Reorganizar classes dentro do monólito é reversível e barato; mover um serviço já implantado é um projeto; separar os dados é o trabalho que trava a migração inteira.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como organizar uma casa antes da mudança.</b> Primeiro você separa por cômodo o que já está lá dentro. Depois decide o que vai para o caminhão. Quem carrega o caminhão sem separar nada passa a semana seguinte procurando a chave de fenda em dezessete caixas.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O livro nasceu das migrações que deram errado. O padrão de falha se repetia: o time começava extraindo serviços por camada técnica ou por entidade, descobria meses depois que os dados não separavam, e terminava com um monólito distribuído — todos os custos da distribuição, nenhum dos benefícios.</p><p class="repl"><b>Veio substituir:</b> a extração por entidade ("um serviço para Cliente, outro para Pedido") e a big bang rewrite, que é a forma mais cara conhecida de refazer um sistema.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao planejar a evolução de um monólito.</li><li>Ao estimar quanto tempo a migração vai levar de verdade.</li><li>Ao defender parar no monólito modular.</li></ul></div>
+        </div>
+        <p>Os autores apresentam o <b>monólito modular como destino legítimo</b>, não apenas como etapa. Muitos sistemas deveriam parar ali: você ganha a organização por domínio, a clareza de fronteira e a possibilidade de extrair depois, sem pagar rede, observabilidade distribuída e consistência eventual. A extração passa a ser uma opção que você exerce quando — e se — houver motivo.</p>
+        <div class="cs"><b>A parte difícil de verdade são os dados.</b> Quebrar o serviço é mecânico. Quebrar o banco é onde aparecem as perguntas sem resposta boa: de quem é esta tabela? o que acontece com as junções que atravessam a nova fronteira? como manter integridade sem chave estrangeira? Cada junção quebrada vira uma decisão — chamada síncrona (acopla), replicação de dados (duplica) ou aceitar inconsistência (precisa do negócio). <b>Orce a migração pelos dados</b>, não pelo número de serviços.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Decompor por camada técnica.</b> Um serviço de "controllers" e outro de "repositories" é o monólito distribuído em estado puro.</li><li><b>Um serviço por entidade.</b> Ignora o domínio e produz serviços que não conseguem fazer nada sozinhos.</li><li><b>Deixar os dados para depois.</b> É o trabalho maior; descobrir isso no meio faz o projeto perder a credibilidade.</li><li><b>Tratar o monólito modular como fracasso.</b> Para muitos sistemas ele é o ponto ótimo.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>No sistema em que você trabalha, escolha um domínio e liste as junções SQL que atravessariam a fronteira se ele virasse serviço. Essa lista é o tamanho real do trabalho.</div><div><b>Prova de domínio</b>Você defende a ordem componentes → serviços → dados e estima a migração pelos dados.</div></div>
+        <button class="done" type="button" data-k="b2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b3">
+        <div class="th"><h3>Granularidade e sagas: os dois cabos de guerra</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> o tamanho do serviço não se decide por intuição — decide-se pesando <b>desintegradores</b> (o que empurra para dividir) contra <b>integradores</b> (o que puxa para juntar). E quando você divide o suficiente para perder a transação, entra o segundo cabo de guerra: qual das oito sagas usar.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como decidir o tamanho de um departamento.</b> Especializar dá foco e cria reuniões de alinhamento. Juntar reduz a coordenação e dilui a responsabilidade. Não existe tamanho ideal de departamento — existe qual força pesa mais naquela empresa, naquele momento.</p></div>
+        <div class="duo">
+          <div><h4>Desintegradores — dividir</h4><ul>
+            <li><b>Escopo de domínio:</b> faz uma coisa só, coesa.</li>
+            <li><b>Volatilidade:</b> uma parte muda toda semana, outra uma vez por ano.</li>
+            <li><b>Escala:</b> uma parte recebe mil vezes mais carga.</li>
+            <li><b>Isolamento de falha:</b> não pode cair junto com o resto.</li>
+            <li><b>Segurança:</b> dado sensível que merece fronteira própria.</li>
+          </ul></div>
+          <div><h4>Integradores — juntar</h4><ul>
+            <li><b>Transação:</b> precisa ser atômico; dividir cria saga.</li>
+            <li><b>Fluxo de dados:</b> um chama o outro sempre, em sequência.</li>
+            <li><b>Dependência forte:</b> um não funciona sem o outro.</li>
+            <li><b>Código compartilhado:</b> lógica que os dois precisariam duplicar.</li>
+          </ul></div>
+        </div>
+        <div class="cs"><b>A matriz das oito sagas, e o que ela resolve.</b> O livro classifica por três eixos binários — comunicação (síncrona ou assíncrona), consistência (atômica ou eventual) e coordenação (orquestrada ou coreografada). Oito combinações, cada uma com nome e consequência declarada. O valor está em parar de dizer "vamos usar saga" e passar a dizer <em>qual</em>, com o custo nomeado: quanto mais atômica e síncrona, mais fácil de raciocinar e menos disponível; quanto mais eventual e assíncrona, melhor escala e mais difícil de depurar. Na prática, a maioria dos fluxos aceita a versão mais simples — e o erro comum é escolher a mais sofisticada por padrão.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Só olhar os desintegradores.</b> Você fatia até que toda operação de negócio vire uma saga de cinco passos.</li><li><b>Ignorar a volatilidade.</b> É o desintegrador mais útil e o menos lembrado: separar o que muda toda semana do que é estável rende muito.</li><li><b>Coreografia com sete passos.</b> O fluxo não está escrito em lugar nenhum e ninguém consegue desenhá-lo.</li><li><b>Compensação que não compensa.</b> E-mail enviado não se apaga; planeje um segundo e-mail de correção.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue dois serviços do seu sistema e liste os integradores e desintegradores entre eles. Se os integradores vencerem, você achou dois serviços que talvez devessem ser um.</div><div><b>Prova de domínio</b>Você decide granularidade pesando as duas listas, e nomeia qual das oito sagas está usando e por quê.</div></div>
+        <button class="done" type="button" data-k="b3">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ========================= PARTE 03 ========================= -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Learning Domain-Driven Design</h2><p>Vlad Khononov · o DDD que cabe num livro só, e que começa pelo negócio.</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>Nem todo subdomínio merece o mesmo esforço</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o filtro que economiza meses</span></div></div>
+        <p class="direto"><b>Direto:</b> o domínio é o negócio inteiro, e ele se divide em três tipos de subdomínio. O <b>core</b> é o que diferencia a empresa da concorrência. O <b>supporting</b> é necessário e específico, mas não diferencia ninguém. O <b>generic</b> é problema resolvido, que se compra pronto. A regra prática: invista modelagem cuidadosa <em>só</em> no core.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como abrir um restaurante.</b> A cozinha e o cardápio são o core — é por eles que o cliente volta, e você não terceiriza. A gestão de reservas é supporting: precisa existir, precisa funcionar do seu jeito, e ninguém escolhe o restaurante por causa dela. A maquininha de cartão é generic: você aluga e esquece. Quem projeta a maquininha do zero está gastando no lugar errado.</p></div>
+        <div class="duo o">
+          <div><h4>Por que essa classificação existe</h4><p>O DDD ganhou fama de caro e cerimonioso porque muita gente aplicou os padrões táticos — agregado, repositório, evento de domínio — em <em>tudo</em>, inclusive no cadastro de CEP. Khononov coloca a classificação logo no começo justamente para evitar isso: o DDD tático é um investimento, e investimento só faz sentido onde há retorno.</p><p class="repl"><b>Veio substituir:</b> o "vamos usar DDD no projeto" como decisão global — que produzia três camadas de abstração em cima de um CRUD e fazia o time concluir que DDD não funciona.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao decidir quanto rigor dar a um módulo novo.</li><li>Ao justificar um CRUD simples numa base "DDD".</li><li>Ao avaliar comprar versus construir.</li></ul></div>
+        </div>
+        <div class="cs"><b>O teste do core.</b> Pergunte: <em>se um concorrente copiasse exatamente esta parte, nós perderíamos vantagem?</em> Se sim, é core — modele com cuidado, escreva testes de regra, invista. Se não, a pergunta seguinte é se existe produto pronto: havendo, é generic e você compra. Não havendo, é supporting e um CRUD bem feito basta. O erro caro não é usar DDD — é usar DDD onde o retorno é zero, e depois não ter fôlego para usá-lo onde importava.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Tudo vira core.</b> Quando toda parte é "estratégica", nenhuma recebe atenção de verdade.</li><li><b>Construir o generic.</b> Autenticação, envio de e-mail e emissão fiscal têm produto pronto e barato; construir é decisão que precisa de justificativa forte.</li><li><b>Classificar uma vez e esquecer.</b> O core de hoje pode virar commodity em três anos — e vice-versa.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Liste os módulos do seu sistema e classifique cada um nos três tipos. Depois confira onde está o esforço de engenharia — costuma estar concentrado no lugar errado.</div><div><b>Prova de domínio</b>Você aplica o teste do core e dimensiona o rigor da modelagem por tipo de subdomínio.</div></div>
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c2">
+        <div class="th"><h3>Bounded context: a fronteira do significado</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> um <b>bounded context</b> é o limite dentro do qual um modelo e sua linguagem valem. Dentro dele, cada termo tem exatamente um significado. Fora dele, a mesma palavra pode significar outra coisa — e isso não é problema a resolver, é a realidade a reconhecer.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como a palavra "conta".</b> No bar é o que você paga; no banco é onde o dinheiro fica; na matemática é a operação. Ninguém acha isso um defeito do português, porque o contexto resolve. Tentar criar uma definição de "conta" que sirva aos três é que seria o absurdo — e é exatamente o que o modelo canônico único tenta fazer.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>A tentativa de ter um modelo único para a empresa inteira — o "modelo canônico" — foi padrão por anos e falhava sempre da mesma forma: o objeto <em>Cliente</em> crescia até ter oitenta campos, servia mal a todos os times e mudá-lo exigia alinhar cinco áreas. O bounded context inverte: cada contexto tem o <em>seu</em> Cliente, com os campos que importam ali, e a integração traduz entre eles.</p><p class="repl"><b>Veio substituir:</b> o modelo canônico corporativo e a tabela compartilhada que todo mundo lia e ninguém podia alterar.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Quando "pedido" significa coisas diferentes no comercial e no fiscal.</li><li>Ao desenhar as fronteiras antes de pensar em serviços.</li><li>Ao integrar com um sistema legado.</li></ul></div>
+        </div>
+        <p>A <b>linguagem ubíqua</b> é a outra metade: o mesmo vocabulário entre quem entende o negócio e quem escreve o código, dentro daquela fronteira. Quando o especialista diz "apólice" e o código diz <code class="ic">ContractEntity</code>, existe uma tradução acontecendo na cabeça de alguém a cada conversa — e é nessa tradução que as regras se perdem.</p>
+        <div class="cs"><b>Bounded context não é microsserviço.</b> O primeiro é uma decisão de <em>modelo</em>; o segundo, de <em>implantação</em>. Eles costumam coincidir, e por isso muita gente trata como sinônimo — mas um bounded context pode perfeitamente viver como um módulo dentro de um monólito. Confundir os dois leva ao pior resultado possível: um microsserviço por entidade, cada um incapaz de fazer algo útil sozinho. <b>Defina os contextos primeiro; decida a implantação depois.</b></div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Modelo canônico único.</b> Serve mal a todos e trava a evolução de cada um.</li><li><b>Fronteira desenhada por entidade.</b> Contexto se define por <em>capacidade de negócio</em>, não por tabela.</li><li><b>Linguagem só no documento.</b> Se o código não usa os termos do negócio, a linguagem ubíqua não existe.</li><li><b>Consumir o modelo do legado direto.</b> O vocabulário dele vaza para dentro do seu domínio — é para isso que existe a camada anticorrupção.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Ache um termo do seu sistema que signifique coisas diferentes em áreas diferentes. Você acabou de encontrar uma fronteira de contexto que ainda não foi nomeada.</div><div><b>Prova de domínio</b>Você desenha contextos por capacidade de negócio e separa a decisão de modelo da decisão de implantação.</div></div>
+        <button class="done" type="button" data-k="c2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c3">
+        <div class="th"><h3>A escada dos padrões táticos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Khononov apresenta quatro formas de implementar a lógica, do mais simples ao mais caro: <b>transaction script</b>, <b>active record</b>, <b>domain model</b> e <b>event-sourced domain model</b>. A regra é escolher a ferramenta <em>proporcional à complexidade da regra</em> — e não aplicar o topo da escada em tudo.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como escolher ferramenta para pendurar um quadro.</b> Martelo e prego resolvem. A furadeira com bucha resolve também, leva dez vezes mais tempo e faz sujeira. E existe quem chame um marceneiro. Nenhuma é errada — errada é a desproporção entre a ferramenta e o prego.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O DDD clássico apresentava os padrões táticos como um conjunto, e a leitura comum era "use todos". O resultado foram bases com agregado, repositório, fábrica e evento de domínio em cima de lógica que era literalmente salvar o formulário. Organizar em escada, com critério explícito de quando subir um degrau, foi a contribuição prática deste livro.</p><p class="repl"><b>Veio substituir:</b> a aplicação uniforme dos padrões táticos, que dava ao DDD a fama de caro e cerimonioso.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao começar um módulo e decidir a estrutura dele.</li><li>Ao revisar um CRUD que virou quatro camadas.</li><li>Ao avaliar event sourcing — e quase sempre recusar.</li></ul></div>
+        </div>
+        <table>
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Degrau</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Quando cabe</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">O que custa</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Transaction script</b></td><td style="padding:9px;color:var(--ink2)">A lógica é um procedimento: recebe, valida, grava</td><td style="padding:9px;color:var(--ink2)">Duplicação quando a regra cresce</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Active record</b></td><td style="padding:9px;color:var(--ink2)">CRUD com alguma regra junto do dado</td><td style="padding:9px;color:var(--ink2)">Mistura persistência e negócio</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Domain model</b></td><td style="padding:9px;color:var(--ink2)">Há invariantes de verdade a proteger</td><td style="padding:9px;color:var(--ink2)">Mais código, mais conceitos, curva de aprendizado</td></tr>
+          <tr><td style="padding:9px"><b>Event sourcing</b></td><td style="padding:9px;color:var(--ink2)">O histórico das mudanças é <em>requisito</em></td><td style="padding:9px;color:var(--ink2)">Alto: consulta, versionamento de evento, operação</td></tr>
+        </table>
+        <div class="cs"><b>O agregado é a fronteira de consistência.</b> No degrau do domain model, o agregado é o que garante as invariantes: tudo dentro dele muda numa transação só. Três regras práticas que evitam a maioria dos problemas — <b>agregado pequeno</b>, <b>referência a outros agregados por identificador</b> (nunca por objeto) e <b>uma transação por agregado</b>. O agregado gigante, que carrega meio banco a cada operação, é o antipadrão mais comum e vira ponto de contenção sob concorrência.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Event sourcing por elegância.</b> Um ano depois ninguém consegue responder uma consulta simples sem construir projeções.</li><li><b>Domain model anêmico.</b> Classes com só getter e setter e a regra toda no service — você pagou o custo do padrão sem o benefício.</li><li><b>Agregado que referencia objeto.</b> Carrega o grafo inteiro e torna a transação enorme.</li><li><b>Subir a escada por padronização.</b> "Aqui a gente usa domain model em tudo" é a mesma desproporção, com outro nome.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue três módulos do seu sistema e diga em que degrau cada um <em>deveria</em> estar, e em qual está. A diferença é dívida — para mais ou para menos.</div><div><b>Prova de domínio</b>Você escolhe o degrau pela complexidade da regra e desenha agregados pequenos com referência por id.</div></div>
+        <button class="done" type="button" data-k="c3">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ========================= PARTE 04 ========================= -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>System Design Interview</h2><p>Alex Xu · a conversa estruturada. Vale para a entrevista e para a reunião de desenho.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>O framework de quatro passos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> diante de uma pergunta aberta — "projete um encurtador de URL" — existe um roteiro: <b>1)</b> entender escopo e requisitos, <b>2)</b> propor um desenho de alto nível, <b>3)</b> aprofundar no ponto crítico, <b>4)</b> encerrar discutindo gargalos e evolução. O passo 1 é o mais pulado e o que mais reprova.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como um médico numa consulta.</b> Ninguém receita antes de perguntar há quanto tempo dói, onde dói e o que você já tomou. Quem começa pelo remédio pode até acertar, mas ninguém confia — porque a conclusão não veio de lugar nenhum.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>A entrevista de system design era notoriamente arbitrária: candidatos fortes travavam por não saber por onde começar, e a avaliação variava com o entrevistador. O framework deu estrutura para os dois lados. E o efeito colateral foi maior que o propósito: o mesmo roteiro serve para conduzir qualquer reunião de desenho técnico.</p><p class="repl"><b>Veio substituir:</b> a preparação por memorização de desenhos famosos — que desmorona quando a pergunta muda de domínio.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Em entrevista, obviamente.</li><li>Ao conduzir a reunião de desenho de uma funcionalidade nova.</li><li>Ao avaliar uma proposta de terceiro.</li></ul></div>
+        </div>
+        <p>As perguntas do passo 1 que mudam tudo: <b>quantos usuários e qual o pico?</b> <b>quais operações, e qual a proporção entre leitura e escrita?</b> <b>que garantias o negócio exige — pode ter atraso? pode duplicar?</b> <b>o que está fora de escopo?</b> Sem elas, qualquer desenho é chute com aparência de método.</p>
+        <div class="cs"><b>A estimativa de guardanapo, e por que ela humilha a complexidade.</b> Um milhão de usuários ativos por dia, dez ações cada, dá dez milhões de ações — cerca de 115 por segundo, com pico talvez de 350. Isso cabe em pouquíssimas máquinas e num banco relacional bem indexado. A maior parte da complexidade que os times adicionam é para uma escala <em>imaginada</em>. Fazer a conta em dois minutos, no começo, é o que separa projetar de deslumbrar.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Desenhar antes de perguntar.</b> É o erro número um, e é visível de longe.</li><li><b>Gastar todo o tempo no desenho bonito.</b> Sem chegar nos gargalos, você não mostrou o que sabe.</li><li><b>Citar tecnologia sem o porquê.</b> "Coloco um Kafka aqui" sem justificar é ruído.</li><li><b>Não declarar o que ficou fora.</b> Escopo aberto é como a conversa se perde.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue uma funcionalidade que você vai construir e rode os quatro passos em vinte minutos, com a estimativa. Compare a arquitetura que sair com a que você teria feito por instinto.</div><div><b>Prova de domínio</b>Você começa por escopo e números, e reserva tempo para os gargalos.</div></div>
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d2">
+        <div class="th"><h3>Os padrões que se repetem</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> os estudos de caso do livro — encurtador, feed, chat, autocompletar, armazenamento de arquivos, notificação — não servem para decorar. Servem para extrair os padrões que reaparecem, para que uma pergunta nova seja reconhecível.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como aprender aberturas no xadrez.</b> Decorar vinte lances de uma abertura ajuda até o adversário sair do roteiro. Entender <em>por que</em> aqueles lances controlam o centro serve para o jogo inteiro, inclusive nas posições que você nunca viu.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>A quantidade de desenhos possíveis é infinita; a quantidade de <em>problemas estruturais</em> é pequena. O livro é organizado em casos justamente para que a repetição fique visível: lido em sequência, você percebe que o quinto capítulo está resolvendo, com outro nome, o mesmo problema do segundo.</p><p class="repl"><b>Veio substituir:</b> a lista de "perguntas que caem na entrevista da empresa X", que envelhece e não transfere.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao reconhecer que o problema novo é leitura pesada disfarçada.</li><li>Ao escolher entre cache e réplica com critério.</li></ul></div>
+        </div>
+        <div class="duo">
+          <div><h4>Os padrões recorrentes</h4><ul>
+            <li><b>Leitura pesada</b> → cache, réplica de leitura, CDN.</li>
+            <li><b>Escrita pesada</b> → fila para amortecer, particionamento.</li>
+            <li><b>Unicidade em escala</b> → gerador de id distribuído.</li>
+            <li><b>Busca por prefixo</b> → índice invertido ou trie.</li>
+            <li><b>Distribuir por nó</b> → consistent hashing.</li>
+            <li><b>Fan-out</b> → escrever na hora ou montar na leitura, e o híbrido.</li>
+          </ul></div>
+          <div><h4>O eixo que decide quase tudo</h4><ul>
+            <li><b>Proporção leitura/escrita.</b> 100:1 e 1:1 pedem arquiteturas opostas.</li>
+            <li><b>Tolerância a atraso.</b> Define se cabe assíncrono e consistência eventual.</li>
+            <li><b>Tamanho do dado.</b> Muda tudo de storage e de banda.</li>
+            <li><b>Padrão de acesso.</b> Por chave, por intervalo ou por busca textual.</li>
+          </ul></div>
+        </div>
+        <div class="cs"><b>O exemplo que ensina o padrão mais transferível: o feed.</b> Existem duas estratégias opostas. <em>Fan-out na escrita</em> — quando alguém publica, o sistema já grava a entrada na caixa de cada seguidor: leitura instantânea, escrita cara, e impraticável para quem tem milhões de seguidores. <em>Fan-out na leitura</em> — monta o feed na hora: escrita barata, leitura cara. A resposta real é <b>híbrida</b>: escrita para a maioria, leitura para as contas enormes. Esse raciocínio — "duas estratégias opostas, e a resposta é separar os casos" — reaparece em metade dos problemas de escala.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Decorar um desenho.</b> Trava assim que o domínio muda.</li><li><b>Ignorar a proporção leitura/escrita.</b> É o número que mais determina a arquitetura, e o mais esquecido.</li><li><b>Aplicar o híbrido sempre.</b> Ele só se justifica quando existe a cauda longa que o motiva.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue três casos do livro e escreva, para cada um, qual padrão estrutural ele resolve. Depois pegue uma funcionalidade sua e veja em qual dos padrões ela cai.</div><div><b>Prova de domínio</b>Você reconhece o padrão estrutural por trás de uma pergunta nova, em vez de procurar um caso parecido.</div></div>
+        <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ========================= PARTE 05 ========================= -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Entendendo Algoritmos</h2><p>Aditya Bhargava · a base que sustenta as decisões dos outros quatro livros.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Big-O: a forma da curva</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Big-O não mede tempo — mede como o tempo <em>cresce</em> quando a entrada cresce. É por isso que O(n²) perde para O(n log n) em escala mesmo sendo mais rápido com dez elementos: o que importa é a forma da curva, não a constante.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como comparar meios de transporte por distância.</b> Para atravessar a rua, a pé vence o avião — check-in, embarque, o trajeto até o aeroporto. Para atravessar o país, não há competição. Perguntar "o que é mais rápido" sem dizer a distância não tem resposta, e é por isso que a constante importa pouco e a curva importa muito.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o livro existe</h4><p>Algoritmos era assunto ensinado com prova matemática e notação pesada, o que afastava quem programava por ofício. Bhargava apostou no contrário: desenho, exemplo concreto e a intuição antes do formalismo. O resultado é que conceitos considerados acadêmicos — recursão, tabela hash, Dijkstra — viram ferramentas reconhecíveis no código do dia a dia.</p><p class="repl"><b>Veio substituir:</b> o livro-texto de algoritmos como única porta de entrada — que é excelente como referência e péssimo como primeiro contato.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao ver um laço dentro de outro sobre a mesma lista.</li><li>Ao escolher entre lista e mapa numa coleção grande.</li><li>Em entrevista: é a pergunta de aquecimento padrão.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">O(n²) escondido</div><pre><code><span class="c">// para cada pedido, procura o cliente na lista</span>
+<span class="k">for</span> (Pedido p : pedidos) {          <span class="c">// n</span>
+  <span class="k">for</span> (Cliente c : clientes) {       <span class="c">// × m</span>
+    <span class="k">if</span> (c.<span class="a">getId</span>().<span class="a">equals</span>(p.<span class="a">getClienteId</span>()))
+        p.<span class="a">setCliente</span>(c);
+  }
+}
+<span class="c">// 10.000 × 10.000 = 100 MILHÕES de comparações</span>
+<span class="c">// funciona lindamente com 20 registros no teste</span></code></pre></div>
+          <div class="depois"><div class="lab">O(n + m) com tabela hash</div><pre><code><span class="k">var</span> porId = clientes.<span class="a">stream</span>()
+    .<span class="a">collect</span>(toMap(Cliente::<span class="a">getId</span>, c -&gt; c));  <span class="c">// m</span>
+
+<span class="k">for</span> (Pedido p : pedidos)                       <span class="c">// n</span>
+  p.<span class="a">setCliente</span>(porId.<span class="a">get</span>(p.<span class="a">getClienteId</span>()));  <span class="c">// O(1)</span>
+
+<span class="c">// 20.000 operações em vez de 100 milhões</span>
+<span class="c">// a mesma resposta, outra ordem de grandeza</span></code></pre></div>
+        </div>
+        <div class="cs"><b>Onde isso conversa com o resto da estante.</b> A busca binária — cortar pela metade a cada passo, O(log n) — é a mesma ideia por trás do índice B-tree do banco (Conceitos de Backend, Parte 05) <em>e</em> do método de investigação por bisseção (Parte 08). Um milhão de itens em cerca de vinte comparações. Quando você entende por que a busca binária exige ordenação, entende de quebra por que o índice do banco é uma estrutura ordenada e por que ele não ajuda em <code class="ic">LIKE '%x'</code>.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Otimizar a constante com a ordem errada.</b> Deixar o laço aninhado 30% mais rápido não resolve nada.</li><li><b>Testar com dados pequenos.</b> O(n²) passa despercebido com vinte registros e trava com vinte mil.</li><li><b>Esquecer a complexidade de espaço.</b> A tabela hash acima resolve tempo e ocupa memória; com dez milhões de clientes, a conta muda.</li><li><b>Big-O como dogma.</b> Para n pequeno e fixo, a solução simples costuma ganhar.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Procure no seu código um laço dentro de outro sobre coleções diferentes. Meça com 100 e com 10.000 registros — a curva aparece sozinha.</div><div><b>Prova de domínio</b>Você identifica a ordem de um trecho e sabe quando a constante importa mais que a curva.</div></div>
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="e2">
+        <div class="th"><h3>As estruturas que você usa sem perceber</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java</span></div></div>
+        <p class="direto"><b>Direto:</b> tabela hash, ordenação e grafo não são assunto de prova — são <code class="ic">HashMap</code>, <code class="ic">Collections.sort</code> e o grafo de dependências que você percorre sem chamar de grafo. Entender o que está por baixo é o que permite escolher certo e diagnosticar quando dá errado.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como dirigir sabendo o que é a embreagem.</b> Dá para dirigir sem saber. Mas quem sabe entende por que o carro morreu na subida, e não repete. O <code class="ic">HashMap</code> funciona sem você saber o que é colisão — até o dia em que o objeto some lá dentro.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>A biblioteca padrão embrulhou essas estruturas tão bem que elas viraram invisíveis, e uma geração inteira passou a usá-las sem modelo mental do custo. O livro devolve a intuição: o que é O(1) amortizado da tabela hash, por que ordenação eficiente é O(n log n) e não menos, e o que uma busca em grafo realmente faz.</p><p class="repl"><b>Veio substituir:</b> a implementação manual dessas estruturas — que hoje é exercício, não trabalho.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao escolher entre <code class="ic">HashMap</code>, <code class="ic">TreeMap</code> e <code class="ic">LinkedHashMap</code>.</li><li>Ao ordenar por vários critérios.</li><li>Ao percorrer dependências sem entrar em laço infinito.</li></ul></div>
+        </div>
+        <table>
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Estrutura</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Em Java</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">A letra miúda</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Tabela hash</b></td><td style="padding:9px;color:var(--ink2)"><code class="ic">HashMap</code>, <code class="ic">HashSet</code></td><td style="padding:9px;color:var(--ink2)">O(1) depende de boa distribuição; chave mutável some</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Árvore ordenada</b></td><td style="padding:9px;color:var(--ink2)"><code class="ic">TreeMap</code>, <code class="ic">TreeSet</code></td><td style="padding:9px;color:var(--ink2)">O(log n), mas mantém ordem e faz intervalo</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Ordenação</b></td><td style="padding:9px;color:var(--ink2)"><code class="ic">Collections.sort</code></td><td style="padding:9px;color:var(--ink2)">Timsort para objetos: estável e ótimo em dado quase ordenado</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Fila de prioridade</b></td><td style="padding:9px;color:var(--ink2)"><code class="ic">PriorityQueue</code></td><td style="padding:9px;color:var(--ink2)">É o coração do Dijkstra; não itera em ordem</td></tr>
+          <tr><td style="padding:9px"><b>Grafo</b></td><td style="padding:9px;color:var(--ink2)">Você monta</td><td style="padding:9px;color:var(--ink2)">BFS para menos saltos; Dijkstra para menor custo</td></tr>
+        </table>
+        <div class="cs"><b>A armadilha do <code class="ic">HashMap</code> que aparece em produção.</b> <code class="ic">equals</code> e <code class="ic">hashCode</code> precisam ser coerentes — e o objeto usado como chave não pode ser alterado depois de inserido. Se você muda um campo que participa do <code class="ic">hashCode</code>, o objeto passa a ser procurado num balde diferente daquele em que foi guardado: ele continua no mapa, ocupando memória, e <code class="ic">get</code> devolve <code class="ic">null</code>. Não há erro, não há exceção — o dado simplesmente sumiu. É o motivo pelo qual chave de mapa deve ser imutável, e por que <code class="ic">record</code> é uma escolha excelente para isso.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Chave mutável.</b> O item some dentro do mapa, em silêncio.</li><li><b><code class="ic">equals</code> sem <code class="ic">hashCode</code>.</b> Dois objetos iguais em baldes diferentes; duplicata no <code class="ic">HashSet</code>.</li><li><b>Implementar a própria ordenação.</b> A da biblioteca é melhor em tudo.</li><li><b>BFS sem conjunto de visitados.</b> Laço infinito no primeiro ciclo do grafo.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Crie uma classe mutável, use como chave de <code class="i">HashMap</code>, insira, altere um campo do <code class="i">hashCode</code> e tente recuperar. Ver o <code class="i">null</code> aparecer sem nenhum erro fixa a lição de vez.</div><div><b>Prova de domínio</b>Você escolhe a estrutura pelo padrão de acesso e sabe por que chave de mapa precisa ser imutável.</div></div>
+        <button class="done" type="button" data-k="e2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ========================= PARTE 06 ========================= -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Ler de verdade</h2><p>Como transformar leitura em decisão — e onde os autores discordam.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>O método dos três passes</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
+        <p class="direto"><b>Direto:</b> livro técnico não se lê como romance. <b>Primeiro passe</b>: sumário, introduções e conclusões, para montar o mapa — uma hora. <b>Segundo passe</b>: os capítulos que respondem a uma pergunta que você tem <em>agora</em>. <b>Terceiro passe</b>: só o que virou decisão real, lido devagar.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como conhecer uma cidade.</b> Primeiro você olha o mapa e entende os bairros. Depois vai aos lugares que interessam ao seu propósito. Só volta com calma àqueles em que vai passar tempo. Quem tenta andar por todas as ruas em ordem alfabética desiste na segunda avenida.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o método funciona</h4><p>Livro técnico de 400 páginas lido linearmente costuma ser abandonado por volta do capítulo 6 — não por falta de disciplina, mas porque os capítulos 2 a 5 respondem perguntas que o leitor ainda não tem. Montar o mapa primeiro inverte isso: você passa a ler sob demanda, guiado por um problema real, e a retenção sobe porque o conteúdo tem onde grudar.</p><p class="repl"><b>Veio substituir:</b> a leitura linear com meta de páginas por dia, que mede esforço em vez de aprendizado.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao começar qualquer um dos livros desta estante.</li><li>Quando bate uma dúvida no trabalho e você lembra que tem livro sobre aquilo.</li></ul></div>
+        </div>
+        <div class="cs"><b>Uma decisão por capítulo é a prova de que você leu.</b> Ao fechar um capítulo, escreva: <em>o que eu faria diferente a partir disto?</em> Se a resposta for "nada", registre isso também — é informação legítima. Mas se cinco capítulos seguidos não mudarem nenhuma decisão, ou o livro não é para você agora, ou a leitura está no piloto automático. E note o contraste com grifar: grifo dá sensação forte de aprendizado e retém pouco, porque reconhecer não é o mesmo que recuperar.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Medir progresso por páginas.</b> Mede tempo sentado, não entendimento.</li><li><b>Grifar muito e não escrever nada.</b> A ilusão de aprendizado mais comum que existe.</li><li><b>Ler três livros ao mesmo tempo.</b> Os modelos se misturam e nenhum se consolida.</li><li><b>Esperar "ter tempo" para o terceiro passe.</b> Ele é curto — só o que virou decisão.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Pegue um dos cinco livros e faça só o primeiro passe, cronometrado em uma hora. Ao final, escreva em cinco linhas do que o livro trata e qual capítulo responde a uma dúvida que você tem hoje.</div><div><b>Prova de domínio</b>Você lê guiado por uma pergunta e mede leitura por decisões mudadas, não por páginas.</div></div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f2">
+        <div class="th"><h3>Onde os autores discordam</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais valioso</span></div></div>
+        <p class="direto"><b>Direto:</b> os quatro primeiros livros se sobrepõem bastante — e divergem em alguns pontos. A divergência não é defeito: é o sinal de que ali existe um <b>trade-off real</b>, e não uma verdade. É onde mais se aprende.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como consultar dois médicos.</b> Se os dois dizem a mesma coisa, você tem confiança e nada a decidir. Se divergem, você descobre que existe uma escolha sendo feita — e passa a entender o problema muito melhor do que se tivesse ouvido só um.</p></div>
+        <div class="duo o">
+          <div><h4>Por que eles divergem</h4><p>Porque partem de problemas diferentes, e cada livro carrega o contexto do seu ponto de partida. Isso não os torna incompatíveis — torna cada um adequado a uma pergunta. O erro comum é tomar o último livro lido como a resposta definitiva e reler os anteriores como se estivessem errados.</p><p class="repl"><b>Veio substituir:</b> a busca pelo "livro definitivo" de arquitetura, que não existe e nem poderia.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Quando dois colegas citam livros diferentes na mesma discussão.</li><li>Ao perceber que a recomendação depende do ponto de partida de quem recomenda.</li></ul></div>
+        </div>
+        <table>
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Questão</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Como cada um trata</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Por onde começar</b></td><td style="padding:9px;color:var(--ink2)"><b>Fundamentals</b> começa pelas características e pelo estilo. <b>Khononov</b> começa pelo negócio e pelo domínio — para ele, a estrutura é consequência. <b>Xu</b> começa pela escala e pelos números.</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Microsserviços</b></td><td style="padding:9px;color:var(--ink2)"><b>Fundamentals</b> os trata como um estilo entre vários, com custo alto. <b>Hard Parts</b> já assume o contexto distribuído e ataca como decompor bem. Ler Hard Parts primeiro dá a impressão de que a decisão já está tomada.</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Onde fica a fronteira</b></td><td style="padding:9px;color:var(--ink2)"><b>Khononov</b> deriva do domínio (bounded context). <b>Hard Parts</b> deriva do acoplamento e dos dados (quantum). Chegam a lugares parecidos por caminhos diferentes — e às vezes a lugares diferentes.</td></tr>
+          <tr><td style="padding:9px"><b>Quanto rigor</b></td><td style="padding:9px;color:var(--ink2)"><b>Khononov</b> é explícito em usar o mínimo necessário. <b>Xu</b>, por ser de entrevista, tende a mostrar a solução robusta — que na vida real costuma ser demais para o volume que você tem.</td></tr>
+        </table>
+        <div class="cs"><b>A ordem de leitura que eu recomendaria, dado o que você já estudou.</b> <b>1)</b> <em>Fundamentals</em> — ele dá o vocabulário que os outros pressupõem. <b>2)</b> <em>Learning DDD</em> — porque fronteira de domínio precede decisão de implantação, e ele evita que você decomponha por critério técnico. <b>3)</b> <em>Hard Parts</em> — quando você já tiver um sistema que pede decomposição de verdade. <b>4)</b> <em>Alex Xu</em> — em paralelo, capítulo por capítulo, como treino. O <em>Entendendo Algoritmos</em> é transversal: leia nos intervalos.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>O último livro como verdade.</b> É o viés mais comum em leitura técnica.</li><li><b>Ler Hard Parts antes de Fundamentals.</b> Você absorve a decomposição sem ter a pergunta de se deve decompor.</li><li><b>Aplicar a solução de entrevista no trabalho.</b> Xu mostra o robusto; o seu volume talvez peça o simples.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Escolha uma decisão técnica atual e escreva o que cada um dos quatro autores provavelmente diria. Onde eles divergirem, está o trade-off que você precisa decidir conscientemente.</div><div><b>Prova de domínio</b>Você usa a divergência entre autores como mapa dos trade-offs, em vez de procurar quem está certo.</div></div>
+        <button class="done" type="button" data-k="f2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f3">
+        <div class="th"><h3>Como acrescentar o próximo livro</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <p class="direto"><b>Direto:</b> esta estante existe para crescer. Cada livro novo entra como um <b>marco na trilha</b> (6 a 8 nós com as ideias-chave) e uma <b>parte no conteúdo</b> (2 a 4 tópicos no formato). E ganha uma linha na tabela de divergências.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como uma estante de verdade.</b> Livro novo entra na prateleira, não numa pilha no chão do escritório. A pilha começa com um livro e sempre termina com onze — foi exatamente assim que surgiram os cinco HTMLs separados que originaram este documento.</p></div>
+        <div class="duo">
+          <div><h4>O ritual, em três passos</h4><ul>
+            <li><b>1. Marco na trilha.</b> 6 a 8 nós com as ideias-chave, no formato <em>o que é / para que serve / como funciona</em>, com o erro comum de cada uma.</li>
+            <li><b>2. Parte no conteúdo.</b> 2 a 4 tópicos: direto, analogia, por que o livro existe, o que ele veio substituir, armadilhas, prova de domínio.</li>
+            <li><b>3. Uma linha na divergência.</b> Onde ele contradiz ou complementa os que já estão aqui — é o que evita a estante virar uma lista de resumos.</li>
+          </ul></div>
+          <div><h4>Candidatos naturais</h4><ul>
+            <li><b>Designing Data-Intensive Applications</b> (Kleppmann) — dados, replicação e consistência. É o complemento mais óbvio ao que você já tem.</li>
+            <li><b>Release It!</b> (Nygard) — resiliência, disjuntor e os padrões de falha. Conversa direto com a Parte 04 do Conceitos de Backend.</li>
+            <li><b>Effective Java</b> (Bloch) — a linguagem em profundidade, para o lado do Java completo.</li>
+            <li><b>Team Topologies</b> — se a lei de Conway virar problema prático no seu time.</li>
+          </ul></div>
+        </div>
+        <div class="cs"><b>O que este documento resolveu, e que vale não desfazer.</b> Antes dele, a biblioteca eram cinco arquivos em três pastas diferentes, dois deles com uma versão v1 superada convivendo com a v2 — e, na hora de estudar, ninguém lembrava onde estava o quê. A estante única resolve isso e tem um efeito secundário melhor: colocar os livros lado a lado <b>expõe as divergências</b>, que eram invisíveis quando cada um vivia no seu arquivo. Livro novo em arquivo separado é o começo do caminho de volta.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Um HTML por livro novo.</b> É como a bagunça anterior começou.</li><li><b>Resumir em vez de sintetizar.</b> Resumo é o livro menor; síntese é o que <em>você</em> passou a decidir diferente.</li><li><b>Adicionar sem cruzar.</b> Sem a linha de divergência, a estante vira uma lista de fichamentos.</li><li><b>Deixar as v1 antigas convivendo.</b> Versão superada ao lado da nova gera dúvida sobre qual abrir.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Escolha o próximo livro e já crie o marco vazio na trilha, com os títulos dos nós que você espera preencher. Começar pelo esqueleto dá direção ao primeiro passe.</div><div><b>Prova de domínio</b>Livro terminado vira marco, parte e linha de divergência aqui — nunca um arquivo novo solto.</div></div>
+        <button class="done" type="button" data-k="f3">marcar dominado</button>
+      </article>
+    </section>
+
+
+    <footer class="foot">
+      <p>Biblioteca completa · setembro de 2026 · reúne num só documento os cinco livros que estavam espalhados pelo vault, em tema Dracula. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code> e <code class="i">Conceitos de Backend completo</code>. Regra de ouro: livro terminado vira <b>marco na trilha</b>, <b>parte no conteúdo</b> e <b>uma linha na tabela de divergências</b> — nunca um arquivo novo solto.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script>
+function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
+var DG={
+ acop:W(150,'<text x="170" y="16" class="bt">quem depende de mim × de quem eu dependo</text><rect x="126" y="58" width="88" height="34" rx="9" class="b1"/><text x="170" y="79" class="bs">componente</text><rect x="10" y="30" width="58" height="20" rx="5" class="b2"/><rect x="10" y="56" width="58" height="20" rx="5" class="b2"/><rect x="10" y="82" width="58" height="20" rx="5" class="b2"/><path d="M68,40 L124,68" class="lt"/><path d="M68,66 L124,73" class="lt"/><path d="M68,92 L124,82" class="lt"/><text x="39" y="118" class="bs">aferente</text><text x="39" y="130" class="bs">3 dependem</text><rect x="272" y="44" width="58" height="20" rx="5" class="b4"/><rect x="272" y="72" width="58" height="20" rx="5" class="b4"/><path d="M214,70 L270,54" class="lb"/><path d="M214,78 L270,82" class="lb"/><text x="301" y="118" class="bs">eferente</text><text x="301" y="130" class="bs">depende de 2</text><text x="170" y="144" class="bs">aferente alto = perigoso mudar · eferente alto = frágil</text>'),
+ quantum:W(160,'<text x="170" y="16" class="bt">um banco compartilhado cola dois serviços</text><rect x="8" y="30" width="150" height="102" rx="10" class="b5"/><text x="83" y="46" class="bs">UM quantum</text><rect x="18" y="56" width="60" height="24" rx="6" class="b2"/><text x="48" y="72" class="bs">pedido</text><rect x="88" y="56" width="60" height="24" rx="6" class="b2"/><text x="118" y="72" class="bs">estoque</text><rect x="38" y="96" width="90" height="24" rx="6" class="b4"/><text x="83" y="112" class="bs">MESMO banco</text><path d="M48,80 L60,94" class="lr"/><path d="M118,80 L106,94" class="lr"/><rect x="182" y="30" width="150" height="102" rx="10" class="b1"/><text x="257" y="46" class="bs">DOIS quanta</text><rect x="192" y="56" width="60" height="24" rx="6" class="b2"/><text x="222" y="72" class="bs">pedido</text><rect x="262" y="56" width="60" height="24" rx="6" class="b2"/><text x="292" y="72" class="bs">estoque</text><rect x="192" y="96" width="60" height="24" rx="6" class="b4"/><text x="222" y="112" class="bs">banco A</text><rect x="262" y="96" width="60" height="24" rx="6" class="b4"/><text x="292" y="112" class="bs">banco B</text><path d="M222,80 L222,94" class="lt"/><path d="M292,80 L292,94" class="lt"/><text x="170" y="152" class="bs">o teste: consigo implantar um sem o outro?</text>'),
+ saga:W(150,'<text x="170" y="16" class="bt">três eixos, oito combinações</text><rect x="14" y="32" width="96" height="46" rx="9" class="b2"/><text x="62" y="50" class="bs">comunicação</text><text x="62" y="66" class="bs">sínc. × assínc.</text><rect x="122" y="32" width="96" height="46" rx="9" class="b4"/><text x="170" y="50" class="bs">consistência</text><text x="170" y="66" class="bs">atômica × eventual</text><rect x="230" y="32" width="96" height="46" rx="9" class="b1"/><text x="278" y="50" class="bs">coordenação</text><text x="278" y="66" class="bs">orquestr. × coreog.</text><text x="170" y="100" class="bs">2 × 2 × 2 = 8 padrões, cada um com nome e custo</text><text x="170" y="122" class="bs">mais atômico e síncrono → fácil de raciocinar, menos disponível</text><text x="170" y="138" class="bs">mais eventual e assíncrono → escala melhor, difícil de depurar</text>'),
+ subd:W(140,'<text x="170" y="16" class="bt">nem todo subdomínio merece o mesmo esforço</text><rect x="10" y="32" width="100" height="66" rx="10" class="b1"/><text x="60" y="52" class="bt">core</text><text x="60" y="70" class="bs">diferencia</text><text x="60" y="86" class="bs">modele com cuidado</text><rect x="120" y="32" width="100" height="66" rx="10" class="b2"/><text x="170" y="52" class="bt">supporting</text><text x="170" y="70" class="bs">necessário</text><text x="170" y="86" class="bs">CRUD bem feito</text><rect x="230" y="32" width="100" height="66" rx="10" class="b3"/><text x="280" y="52" class="bt">generic</text><text x="280" y="70" class="bs">resolvido</text><text x="280" y="86" class="bs">compre pronto</text><text x="170" y="122" class="bs">DDD tático no genérico é desperdício puro</text>'),
+ fw:W(140,'<rect x="8" y="36" width="74" height="40" rx="9" class="b2"/><text x="45" y="54" class="bt">1 escopo</text><text x="45" y="68" class="bs">perguntar</text><rect x="92" y="36" width="74" height="40" rx="9" class="b2"/><text x="129" y="54" class="bt">2 desenho</text><text x="129" y="68" class="bs">alto nível</text><rect x="176" y="36" width="74" height="40" rx="9" class="b1"/><text x="213" y="54" class="bt">3 detalhe</text><text x="213" y="68" class="bs">o crítico</text><rect x="260" y="36" width="72" height="40" rx="9" class="b3"/><text x="296" y="54" class="bt">4 fechar</text><text x="296" y="68" class="bs">gargalos</text><path d="M82,56 L90,56" class="l"/><path d="M166,56 L174,56" class="l"/><path d="M250,56 L258,56" class="l"/><text x="170" y="100" class="bs">o passo 1 é o mais pulado — e o que mais reprova</text><text x="170" y="122" class="bs">sair desenhando sem perguntar quantos e quais garantias</text>'),
+ bigo:W(160,'<text x="170" y="16" class="bt">a forma da curva, não o tempo absoluto</text><path d="M30,130 L310,130" class="l"/><path d="M30,130 L30,30" class="l"/><text x="170" y="150" class="bs">tamanho da entrada →</text><path d="M30,126 L310,120" class="lt"/><text x="290" y="112" class="bs">O(1)</text><path d="M30,124 L310,100" class="lt"/><text x="290" y="94" class="bs">O(log n)</text><path d="M30,126 L310,66" class="lb"/><text x="286" y="60" class="bs">O(n)</text><path d="M30,126 C160,120 250,80 310,40" class="lb"/><text x="282" y="36" class="bs">O(n log n)</text><path d="M30,128 C120,126 170,100 200,32" class="lr"/><text x="204" y="28" class="bs">O(n²)</text>')
+};
+var T=[
+{g:"01",n:"Fundamentals of Software Architecture",s:"Mark Richards e Neal Ford — o que arquitetura é, e por que não existe melhor prática",c:"var(--gold)",cs:"var(--gold-s)",items:[
+ {t:"Tudo é trade-off",x:"a frase que governa o livro",oq:"A tese central: em arquitetura não existe resposta certa, só a resposta menos ruim para um contexto. Toda escolha ganha uma coisa e paga outra.",ps:"Trocar a busca por 'a arquitetura correta' pela pergunta 'o que estou comprando e o que estou pagando?'.",cf:"Quando alguém apresenta uma solução sem citar o custo dela, a análise está incompleta — não a solução. <b>Erro comum:</b> escolher a tecnologia primeiro e construir a justificativa depois; acontece muito mais do que se admite.",ex:"# a pergunta de revisão\n\"O que esta decisão está nos custando?\"\n# se ninguém souber responder, a decisão não\n# foi tomada — foi adotada"},
+ {t:"As quatro dimensões",x:"o que compõe uma arquitetura",oq:"Arquitetura é a soma de quatro coisas: a estrutura (o estilo escolhido), as características desejadas, as decisões tomadas e os princípios que guiam as decisões futuras.",ps:"Perceber que desenhar caixas é só uma das quatro — e a mais fácil.",cf:"Estrutura responde 'como está organizado'; características, 'o que precisa ser verdade'; decisões, 'o que é regra'; princípios, 'como decidir o que ainda não foi decidido'. <b>Erro comum:</b> documentar só a estrutura e deixar as outras três na cabeça de uma pessoa."},
+ {t:"Características de arquitetura",x:"os -ilities, e por que no máximo três",oq:"Disponibilidade, escalabilidade, testabilidade, desempenho, segurança, elasticidade — as propriedades que o sistema precisa exibir, além de fazer o que faz.",ps:"São elas que determinam o estilo. Escolher o estilo antes de conhecê-las é decidir sem critério.",cf:"Elas competem entre si: mais segurança custa desempenho, mais elasticidade custa simplicidade. Por isso os autores insistem em <b>escolher no máximo três como prioritárias</b>. <b>Erro comum:</b> a lista com quinze itens 'importantes' — que é o mesmo que não ter prioridade nenhuma.",ex:"# o exercício que dói e funciona\n# marque APENAS 3 e defenda a exclusão do resto\n[ ] desempenho   [ ] escalabilidade\n[ ] segurança    [ ] testabilidade\n[ ] simplicidade [ ] disponibilidade"},
+ {t:"Acoplamento aferente e eferente",x:"quem depende de mim, de quem eu dependo",dg:"acop",oq:"Aferente é quantos componentes dependem deste; eferente é de quantos este depende. Instabilidade é a razão entre os dois.",ps:"Medir acoplamento em vez de opinar sobre ele — e saber quais componentes não podem mudar com frequência.",cf:"Componente com acoplamento aferente alto é perigoso de mudar: muita gente quebra junto. Acoplamento eferente alto é frágil: quebra quando qualquer dependência muda. <b>Erro comum:</b> tratar 'acoplamento' como palavrão em vez de medida — algum acoplamento é inevitável e necessário."},
+ {t:"Os estilos, e o que cada um cobra",x:"camadas, pipeline, microkernel, microsserviços",oq:"Cada estilo arquitetural favorece certas características e sacrifica outras. Não há escala de melhor para pior — há adequação.",ps:"Escolher com base nas três características prioritárias, e não no que está em alta.",cf:"Camadas é simples e barato, e escala mal. Microsserviços dá elasticidade e evolução independente, ao custo de complexidade operacional enorme. Event-driven dá desacoplamento e torna o fluxo difícil de seguir. <b>Erro comum:</b> copiar a arquitetura de uma big tech — ela carrega o custo do problema deles, que você não tem."},
+ {t:"Lei de Conway e a manobra inversa",x:"o desenho segue o organograma",oq:"Sistemas tendem a copiar a estrutura de comunicação da organização que os constrói. Se há três times, tende a sair um sistema em três partes.",ps:"Entender por que a arquitetura desenhada no quadro não sobrevive ao contato com a empresa.",cf:"A manobra inversa é reorganizar os times para que a estrutura desejada seja a natural. É por isso que arquitetura é também assunto de gestão. <b>Erro comum:</b> desenhar módulos que atravessam fronteiras de time e esperar que eles se mantenham separados."},
+ {t:"ADR: registrar a decisão",x:"o porquê que sobrevive à pessoa",oq:"Architecture Decision Record: um documento curto por decisão, com contexto, alternativas consideradas, escolha e consequências.",ps:"Fazer o raciocínio sobreviver a quem saiu da empresa — e evitar que a mesma discussão volte a cada seis meses.",cf:"O campo que mais importa é <b>consequências</b>, e é o que as pessoas pulam. Sem ele, o ADR vira ata. <b>Erro comum:</b> registrar só o que foi escolhido, sem as alternativas — aí ninguém sabe se a opção óbvia de hoje já foi descartada por um motivo real."}
+]},
+{g:"02",n:"Software Architecture: The Hard Parts",s:"Ford, Richards, Sadalage e Dehghani — decompor quando não há resposta pronta",c:"var(--red)",cs:"var(--red-soft)",items:[
+ {t:"Architecture quantum",x:"a unidade que escala junto",dg:"quantum",oq:"Um quantum é a menor parte que pode ser implantada de forma independente, com alto acoplamento funcional e um contrato de dados próprio. Se dois serviços compartilham o mesmo banco, eles são um quantum só.",ps:"Descobrir a fronteira real do seu sistema — que quase nunca é a que o diagrama mostra.",cf:"O banco compartilhado é o que mais frequentemente cola serviços num quantum único: eles são implantados separados e falham juntos. <b>Erro comum:</b> chamar de microsserviços um conjunto que divide o mesmo esquema de banco.",ex:"# teste do quantum\n# posso implantar A sem implantar B?\n# posso mudar o esquema de A sem quebrar B?\n# se a resposta for não, A e B são UM"},
+ {t:"Decompor: componentes antes de serviços",x:"a ordem que evita retrabalho",oq:"Antes de quebrar em serviços, identifique e reorganize os componentes dentro do monólito — agrupando por domínio, não por camada técnica.",ps:"Errar barato. Mover uma classe de pacote é trivial; mover um serviço já implantado é um projeto.",cf:"O monólito modular é um destino legítimo, não só uma etapa. Muitos sistemas deveriam parar aí. <b>Erro comum:</b> começar extraindo serviço sem antes ter componentes coesos — você distribui a bagunça em vez de organizá-la."},
+ {t:"Decompor os dados",x:"a parte genuinamente difícil",oq:"Quebrar o serviço é a parte fácil. Quebrar o banco — decidir de quem é cada tabela, o que fazer com as junções e como manter integridade sem chave estrangeira — é onde a migração trava.",ps:"Reconhecer que o trabalho de verdade está nos dados, e orçar tempo para isso.",cf:"As junções que atravessam a nova fronteira precisam virar chamada, replicação de dados ou uma decisão de negócio sobre consistência. <b>Erro comum:</b> planejar a separação de serviços e descobrir o problema de dados no meio do caminho."},
+ {t:"Escolher banco pela força dominante",x:"critério, não preferência",oq:"Em vez de 'qual banco é melhor', o livro propõe pontuar cada opção contra as forças que realmente importam naquele caso: modelo de consulta, escala, consistência, custo e o que o time sabe operar.",ps:"Tornar a escolha defensável e registrável num ADR, em vez de uma disputa de gosto.",cf:"A força dominante costuma ser o padrão de acesso — o mesmo critério do Conceitos de Backend. <b>Erro comum:</b> deixar a familiaridade do time fora da matriz; ela é uma força legítima e frequentemente decisiva."},
+ {t:"Granularidade: integradores e desintegradores",x:"o cabo de guerra",oq:"Existem forças que puxam para dividir mais (escopo do domínio, volatilidade diferente, escala diferente, isolamento de falha, segurança) e forças que puxam para juntar (transação, fluxo de dados, dependência, troca de código compartilhado).",ps:"Ter uma lista explícita dos dois lados, em vez de decidir o tamanho do serviço por intuição.",cf:"A pergunta certa não é 'qual o tamanho ideal', e sim 'qual força é mais forte aqui'. <b>Erro comum:</b> só olhar os desintegradores — aí você fatia até o ponto em que toda operação vira uma saga."},
+ {t:"Transação distribuída e ownership",x:"quem manda no dado",oq:"Ao dividir, cada dado precisa de um dono claro. Quando uma operação atravessa donos, não existe transação — existe coordenação.",ps:"Saber que a transação ACID era um luxo do monólito, e que perdê-la tem preço concreto.",cf:"Três casos de ownership: um serviço só escreve (simples), poucos serviços escrevem (delegar a um) ou muitos escrevem (serviço dedicado de dados). <b>Erro comum:</b> dois serviços escrevendo na mesma tabela e a esperança de que dê certo."},
+ {t:"Os oito padrões de saga",x:"a matriz que organiza tudo",dg:"saga",oq:"O livro classifica sagas por três eixos: comunicação (síncrona ou assíncrona), consistência (atômica ou eventual) e coordenação (orquestrada ou coreografada). Oito combinações, cada uma com nome e consequência.",ps:"Parar de dizer 'vamos usar saga' e passar a dizer qual das oito, com o custo nomeado.",cf:"Quanto mais atômica e síncrona, mais fácil de raciocinar e menos disponível. Quanto mais eventual e assíncrona, mais escalável e mais difícil de depurar. <b>Erro comum:</b> escolher a mais sofisticada por padrão, quando a maioria dos fluxos aceita a mais simples."},
+ {t:"Contratos rígidos e flexíveis",x:"o outro cabo de guerra",oq:"Contrato rígido (esquema estrito, versionado) dá garantia e acopla; contrato flexível (campos opcionais, tolerante) dá liberdade e adia o erro para a execução.",ps:"Decidir conscientemente onde cada um cabe, em vez de padronizar um dos dois para tudo.",cf:"Rígido entre times que se coordenam mal; flexível onde a evolução é constante e os consumidores são conhecidos. <b>Erro comum:</b> contrato flexível sem teste de contrato — você trocou a garantia por nada."}
+]},
+{g:"03",n:"Learning Domain-Driven Design",s:"Vlad Khononov — modelar o domínio antes de desenhar o castelo",c:"var(--purple)",cs:"var(--purple-soft)",items:[
+ {t:"Domínio e subdomínios",x:"nem tudo merece o mesmo esforço",dg:"subd",oq:"O domínio é o negócio inteiro. Ele se divide em subdomínios <b>core</b> (o que diferencia a empresa), <b>supporting</b> (necessário, específico, mas não diferencia) e <b>generic</b> (resolvido, dá para comprar pronto).",ps:"Concentrar a modelagem cuidadosa onde ela paga — e só ali.",cf:"Aplicar DDD tático no subdomínio genérico é desperdício puro: autenticação e envio de e-mail você compra. <b>Erro comum:</b> usar agregados e eventos no CRUD de cadastro porque 'é o padrão da casa'.",ex:"core      → modele com cuidado, invista\nsupporting→ CRUD bem feito basta\ngeneric   → compre, não construa"},
+ {t:"Linguagem ubíqua",x:"uma palavra, um significado",oq:"O mesmo vocabulário entre quem entende o negócio e quem escreve o código — e dentro de uma fronteira, cada termo significa exatamente uma coisa.",ps:"Eliminar a tradução constante que é a origem silenciosa de metade dos bugs de regra de negócio.",cf:"Se 'pedido' significa coisas diferentes no comercial e no fiscal, você não tem um termo ambíguo — você tem duas fronteiras. <b>Erro comum:</b> forçar um modelo canônico único para o 'cliente' da empresa inteira, que acaba servindo mal a todo mundo."},
+ {t:"Bounded context",x:"a fronteira do significado",oq:"O limite dentro do qual um modelo e sua linguagem valem. Fora dele, os mesmos termos podem significar outra coisa — e tudo bem.",ps:"Permitir que cada parte do sistema tenha o modelo adequado ao seu problema, sem negociar um modelo universal.",cf:"Bounded context é decisão de <em>modelo</em>; serviço é decisão de <em>implantação</em>. Costumam coincidir, mas não são a mesma coisa. <b>Erro comum:</b> confundir os dois e criar um microsserviço por entidade."},
+ {t:"Context map",x:"como as fronteiras se relacionam",oq:"Os padrões de integração entre contextos: parceria, kernel compartilhado, cliente-fornecedor, conformista, camada anticorrupção e serviço de host aberto.",ps:"Nomear a relação de poder e de dependência entre times — que é o que de fato determina como a integração vai envelhecer.",cf:"A <b>camada anticorrupção</b> é a mais útil no dia a dia: traduz o modelo do outro para o seu, para que o vocabulário alheio não vaze para dentro do seu domínio. <b>Erro comum:</b> consumir o modelo do legado direto e deixá-lo contaminar o código novo."},
+ {t:"A escada dos padrões táticos",x:"proporcional à regra",oq:"Quatro níveis, do mais simples ao mais caro: transaction script, active record, domain model e event-sourced domain model.",ps:"Escolher a ferramenta proporcional à complexidade da regra — não aplicar o mais sofisticado por toda parte.",cf:"Se a lógica é 'salva o que veio do formulário', transaction script resolve. Domain model se paga quando há invariantes de verdade. Event sourcing quando o histórico das mudanças é requisito, não curiosidade. <b>Erro comum:</b> event sourcing por elegância — e um ano depois ninguém consegue responder uma consulta simples."},
+ {t:"Agregado, entidade e value object",x:"onde a invariante vive",oq:"O agregado é a fronteira de consistência: tudo dentro dele muda numa transação só, e ele é a unidade de proteção das regras.",ps:"Ter um lugar óbvio onde a invariante é garantida, em vez de espalhá-la por serviços e validações.",cf:"Regra prática: agregado pequeno, referência a outros por identificador, uma transação por agregado. Value object não tem identidade — dois valores iguais são o mesmo. <b>Erro comum:</b> agregado gigante que carrega meio banco a cada operação e vira ponto de contenção."},
+ {t:"Eventos de domínio",x:"o fato que o negócio reconhece",oq:"Um fato relevante do domínio, nomeado no passado, que outras partes podem reagir a — sem que quem publicou saiba quem são.",ps:"Desacoplar reações do fluxo principal usando a linguagem do negócio, e não termos técnicos.",cf:"Evento de domínio é diferente de evento de integração: o primeiro é interno ao contexto e rico; o segundo atravessa fronteiras e deve ser estável e magro. <b>Erro comum:</b> publicar o evento interno para fora e amarrar todo mundo ao seu modelo."}
+]},
+{g:"04",n:"System Design Interview",s:"Alex Xu — a conversa estruturada, não a resposta decorada",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
+ {t:"O framework de quatro passos",x:"a estrutura que evita o branco",dg:"fw",oq:"1) Entender o escopo e os requisitos. 2) Propor um desenho de alto nível. 3) Aprofundar nos pontos críticos. 4) Encerrar discutindo gargalos e evolução.",ps:"Ter um roteiro quando a pergunta é aberta demais — na entrevista e na reunião de desenho.",cf:"O passo 1 é o mais subestimado e o que mais reprova: sair desenhando sem perguntar quantos usuários, que operações e quais garantias é o erro clássico. <b>Erro comum:</b> gastar 80% do tempo no desenho bonito e não sobrar tempo para os gargalos.",ex:"1. escopo    — quantos? quais operações? que garantias?\n2. alto nível— caixas e fluxo principal\n3. detalhe   — o ponto crítico, com números\n4. fechar    — gargalos, falhas, próximo passo"},
+ {t:"Estimativa de guardanapo",x:"números antes de escolher",oq:"Calcular por alto o volume de requisições, o armazenamento e a banda antes de decidir a arquitetura.",ps:"Descobrir se o problema é grande de verdade. Muita complexidade é adicionada para um volume que caberia num servidor.",cf:"Poucos números resolvem: requisições por segundo (total e de pico), tamanho médio do registro, retenção. <b>Erro comum:</b> pular a estimativa e projetar para uma escala imaginária.",ex:"1 milhão de usuários ativos/dia\n× 10 ações = 10M/dia ≈ 115 req/s\npico 3× ≈ 350 req/s\n# isto cabe em pouquíssimas máquinas"},
+ {t:"A escada de escala",x:"a mesma ordem, de novo",oq:"Vertical, horizontal com balanceador, cache, CDN, réplica de leitura, sharding — cada degrau resolvendo um limite específico.",ps:"Ter uma sequência defensável em vez de mencionar tecnologias soltas.",cf:"É a mesma escada da Parte 01 do Conceitos de Backend, vista pela ótica da entrevista: o entrevistador quer ouvir o <em>porquê</em> de cada degrau e o que ele custa. <b>Erro comum:</b> citar o degrau sem saber o que ele quebra."},
+ {t:"Consistent hashing",x:"o truque que evita remapear tudo",oq:"Distribuir chaves por um anel de hash, de modo que adicionar ou remover um nó realoque apenas uma fração das chaves, em vez de quase todas.",ps:"Fundamento de cache distribuído, banco chave-valor e sharding — aparece em quase todo desenho de escala.",cf:"Com o módulo simples pelo número de nós, mudar a quantidade de nós invalida praticamente todo o mapeamento. Nós virtuais suavizam a distribuição. <b>Erro comum:</b> citar o nome sem saber explicar o problema que ele resolve."},
+ {t:"Padrões transferíveis",x:"o que realmente vale decorar",oq:"Os estudos de caso — encurtador de URL, feed, chat, autocompletar, armazenamento de arquivos — servem para extrair padrões que se repetem, não para memorizar respostas.",ps:"Reconhecer o padrão numa pergunta nova, em vez de torcer para cair uma que você já viu.",cf:"Os que mais se repetem: leitura pesada resolve com cache e réplica; escrita pesada resolve com fila e particionamento; unicidade resolve com gerador de id; busca resolve com índice invertido. <b>Erro comum:</b> decorar o desenho do Twitter e travar quando a pergunta muda de domínio."},
+ {t:"Explicar o porquê",x:"o critério de avaliação real",oq:"O entrevistador avalia o raciocínio, não o diagrama. Uma escolha simples bem justificada vale mais que uma sofisticada sem defesa.",ps:"Treinar a articulação do trade-off — que é a mesma habilidade dos dois primeiros livros desta estante.",cf:"Diga o que está trocando: 'escolho consistência eventual aqui porque o usuário tolera alguns segundos, e isso me dá disponibilidade'. <b>Erro comum:</b> apresentar a solução como óbvia e não mencionar nenhuma alternativa."}
+]},
+{g:"05",n:"Entendendo Algoritmos",s:"Aditya Bhargava — a base que sustenta as decisões dos outros quatro",c:"var(--green)",cs:"var(--green-soft)",items:[
+ {t:"Big-O em dez segundos",x:"como o custo cresce",dg:"bigo",oq:"Notação que descreve como o tempo cresce conforme a entrada cresce — não quanto tempo leva, mas a forma da curva.",ps:"Comparar abordagens sem medir, e reconhecer o laço aninhado que vai explodir com dados reais.",cf:"O que importa é a ordem, não a constante: O(n²) perde para O(n log n) em escala, mesmo que seja mais rápido com dez elementos. <b>Erro comum:</b> otimizar a constante de um algoritmo que tem a ordem errada.",ex:"O(1)      acesso a índice, tabela hash\nO(log n)  busca binária\nO(n)      varrer uma vez\nO(n log n) ordenação eficiente\nO(n²)     laço dentro de laço\nO(2^n)    força bruta em subconjuntos"},
+ {t:"Busca binária",x:"o poder de cortar pela metade",oq:"Numa coleção ordenada, comparar com o meio e descartar metade a cada passo. Um milhão de itens em cerca de vinte comparações.",ps:"É a intuição por trás do índice B-tree do banco, do diagnóstico por bisseção e do próprio método de investigação.",cf:"Exige ordenação prévia — e é por isso que o índice do banco é uma estrutura ordenada. <b>Erro comum:</b> aplicar em coleção não ordenada e obter resultado errado sem erro nenhum."},
+ {t:"Ordenação: seleção, quick e merge",x:"os clássicos e o que o mundo usa",oq:"Seleção é O(n²) e didático. Quicksort é O(n log n) no caso médio e rápido na prática. Mergesort é O(n log n) garantido e estável.",ps:"Entender o que a biblioteca faz por você — e por que ninguém escreve ordenação à mão.",cf:"Java usa Timsort para objetos (estável, ótimo em dados parcialmente ordenados) e uma variação de quicksort para primitivos. <b>Erro comum:</b> implementar a própria ordenação; a da biblioteca é melhor em todos os aspectos.",ex:"Collections.sort(lista)      // Timsort, estável\nArrays.sort(int[])           // dual-pivot quicksort\nlista.sort(Comparator.comparing(Pedido::data))"},
+ {t:"Tabela hash",x:"O(1) e a letra miúda",oq:"Estrutura que transforma a chave num índice e acessa direto. Busca, inserção e remoção em tempo constante no caso médio.",ps:"É o que está por trás de HashMap, de cache e de deduplicação — inclusive a tabela de idempotência.",cf:"O caso constante depende de boa distribuição: com colisões em excesso, degrada. Em Java, <code>equals</code> e <code>hashCode</code> precisam ser coerentes, senão o objeto some dentro do mapa. <b>Erro comum:</b> usar como chave um objeto mutável e alterá-lo depois de inserido."},
+ {t:"Grafos: BFS e Dijkstra",x:"caminho mais curto",oq:"Busca em largura encontra o menor número de saltos; Dijkstra encontra o caminho de menor custo quando as arestas têm peso.",ps:"Modelar relações — dependências, rotas, recomendações — e resolver com algoritmo conhecido em vez de heurística própria.",cf:"BFS usa fila e visita por camadas; Dijkstra usa fila de prioridade e não aceita peso negativo. <b>Erro comum:</b> esquecer o conjunto de visitados e entrar em laço infinito num grafo com ciclo."},
+ {t:"Guloso e programação dinâmica",x:"quando o ótimo local basta",oq:"O guloso escolhe o melhor passo imediato e é rápido — nem sempre chega ao ótimo. A programação dinâmica quebra em subproblemas e guarda os resultados, chegando ao ótimo por mais trabalho.",ps:"Reconhecer quando uma aproximação boa é suficiente — que é a maioria dos casos práticos.",cf:"Se o problema tem subestrutura ótima e subproblemas repetidos, cabe programação dinâmica. Se não, o guloso com uma heurística razoável costuma ser a escolha pragmática. <b>Erro comum:</b> partir para força bruta sem perceber que os subproblemas se repetem."}
+]},
+{g:"06",n:"Ler de verdade",s:"como transformar leitura em decisão — e as próximas da fila",c:"var(--java)",cs:"var(--java-soft)",items:[
+ {t:"O método dos três passes",x:"não leia do começo ao fim",oq:"Primeiro passe: sumário, introduções e conclusões de cada capítulo, para montar o mapa. Segundo: os capítulos que respondem a uma pergunta que você tem agora. Terceiro: só o que virou decisão real.",ps:"Livro técnico de 400 páginas lido linearmente costuma ser abandonado no capítulo 6. O mapa primeiro muda isso.",cf:"A pergunta que guia o segundo passe vem do trabalho: 'como decido o tamanho deste serviço?' leva direto ao capítulo de granularidade. <b>Erro comum:</b> tratar livro técnico como romance — e medir progresso por páginas em vez de por decisões."},
+ {t:"Uma decisão por capítulo",x:"a prova de que leu",oq:"Ao fechar um capítulo, escreva uma decisão que você tomaria diferente a partir dele — ou registre que ele não mudou nada.",ps:"Separar 'li e concordei' de 'entendi a ponto de aplicar'. São coisas muito diferentes.",cf:"Se em cinco capítulos nenhuma decisão mudou, ou o livro não é para você agora, ou você está lendo no piloto automático. <b>Erro comum:</b> grifar muito e não escrever nada — grifo dá sensação de aprendizado e retém pouco."},
+ {t:"Cruzar os autores",x:"onde eles discordam",oq:"Os quatro primeiros livros desta estante se sobrepõem em vários pontos — e divergem em alguns.",ps:"A divergência é onde está o aprendizado: significa que ali existe um trade-off real, não uma verdade.",cf:"Exemplos: Richards e Ford tratam microsserviços como um estilo entre vários; Hard Parts assume o contexto distribuído e ataca a decomposição. Khononov parte do domínio; Xu parte da escala. Nenhum está errado — partem de problemas diferentes. <b>Erro comum:</b> tomar o último livro lido como a resposta definitiva."},
+ {t:"As próximas da fila",x:"onde acrescentar",oq:"Esta estante cresce: cada livro novo entra como um marco na trilha e uma parte no conteúdo, no mesmo formato.",ps:"Manter a biblioteca num lugar só, em vez de espalhar um HTML por livro — que foi o que originou este documento.",cf:"Candidatos naturais para a sequência, dado o que você já leu: <em>Designing Data-Intensive Applications</em> (Kleppmann) para dados e consistência, <em>Release It!</em> (Nygard) para resiliência e os padrões de falha, e <em>Effective Java</em> (Bloch) para a linguagem. Ao ler, acrescente aqui: marco na trilha, parte no conteúdo.",ex:"# quando terminar um livro:\n# 1. novo marco na trilha (6-8 nós)\n# 2. nova parte no conteúdo\n# 3. um tópico em \"onde discordam\"\n# NÃO crie um HTML novo por livro",star:true}
+]}
+];
+
+
+/* ---------- render ---------- */
+/* ================== NAVEGAÇÃO (trilha + conteúdo) ================== */
+var nav=document.getElementById("nav");
+var navMap={};
+function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
+/* ================== TRILHA ================== */
+var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
+flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
+var KEYT="biblioteca-completo-CL-trilha-v1";
+var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
+var track=document.getElementById("track"),lg=document.getElementById("lg");
+navHead("A trilha · 6 livros");
+T.forEach(function(g,gi){
+  var sec=document.createElement("section");
+  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
+  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
+  var ms=document.createElement("div");ms.className="milestone";
+  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
+  var box=document.createElement("div");box.className="cluster";
+  g.items.forEach(function(it){
+    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
+    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
+    b.addEventListener("click",function(){open(it._i);});
+    box.appendChild(b);
+  });
+  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
+  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
+  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
+  navMap["g"+g.g]=a;
+});
+var fim=document.createElement("div");fim.className="trail-end";
+fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
+track.appendChild(fim);
+/* ---------- painel ---------- */
+var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
+function open(i){
+  cur=i;var it=flat[i];
+  panel.style.setProperty("--pc",it._g.c);
+  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
+  document.getElementById("pTitle").textContent=it.t;
+  document.getElementById("pSub").textContent=it.x;
+  var h='';
+  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
+  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
+  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
+  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
+  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+hlCode(it.ex)+'</code></pre></div>';
+  document.getElementById("pBody").innerHTML=h;
+  document.getElementById("pBody").scrollTop=0;
+  syncMark();
+  panel.classList.add("on");scrim.classList.add("on");
+  document.getElementById("pX").focus();
+}
+function hlCode(code){
+  var e=code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  e=e.replace(/(\/\/[^\n]*|#[^\n]*)/g,'<span class="c">$1</span>');
+  e=e.replace(/"([^"\n]*)"/g,'<span class="s">"$1"</span>');
+  e=e.replace(/\b(class|interface|record|enum|new|return|static|final|void|try|catch|finally|throw|throws|if|else|for|while|switch|case|public|private|protected|var|sealed|permits|implements|extends|synchronized|volatile|import|module|requires|exports)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/\b(int|long|double|boolean|String|List|Map|Set|Optional|BigDecimal|LocalDate|Duration|Path|ByteBuffer|Thread|Future)\b/g,'<span class="t">$1</span>');
+  e=e.replace(/(@\w+)/g,'<span class="d">$1</span>');
+  return e;
+}
+function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("pX").addEventListener("click",closeP);
+scrim.addEventListener("click",closeP);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeP();
+  if(!panel.classList.contains("on"))return;
+  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
+});
+function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
+document.getElementById("pNext").addEventListener("click",function(){go(1);});
+document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
+var mark=document.getElementById("pMark");
+function syncMark(){
+  var on=!!doneT[flat[cur]._id];
+  mark.classList.toggle("is",on);
+  mark.textContent=on?"✓ estudado":"marcar estudado";
+}
+mark.addEventListener("click",function(){
+  var id=flat[cur]._id;
+  if(doneT[id])delete doneT[id];else doneT[id]=1;
+  localStorage.setItem(KEYT,JSON.stringify(doneT));
+  syncMark();paint();
+});
+/* ================== CONTEÚDO (tópicos profundos) ================== */
+var parts=[].slice.call(document.querySelectorAll("section.part"));
+var entries=[];
+navHead("O conteúdo · 6 partes");
+parts.forEach(function(sec){
+  var num=sec.querySelector(".ph .num").textContent.trim();
+  var h2=sec.querySelector(".ph h2").textContent;
+  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
+  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
+  sec.querySelectorAll("article.topic").forEach(function(t){
+    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
+    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
+    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
+  });
+});
+var KEYM="biblioteca-completo-CL-conteudo-v1";
+var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
+var botoes=[].slice.call(document.querySelectorAll(".done"));
+botoes.forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.k;
+    if(doneM[k])delete doneM[k];else doneM[k]=1;
+    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
+  });
+});
+/* ================== PROGRESSO COMBINADO ================== */
+function paint(){
+  var n=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
+    b.classList.toggle("done",on);if(on)n++;
+  });
+  var m=0;
+  botoes.forEach(function(b){
+    var k=b.dataset.k,on=!!doneM[k];
+    b.classList.toggle("is",on);
+    b.textContent=on?"✓ dominado":"marcar dominado";
+    var la=nav.querySelector('a[data-k="'+k+'"]');
+    if(la)la.classList.toggle("ok",on);
+    if(on)m++;
+  });
+  var tot=flat.length+botoes.length,fez=n+m;
+  var pct=tot?Math.round(fez/tot*100):0;
+  document.getElementById("rdone").textContent=fez+" de "+tot;
+  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+}
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
+  doneT={};doneM={};
+  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
+  paint();if(cur>=0)syncMark();
+});
+/* ================== SCROLLSPY ================== */
+function onScroll(){
+  var y=window.scrollY+140,c=null,i;
+  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
+  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
+  var h=document.body.scrollHeight-window.innerHeight;
+  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
+  document.getElementById("up").classList.toggle("on",window.scrollY>700);
+}
+document.addEventListener("scroll",onScroll,{passive:true});
+document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+/* ================== BUSCA (nós + tópicos) ================== */
+var q=document.getElementById("q");
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase(),vis=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];
+    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf).toLowerCase();
+    var hit=v&&txt.indexOf(v)>-1;
+    b.classList.toggle("hit",!!hit);
+    b.classList.toggle("dim",!!v&&!hit);
+    if(hit)vis++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){g.classList.remove("hide");return;}
+    g.classList.toggle("hide",!g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(t){
+    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
+    t.classList.toggle("hide",!hit);
+    var la=nav.querySelector('a[data-k="'+t.id+'"]');
+    if(la)la.classList.toggle("hide",!hit);
+    if(hit&&v)vis++;
+  });
+  parts.forEach(function(sec){
+    var algum=sec.querySelector("article.topic:not(.hide)");
+    sec.style.display=algum?"":"none";
+    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa)sa.classList.toggle("hide",!algum);
+  });
+  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
+});
+/* ================== REALCE DOS BLOCOS DE CÓDIGO ================== */
+function hl(el){
+  var e=el.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  var store=[];
+  function keep(cls,txt){store.push('<span class="'+cls+'">'+txt+'</span>');return "§"+(store.length-1)+"§";}
+  e=e.replace(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|--[^\n]*|#[^\n]*)/g,function(m){return keep("c",m);});
+  e=e.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g,function(m){return keep("s",m);});
+  e=e.replace(/(@[A-Za-z_]\w*)/g,function(m){return keep("a",m);});
+  e=e.replace(/\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|record|return|sealed|permits|short|static|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while|when|yield|true|false|null|SELECT|FROM|WHERE|AND|OR|INSERT|INTO|VALUES|UPDATE|SET|JOIN|ON|ORDER|BY|LIMIT|BEGIN|COMMIT|ROLLBACK|CREATE|INDEX|EXPLAIN|ANALYZE|FOR)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/\b([A-Z][A-Za-z0-9_]*)\b/g,'<span class="t">$1</span>');
+  e=e.replace(/\b(\d[\d_]*)\b/g,'<span class="n">$1</span>');
+  e=e.replace(/§(\d+)§/g,function(_,i){return store[+i];});
+  el.innerHTML=e;
+}
+document.querySelectorAll("section.part pre code").forEach(hl);
+paint();onScroll();
+/* ================== MODO TESTE (retrieval practice) ================== */
+(function(){
+ var RK="biblioteca-completo-CL-rev-v1";
+ var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
+ var test=false,revealed=false;
+ var P=document.getElementById("panel"),B=document.getElementById("pBody");
+ var mB=document.getElementById("mode"),rB=document.getElementById("review");
+ var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
+ var _open=open;
+ open=function(i){_open(i);after(flat[i]);};
+ function after(it){
+  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
+  if(test){
+   var g=document.createElement("div");g.className="gate";
+   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
+   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
+   g.querySelector(".reveal-btn").addEventListener("click",reveal);
+   B.insertBefore(g,B.firstChild);
+  }
+  grade();
+ }
+ function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
+ function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
+ function cid(){return(cur>=0)?flat[cur]._id:null;}
+ function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
+ ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
+ no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
+ mB.addEventListener("click",function(){
+  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
+  if(P.classList.contains("on")&&cur>=0)open(cur);
+ });
+ rB.addEventListener("click",function(){
+  var k=Object.keys(rev);if(!k.length)return;
+  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
+  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
+ });
+ function pr(){
+  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
+  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
+ }
+ pr();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="O acervo: oito documentos de estudo de backend — Java, Spring, Arquitetura, Docker e Kubernetes, Nuvem, Mensageria, Conceitos de Backend e a Biblioteca. Busca por assunto, o fio do OrderFlow e a ordem de leitura.">
+<meta name="color-scheme" content="dark">
+<title>O acervo · oito documentos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);
+  background:radial-gradient(ellipse at 6% 0,#bd93f91f,transparent 36rem),radial-gradient(ellipse at 92% 4%,#8be9fd14,transparent 38rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(#f8f8f21a 1px,transparent 1px);background-size:22px 22px;
+  mask-image:linear-gradient(#0007,transparent 60%)}
+.wrap{position:relative;z-index:1;width:min(1120px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+.mono{font-family:"Cascadia Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.kick{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+.island{position:sticky;top:16px;z-index:6;width:min(1120px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;gap:9px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em;margin-right:auto;white-space:nowrap}
+.brand i{font-style:normal;color:var(--purple)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;white-space:nowrap;transition:background .3s var(--ease),color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+.island a.on{color:var(--purple);border-color:#bd93f97a}
+
+.head{padding:clamp(28px,5vh,60px) 0 0}
+.head h1{margin:14px 0 0;font:500 clamp(2.4rem,6vw,4.2rem)/.96 Georgia,serif;letter-spacing:-.05em}
+.head p{margin:18px 0 0;max-width:72ch;color:var(--ink2);font-size:.96rem;line-height:1.65}
+
+/* radar */
+.radar{position:relative;display:grid;place-items:center;margin-top:34px;padding:16px;border-radius:26px;
+  border:1px solid var(--line);background:radial-gradient(70% 70% at 50% 45%,#bd93f916,transparent 70%),#ffffff05;
+  overflow:hidden}
+.radar svg{width:100%;max-width:400px;height:auto;overflow:visible}
+.radar .grid{fill:none;stroke:#44475a55;stroke-width:1}
+.radar .spoke{stroke:#44475a4d;stroke-width:1}
+.radar .blob{fill:#bd93f92b;stroke:var(--purple);stroke-width:2.5;stroke-linejoin:round;
+  filter:drop-shadow(0 0 12px #bd93f96b)}
+.radar .dot{fill:var(--bg);stroke:var(--purple);stroke-width:2.5;opacity:0}
+.radar .ghost{font:700 4.4rem "Cascadia Code",monospace;fill:var(--ink);opacity:.09;
+  text-anchor:middle;dominant-baseline:central;letter-spacing:-.05em}
+.radar .lb-n{font:.68rem "Cascadia Code",monospace;fill:var(--muted)}
+.radar .lb-v{font:700 .95rem "Cascadia Code",monospace;fill:var(--ink2)}
+.radar .lb{opacity:0;cursor:pointer;transition:opacity .5s var(--ease)}
+.radar .lb.in{opacity:1}
+.radar .lb:hover .lb-v{fill:var(--purple)}
+.radar .cap{position:absolute;left:20px;right:20px;bottom:14px;display:flex;justify-content:space-between;gap:10px;
+  pointer-events:none}
+.radar .cap span{font:700 .61rem "Cascadia Code",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+h2.sec{font:500 1.5rem Georgia,serif;letter-spacing:-.03em;margin:clamp(48px,7vh,78px) 0 3px}
+p.sub{color:var(--muted);font-size:.84rem;margin:0 0 18px;max-width:78ch;line-height:1.6}
+
+.findbar{display:flex;align-items:center;gap:12px;padding:13px 20px;border:1px solid var(--line);
+  border-radius:999px;background:#ffffff05}
+.findbar i{font-style:normal;color:var(--soft);font-size:.95rem}
+#find{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:400 .95rem Inter,sans-serif;outline:none}
+#find::placeholder{color:var(--muted)}
+.findbar:focus-within{border-color:#bd93f98c}
+#findn{font:.66rem "Cascadia Code",monospace;color:var(--muted);white-space:nowrap}
+
+.idx{border-top:1px solid var(--line);margin-top:14px}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) 170px 30px;gap:20px;align-items:center;
+  padding:17px 12px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;
+  transition:background .35s var(--ease)}
+.row:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
+.row.off{display:none}
+.row .num{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--c)}
+.row h3{margin:0;font:500 1.32rem/1.15 Georgia,serif;letter-spacing:-.035em}
+.row .meta{font:.66rem "Cascadia Code",monospace;color:var(--muted);margin-top:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .desc{margin:7px 0 0;color:var(--muted);font-size:.82rem;line-height:1.5;max-width:64ch;display:none}
+.row.hit .desc{display:block}
+.row .desc mark{background:color-mix(in srgb,var(--c) 30%,transparent);color:var(--ink);border-radius:3px;padding:0 2px}
+.row .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.row .tags em{font-style:normal;font:.63rem "Cascadia Code",monospace;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:4px 9px}
+.row .go{text-align:right;color:var(--c);font:500 1.05rem Georgia,serif;opacity:.7}
+.row:hover .go{opacity:1}
+.none{padding:22px 12px;color:var(--muted);font-size:.85rem;display:none}
+.none.on{display:block}
+
+/* fio + trilho animado */
+.track{position:relative;height:52px;margin:22px 0 -4px}
+.rail{position:absolute;left:8.333%;right:8.333%;top:25px;height:1px;
+  background:linear-gradient(to right,transparent,var(--line2) 6%,var(--line2) 94%,transparent)}
+.nodes{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:center}
+.nodes i{justify-self:center;width:9px;height:9px;border-radius:50%;background:var(--panel);
+  border:1.5px solid var(--line2);margin-top:1px;animation:nodeHit 6s var(--ease) infinite;animation-delay:var(--d)}
+@keyframes nodeHit{
+  0%,100%{border-color:var(--line2);box-shadow:none;transform:scale(1)}
+  6%{border-color:var(--c);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 22%,transparent);transform:scale(1.5)}
+  20%{border-color:var(--line2);box-shadow:none;transform:scale(1)}
+}
+.pkt{position:absolute;top:19px;left:8.333%;width:13px;height:13px;margin-left:-6.5px;border-radius:4px;
+  background:var(--cyan);box-shadow:0 0 16px 2px #8be9fd99;animation:pktRun 6s var(--ease) infinite}
+.pkt:after{content:"";position:absolute;right:100%;top:50%;width:46px;height:2px;margin-top:-1px;
+  background:linear-gradient(to left,#8be9fdcc,transparent);border-radius:2px}
+@keyframes pktRun{
+  0%{left:8.333%;opacity:0;transform:scale(.4)}
+  5%{opacity:1;transform:scale(1)}
+  83.33%{left:91.667%;opacity:1;transform:scale(1)}
+  92%{left:91.667%;opacity:0;transform:scale(.4)}
+  100%{left:8.333%;opacity:0;transform:scale(.4)}
+}
+.fio{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.st{position:relative;display:block;text-decoration:none;padding:18px 17px 20px;border-radius:20px;
+  border:1px solid color-mix(in srgb,var(--c) 30%,transparent);
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  transition:transform .45s var(--ease),border-color .45s var(--ease)}
+.st:hover{transform:translateY(-5px);border-color:var(--c)}
+.st u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
+.st b{display:block;margin:12px 0 6px;font:500 1.12rem/1.15 Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.st span{color:var(--muted);font-size:.78rem;line-height:1.5}
+
+.ord{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:18px}
+.ord a{display:block;text-decoration:none;padding:17px 19px;border-radius:18px;border:1px solid var(--line);
+  background:#ffffff05;transition:border-color .4s var(--ease),transform .4s var(--ease)}
+.ord a:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--c) 60%,transparent)}
+.ord u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
+.ord b{display:block;margin:9px 0 6px;font:500 1.1rem Georgia,serif;letter-spacing:-.03em}
+.ord span{color:var(--muted);font-size:.8rem;line-height:1.5}
+
+.obs{--ob:var(--gold);
+  position:relative;display:flex;align-items:center;gap:18px;margin-top:clamp(44px,6vh,64px);padding:22px;
+  overflow:hidden;text-decoration:none;border:1px solid color-mix(in srgb,var(--ob) 30%,transparent);border-radius:24px;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--ob) 8%,transparent),transparent 62%),var(--panel);
+  transition:border-color .5s var(--ease),transform .5s var(--ease)}
+.obs+.obs{margin-top:14px}
+.obs:hover{border-color:var(--ob);transform:translateY(-3px)}
+.obs:before{content:"";position:absolute;right:-40px;bottom:-52px;width:132px;height:132px;border-radius:42px;
+  background:color-mix(in srgb,var(--ob) 15%,transparent);transform:rotate(22deg);transition:transform .5s var(--ease)}
+.obs:hover:before{transform:rotate(40deg) scale(1.12)}
+.obs .mark{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:19px;
+  border:1px solid color-mix(in srgb,var(--ob) 45%,transparent);background:color-mix(in srgb,var(--ob) 12%,transparent);
+  font:500 1.6rem Georgia,serif;color:var(--ob)}
+.obs .t{position:relative;z-index:1;flex:1;min-width:0}
+.obs .tag{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--ob)}
+.obs h3{margin:5px 0 5px;font:500 1.42rem Georgia,serif;letter-spacing:-.03em}
+.obs p{margin:0;color:var(--muted);font-size:.83rem;max-width:66ch;line-height:1.5}
+
+footer{margin:clamp(56px,8vh,90px) 0 44px;padding-top:24px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.77rem;line-height:1.7}
+footer a{color:var(--purple)}
+
+.rise{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rise.in{opacity:1;transform:none}
+
+@media(max-width:1000px){
+  .fio{grid-template-columns:repeat(3,1fr)}
+  .track{display:none}
+  .row{grid-template-columns:30px minmax(0,1fr) 30px;gap:14px}
+  .row .tags{display:none}
+}
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}.island{width:calc(100% - 24px)}
+  .island a.hide{display:none}
+  .fio{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .pkt{display:none}.rise{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <a href="index.html">hoje</a>
+  <a href="acervo.html" class="on">o acervo</a>
+  <a href="cronograma.html" class="hide">cronograma →</a>
+</nav>
+
+<main class="wrap">
+
+  <header class="head">
+    <span class="kick" style="color:var(--purple)">o acervo</span>
+    <h1>Oito documentos,<br>um assunto só.</h1>
+    <p>Cada um tem duas metades: em cima uma <b>trilha visual</b> no estilo roadmap.sh, para varrer e revisar com modo teste; embaixo o <b>conteúdo em profundidade</b>, onde cada tópico traz a origem do mecanismo, o que ele veio substituir, os diagramas, as armadilhas que custam uma madrugada e uma prova de domínio.</p>
+
+    <div class="radar">
+      <svg viewBox="0 0 340 320" id="rad" role="img" aria-label="Nós de trilha por documento"></svg>
+      <div class="cap"><span>nós de trilha por documento</span><span id="radMax"></span></div>
+    </div>
+  </header>
+
+  <h2 class="sec">Procure um assunto</h2>
+  <p class="sub">Digite o termo e o índice filtra para os documentos que o cobrem, destacando onde ele aparece na descrição.</p>
+  <div class="findbar">
+    <i>⌕</i>
+    <input id="find" type="search" placeholder="idempotência, generics, HPA, JWT, DDD, JOIN…" autocomplete="off" aria-label="Procurar um assunto nos oito documentos">
+    <span id="findn"></span>
+  </div>
+  <div class="idx" id="idx"></div>
+  <p class="none" id="none">Nenhum documento cobre esse termo pelo nome. Se for uma dúvida solta, o lugar dela é o <a href="conceitos-backend.html" style="color:var(--gold)">caderno de dúvidas</a>.</p>
+
+  <h2 class="sec">O fio condutor</h2>
+  <p class="sub">O mesmo sistema — <b>OrderFlow</b> — atravessa os seis primeiros documentos. As restrições se repetem entre eles: a conta do pool de conexões que limita o autoescalonamento aparece em três, vista de ângulos diferentes.</p>
+  <div class="track" aria-hidden="true">
+    <div class="rail"></div>
+    <div class="nodes" id="nodes"></div>
+    <div class="pkt"></div>
+  </div>
+  <div class="fio" id="fio"></div>
+
+  <h2 class="sec">Em que ordem ler</h2>
+  <p class="sub">O cronograma distribui os temas pela semana. Esta é a outra ordem — a de dependência, para quando você quer atravessar um assunto do começo ao fim em vez de seguir o dia.</p>
+  <div class="ord" id="ord"></div>
+
+  <a class="obs" href="conceitos-backend.html">
+    <div class="mark">?</div>
+    <div class="t">
+      <span class="tag">obs · dúvidas</span>
+      <h3>Conceitos de Backend completo</h3>
+      <p>O sétimo fica fora da sequência de propósito: é o caderno de dúvidas. Gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa e no formato, em vez de criar um arquivo novo solto.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="biblioteca.html" style="--ob:var(--purple)">
+    <div class="mark">▤</div>
+    <div class="t">
+      <span class="tag">obs · a estante</span>
+      <h3>Biblioteca completa</h3>
+      <p>O oitavo também fica fora da sequência, por outro motivo: não é sobre uma tecnologia, é sobre <b>como decidir</b>. Reúne os cinco livros que estavam espalhados pelo vault — Fundamentals of Software Architecture, The Hard Parts, Learning DDD, System Design Interview e Entendendo Algoritmos — com a síntese de cada um, a ordem de leitura e a tabela de <b>onde os autores discordam</b>, que é justamente onde mora o trade-off. Livro terminado vira marco, parte e uma linha de divergência ali.</p>
+    </div>
+  </a>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a> · desenvolvedor backend Java e Spring.<br>
+    HTML autocontido, tema Dracula. Sem framework, sem build, sem rastreador.
+  </footer>
+
+</main>
+
+<script>
+var DOCS=[
+ {n:"01",nome:"Java completo",curto:"Java",file:"java.html",cor:"var(--cyan)",hex:"#8be9fd",nos:134,top:49,
+  desc:"Da plataforma ao runtime em produção: valores e referências, generics e coleções, falhas e recursos, SQL e JDBC sem ORM, os mecanismos por trás dos frameworks, concorrência e o Java Memory Model, JVM e performance.",
+  tags:["generics","concorrência","JVM"],
+  chaves:"java jvm generics coleções collections list map set stream lambda equals hashcode imutabilidade referência exceção try-with-resources jdbc sql pool concorrência thread synchronized volatile atomic executor java memory model jmm garbage collector gc heap performance bytecode classloader record optional"},
+ {n:"02",nome:"Spring completo",curto:"Spring",file:"spring.html",cor:"var(--purple)",hex:"#bd93f9",nos:85,top:52,
+  desc:"Do container de IoC à produção: injeção de dependência, o ciclo de vida do bean, AOP e proxies, a anatomia de uma requisição web, dados e transações, testes e o actuator.",
+  tags:["IoC","AOP","transações"],
+  chaves:"spring boot ioc injeção dependência bean escopo ciclo de vida configuration component autowired aop proxy cglib transactional transação jpa hibernate repository mvc controller requisição filtro interceptor validação exception handler actuator profile properties teste mockmvc"},
+ {n:"03",nome:"Arquitetura completa",curto:"Arquitetura",file:"arquitetura.html",cor:"var(--gold)",hex:"#f1fa8c",nos:101,top:51,
+  desc:"O que arquitetura é de verdade: anatomia e princípios, SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, segurança e observabilidade, e como decidir, documentar e influenciar.",
+  tags:["SOLID","DDD","ADR"],
+  chaves:"arquitetura solid conway acoplamento coesão hexagonal clean camadas monolito microserviço ddd domínio agregado bounded context evento consistência eventual saga cap escala resiliência disjuntor circuit breaker segurança observabilidade adr decisão documentação c4 trade-off"},
+ {n:"04",nome:"Docker e Kubernetes completo",curto:"Docker e Kubernetes",file:"docker-kubernetes.html",cor:"var(--lime)",hex:"#50fa7b",nos:74,top:36,
+  desc:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Compose e seus limites, Pod e Deployment, Service e Ingress, probes, recursos, rollout e HPA. Tudo pelo terminal Linux.",
+  tags:["Dockerfile","Pod","HPA"],
+  chaves:"docker container namespace cgroup imagem camada layer cache dockerfile entrypoint cmd pid 1 sinal volume rede bridge compose kubernetes k8s pod deployment replicaset service ingress configmap secret probe liveness readiness recurso request limit rollout rollback hpa autoescalonamento kubectl linux terminal"},
+ {n:"05",nome:"Nuvem completo",curto:"Nuvem",file:"nuvem.html",cor:"var(--orange)",hex:"#ffb86c",nos:51,top:48,
+  desc:"Conceitual e sem vendor: cada nó traz o mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage, banco, identidade, mensageria, observabilidade, infraestrutura como código, nuvem privada e custo.",
+  tags:["AWS ↔ Azure ↔ GCP","IaC","custo"],
+  chaves:"nuvem cloud aws azure google gcp oracle vmware compute vm instância serverless lambda função rede vpc subnet balanceador storage bucket s3 blob banco rds identidade iam papel role mensageria fila sqs observabilidade métrica log terraform iac infraestrutura como código nuvem privada custo billing região zona"},
+ {n:"06",nome:"Mensageria e RabbitMQ completo",curto:"Mensageria",file:"mensageria.html",cor:"var(--pink)",hex:"#ff79c6",nos:76,top:35,
+  desc:"Da fila à operação confiável: o modelo AMQP, os quatro tipos de exchange, publisher confirms, ack manual e a janela commit/ack, prefetch, retry com DLQ, idempotência, outbox e saga, Spring AMQP, quorum queues e Kafka.",
+  tags:["AMQP","DLQ","idempotência"],
+  chaves:"mensageria mensagem rabbitmq amqp exchange direct topic fanout headers routing key fila queue binding publisher confirm ack nack manual prefetch qos retry dlq dead letter idempotência outbox saga spring amqp listener quorum queue kafka partição offset ordem entrega duplicada"},
+ {n:"07",nome:"Conceitos de Backend completo",curto:"Conceitos de Backend",file:"conceitos-backend.html",cor:"var(--gold)",hex:"#f1fa8c",nos:57,top:25,
+  desc:"O caderno de dúvidas, fora da sequência: gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback.",
+  tags:["locks","JWT","índices"],
+  chaves:"gargalo escala vertical horizontal race condition condição de corrida lock pessimista otimista distribuído idempotência rate limit disjuntor circuit breaker índice index join sql query n+1 sessão cookie jwt token oauth2 pkce autenticação autorização upload arquivo observabilidade log métrica trace deploy rollback blue green canário cache"},
+ {n:"08",nome:"Biblioteca completa",curto:"Biblioteca",file:"biblioteca.html",cor:"var(--purple)",hex:"#bd93f9",nos:38,top:17,
+  desc:"A estante: os cinco livros que formaram o critério, num documento só. Fundamentals of Software Architecture, The Hard Parts, Learning DDD, System Design Interview e Entendendo Algoritmos — com a síntese de cada um, a ordem de leitura e a tabela de onde os autores discordam.",
+  tags:["trade-off","quantum","Big-O"],
+  chaves:"biblioteca livro livros leitura fundamentals software architecture richards ford hard parts sadalage dehghani learning domain driven design khononov ddd system design interview alex xu entendendo algoritmos bhargava trade-off característica estilo conway adr architecture quantum decomposição granularidade saga contrato core supporting generic bounded context linguagem ubíqua agregado transaction script active record domain model event sourcing framework quatro passos estimativa consistent hashing big-o busca binária ordenação tabela hash grafo dijkstra três passes divergência ordem de leitura"}
+];
+
+var FIO=[
+ {u:"01",b:"Implementado em Java",s:"O pedido nasce como código: modelo, persistência com JDBC e as restrições de concorrência.",file:"java.html",cor:"var(--cyan)"},
+ {u:"02",b:"Migrado para Spring",s:"O mesmo código vira serviço: injeção de dependência, transações e a anatomia da requisição.",file:"spring.html",cor:"var(--purple)"},
+ {u:"03",b:"Projetado em Arquitetura",s:"As fronteiras aparecem: estilos, DDD, consistência e as decisões que ficam documentadas.",file:"arquitetura.html",cor:"var(--gold)"},
+ {u:"04",b:"Empacotado em containers",s:"Vira imagem e Pod: camadas, PID 1, probes, recursos e rollout no cluster.",file:"docker-kubernetes.html",cor:"var(--lime)"},
+ {u:"05",b:"Implantado numa nuvem",s:"Ganha compute, rede, identidade e conta no fim do mês — em qualquer provedor.",file:"nuvem.html",cor:"var(--orange)"},
+ {u:"06",b:"Desacoplado com mensageria",s:"A fila entra no meio: confirms, ack, DLQ, idempotência e o preço da entrega duplicada.",file:"mensageria.html",cor:"var(--pink)"}
+];
+
+var ORD=[
+ {u:"comece aqui",b:"Java completo",s:"É a base dos outros seis: sem valores e referências, concorrência e JDBC, o resto vira decoreba.",file:"java.html",cor:"var(--cyan)"},
+ {u:"depois",b:"Spring completo",s:"Cada mecanismo do Spring resolve um problema que o Java puro deixa na sua mão.",file:"spring.html",cor:"var(--purple)"},
+ {u:"depois",b:"Mensageria e RabbitMQ",s:"Entra melhor com Spring na cabeça: o listener e as transações são metade do assunto.",file:"mensageria.html",cor:"var(--pink)"},
+ {u:"depois",b:"Arquitetura completa",s:"Só faz sentido quando você já sentiu o acoplamento doer no código dos anteriores.",file:"arquitetura.html",cor:"var(--gold)"},
+ {u:"depois",b:"Docker e Kubernetes",s:"Empacotar exige saber o que a aplicação precisa: portas, sinais, memória, saúde.",file:"docker-kubernetes.html",cor:"var(--lime)"},
+ {u:"por fim",b:"Nuvem completo",s:"É o mapa por cima de tudo. Lido antes, é vocabulário; lido depois, é decisão.",file:"nuvem.html",cor:"var(--orange)"},
+ {u:"em qualquer ponto",b:"Conceitos de Backend",s:"O caderno de dúvidas não tem lugar na fila: é consulta, sempre que travar.",file:"conceitos-backend.html",cor:"var(--gold)"},
+ {u:"em paralelo",b:"Biblioteca",s:"A estante acompanha tudo: leia um livro por vez, no ritmo dos outros seis. Comece pelo Fundamentals.",file:"biblioteca.html",cor:"var(--purple)"}
+];
+
+function q(id){return document.getElementById(id)}
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function sn(t){return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function snMap(t){var o="";for(var i=0;i<t.length;i++){var c=sn(t[i]);o+=c.length?c[0]:" "}return o}
+function marcar(txt,termo){
+  if(!termo)return esc(txt);
+  var base=snMap(txt),out="",i=0,pos;
+  while((pos=base.indexOf(termo,i))>-1){
+    out+=esc(txt.slice(i,pos))+"<mark>"+esc(txt.slice(pos,pos+termo.length))+"</mark>";
+    i=pos+termo.length;
+  }
+  return out+esc(txt.slice(i));
+}
+var reduz=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+/* radar dos seis */
+var AX=DOCS.slice(0,6);
+var totalNos=DOCS.reduce(function(a,d){return a+d.nos},0);
+var maxNos=Math.max.apply(null,AX.map(function(d){return d.nos}));
+var CX=170,CY=152,RMAX=98,RMIN=26;
+function pt(i,r){var a=(-90+i*(360/AX.length))*Math.PI/180;return[CX+Math.cos(a)*r,CY+Math.sin(a)*r]}
+function poly(r){return AX.map(function(_,i){return pt(i,r).map(function(v){return v.toFixed(1)}).join(",")}).join(" ")}
+function blob(ps){
+  var d="M"+ps[0][0].toFixed(1)+","+ps[0][1].toFixed(1);
+  for(var i=0;i<ps.length;i++){
+    var p0=ps[(i-1+ps.length)%ps.length],p1=ps[i],p2=ps[(i+1)%ps.length],p3=ps[(i+2)%ps.length];
+    d+="C"+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+","+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)
+      +" "+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+","+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)
+      +" "+p2[0].toFixed(1)+","+p2[1].toFixed(1);
+  }
+  return d+"Z";
+}
+var pontos=AX.map(function(d,i){return pt(i,RMIN+(RMAX-RMIN)*(d.nos/maxNos))});
+var svg="";
+[1,.72,.44].forEach(function(k){svg+='<polygon class="grid" points="'+poly(RMAX*k)+'"></polygon>'});
+AX.forEach(function(_,i){var p=pt(i,RMAX);svg+='<line class="spoke" x1="'+CX+'" y1="'+CY+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'"></line>'});
+svg+='<text class="ghost" id="ghost" x="'+CX+'" y="'+(CY-8)+'">0</text>';
+svg+='<path class="blob" id="blob" d="'+blob(pontos)+'"></path>';
+pontos.forEach(function(p,i){svg+='<circle class="dot" data-i="'+i+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4.5"></circle>'});
+AX.forEach(function(d,i){
+  var p=pt(i,RMAX+34),an=p[0]>CX+8?"start":p[0]<CX-8?"end":"middle";
+  var dx=an==="start"?4:an==="end"?-4:0;
+  svg+='<a class="lb" data-i="'+i+'" href="'+d.file+'">'
+    +'<text class="lb-n" text-anchor="'+an+'" x="'+(p[0]+dx).toFixed(1)+'" y="'+p[1].toFixed(1)+'">'+d.curto+'</text>'
+    +'<text class="lb-v" text-anchor="'+an+'" x="'+(p[0]+dx).toFixed(1)+'" y="'+(p[1]+18).toFixed(1)+'">'+d.nos+'</text></a>';
+});
+q("rad").innerHTML=svg;
+q("radMax").textContent=totalNos+" nós no total · 6 de 8 documentos";
+
+var bl=q("blob"),L=bl.getTotalLength();
+if(!reduz){
+  bl.style.strokeDasharray=L;bl.style.strokeDashoffset=L;bl.style.fillOpacity=0;
+  requestAnimationFrame(function(){
+    bl.style.transition="stroke-dashoffset 1.5s var(--ease),fill-opacity 1.1s .5s var(--ease)";
+    bl.style.strokeDashoffset=0;bl.style.fillOpacity=1;
+  });
+  [].slice.call(q("rad").querySelectorAll(".dot")).forEach(function(c,i){
+    setTimeout(function(){c.style.transition="opacity .4s var(--ease)";c.style.opacity=1},450+i*110);
+  });
+  [].slice.call(q("rad").querySelectorAll(".lb")).forEach(function(a,i){
+    setTimeout(function(){a.classList.add("in")},600+i*110);
+  });
+  var g=q("ghost"),t0=null;
+  requestAnimationFrame(function passo(t){
+    if(!t0)t0=t;
+    var k=Math.min(1,(t-t0)/1400),e=1-Math.pow(1-k,3);
+    g.textContent=Math.round(totalNos*e);
+    if(k<1)requestAnimationFrame(passo);
+  });
+}else{
+  q("ghost").textContent=totalNos;
+  [].slice.call(q("rad").querySelectorAll(".dot")).forEach(function(c){c.style.opacity=1});
+  [].slice.call(q("rad").querySelectorAll(".lb")).forEach(function(a){a.classList.add("in")});
+}
+[].slice.call(q("rad").querySelectorAll(".lb")).forEach(function(a,i){
+  var dot=q("rad").querySelector('.dot[data-i="'+i+'"]');
+  a.addEventListener("mouseenter",function(){dot.setAttribute("r","7")});
+  a.addEventListener("mouseleave",function(){dot.setAttribute("r","4.5")});
+});
+
+/* índice */
+q("idx").innerHTML=DOCS.map(function(d){
+  return '<a class="row" data-k="'+sn(d.nome+" "+d.chaves+" "+d.desc)+'" href="'+d.file+'" style="--c:'+d.cor+'">'
+    +'<span class="num">'+d.n+'</span>'
+    +'<span><h3>'+d.nome+'</h3><div class="meta">'+d.nos+' nós de trilha · '+d.top+' tópicos em profundidade</div>'
+    +'<p class="desc" data-txt="'+esc(d.desc).replace(/"/g,"&quot;")+'">'+esc(d.desc)+'</p></span>'
+    +'<span class="tags">'+d.tags.map(function(t){return '<em>'+t+'</em>'}).join("")+'</span>'
+    +'<span class="go">↗</span></a>';
+}).join("");
+
+/* fio, nós e ordem */
+q("nodes").innerHTML=FIO.map(function(f,i){return '<i style="--c:'+f.cor+';--d:'+i+'s"></i>'}).join("");
+q("fio").innerHTML=FIO.map(function(f){
+  return '<a class="st" href="'+f.file+'" style="--c:'+f.cor+'"><u>'+f.u+'</u><b>'+f.b+'</b><span>'+f.s+'</span></a>';
+}).join("");
+q("ord").innerHTML=ORD.map(function(o){
+  return '<a href="'+o.file+'" style="--c:'+o.cor+'"><u>'+o.u+'</u><b>'+o.b+'</b><span>'+o.s+'</span></a>';
+}).join("");
+
+/* entrada ao rolar */
+if(!reduz&&"IntersectionObserver" in window){
+  var alvos=[].slice.call(document.querySelectorAll("h2.sec,.findbar,.idx,.fio,.ord,.obs"));
+  alvos.forEach(function(el){el.classList.add("rise")});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}});
+  },{rootMargin:"0px 0px -12% 0px",threshold:.08});
+  alvos.forEach(function(el){io.observe(el)});
+}
+
+/* busca */
+var rows=[].slice.call(document.querySelectorAll(".row"));
+q("find").addEventListener("input",function(){
+  var t=sn(this.value.trim()),n=0;
+  rows.forEach(function(r){
+    var hit=!t||r.getAttribute("data-k").indexOf(t)>-1;
+    r.classList.toggle("off",!hit);
+    r.classList.toggle("hit",!!t&&hit);
+    if(hit){n++;var p=r.querySelector(".desc");if(p)p.innerHTML=marcar(p.getAttribute("data-txt"),t)}
+  });
+  q("findn").textContent=t?(n===1?"1 documento":n+" documentos"):"";
+  q("none").classList.toggle("on",!!t&&n===0);
+});
+</script>
+</body>
+</html>

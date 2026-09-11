@@ -6,7 +6,6 @@
 <meta name="description" content="O tema de hoje e a semana de estudos de backend: Java, Spring, Mensageria, Nuvem, Docker e Kubernetes, Arquitetura.">
 <meta name="color-scheme" content="dark">
 <title>Estudos · hoje</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
@@ -86,11 +85,14 @@ h1 em{font-style:normal;color:var(--accent)}
 .morrow b{color:var(--nx);font-weight:500}
 
 .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;opacity:0;animation:fade 1s .95s var(--ease) forwards}
-.act{position:relative;text-decoration:none;font-size:.85rem;padding:12px 20px;border-radius:999px;
+.act{position:relative;overflow:hidden;text-decoration:none;font-size:.85rem;padding:12px 20px;border-radius:999px;
   border:1px solid color-mix(in srgb,var(--accent) 52%,transparent);color:var(--accent);
   background:color-mix(in srgb,var(--accent) 12%,transparent);
-  transition:background .35s var(--ease)}
-.act:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+  transition:transform .4s var(--ease),background .4s var(--ease)}
+.act:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.act:after{content:"";position:absolute;inset:0;transform:translateX(-110%);
+  background:linear-gradient(100deg,transparent,#ffffff26,transparent);transition:transform .8s var(--ease)}
+.act:hover:after{transform:translateX(110%)}
 .act.ghost{border-color:var(--line2);color:var(--ink);background:transparent}
 .act.ghost:hover{background:#ffffff0a}
 
@@ -100,25 +102,29 @@ h1 em{font-style:normal;color:var(--accent)}
   border-bottom:1px solid var(--line)}
 .wk .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
 .day{position:relative;overflow:hidden;display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:22px;align-items:center;
-  padding:19px 16px 19px 18px;border-bottom:1px solid var(--line);text-decoration:none;
+  padding:19px 16px 19px 14px;border-bottom:1px solid var(--line);text-decoration:none;
   opacity:0;transform:translateY(12px);
   animation:dayIn .8s var(--ease) forwards;animation-delay:var(--d);
-  transition:background .4s var(--ease)}
+  transition:background .45s var(--ease),padding-left .45s var(--ease)}
 @keyframes dayIn{to{opacity:1;transform:none}}
 .day:before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;border-radius:2px;
   background:var(--c);transform:scaleY(0);transform-origin:top;transition:transform .5s var(--ease)}
-.day:hover{background:color-mix(in srgb,var(--c) 7%,transparent)}
+.day:hover{background:color-mix(in srgb,var(--c) 8%,transparent);padding-left:22px}
 .day:hover:before{transform:scaleY(1)}
 .day .sig{font:700 .72rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
 .day .mid{min-width:0}
 .day .tm{display:block;font:500 clamp(1.15rem,2.4vw,1.7rem)/1.2 Georgia,serif;letter-spacing:-.035em;color:var(--ink2);
   transition:color .4s var(--ease)}
 .day:hover .tm{color:var(--ink)}
-.day .sub{display:block;margin-top:10px;color:var(--muted);font-size:.82rem;line-height:1.55;max-width:62ch}
+.day .sub{display:block;margin-top:0;color:var(--muted);font-size:.82rem;line-height:1.55;max-width:62ch;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .55s var(--ease),opacity .45s var(--ease),margin-top .55s var(--ease)}
+.day:hover .sub,.day.now .sub{max-height:96px;opacity:1;margin-top:10px}
 .day .rt{display:flex;align-items:center;gap:12px;flex:none}
-.day .ar{font:500 1.05rem Georgia,serif;color:var(--c);opacity:.5;transition:opacity .35s var(--ease)}
-.day:hover .ar{opacity:1}
-.day.now{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 13%,transparent),transparent 72%)}
+.day .ar{font:500 1.05rem Georgia,serif;color:var(--c);opacity:.45;transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.day:hover .ar{opacity:1;transform:translateX(3px)}
+.day.now{padding-left:22px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 13%,transparent),transparent 72%)}
 .day.now:before{transform:scaleY(1)}
 .day.now .tm{color:var(--ink)}
 .day.now .tag{display:inline-block;margin-left:12px;font:700 .58rem "Cascadia Code",monospace;letter-spacing:.1em;
@@ -130,14 +136,6 @@ h1 em{font-style:normal;color:var(--accent)}
 @keyframes sweep{0%{left:-42%}60%,100%{left:104%}}
 .day.rest{opacity:.62}
 .day.rest:hover{opacity:1}
-/* dia sem documento: informa, não convida ao clique */
-.day.sem{cursor:default}
-.day.sem:hover{background:transparent}
-.day.sem:hover:before{transform:scaleY(0)}
-.day.sem:hover .tm{color:var(--ink2)}
-.day .sel{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--c);opacity:.7;border:1px solid color-mix(in srgb,var(--c) 32%,transparent);
-  border-radius:999px;padding:6px 12px;white-space:nowrap}
 
 /* ---------- outros ---------- */
 .outros{margin:clamp(50px,8vh,84px) 0 0}
@@ -145,34 +143,41 @@ h1 em{font-style:normal;color:var(--accent)}
   border-bottom:1px solid var(--line)}
 .outros .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
 
-.duv{--dv:var(--gold);
-  position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:26px;
+.duv{position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:26px;
   align-items:center;margin-top:20px;padding:28px 30px;border-radius:26px;text-decoration:none;
-  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);
-  background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--dv) 11%,transparent),transparent 58%),var(--panel);
+  border:1px solid #f1fa8c40;
+  background:radial-gradient(120% 140% at 0% 0%,#f1fa8c1c,transparent 58%),var(--panel);
   transition:border-color .6s var(--ease),transform .6s var(--ease),box-shadow .6s var(--ease)}
-.duv:hover{border-color:color-mix(in srgb,var(--dv) 56%,transparent)}
+.duv:hover{border-color:#f1fa8c9e;transform:translateY(-4px);box-shadow:0 18px 46px -24px #f1fa8c4d}
+.duv:after{content:"";position:absolute;inset:0;pointer-events:none;transform:translateX(-120%);
+  background:linear-gradient(100deg,transparent,#f1fa8c1f,transparent);transition:transform 1.1s var(--ease)}
+.duv:hover:after{transform:translateX(120%)}
 
 .duv .mk{position:relative;flex:none;display:grid;place-items:center;width:82px;height:82px;border-radius:26px;
-  border:1px solid color-mix(in srgb,var(--dv) 42%,transparent);background:color-mix(in srgb,var(--dv) 8%,transparent);
-  font:500 2.5rem Georgia,serif;color:var(--dv);
-  animation:bob 5.5s var(--ease) infinite}
+  border:1px solid #f1fa8c6b;background:#f1fa8c14;
+  font:500 2.5rem Georgia,serif;color:var(--gold);
+  animation:bob 5.5s var(--ease) infinite;transition:transform .6s var(--ease),background .6s var(--ease)}
 .duv .mk:before{content:"";position:absolute;inset:-1px;border-radius:26px;
-  background:conic-gradient(from 0deg,transparent 0 68%,color-mix(in srgb,var(--dv) 52%,transparent) 82%,transparent 96%);
+  background:conic-gradient(from 0deg,transparent 0 68%,#f1fa8c85 82%,transparent 96%);
   animation:spin 7s linear infinite;opacity:.75;
   mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px));
   -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px))}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-2.5deg)}}
 @keyframes spin{to{transform:rotate(1turn)}}
+.duv:hover .mk{background:#f1fa8c26;transform:scale(1.05) rotate(3deg)}
 
 .duv .bd{position:relative;z-index:1;min-width:0}
-.duv .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--dv)}
+.duv .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--gold)}
 .duv h3{margin:9px 0 9px;font:500 clamp(1.5rem,3vw,2rem)/1.08 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
 .duv p{margin:0;color:var(--muted);font-size:.87rem;line-height:1.6;max-width:64ch}
 .duv .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
-.duv .chips i{font-style:normal;font:.66rem "Cascadia Code",monospace;color:color-mix(in srgb,var(--dv) 84%,transparent);
-  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);border-radius:999px;padding:5px 11px}
-.duv .go{position:relative;z-index:1;flex:none;font:500 1.5rem Georgia,serif;color:var(--dv);opacity:.6}
+.duv .chips i{font-style:normal;font:.66rem "Cascadia Code",monospace;color:#f1fa8cd6;
+  border:1px solid #f1fa8c40;border-radius:999px;padding:5px 11px;
+  transition:background .4s var(--ease),border-color .4s var(--ease)}
+.duv:hover .chips i{background:#f1fa8c14;border-color:#f1fa8c73}
+.duv .go{position:relative;z-index:1;flex:none;font:500 1.5rem Georgia,serif;color:var(--gold);opacity:.55;
+  transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.duv:hover .go{opacity:1;transform:translateX(5px) translateY(-3px)}
 
 @media(max-width:680px){
   .duv{grid-template-columns:auto minmax(0,1fr);gap:18px;padding:22px 20px}
@@ -205,7 +210,7 @@ footer a{color:var(--accent)}
 
 <nav class="island">
   <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
-  <a href="acervo.html">os oito documentos</a>
+  <a href="acervo.html">os sete documentos</a>
   <a href="cronograma.html" class="hide">cronograma →</a>
 </nav>
 
@@ -248,20 +253,21 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="biblioteca.html" style="--dv:var(--purple)">
+    <a class="duv" href="biblioteca.html" style="--accent:var(--gold)">
       <span class="mk">▤</span>
       <span class="bd">
         <span class="kk">a estante</span>
         <h3>Biblioteca</h3>
         <p>Os cinco livros que formaram o critério, num documento só — com a síntese de cada um e, principalmente, <b>onde os autores discordam</b>: é ali que mora o trade-off, e era invisível quando cada livro vivia no seu arquivo.</p>
-        <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i><i>ordem de leitura</i></span>
+        <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i></span>
       </span>
       <span class="go">↗</span>
     </a>
   </section>
 
   <footer>
-    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a>.
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a> · desenvolvedor backend Java e Spring.<br>
+    HTML autocontido, tema Dracula. Sem framework, sem build, sem rastreador — o seu progresso fica no armazenamento local do próprio navegador.
   </footer>
 
 </main>
@@ -331,17 +337,12 @@ if(!window.matchMedia("(prefers-reduced-motion:reduce)").matches){
 
 /* a semana */
 q("wk").innerHTML=SEM.map(function(x,i){
+  var href=x.doc||"cronograma.html";
   var cls="day"+(i===dow?" now":"")+((x.descanso||x.livre)?" rest":"");
-  var estilo='style="--c:'+x.cor+';--d:'+(.35+i*.07).toFixed(2)+'s"';
-  var miolo='<span class="sig">'+x.sig+'</span>'
+  return '<a class="'+cls+'" href="'+href+'" style="--c:'+x.cor+';--d:'+(.35+i*.07).toFixed(2)+'s">'
+    +'<span class="sig">'+x.sig+'</span>'
     +'<span class="mid"><span class="tm">'+x.tema+(i===dow?'<span class="tag">hoje</span>':'')+'</span>'
-    +'<span class="sub">'+x.nota+'</span></span>';
-
-  /* dia sem documento (sábado, domingo) não é link: seria mentira clicável */
-  if(!x.doc) return '<div class="'+cls+' sem" '+estilo+'>'+miolo
-    +'<span class="rt"><span class="sel">'+(x.descanso?"sem pauta":x.livre)+'</span></span></div>';
-
-  return '<a class="'+cls+'" href="'+x.doc+'" '+estilo+'>'+miolo
+    +'<span class="sub">'+x.nota+'</span></span>'
     +'<span class="rt"><span class="ar">↗</span></span></a>';
 }).join("");
 </script>

@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git completo — trilha visual + conteúdo · o grafo, a cirurgia e a recuperação</title>
+<meta name="description" content="O décimo primeiro documento, unificando os quatro roadmaps de Git do vault. Trilha visual em 9 marcos, mais 15 tópicos em 9 partes — commit como snapshot e o DAG, blob/tree/commit/tag, working tree e index, merge contra rebase, conflito como decisão, cherry-pick com -x, stash e worktree, bisect, restore/reset/revert, reflog e fsck, rebase interativo, force-with-lease, segredo vazado, pull request, SemVer, trunk-based, blame e pickaxe, packfiles e assinatura. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{white-space:nowrap;width:1%}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px;white-space:nowrap}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>⑂</i><b>Git</b></div>
+    <p class="sub">O grafo, a cirurgia e a recuperação.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (rebase, cherry-pick, reflog)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Git · setembro 2026</span>
+      <h1>Um <em>grafo</em>, não uma pilha de versões.</h1>
+      <p class="lede">O décimo primeiro documento, e o que unifica os <b>quatro roadmaps de Git</b> que estavam concorrendo no vault. A tese é uma só: quase todo problema de Git vem de tratá-lo como histórico linear, quando ele é um <b>grafo dirigido acíclico de snapshots</b> — e quase toda recuperação é possível porque o Git praticamente não apaga nada por trinta dias. Em cima, a <b>trilha visual</b>: 30 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 15 tópicos em 9 partes. Com o mesmo compromisso dos dois anteriores: <b>nenhum comando sem o caso que o justifica</b> — o commit no branch errado, o segredo que vazou, a regressão que ninguém sabe quando entrou, o <code class="i">push --force</code> que apagou o trabalho de outra pessoa.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>do grafo à recuperação e ao time</a>
+      </div>
+      <div class="legenda">
+        <div><b>Sempre com caso</b><span>Cada tópico abre com a situação real que exige aquele comando.</span></div>
+        <div><b>Recuperação primeiro</b><span>O reflog vem cedo: saber desfazer é o que dá coragem para experimentar.</span></div>
+        <div><b>Cirurgia</b><span>cherry-pick, bisect, stash e worktree — o que quase ninguém usa e resolve muito.</span></div>
+        <div><b>Onde a teoria mora</b><span>Link para o documento que aprofunda, em vez de reexplicar.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do grafo ao time</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>O modelo mental: um grafo de snapshots</h2><p>Quase todo problema de Git vem de tratá-lo como histórico linear. Ele é um grafo — e commits são imutáveis.</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>Commit é snapshot, e o hash é do conteúdo inteiro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> cada commit guarda o estado <b>completo</b> do projeto mais um ponteiro para o pai. O diferencial que você vê na tela é calculado na hora. E o identificador é o hash de tudo isso — então mudar qualquer campo cria um commit <b>novo</b>.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Não é um caderno onde você escreve as alterações; é uma pilha de fotografias do projeto inteiro, cada uma com um bilhete dizendo qual é a anterior. A "mudança" é o que você percebe comparando duas fotos — ela não está guardada em lugar nenhum.</p></div>
+
+        <div class="duo o">
+          <div><h4>Como funciona por dentro</h4><p>São quatro objetos. O <b>blob</b> é o conteúdo de um arquivo. A <b>tree</b> é um diretório: nomes apontando para blobs e outras trees. O <b>commit</b> aponta para uma tree e para os pais. A <b>tag</b> anotada aponta para um commit, com autor e mensagem.</p>
+            <p style="margin-top:9px">Tudo endereçado por hash do conteúdo. Dois arquivos idênticos em pastas diferentes são <b>um blob só</b>. Arquivo que não mudou entre commits não é duplicado: a tree nova aponta para o mesmo blob.</p>
+            <div class="repl"><b>O que veio substituir:</b> os sistemas anteriores — CVS, Subversion — guardavam <b>diferenças</b> por arquivo e um número de revisão central. Ramificar era caro, e mesclar, pior ainda. O Git inverteu: snapshot barato, ramificação trivial, e nenhuma autoridade central.</p></div>
+          </div>
+          <div><h4>O que isso implica</h4><ul>
+            <li><code class="i">amend</code> não edita: cria outro commit.</li>
+            <li><code class="i">rebase</code> não move: recria, com hashes diferentes.</li>
+            <li>Reescrever histórico já compartilhado quebra o de quem puxou.</li>
+            <li>Nada se perde na hora: o objeto antigo fica sem nome até o coletor passar.</li>
+          </ul>
+            <p style="margin-top:9px">As quatro regras mais importantes deste documento saem todas daqui.</p></div>
+        </div>
+
+        <p>O grafo é <b>dirigido e acíclico</b>: as setas apontam para trás, dos filhos para os pais. Um merge tem dois pais; o commit inicial não tem nenhum. É por isso que o Git consegue encontrar a <i>base comum</i> entre dois branches — basta caminhar para trás até achar o ancestral compartilhado, que é exatamente o que merge e rebase fazem antes de qualquer coisa.</p>
+
+        <pre><code>git log --oneline --graph --all
+# * a1b2c3 (HEAD -> main) corrige calculo de juros
+# |\
+# | * d4e5f6 (feature/relatorio) adiciona exportacao
+# |/
+# * 9f8e7d base comum
+
+git cat-file -p HEAD
+# tree 4b825dc...
+# parent 9f8e7d...
+# author Thallys Cezar <...> 1789200000 -0300
+# committer ...</code></pre>
+
+        <div class="cs"><b>Repare no <code class="i">git cat-file -p HEAD</code>.</b> Ele mostra o commit como o Git realmente o guarda: uma tree, um ou mais pais, autor, committer e mensagem. Não há nenhum "diff" ali. Rodar esse comando uma vez vale mais que dez explicações — e é o que transforma o Git de caixa preta em estrutura de dados.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Achar que o repositório guarda cópias completas em disco.</b> Guarda logicamente; fisicamente o packfile comprime por delta entre objetos parecidos.</li>
+            <li><b>Confundir <code class="i">~</code> com <code class="i">^</code>.</b> <code class="i">HEAD~2</code> anda dois commits para trás; <code class="i">HEAD^2</code> escolhe o <b>segundo pai</b> — e só existe em merge.</li>
+            <li><b>Copiar hash na mão.</b> A <i>revision syntax</i> nomeia quase tudo: <code class="i">main@{ontem}</code>, <code class="i">HEAD~5</code>, <code class="i">v1.3..v1.4</code>.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">git cat-file -p HEAD</code> e depois <code class="i">git cat-file -p HEAD^{tree}</code> num repositório seu. Você vai ver a estrutura inteira em dois comandos.</div>
+          <div><b>prova de domínio</b>Você explica por que um <code class="i">rebase</code> produz hashes diferentes mesmo quando o conteúdo final é idêntico.</div>
+        </div>
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>As três áreas — e por que o index existe</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> working tree são seus arquivos, index é a montagem do próximo commit, repositório é o histórico. O index existe para você <b>escolher</b> o que entra.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você corrigiu um bug e, no caminho, também ajustou a indentação de dois arquivos e mudou uma porta no <code class="i">application.yml</code> local para testar.</p>
+          <p><code class="i">git add .</code> manda os três para o mesmo commit. O revisor recebe um diff em que a correção real está enterrada em ruído — e a porta de teste vai para produção.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O index é a bancada de embrulho. Você não manda a loja inteira para o cliente: separa na bancada exatamente o que vai na caixa, confere, e só então fecha. Quem pula a bancada manda junto o que estava do lado.</p></div>
+
+        <p>O comando que mais rende nesta parte é <code class="i">git add -p</code>. Ele percorre as alterações em pedaços e pergunta, um a um, se aquele vai para o commit. Com ele, a correção vira um commit e a indentação vira outro — sem precisar desfazer nada.</p>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>Compara / age entre</th></tr></thead>
+          <tbody>
+            <tr><td><code>git diff</code></td><td>Working tree × index — o que você ainda <b>não</b> preparou.</td></tr>
+            <tr><td><code>git diff --staged</code></td><td>Index × último commit — o que <b>vai</b> no commit.</td></tr>
+            <tr><td><code>git add -p</code></td><td>Escolhe pedaços, não arquivos.</td></tr>
+            <tr><td><code>git restore arq</code></td><td>Descarta a alteração local (volta do index).</td></tr>
+            <tr><td><code>git restore --staged arq</code></td><td>Tira do index, mantém no disco.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">git add .</code> sem olhar.</b> É a origem do arquivo de configuração local versionado por engano.</li>
+            <li><b>Commitar sem ver o <code class="i">--staged</code>.</b> Um <code class="i">git diff --staged</code> antes de cada commit pega quase todo acidente.</li>
+            <li><b><code class="i">restore</code> sem backup.</b> Descartar alteração local é uma das poucas coisas que o reflog <b>não</b> recupera — nunca virou commit.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça duas alterações não relacionadas no mesmo arquivo e separe-as em dois commits usando só <code class="i">git add -p</code>.</div>
+          <div><b>prova de domínio</b>Você explica a diferença entre <code class="i">git diff</code> e <code class="i">git diff --staged</code> apontando qual área cada um compara.</div>
+        </div>
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Integrar: a regra que encerra a discussão</h2><p>Merge contra rebase não é questão de gosto. É uma pergunta sobre compartilhamento.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>Rebase no que é seu, merge no que já é de todos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-imp">a regra</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>merge</b> preserva o grafo e não altera nada que já existe. <b>Rebase</b> recria commits e deixa o histórico linear. O critério de escolha é se o branch já foi compartilhado.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você rebaseia o branch <code class="i">feature/checkout</code> sobre a <code class="i">main</code> e dá <code class="i">push --force</code>. Mas um colega já tinha puxado esse branch e feito dois commits em cima.</p>
+          <p>Do lado dele, os commits que ele usou como base <b>deixaram de existir</b> no remoto. O próximo <code class="i">pull</code> dele traz uma divergência que o Git não sabe resolver — e a "solução" improvisada costuma ser um merge que duplica todo o trabalho.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Merge é anexar uma errata ao livro já impresso: o texto original continua lá, e todo mundo consegue seguir. Rebase é reimprimir o livro com o texto corrigido no lugar — excelente antes de distribuir, desastroso depois que as pessoas já anotaram nas margens dos exemplares delas.</p></div>
+
+        <div class="duo">
+          <div><h4>Merge</h4><ul>
+            <li><b>Ganha:</b> histórico verdadeiro; nada é reescrito; seguro sempre.</li>
+            <li><b>Paga:</b> o grafo fica mais difícil de ler com muitos ramos curtos.</li>
+            <li><b>Use:</b> integrar na main, e sempre que o branch já foi puxado por alguém.</li>
+          </ul>
+            <p style="margin-top:9px">Sem divergência, o Git faz <i>fast-forward</i> — só move o ponteiro. <code class="i">--no-ff</code> força o commit de merge quando você quer que o ramo fique visível.</p></div>
+          <div><h4>Rebase</h4><ul>
+            <li><b>Ganha:</b> linha reta, fácil de ler e de bisectar.</li>
+            <li><b>Paga:</b> hashes novos; conflitos aparecem por commit; reescreve.</li>
+            <li><b>Use:</b> arrumar o seu branch antes de abrir o PR.</li>
+          </ul>
+            <p style="margin-top:9px">É por isso que <code class="i">pull --rebase</code> é um bom padrão: evita o commit de merge acidental que aparece toda vez que você puxa com trabalho local.</p></div>
+        </div>
+
+        <pre><code># o padrao que evita merge acidental em todo pull
+git config --global pull.rebase true
+
+# arrumar o seu branch antes do PR
+git fetch origin
+git rebase origin/main
+
+# conflito? resolva, depois:
+git add arquivo && git rebase --continue
+git rebase --abort        # desistir e voltar ao estado anterior
+
+# depois do rebase, ver o que mudou ALEM da base:
+git range-diff origin/main@{1} origin/main HEAD</code></pre>
+
+        <div class="cs"><b>O <code class="i">range-diff</code> é o comando mais subestimado do Git.</b> Depois de rebasear, ele compara <b>duas versões da mesma série de commits</b> e mostra o que você realmente alterou, separado do ruído da reaplicação. Em revisão de PR rebaseado, é a diferença entre achar a mudança em segundos e não achar.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Rebasear branch compartilhado.</b> Você transfere o problema para quem já puxou.</li>
+            <li><b><code class="i">pull</code> com trabalho não commitado.</b> Cria merge no meio ou recusa. Faça <code class="i">stash</code> antes, ou use <code class="i">--rebase --autostash</code>.</li>
+            <li><b>Tratar como preferência estética.</b> A pergunta é única: <i>alguém já puxou isto?</i></li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Num repositório de teste, crie dois branches divergentes. Integre um com merge e outro com rebase, e compare <code class="i">git log --graph --all</code> nos dois casos.</div>
+          <div><b>prova de domínio</b>Alguém pergunta "merge ou rebase?". Você responde com <b>uma</b> pergunta de volta, e ela resolve o caso.</div>
+        </div>
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b2">
+        <div class="th"><h3>Conflito é decisão, não obstáculo</h3><div class="badges"><span class="badge b-imp">procedimento</span></div></div>
+        <p class="direto"><b>Direto:</b> o Git marca conflito quando os dois lados mudaram as <b>mesmas linhas</b> e ele não tem critério para escolher. Resolver não é apagar marcadores — é decidir.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Dois editores reescreveram o mesmo parágrafo. O revisor não joga um fora no escuro: lê os dois, entende o que cada um queria dizer, e escreve a versão que preserva as duas intenções. Muitas vezes a resposta certa não é nenhuma das duas.</p></div>
+
+        <p>O procedimento tem quatro passos, e o primeiro é o que quase todo mundo pula: <b>entender o que cada lado estava resolvendo</b>. Um <code class="i">git log --merge -p arquivo</code> mostra só os commits que tocaram a região em conflito, dos dois lados — e costuma responder a pergunta em trinta segundos.</p>
+
+        <pre><code># 1. o que esta em conflito
+git status
+git diff --name-only --diff-filter=U
+
+# 2. POR QUE cada lado mudou (o passo que resolve)
+git log --merge -p caminho/arquivo
+
+# 3. decidir e marcar resolvido
+git add caminho/arquivo
+
+# 4. concluir
+git merge --continue      # ou: git rebase --continue
+
+# desistir a qualquer momento:
+git merge --abort</code></pre>
+
+        <div class="cs"><b>Cuidado com o significado de <code class="i">--ours</code> e <code class="i">--theirs</code>:</b> eles se invertem entre merge e rebase. No merge, <i>ours</i> é o branch em que você está. No rebase, você está temporariamente sobre a base — então <i>ours</i> é o branch <b>de destino</b> e <i>theirs</i> é o seu trabalho. Usar no automático durante um rebase é a forma mais silenciosa de descartar o próprio código.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Apagar os marcadores e ficar com um lado.</b> O trabalho do outro some sem aviso e sem rastro no diff.</li>
+            <li><b>Resolver sem rodar o teste.</b> Um conflito resolvido compila e ainda assim quebra a regra de negócio.</li>
+            <li><b>Deixar marcador no commit.</b> <code class="i">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> em produção acontece mais do que se admite — um hook de pre-commit barra isso.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Provoque um conflito de propósito em dois branches e resolva usando <code class="i">git log --merge -p</code> antes de escrever a resolução.</div>
+          <div><b>prova de domínio</b>Você explica por que <code class="i">--ours</code> significa coisas diferentes em merge e em rebase.</div>
+        </div>
+        <button class="done" type="button" data-k="b2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Cirurgia: cherry-pick e bisect</h2><p>Dois comandos que quase ninguém usa e que resolvem problemas caros em minutos.</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>Cherry-pick: transportar um commit, com rastro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> aplica a mudança de um commit específico sobre o branch atual, criando um commit <b>novo</b>. E sempre com <code class="i">-x</code>, que grava de onde ele veio.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Uma correção crítica entrou na <code class="i">main</code>, e depois dela vieram três funcionalidades novas. O cliente está na <code class="i">release/1.4</code> e precisa <b>só</b> da correção.</p>
+          <p>Merge traria tudo. Refazer a correção à mão cria duas versões que vão divergir. O cherry-pick leva aquele commit isolado — e com <code class="i">-x</code>, daqui a seis meses ainda dá para saber que os dois commits são a mesma coisa.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É fotocopiar uma página específica de um livro e encadernar em outro. O original continua no lugar; a cópia é um objeto novo. O <code class="i">-x</code> é o carimbo dizendo de qual livro e de qual página ela veio — sem ele, ninguém sabe que são a mesma página.</p></div>
+
+        <pre><code>git checkout release/1.4
+git cherry-pick -x a1b2c3d
+
+# a mensagem do commit novo ganha:
+#   (cherry picked from commit a1b2c3d)
+
+# um intervalo, atencao a ordem e ao ^:
+git cherry-pick -x a1b2c3d^..f7e8d9c
+
+# conflito no meio:
+git cherry-pick --continue    # ou --abort, ou --skip</code></pre>
+
+        <div class="cs"><b>A prova de domínio que o material do vault já propunha</b> é a melhor formulação: <i>"você justifica por que cherry-pick é melhor que merge naquele caso"</i>. A resposta é sempre sobre <b>escopo</b> — você quer uma mudança, não a linha do tempo que a contém.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Cherry-pick em série no lugar de um merge.</b> Duplica o histórico e cria conflito na integração seguinte.</li>
+            <li><b>Esquecer o <code class="i">-x</code>.</b> Perde-se a rastreabilidade, e a mesma correção parece duas coisas diferentes.</li>
+            <li><b>Levar só a correção e não o teste.</b> O commit seguinte costuma ser o teste — leve os dois.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie um branch de release atrás da main, faça uma correção na main e leve só ela com <code class="i">-x</code>. Depois leia o corpo da mensagem do commit resultante.</div>
+          <div><b>prova de domínio</b>Dado um pedido de "leva essa correção para a release", você decide entre cherry-pick e merge e justifica pela escopo da mudança.</div>
+        </div>
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c2">
+        <div class="th"><h3>Bisect: mil commits em dez testes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> busca binária no histórico. Cada resposta corta o intervalo pela metade — e com um script, o Git faz sozinho.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O relatório mensal começou a sair com valor errado "faz umas semanas". Ninguém sabe quando. Entre a última versão comprovadamente boa e agora há 800 commits.</p>
+          <p>Com um teste que reproduz o erro, o bisect entrega o commit culpado em <b>dez</b> execuções. Sem ele, a alternativa é ler 800 diffs ou adivinhar.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o jogo de adivinhar o número entre 1 e 1000. Perguntando "é maior que 500?" você chega em dez tentativas. Perguntar um por um levaria 500 em média — e é exatamente isso que fazer arqueologia manual no histórico significa.</p></div>
+
+        <p>É o mesmo mecanismo da busca binária que aparece na <b>Biblioteca</b>, no <i>Entendendo Algoritmos</i>, e o mesmo princípio de bisecção que o <i>Como investigar qualquer problema</i> usa para depuração em geral. Aqui ele está aplicado ao grafo de commits.</p>
+
+        <pre><code>git bisect start
+git bisect bad                 # o estado atual esta quebrado
+git bisect good v1.3.0         # aqui comprovadamente funcionava
+
+# o Git faz checkout no meio; teste e responda:
+git bisect good     # ou: git bisect bad
+
+# ... ~10 rodadas ...
+# a1b2c3d is the first bad commit
+
+git bisect reset               # SEMPRE, para sair do HEAD destacado
+
+# automatico: script que retorna 0 = bom, !=0 = ruim
+git bisect start HEAD v1.3.0
+git bisect run ./reproduz.sh</code></pre>
+
+        <div class="cs"><b>O <code class="i">bisect run</code> é o que muda o custo da ferramenta.</b> Escrever um script de dez linhas que reproduz o erro e retorna o código certo transforma uma investigação de meia hora em um comando que roda enquanto você toma café. E o script vira, depois, um teste de regressão.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Esquecer o <code class="i">reset</code>.</b> Você continua trabalhando em HEAD destacado e os commits novos ficam órfãos.</li>
+            <li><b>Commits que não compilam no meio do intervalo.</b> Use <code class="i">git bisect skip</code> — e depois considere se o histórico deveria permitir isso.</li>
+            <li><b>Teste não determinístico.</b> Um teste instável faz o bisect apontar o commit errado com toda a confiança.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Num repositório de teste, plante uma regressão num commit no meio de vinte. Ache com bisect manual, depois refaça com <code class="i">bisect run</code>.</div>
+          <div><b>prova de domínio</b>Você estima, antes de começar, quantos testes o bisect vai precisar para um intervalo de N commits.</div>
+        </div>
+        <button class="done" type="button" data-k="c2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Desfazer e recuperar</h2><p>A parte que dá coragem para usar o resto. Quem sabe recuperar experimenta; quem não sabe usa três comandos pelo resto da vida.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>Restore, reset e revert: três intenções</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>restore</b> mexe em arquivos, <b>reset</b> move o ponteiro do branch, <b>revert</b> cria um commit novo que desfaz outro. Só o terceiro é seguro em branch compartilhado.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> <code class="i">restore</code> é apagar o rascunho na mesa. <code class="i">reset</code> é voltar o marcador de página para trás — o que veio depois continua no livro, só não está mais marcado. <code class="i">revert</code> é escrever uma nova página dizendo "o capítulo 7 fica sem efeito" — todo mundo que já leu o livro consegue acompanhar.</p></div>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>O que faz</th><th>Seguro em compartilhado?</th></tr></thead>
+          <tbody>
+            <tr><td><code>restore arq</code></td><td>Descarta alteração local do arquivo.</td><td>Sim (não toca no histórico)</td></tr>
+            <tr><td><code>reset --soft HEAD~1</code></td><td>Desfaz o commit, mantém tudo no index.</td><td><b>Não</b></td></tr>
+            <tr><td><code>reset --mixed HEAD~1</code></td><td>Desfaz e tira do index (padrão).</td><td><b>Não</b></td></tr>
+            <tr><td><code>reset --hard HEAD~1</code></td><td>Desfaz e <b>descarta</b> as alterações.</td><td><b>Não</b></td></tr>
+            <tr><td><code>revert a1b2c3d</code></td><td>Commit novo que desfaz aquele.</td><td><b>Sim</b> — é a única</td></tr>
+          </tbody>
+        </table>
+
+        <p>O <code class="i">--soft</code> é o mais útil e o menos conhecido: ele desfaz o commit mantendo tudo preparado no index. É o comando para "commitei cedo demais" — você recupera a montagem, ajusta e commita de novo, sem perder nada.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">reset --hard</code> com trabalho não commitado.</b> Isso o reflog <b>não</b> recupera — nunca virou objeto. É a única perda realmente irreversível desta parte.</li>
+            <li><b><code class="i">reset</code> em branch que já foi empurrado.</b> Use <code class="i">revert</code>.</li>
+            <li><b>Confundir <code class="i">checkout</code> antigo com os novos.</b> <code class="i">switch</code> troca de branch, <code class="i">restore</code> mexe em arquivo. Os dois existem justamente porque o <code class="i">checkout</code> fazia coisas demais.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça três commits, desfaça o último com <code class="i">--soft</code> e veja o estado do index. Depois refaça com <code class="i">--mixed</code> e compare.</div>
+          <div><b>prova de domínio</b>Você escolhe entre os três sabendo dizer o que acontece com o histórico de quem já puxou o branch.</div>
+        </div>
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d2">
+        <div class="th"><h3>O reflog: quase nada se perde de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> o reflog registra <b>todo movimento</b> local de HEAD e das refs, com o SHA anterior. Commits órfãos continuam no repositório por cerca de 30 dias.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p><code class="i">git reset --hard HEAD~3</code> no branch errado. Três commits de trabalho "sumiram". O impulso é reclonar e refazer.</p>
+          <p>Eles não sumiram: o <b>branch</b> parou de apontar para eles. Os objetos continuam lá, sem nome. O reflog tem o SHA anterior, e um <code class="i">git branch resgate &lt;sha&gt;</code> traz tudo de volta em dois comandos.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Você apagou o atalho da área de trabalho, não o arquivo. O reflog é o histórico de onde cada atalho apontava antes — e o faxineiro só passa depois de um mês.</p></div>
+
+        <pre><code>git reflog
+# a1b2c3d HEAD@{0}: reset: moving to HEAD~3
+# f7e8d9c HEAD@{1}: commit: o trabalho que "sumiu"   <-- este
+# 9a8b7c6 HEAD@{2}: commit: anterior
+
+# PRIMEIRO salve, depois pense:
+git branch resgate f7e8d9c
+
+# reflog de um branch especifico:
+git reflog show minha-branch
+
+# se o reflog ja expirou, ainda ha uma chance:
+git fsck --lost-found</code></pre>
+
+        <div class="cs"><b>A regra de ouro em qualquer acidente de Git:</b> antes de tentar consertar, crie um branch no estado atual. <code class="i">git branch backup-$(date +%s)</code> custa um segundo e transforma qualquer tentativa seguinte em reversível. A maioria das perdas reais acontece durante a <b>tentativa de recuperação</b>, não no acidente original.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Rodar <code class="i">gc --prune=now</code> depois do acidente.</b> Isso apaga exatamente os objetos órfãos que você ia recuperar.</li>
+            <li><b>Reclonar por pânico.</b> O reflog é <b>local</b> — o clone novo não tem o seu. Reclonar destrói a única chance.</li>
+            <li><b>Achar que o reflog cobre tudo.</b> Alteração não commitada nunca virou objeto; não há o que recuperar.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Num repositório de teste, faça cinco commits, dê <code class="i">reset --hard HEAD~3</code> e recupere pelo reflog. Repita até fazer sem consultar.</div>
+          <div><b>prova de domínio</b>Diante de "apaguei meu trabalho", você sabe em que ordem agir — e qual é o único caso que realmente não volta.</div>
+        </div>
+        <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Reescrever com segurança</h2><p>Arrumar o histórico antes de mostrar é cortesia com quem vai revisar. Fazer isso sem apagar o trabalho dos outros é obrigação.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Rebase interativo e o par fixup + autosquash</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">commit --fixup=&lt;sha&gt;</code> marca uma correção; <code class="i">rebase -i --autosquash</code> a posiciona e funde sozinho. Muito melhor que reordenar na mão.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Seu branch tem oito commits: três de trabalho real e cinco do tipo <i>"corrige typo"</i>, <i>"ajusta teste"</i>, <i>"esqueci o import"</i>. O revisor precisa ler oito diffs para entender três ideias.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É passar o rascunho a limpo antes de entregar. Ninguém quer ler as suas rasuras — quer ler o raciocínio final. O histórico é para o leitor futuro, não para o registro cronológico do seu dia.</p></div>
+
+        <pre><code># em vez de "corrige typo", marque a qual commit pertence:
+git commit --fixup=a1b2c3d
+
+# e no fim, o Git organiza sozinho:
+git rebase -i --autosquash origin/main
+
+# no editor, as acoes:
+#   pick    mantem
+#   reword  muda so a mensagem
+#   squash  funde no anterior, juntando as mensagens
+#   fixup   funde no anterior, DESCARTA a mensagem
+#   edit    para no commit para voce alterar
+#   drop    remove</code></pre>
+
+        <div class="cs"><b>Deixe o <code class="i">--autosquash</code> sempre ligado:</b> <code class="i">git config --global rebase.autosquash true</code>. A partir daí, todo <code class="i">--fixup</code> se organiza automaticamente no próximo rebase interativo — e você para de reordenar linha por linha no editor.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">amend</code> em commit já enviado.</b> O hash muda e o remoto diverge; a partir daí só com <code class="i">--force-with-lease</code>.</li>
+            <li><b>Limpar demais.</b> Fundir tudo num commit gigante destrói a possibilidade de bisect e de revert cirúrgico. Um commit por ideia, não um por branch.</li>
+            <li><b>Rebase interativo longo sem backup.</b> Faça <code class="i">git branch backup</code> antes; é grátis.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça três commits e depois dois <code class="i">--fixup</code> apontando para o primeiro. Rode <code class="i">rebase -i --autosquash</code> e veja a ordenação automática.</div>
+          <div><b>prova de domínio</b>Você explica a diferença entre <code class="i">squash</code> e <code class="i">fixup</code> — e quando cada uma é a certa.</div>
+        </div>
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="e2">
+        <div class="th"><h3>Nunca <code class="ic">--force</code>: sempre <code class="ic">--force-with-lease</code></h3><div class="badges"><span class="badge b-imp">correção</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">--force</code> sobrescreve o remoto sem olhar o que tem lá. <code class="i">--force-with-lease</code> só sobrescreve se o remoto ainda estiver onde você viu pela última vez.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você rebaseou o branch e vai publicar. Enquanto isso, um colega empurrou dois commits nele.</p>
+          <p>Com <code class="i">--force</code>, os commits dele desaparecem do remoto e ninguém é avisado — do lado dele, o trabalho some. Com <code class="i">--force-with-lease</code>, o push é <b>recusado</b>, porque o remoto não está mais onde você viu. E recusa é exatamente o resultado certo.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> <code class="i">--force</code> é substituir o documento na gaveta sem abrir para conferir. <code class="i">--force-with-lease</code> é conferir se ainda é a versão que você tinha visto antes de trocar — e desistir se alguém mexeu.</p></div>
+
+        <pre><code># SEMPRE atualize o lease antes, senao ele fica desatualizado
+git fetch origin
+git push --force-with-lease origin minha-branch
+
+# o alias que tira o dedo pesado do caminho:
+git config --global alias.pushf "push --force-with-lease"
+
+# se o push for recusado, e porque alguem empurrou.
+# integre o trabalho da pessoa antes de insistir.</code></pre>
+
+        <div class="cs"><b>Uma sutileza que vale saber:</b> o <code class="i">--force-with-lease</code> compara com a sua cópia local de <code class="i">origin/branch</code>. Se você rodar <code class="i">fetch</code> logo antes sem olhar o resultado, o lease é atualizado e a proteção se esvazia. O par seguro é <code class="i">fetch</code> → <b>olhar</b> → push.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">--force</code> por hábito.</b> Funciona 99 vezes e destrói trabalho alheio na centésima.</li>
+            <li><b>Force em <code class="i">main</code>.</b> Configure proteção de branch no servidor; não dependa de disciplina.</li>
+            <li><b>Fetch cego antes do push.</b> Atualiza o lease e anula a proteção.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Com dois clones do mesmo repositório, simule o conflito: empurre de um, rebaseie no outro e tente <code class="i">--force-with-lease</code>. Veja a recusa acontecer.</div>
+          <div><b>prova de domínio</b>Você explica por que a recusa do <code class="i">--force-with-lease</code> é o comportamento desejado, e não um obstáculo.</div>
+        </div>
+        <button class="done" type="button" data-k="e2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Segredo no histórico</h2><p>A ordem das ações importa mais que a técnica — e quase todo mundo começa pela etapa errada.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>Vazou uma credencial: a ordem certa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ordem importa</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>rotacione a credencial primeiro.</b> É a única ação que realmente resolve. Limpar o histórico depois é higiene, não contenção.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um <code class="i">application.yml</code> com senha de banco foi commitado e empurrado. Alguém percebe duas horas depois.</p>
+          <p>O impulso é limpar o histórico. Mas enquanto você reescreve commits, <b>a credencial continua válida</b> — e se o repositório for público, varredores automáticos já a encontraram. O relógio que importa começou a correr no momento do push, não no da descoberta.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Você deixou a chave de casa cair na rua. A prioridade é <b>trocar a fechadura</b>, não sair procurando quem pegou a chave. Recuperar a chave é útil; trocar a fechadura é o que resolve.</p></div>
+
+        <div class="duo">
+          <div><h4>A ordem</h4><ul>
+            <li><b>1. Rotacione.</b> Gere nova credencial e invalide a antiga. Agora.</li>
+            <li><b>2. Limpe o histórico</b> com <code class="i">git filter-repo</code>.</li>
+            <li><b>3. Force com lease</b> e avise o time a <b>reclonar</b>.</li>
+            <li><b>4. Previna:</b> <code class="i">.gitignore</code> e um hook que barre o padrão.</li>
+          </ul></div>
+          <div><h4>Por que reclonar</h4><p>Depois da limpeza, todo clone existente ainda tem os objetos antigos no <code class="i">.git</code>. Um <code class="i">pull</code> não os remove. Se alguém empurrar a partir de um clone antigo, o segredo <b>volta</b> ao remoto.</p>
+            <p style="margin-top:9px">Por isso o passo 3 tem duas partes, e a segunda — avisar — é a que costuma ser esquecida.</p></div>
+        </div>
+
+        <pre><code># 1. ROTACIONE. sempre primeiro.
+
+# 2. limpar (git filter-repo, sucessor do filter-branch)
+git filter-repo --path config/application.yml --invert-paths
+# ou, so o valor:
+git filter-repo --replace-text expressoes.txt
+
+# 3. publicar e AVISAR
+git push --force-with-lease --all
+git push --force-with-lease --tags
+# -> o time precisa RECLONAR, nao dar pull
+
+# 4. prevenir
+echo "*.env" >> .gitignore
+echo "config/application-local.yml" >> .gitignore</code></pre>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Limpar antes de rotacionar.</b> O erro de ordem mais caro que existe.</li>
+            <li><b>Achar que <code class="i">git rm</code> resolve.</b> Ele remove do estado atual; o histórico continua com o valor.</li>
+            <li><b>Esquecer os forks e as cópias em CI.</b> Em serviço hospedado, o objeto pode continuar acessível por SHA mesmo após a limpeza — abra um chamado com o provedor.</li>
+            <li><b>Não avisar o time.</b> Um push de clone antigo reintroduz tudo.</li>
+          </ul>
+        </div>
+
+        <div class="ver"><b>onde a teoria mora</b>Gestão de segredo, rotação e identidade de workload estão em <a href="nuvem.html">Nuvem completo</a>. Segredo fora da imagem e variável de ambiente, em <a href="docker-kubernetes.html">Docker e Kubernetes completo</a> e no aquecimento <code class="ic">P08</code> do <a href="projetos.html">Laboratório</a>.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Num repositório descartável, commite um arquivo com um valor falso, empurre para um remoto local e execute os quatro passos na ordem.</div>
+          <div><b>prova de domínio</b>Alguém avisa que vazou uma chave. Você diz a primeira ação em menos de cinco segundos — e ela não envolve Git.</div>
+        </div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 07 ===================== -->
+    <section class="part" id="p7">
+      <div class="ph"><span class="num">07</span><div><h2>Colaborar: PR, versão e fluxo</h2><p>As convenções existem para que a máquina verifique o que a máquina verifica melhor — e a pessoa revise o que só a pessoa revisa.</p></div></div>
+
+      <article class="topic" id="g1">
+        <div class="th"><h3>O tamanho do PR é a variável que decide a revisão</h3><div class="badges"><span class="badge b-imp">prática</span></div></div>
+        <p class="direto"><b>Direto:</b> PR grande recebe aprovação sem leitura. PR pequeno recebe comentário útil. O tamanho não é detalhe de processo — é o que determina se a revisão existe.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre pedir para alguém revisar uma página e entregar um calhamaço. Na página, a pessoa aponta a vírgula errada. No calhamaço, ela folheia, diz "parece bom" e assina.</p></div>
+
+        <p>A descrição do PR deve responder <b>por quê</b>. O <i>o quê</i> o diff já mostra; o que ele não mostra é a alternativa que você descartou, a restrição que motivou a escolha, e o que você decidiu deixar para depois. Um PR bem descrito é a versão curta de uma ADR.</p>
+        <p>E a regra que mais melhora a revisão: <b>refatoração e mudança de comportamento não vão no mesmo PR</b>. Misturados, ninguém consegue distinguir o que é movimentação de código do que é lógica nova — e é exatamente aí que o bug passa.</p>
+
+        <p><b>Conventional Commits</b> (<code class="i">feat:</code>, <code class="i">fix:</code>, <code class="i">chore:</code>) existem para que changelog e versão saiam automaticamente. <b>Hooks</b> dão retorno rápido localmente, mas são opcionais — podem ser pulados com <code class="i">--no-verify</code> e não existem num clone novo. Por isso a <b>CI precisa repetir</b>: o hook é conveniência, a CI é garantia.</p>
+
+        <pre><code>feat(pedido): aceita pagamento parcelado
+fix(estoque): corrige contagem em compra simultanea
+chore(deps): atualiza spring-boot para 3.3.4
+refactor(checkout): extrai calculo de frete
+
+# corpo: POR QUE, nao o que
+# rodape: BREAKING CHANGE: ... / Refs: #123</code></pre>
+
+        <div class="ver"><b>onde a teoria mora</b>ADR, comunicação de decisão e a régua de profundidade estão em <a href="arquitetura.html">Arquitetura completo</a>. Pipeline, rollback e GMUD, em <a href="conceitos-backend.html">Conceitos de Backend completo</a>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Refatoração junto com comportamento.</b> Torna a revisão impossível.</li>
+            <li><b>Confiar só no hook.</b> Metade do time nunca o instalou.</li>
+            <li><b>Descrição que repete o diff.</b> Desperdiça o único campo em que você poderia explicar a decisão.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o seu último PR e conte as linhas alteradas. Depois pense em como ele poderia ter sido dois ou três — e o que cada um teria como propósito.</div>
+          <div><b>prova de domínio</b>Você recusa educadamente um PR que mistura refatoração e comportamento, explicando o custo em vez de citar regra.</div>
+        </div>
+        <button class="done" type="button" data-k="g1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="g2">
+        <div class="th"><h3>SemVer e o fluxo: escolha pela frequência de entrega</h3><div class="badges"><span class="badge b-imp">trade-off</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>MAIOR.MENOR.CORREÇÃO</b> é um contrato com quem consome. E o fluxo de branches se escolhe pelo ritmo de entrega, não por hábito.</p>
+
+        <p><b>MAIOR</b> quebra compatibilidade. <b>MENOR</b> acrescenta de forma compatível. <b>CORREÇÃO</b> conserta sem mudar contrato. O número existe para que quem consome decida se pode atualizar sem ler o changelog inteiro — subir MENOR numa mudança que quebra é quebrar quem confiou.</p>
+        <p>Use tag <b>anotada</b> (<code class="i">-a</code> ou <code class="i">-s</code>): é um objeto real, com autor, data e mensagem. A tag leve é um ponteiro solto. E tags <b>não</b> vão no push por padrão.</p>
+
+        <div class="duo">
+          <div><h4>Trunk-based</h4><p>Todos integram na main várias vezes ao dia, branches vivem horas. Exige CI rápida e <i>feature flags</i>.</p><p style="margin-top:7px"><b>Use quando:</b> entrega contínua, time acostumado a integrar.</p></div>
+          <div><h4>GitHub Flow</h4><p>Um branch curto por mudança, PR, merge na main, deploy. É o meio-termo, e o padrão da maioria.</p><p style="margin-top:7px"><b>Use quando:</b> entrega frequente com revisão obrigatória.</p></div>
+        </div>
+        <p><b>GitFlow</b> — com <code class="i">develop</code>, <code class="i">release/*</code> e <code class="i">hotfix/*</code> — foi desenhado para software com versões lançadas periodicamente e várias versões suportadas ao mesmo tempo. Para quem entrega continuamente, ele adiciona cerimônia sem benefício: merges intermináveis entre develop e main, e confusão sobre onde uma correção deve nascer.</p>
+
+        <pre><code>git tag -a v1.4.0 -m "suporte a pagamento parcelado"
+git push origin v1.4.0        # tags NAO vao no push normal
+
+git describe --tags
+# v1.4.0-12-ga1b2c3d
+#   ^tag  ^commits depois  ^hash atual</code></pre>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Subir MENOR quando quebra contrato.</b> Quebra quem atualizou confiando no número.</li>
+            <li><b>Tag leve em release.</b> Sem autor, data nem mensagem — e não assinável.</li>
+            <li><b>GitFlow por padrão.</b> Adotar por hábito custa caro em time que entrega toda semana.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">git describe --tags</code> no seu projeto e interprete as três partes do resultado.</div>
+          <div><b>prova de domínio</b>Dada uma mudança, você decide qual número sobe — e justifica pelo contrato, não pelo tamanho da alteração.</div>
+        </div>
+        <button class="done" type="button" data-k="g2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 08 ===================== -->
+    <section class="part" id="p8">
+      <div class="ph"><span class="num">08</span><div><h2>Investigar: arqueologia responsável</h2><p>O histórico responde "o que mudou, quando e por quê". O objetivo é contexto, nunca culpado.</p></div></div>
+
+      <article class="topic" id="h1">
+        <div class="th"><h3>Log, pickaxe, blame e range-diff</h3><div class="badges"><span class="badge b-prof">profundidade</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">log -S</code> acha <b>quando um termo entrou</b>; <code class="i">blame</code> acha <b>quem tocou por último</b>; <code class="i">range-diff</code> compara <b>duas versões da mesma série</b>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Existe uma constante <code class="i">TAXA_FIXA = 0.07</code> no código. Ninguém sabe de onde veio nem se ainda vale.</p>
+          <p><code class="i">git log -S "TAXA_FIXA" --oneline</code> mostra o commit que a introduziu. A mensagem dele aponta o chamado, o chamado aponta a decisão — e em dois minutos você sabe se pode mexer.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O <code class="i">blame</code> diz quem foi a última pessoa a assinar o documento. O <i>pickaxe</i> diz em que edição aquele parágrafo apareceu pela primeira vez. Para entender <b>por que</b> o parágrafo existe, o segundo quase sempre responde melhor.</p></div>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>Responde</th></tr></thead>
+          <tbody>
+            <tr><td><code>git log -S "termo"</code></td><td>Commits que <b>adicionaram ou removeram</b> o termo.</td></tr>
+            <tr><td><code>git log -p -- arquivo</code></td><td>Histórico do arquivo, com o diff de cada commit.</td></tr>
+            <tr><td><code>git log --follow -- arq</code></td><td>Atravessa renomeações.</td></tr>
+            <tr><td><code>git blame -w -C -L 40,60</code></td><td>Autoria por linha, ignorando espaço e seguindo código movido.</td></tr>
+            <tr><td><code>git range-diff A..B C..D</code></td><td>O que mudou entre duas versões da mesma série.</td></tr>
+            <tr><td><code>git log --merge -p arq</code></td><td>Durante conflito: só os commits que tocaram a região.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>O <code class="i">-w -C</code> no blame muda o resultado completamente.</b> Sem eles, quem reformatou o arquivo aparece como autor de tudo. Com eles, o Git ignora mudança de espaço e segue código movido entre arquivos — e aí a autoria reflete quem escreveu a lógica, não quem rodou o formatador.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Usar blame para achar culpado.</b> O objetivo é contexto. E quem escreveu provavelmente tinha uma restrição que você não conhece.</li>
+            <li><b>Blame sem <code class="i">-w</code>.</b> Atribui tudo a quem formatou.</li>
+            <li><b>Revisar PR rebaseado pelo diff completo.</b> Use <code class="i">range-diff</code>; sem ele, a alteração real fica invisível no ruído.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escolha uma constante estranha no seu código e ache o commit que a introduziu com <code class="i">log -S</code>. Leia a mensagem.</div>
+          <div><b>prova de domínio</b>Você sabe quando usar <code class="i">-S</code> em vez de <code class="i">blame</code> — e explica por que o primeiro responde melhor "por quê".</div>
+        </div>
+        <button class="done" type="button" data-k="h1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 09 ===================== -->
+    <section class="part" id="p9">
+      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Quase todo mundo usa três comandos de Git por medo dos outros. O antídoto é um repositório onde destruir é de graça.</p></div></div>
+
+      <article class="topic" id="i1">
+        <div class="th"><h3>O ciclo, as fontes e o laboratório dos cinco acidentes</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
+        <p class="direto"><b>Direto:</b> ler aqui → criar um repositório de teste → <b>destruir de propósito</b> → recuperar pelo reflog → escrever o que aprendeu. A confiança de saber recuperar é o que libera as ferramentas boas.</p>
+
+        <p>O padrão é conhecido: a pessoa aprende <code class="i">add</code>, <code class="i">commit</code> e <code class="i">push</code>, e nunca mais sai daí — porque errar no repositório do trabalho custa caro, e por isso nunca se experimenta. O resultado é uma década usando 5% da ferramenta.</p>
+        <p>Um <code class="i">mkdir lab-git && git init</code> quebra esse ciclo. Ali você pode dar <code class="i">reset --hard</code> errado, apagar branch, rebasear o que não devia, forçar push. Depois de recuperar três vezes pelo reflog, o medo passa — e aí rebase interativo, bisect e cherry-pick deixam de ser assustadores.</p>
+
+        <p><b>Canais e cursos em português.</b> <b>Rodrigo Branas</b> tem material sólido de Git em PT-BR, incluindo fluxos de trabalho. <b>Fabio Akita</b> explica o funcionamento interno — que é o recorte dos marcos 01 e 08. <b>Willian Justen</b> e <b>Código Fonte TV</b> cobrem bem o básico e o fluxo de PR.</p>
+        <p>Em texto, a melhor referência única que existe é o <b>Pro Git</b>, de Chacon e Straub: está <b>traduzido para o português e é gratuito</b> no site oficial do Git. É o que eu consultaria antes de qualquer vídeo — e os capítulos 2, 3 e 10 cobrem, juntos, quase todo este documento.</p>
+
+        <h4 class="codelab">o laboratório: cinco acidentes, cinco recuperações</h4>
+        <pre><code># o laboratorio inteiro cabe em um diretorio
+mkdir lab-git && cd lab-git && git init
+for i in 1 2 3 4 5; do
+  echo "linha $i" >> arquivo.txt
+  git add . && git commit -m "commit $i"
+done
+
+# 1 — reset --hard perdendo tres commits
+git reset --hard HEAD~3
+git reflog                    # eles estao aqui
+git branch resgate <sha>      # de volta
+
+# 2 — commit no branch errado
+git log --oneline -1          # anote o sha
+git reset --hard HEAD~1       # tira daqui
+git checkout -b certo && git cherry-pick <sha>
+
+# 3 — regressao plantada, achada com bisect
+git bisect start && git bisect bad && git bisect good <sha>
+
+# 4 — historico baguncado
+git commit --fixup=<sha> && git rebase -i --autosquash <base>
+
+# 5 — segredo commitado: rotacione, limpe, force, avise</code></pre>
+
+        <div class="cs"><b>O que registrar em cada acidente:</b> o comando que causou, o sintoma, a hipótese de recuperação, o comando que funcionou. Depois de cinco, você tem um runbook pessoal — e é ele que você vai abrir no dia em que acontecer de verdade, com pressa e com gente olhando.</div>
+
+        <div class="ver"><b>a bancada correspondente</b>Todo projeto do <a href="projetos.html">Laboratório</a> começa com <code class="ic">git init</code> e pede evidência no repositório — README, ADR, histórico legível. O critério de aceite do <code class="ic">A03</code> inclui "infra nasce e morre por comando versionado", que só existe com Git bem usado.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça o acidente nº 1 hoje. Leva três minutos e é o que mais muda a sua relação com a ferramenta.</div>
+          <div><b>prova de domínio</b>Você tem um repositório de laboratório com os cinco acidentes reproduzidos e o comando de recuperação anotado para cada um.</div>
+        </div>
+        <button class="done" type="button" data-k="i1">marcar dominado</button>
+      </article>
+    </section>
+
+
+
+    <footer class="foot">
+      <p>Git completo · setembro de 2026 · o décimo primeiro documento do acervo, em tema Dracula. Unifica os quatro roadmaps de Git que estavam concorrendo no vault — o <code class="i">roadmap-git-CL</code>, o <code class="i">chronicle-keeper</code>, a nota de squash e hooks e a trilha avançada de 07/09, que era a mais completa e serviu de espinha. Fica <b>fora da semana</b>, junto com o Linux e o Conceitos de Backend: é ferramenta de uso contínuo. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script>
+function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
+var DG={
+ dag:W(150,'<text x="170" y="16" class="bt">cada commit aponta para o PAI — a seta vai para trás</text><circle cx="40" cy="60" r="13" class="b2"/><text x="40" y="64" class="bs">C1</text><circle cx="110" cy="60" r="13" class="b2"/><text x="110" y="64" class="bs">C2</text><circle cx="180" cy="60" r="13" class="b2"/><text x="180" y="64" class="bs">C3</text><circle cx="250" cy="40" r="13" class="b1"/><text x="250" y="44" class="bs">C4</text><circle cx="250" cy="86" r="13" class="b4"/><text x="250" y="90" class="bs">C5</text><path d="M97,60 L55,60" class="l"/><path d="M55,60 L63,56 L63,64 Z" class="h"/><path d="M167,60 L125,60" class="l"/><path d="M125,60 L133,56 L133,64 Z" class="h"/><path d="M238,44 L194,56" class="lt"/><path d="M194,56 L202,54 L201,61 Z" class="ht"/><path d="M238,82 L194,66" class="l"/><path d="M194,66 L202,68 L200,74 Z" class="h"/><text x="285" y="44" class="bs">main</text><text x="285" y="90" class="bs">feature</text><text x="170" y="116" class="bs">o commit e imutavel: mudar qualquer coisa gera um NOVO hash</text><text x="170" y="138" class="bt">por isso rebase nao "move" commits — ele recria</text>'),
+ tres:W(156,'<text x="170" y="16" class="bt">as três áreas</text><rect x="8" y="36" width="96" height="48" rx="9" class="b3"/><text x="56" y="56" class="bs">working tree</text><text x="56" y="70" class="bs">seus arquivos</text><path d="M108,60 L136,60" class="lt"/><path d="M136,60 L128,56 L128,64 Z" class="ht"/><text x="122" y="50" class="bs">add</text><rect x="138" y="36" width="88" height="48" rx="9" class="b6"/><text x="182" y="56" class="bs">index</text><text x="182" y="70" class="bs">o proximo commit</text><path d="M230,60 L258,60" class="lt"/><path d="M258,60 L250,56 L250,64 Z" class="ht"/><text x="245" y="50" class="bs">commit</text><rect x="260" y="36" width="72" height="48" rx="9" class="b1"/><text x="296" y="56" class="bs">repositorio</text><text x="296" y="70" class="bs">.git</text><path d="M296,90 L296,104 L56,104 L56,90" class="lr d"/><path d="M56,90 L52,98 L60,98 Z" class="hr"/><text x="176" y="118" class="bs">restore · reset · checkout — cada um volta de um lugar diferente</text><text x="170" y="142" class="bt">o index existe para você escolher O QUE entra no commit</text>'),
+ mr:W(170,'<text x="86" y="16" class="bt">merge</text><text x="254" y="16" class="bt">rebase</text><line x1="170" y1="24" x2="170" y2="144" class="l d"/><circle cx="30" cy="52" r="10" class="b2"/><circle cx="66" cy="52" r="10" class="b2"/><circle cx="102" cy="52" r="10" class="b2"/><circle cx="66" cy="92" r="10" class="b4"/><circle cx="102" cy="92" r="10" class="b4"/><circle cx="138" cy="70" r="11" class="b1"/><path d="M40,52 L56,52 M76,52 L92,52" class="l"/><path d="M60,84 L36,58" class="l"/><path d="M76,92 L92,92" class="l"/><path d="M130,64 L110,54 M130,78 L110,88" class="lt"/><text x="86" y="122" class="bs">o grafo guarda que houve dois caminhos</text><text x="86" y="136" class="bs">historico verdadeiro, leitura mais dificil</text><circle cx="200" cy="70" r="10" class="b2"/><circle cx="236" cy="70" r="10" class="b2"/><circle cx="272" cy="70" r="10" class="b1"/><circle cx="308" cy="70" r="10" class="b1"/><path d="M210,70 L226,70 M246,70 L262,70 M282,70 L298,70" class="l"/><text x="290" y="50" class="bs">recriados</text><text x="254" y="122" class="bs">linha reta — e hashes NOVOS</text><text x="254" y="136" class="bs">leitura facil, historico reescrito</text><text x="170" y="162" class="bt">regra: rebase no que é só seu · merge no que já é de todos</text>'),
+ cherry:W(150,'<text x="170" y="16" class="bt">cherry-pick: o commit é COPIADO, não movido</text><circle cx="40" cy="52" r="11" class="b2"/><circle cx="88" cy="52" r="11" class="b2"/><circle cx="136" cy="52" r="11" class="b5"/><text x="136" y="34" class="bs">a correcao</text><circle cx="184" cy="52" r="11" class="b2"/><path d="M51,52 L77,52 M99,52 L125,52 M147,52 L173,52" class="l"/><text x="30" y="76" class="bs">main</text><circle cx="88" cy="106" r="11" class="b1"/><circle cx="136" cy="106" r="11" class="b1"/><circle cx="184" cy="106" r="11" class="b5"/><text x="184" y="130" class="bs">copia — hash NOVO</text><path d="M99,106 L125,106 M147,106 L173,106" class="lt"/><path d="M136,64 L184,94" class="lr d"/><path d="M184,94 L176,92 L178,99 Z" class="hr"/><text x="60" y="130" class="bs">release/1.4</text><text x="170" y="146" class="bs">use -x: ele grava no corpo qual commit foi a origem</text>'),
+ reflog:W(160,'<text x="170" y="16" class="bt">o reflog é a rede de segurança</text><rect x="10" y="34" width="140" height="56" rx="9" class="b5"/><text x="80" y="52" class="bs">reset --hard errado</text><text x="80" y="68" class="bs">"perdi 3 commits"</text><text x="80" y="83" class="bs">o branch nao aponta mais</text><path d="M152,62 L182,62" class="lt"/><path d="M182,62 L174,58 L174,66 Z" class="ht"/><rect x="184" y="34" width="148" height="56" rx="9" class="b1"/><text x="258" y="52" class="bs">git reflog</text><text x="258" y="68" class="bs">todo movimento de HEAD</text><text x="258" y="83" class="bs">com o SHA anterior</text><text x="170" y="112" class="bs">os commits continuam no repositorio — so ficaram sem nome</text><text x="170" y="134" class="bt">o coletor so remove depois de ~30 dias</text><text x="170" y="150" class="bs">git branch resgate &lt;sha&gt; e pronto</text>'),
+ bisect:W(150,'<text x="170" y="16" class="bt">busca binária: 1000 commits em ~10 testes</text><rect x="10" y="38" width="320" height="18" rx="5" class="b3"/><text x="30" y="51" class="bs">bom</text><text x="310" y="51" class="bs">ruim</text><rect x="10" y="64" width="160" height="18" rx="5" class="b1"/><rect x="172" y="64" width="158" height="18" rx="5" class="b5"/><text x="170" y="77" class="bs">|</text><rect x="92" y="90" width="78" height="18" rx="5" class="b1"/><rect x="172" y="90" width="80" height="18" rx="5" class="b5"/><text x="170" y="126" class="bs">cada teste corta o espaço pela metade</text><text x="170" y="142" class="bt">e com um script, git bisect run faz sozinho</text>'),
+ forca:W(164,'<text x="86" y="16" class="bt">--force</text><text x="254" y="16" class="bt">--force-with-lease</text><line x1="170" y1="24" x2="170" y2="132" class="l d"/><rect x="14" y="34" width="140" height="72" rx="9" class="b5"/><text x="84" y="54" class="bs">sobrescreve o remoto</text><text x="84" y="70" class="bs">sem olhar o que tem la</text><text x="84" y="88" class="bs">o commit do colega</text><text x="84" y="100" class="bs">simplesmente some</text><rect x="184" y="34" width="142" height="72" rx="9" class="b1"/><text x="255" y="54" class="bs">so sobrescreve se o remoto</text><text x="255" y="70" class="bs">ainda estiver onde voce viu</text><text x="255" y="88" class="bs">se alguem empurrou,</text><text x="255" y="100" class="bs">o push e RECUSADO</text><text x="170" y="146" class="bt">nunca use --force num branch compartilhado</text><text x="170" y="160" class="bs">e prefira --force-with-lease mesmo no seu</text>'),
+ ciclo:W(150,'<text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="66" height="30" rx="8" class="b2"/><text x="43" y="53" class="bs">ler aqui</text><path d="M78,49 L96,49" class="l"/><path d="M96,49 L88,45 L88,53 Z" class="h"/><rect x="98" y="34" width="66" height="30" rx="8" class="b2"/><text x="131" y="53" class="bs">repo de teste</text><path d="M166,49 L184,49" class="l"/><path d="M184,49 L176,45 L176,53 Z" class="h"/><rect x="186" y="34" width="66" height="30" rx="8" class="b2"/><text x="219" y="53" class="bs">quebrar</text><path d="M254,49 L272,49" class="l"/><path d="M272,49 L264,45 L264,53 Z" class="h"/><rect x="274" y="34" width="60" height="30" rx="8" class="b1"/><text x="304" y="53" class="bs">recuperar</text><path d="M304,66 L304,88 L43,88 L43,66" class="lt d"/><path d="M43,66 L39,74 L47,74 Z" class="ht"/><text x="170" y="104" class="bs">num repositorio descartavel, destruir e de graca</text><text x="170" y="126" class="bt">e o reflog quase sempre traz de volta</text><text x="170" y="142" class="bs">e essa confianca que te deixa usar o Git de verdade</text>')
+};
+
+var T=[
+{g:"01",n:"Modelo mental",s:"o grafo — e por que ele explica quase tudo",c:"var(--purple)",cs:"var(--purple-soft)",items:[
+ {t:"Commit é snapshot, não diferença",x:"e o DAG que ele forma",dg:"dag",oq:"Cada commit guarda o estado <b>inteiro</b> do projeto naquele instante, mais um ponteiro para o pai. O diferencial que você vê é calculado na hora da exibição.",ps:"É a fundação: entendendo isso, merge, rebase e cherry-pick deixam de ser mágica.",cf:"Os commits formam um grafo dirigido acíclico — as setas apontam para <b>trás</b>, para os pais. Um merge tem dois pais; o commit inicial não tem nenhum. O identificador é o hash do conteúdo, então mudar qualquer coisa — inclusive a mensagem ou a data — produz um commit <b>novo</b>. <b>Erro comum:</b> achar que rebase move commits. Ele os recria, com hashes diferentes.",ex:"git log --oneline --graph --all\n# * a1b2c3 (HEAD -> main) corrige calculo\n# |\\\n# | * d4e5f6 (feature) adiciona relatorio"},
+ {t:"Os quatro objetos",x:"blob, tree, commit e tag",oq:"<b>Blob</b> é o conteúdo de um arquivo. <b>Tree</b> é um diretório: lista nomes apontando para blobs e outras trees. <b>Commit</b> aponta para uma tree e para os pais. <b>Tag</b> anotada é um objeto que aponta para um commit.",ps:"Tornar concreto o que o <code class=\"i\">.git</code> guarda — e explicar por que o repositório não incha tanto quanto se espera.",cf:"Tudo é endereçado por hash do conteúdo. Dois arquivos idênticos em lugares diferentes são <b>um</b> blob só. Arquivo que não mudou entre commits não é duplicado: a tree nova aponta para o mesmo blob. <b>Erro comum:</b> imaginar que cada commit guarda uma cópia completa em disco — guarda logicamente, não fisicamente.",ex:"git cat-file -t HEAD        # commit\ngit cat-file -p HEAD        # tree, parent, author, mensagem\ngit cat-file -p HEAD^{tree} # o diretorio raiz daquele commit"},
+ {t:"Working tree, index e repositório",x:"as três áreas",dg:"tres",oq:"<b>Working tree</b> são os seus arquivos. <b>Index</b> (ou stage) é a montagem do próximo commit. <b>Repositório</b> é o <code class=\"i\">.git</code>, com o histórico.",ps:"Explicar a diferença entre <code class=\"i\">restore</code>, <code class=\"i\">reset</code> e <code class=\"i\">checkout</code> — que voltam de lugares diferentes.",cf:"O index existe para você <b>escolher</b> o que entra no commit, inclusive partes de um arquivo (<code class=\"i\">add -p</code>). <b>Erro comum:</b> <code class=\"i\">git add .</code> sem olhar, e commitar um arquivo de configuração local junto.",ex:"git status            # mostra as tres areas de uma vez\ngit add -p arquivo    # escolhe PEDACOS, nao o arquivo inteiro\ngit diff              # working tree x index\ngit diff --staged     # index x ultimo commit"},
+ {t:"HEAD, refs e revision syntax",x:"como nomear qualquer commit",oq:"<b>HEAD</b> aponta para onde você está. <b>Branch</b> é um arquivo de texto com um hash — um ponteiro móvel. <b>Revision syntax</b> é a linguagem para nomear commits relativos.",ps:"Parar de copiar hash na mão e passar a navegar pelo grafo com expressões.",cf:"<code class=\"i\">HEAD~2</code> é dois commits atrás pela primeira linhagem; <code class=\"i\">HEAD^2</code> é o <b>segundo pai</b> (só existe em merge); <code class=\"i\">main@{1.week.ago}</code> usa o reflog. <b>Erro comum:</b> confundir <code class=\"i\">~</code> com <code class=\"i\">^</code> — o primeiro anda para trás, o segundo escolhe qual pai.",ex:"git show HEAD~3          # tres commits atras\ngit show HEAD^2          # o segundo pai de um merge\ngit log main..feature    # o que tem em feature e nao em main\ngit log feature...main   # a diferenca simetrica"}
+]},
+{g:"02",n:"Integrar",s:"merge, rebase e o conflito como decisão",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
+ {t:"Remote, fetch, pull e tracking",x:"o que cada um realmente faz",oq:"<code class=\"i\">fetch</code> baixa e <b>não</b> mexe no seu trabalho. <code class=\"i\">pull</code> é fetch seguido de merge (ou rebase). <i>Tracking branch</i> é a associação entre o seu branch local e o remoto.",ps:"Separar 'ver o que mudou' de 'incorporar o que mudou' — que é a primeira coisa que dá errado.",cf:"<code class=\"i\">origin/main</code> é a sua <b>cópia local</b> de onde o remoto estava no último fetch. Ele não se atualiza sozinho. <b>Erro comum:</b> dar <code class=\"i\">pull</code> com trabalho não commitado e criar um merge acidental no meio.",ex:"git fetch --all --prune   # atualiza e remove branches remotos mortos\ngit log HEAD..origin/main # o que chegou e voce ainda nao tem\ngit pull --rebase         # sem merge automatico\ngit config --global pull.rebase true"},
+ {t:"Merge",x:"integrar preservando o grafo",dg:"mr",oq:"Cria um commit com <b>dois pais</b>, unindo as duas linhas sem alterar nenhum commit existente.",ps:"Preservar o histórico como realmente aconteceu — e é a operação segura em branch compartilhado.",cf:"Quando não há divergência, o Git faz <i>fast-forward</i>: só move o ponteiro, sem commit de merge. <code class=\"i\">--no-ff</code> força o commit de merge, o que deixa visível que houve um ramo. <b>Erro comum:</b> discutir merge contra rebase como questão de gosto. A regra é sobre <b>compartilhamento</b>, não sobre estética."},
+ {t:"Conflito é decisão",x:"não é 'apagar os marcadores'",oq:"O Git marca o conflito quando os dois lados mudaram as mesmas linhas e ele não tem critério para escolher.",ps:"Trocar o pânico por um procedimento: entender os dois lados e decidir com intenção.",cf:"Os marcadores delimitam <b>seu</b> lado (HEAD) e o <b>outro</b>. A resolução raramente é escolher um: costuma ser escrever uma terceira versão que preserva as duas intenções. Depois, <code class=\"i\">add</code> e <code class=\"i\">continue</code>. <b>Erro comum:</b> apagar os marcadores e ficar com o código de um lado só — perdendo em silêncio o que o colega fez.",ex:"git status                 # lista os arquivos em conflito\ngit diff --name-only --diff-filter=U\ngit checkout --ours  arq   # o lado de quem esta integrando\ngit checkout --theirs arq  # o que esta chegando\ngit merge --abort          # desistir e voltar ao estado anterior"},
+ {t:"Rebase",x:"reaplicar sobre nova base",oq:"Pega os commits que só existem no seu branch, encontra a base comum, e os <b>reaplica</b> um a um sobre a ponta do outro branch.",ps:"Deixar o histórico linear e legível antes de abrir o pull request.",cf:"Os commits reaplicados são <b>novos objetos</b>, com hashes diferentes — mesmo que o conteúdo seja idêntico. Conflitos aparecem por commit, e você resolve, dá <code class=\"i\">add</code> e <code class=\"i\">rebase --continue</code>; para desistir, <code class=\"i\">--abort</code>. <b>Erro comum:</b> rebasear um branch que outras pessoas já puxaram — o histórico delas diverge do seu e o próximo pull vira um nó.",caso:"A regra prática que resolve a discussão: <b>rebase no que ainda é só seu, merge no que já é de todos</b>. Enquanto o branch não foi compartilhado, reescrever é de graça. Depois que alguém puxou, reescrever é transferir o problema para essa pessoa.",ex:"git fetch origin\ngit rebase origin/main\n# conflito? resolva, depois:\ngit add arquivo && git rebase --continue\n# desistir:\ngit rebase --abort\n\n# ver se a reaplicacao mudou algo alem da base:\ngit range-diff origin/main@{1} origin/main HEAD"}
+]},
+{g:"03",n:"Cirurgia",s:"o que quase ninguém usa e resolve muito",c:"var(--green)",cs:"var(--green-soft)",items:[
+ {t:"Cherry-pick",x:"transportar UM commit",dg:"cherry",oq:"Aplica a mudança introduzida por um commit específico sobre o branch atual, criando um commit <b>novo</b> — o original continua onde estava.",ps:"Levar uma correção para um branch de release sem arrastar junto tudo o que veio depois dela.",cf:"Use <code class=\"i\">-x</code>: ele acrescenta ao corpo da mensagem a linha <i>cherry picked from commit &lt;sha&gt;</i>, que é o rastro de onde aquilo veio. Sem isso, meses depois ninguém sabe que os dois commits são a mesma correção. <b>Erro comum:</b> usar cherry-pick em série para o que era um merge — você duplica o histórico e cria conflito na integração seguinte.",caso:"Uma correção crítica entrou na <code class=\"i\">main</code>, junto com três funcionalidades novas. O cliente está na <code class=\"i\">release/1.4</code> e precisa só da correção. Merge traria tudo; cherry-pick leva o commit isolado.",ex:"git checkout release/1.4\ngit cherry-pick -x a1b2c3d\n# o corpo da mensagem agora registra a origem\n\n# um intervalo (cuidado com a ordem):\ngit cherry-pick -x a1b2c3d^..f7e8d9c"},
+ {t:"Stash e worktree",x:"trocar de contexto sem perder estado",oq:"<b>Stash</b> guarda mudanças locais numa pilha para retomar depois. <b>Worktree</b> cria outra pasta ligada ao mesmo repositório, com outro branch em paralelo.",ps:"Atender uma interrupção sem commitar trabalho pela metade nem perder o que estava fazendo.",cf:"<code class=\"i\">stash</code> serve a interrupções <b>curtas</b>. Se o contexto vai coexistir por horas — um hotfix enquanto a feature continua —, <code class=\"i\">worktree</code> é melhor: os dois ficam abertos ao mesmo tempo, sem trocar de branch. <b>Erro comum:</b> acumular stashes sem mensagem, e meses depois não saber o que é cada um.",ex:"git stash push -u -m \"meio do refactor do checkout\"\ngit stash list\ngit stash pop            # aplica e remove da pilha\n\n# para o hotfix que coexiste:\ngit worktree add ../hotfix hotfix/urgente\n# duas pastas, dois branches, um repositorio so\ngit worktree remove ../hotfix"},
+ {t:"Bisect",x:"busca binária no histórico",dg:"bisect",oq:"Encontra o commit que introduziu uma regressão, dividindo o intervalo entre um commit bom conhecido e um ruim.",ps:"Transformar 'quebrou em algum momento do último mês' num commit específico, em poucos testes.",cf:"Mil commits viram cerca de dez testes, porque cada resposta corta o espaço pela metade. Com um script que retorna 0 para bom e diferente de 0 para ruim, <code class=\"i\">git bisect run</code> faz tudo sozinho. Ao terminar, <code class=\"i\">git bisect reset</code> volta ao estado original. <b>Erro comum:</b> esquecer o reset e continuar trabalhando em HEAD destacado.",caso:"O relatório começou a sair com valor errado 'faz umas semanas'. Ninguém sabe quando. São 800 commits no intervalo. Com um teste que reproduz o erro, o bisect entrega o commit culpado em nove execuções.",ex:"git bisect start\ngit bisect bad                 # o atual esta quebrado\ngit bisect good v1.3.0         # aqui funcionava\n# teste, e a cada rodada:  git bisect good|bad\n\n# automatico, com um script que retorna 0 = bom:\ngit bisect run ./testa.sh\ngit bisect reset"},
+ {t:"Patch e format-patch",x:"mudança como arquivo",oq:"<code class=\"i\">format-patch</code> transforma commits em arquivos; <code class=\"i\">am</code> os aplica preservando autoria e mensagem. <code class=\"i\">diff</code> e <code class=\"i\">apply</code> lidam com a mudança textual crua.",ps:"Mover trabalho entre repositórios sem remoto comum — e é assim que o próprio kernel do Linux é mantido.",cf:"<code class=\"i\">apply</code> aplica o texto sem criar commit; <code class=\"i\">am</code> cria o commit com o autor original. <b>Erro comum:</b> usar <code class=\"i\">apply</code> quando queria preservar autoria, e aparecer como autor do trabalho de outra pessoa.",ex:"git format-patch -3            # os 3 ultimos commits viram arquivos\ngit am 0001-corrige.patch      # aplica preservando autoria\n\ngit diff > mudanca.patch       # so o texto\ngit apply --check mudanca.patch  # testa antes de aplicar"}
+]},
+{g:"04",n:"Desfazer e recuperar",s:"a parte que dá coragem para usar o resto",c:"var(--orange)",cs:"var(--orange-soft)",items:[
+ {t:"Restore, reset e revert",x:"três intenções diferentes",oq:"<b>restore</b> devolve arquivos. <b>reset</b> move o ponteiro do branch. <b>revert</b> cria um commit novo que desfaz outro.",ps:"Escolher pelo que você quer que aconteça com o histórico — e com o trabalho dos outros.",cf:"<code class=\"i\">reset --soft</code> move o ponteiro e mantém tudo no index; <code class=\"i\">--mixed</code> (padrão) mantém no working tree; <code class=\"i\">--hard</code> descarta. <b>revert é a única segura em branch compartilhado</b>, porque não reescreve nada. <b>Erro comum:</b> <code class=\"i\">reset --hard</code> com trabalho não commitado — isso o reflog <b>não</b> recupera, porque nunca virou commit.",ex:"git restore arquivo             # descarta a alteracao local\ngit restore --staged arquivo    # tira do index, mantem no disco\n\ngit reset --soft HEAD~1   # desfaz o commit, mantem tudo staged\ngit reset --mixed HEAD~1  # desfaz e tira do index\ngit reset --hard HEAD~1   # desfaz e DESCARTA\n\ngit revert a1b2c3d        # commit novo que desfaz — seguro no compartilhado"},
+ {t:"Reflog e fsck",x:"a rede de segurança",dg:"reflog",oq:"O reflog registra <b>todo movimento</b> local de HEAD e das refs, com o SHA anterior — mesmo os que ficaram sem nome.",ps:"Recuperar commits que um reset, um rebase ou uma exclusão de branch deixaram órfãos.",cf:"Commits sem nenhuma referência continuam no repositório até o coletor de lixo passar — tipicamente após cerca de 30 dias. Se o reflog já expirou, <code class=\"i\">fsck --lost-found</code> ainda pode achar. <b>Erro comum:</b> entrar em pânico e clonar de novo. Quase sempre o trabalho está a dois comandos de distância.",caso:"Você deu <code class=\"i\">reset --hard HEAD~3</code> no branch errado e três commits sumiram. Eles não sumiram: o branch parou de apontar para eles. O reflog tem o SHA anterior, e um <code class=\"i\">git branch resgate &lt;sha&gt;</code> traz tudo de volta.",ex:"git reflog\n# a1b2c3d HEAD@{0}: reset: moving to HEAD~3\n# f7e8d9c HEAD@{1}: commit: o trabalho que 'sumiu'\n\ngit branch resgate f7e8d9c     # salva antes de qualquer coisa\n\n# se o reflog nao tem mais:\ngit fsck --lost-found"},
+ {t:"Amend, fixup e rebase interativo",x:"arrumar antes de mostrar",oq:"<code class=\"i\">amend</code> refaz o último commit. <code class=\"i\">rebase -i</code> permite reordenar, juntar, editar e remover commits de um intervalo.",ps:"Entregar um pull request com histórico limpo, em que cada commit tem um propósito.",cf:"<code class=\"i\">commit --fixup=&lt;sha&gt;</code> cria um commit marcado; depois <code class=\"i\">rebase -i --autosquash</code> o posiciona e funde automaticamente. É muito melhor que reordenar na mão. <b>Erro comum:</b> fazer <code class=\"i\">amend</code> num commit já enviado — o hash muda e o remoto diverge.",ex:"git commit --amend --no-edit        # só acrescenta ao ultimo\ngit commit --fixup=a1b2c3d          # marca como correcao daquele\ngit rebase -i --autosquash origin/main\n\n# no editor: pick, squash, fixup, reword, edit, drop"},
+ {t:"Force-with-lease",x:"nunca --force num branch compartilhado",dg:"forca",oq:"<code class=\"i\">--force</code> sobrescreve o remoto sem olhar. <code class=\"i\">--force-with-lease</code> só sobrescreve se o remoto ainda estiver onde você viu pela última vez.",ps:"Publicar um branch reescrito sem apagar o trabalho de quem empurrou enquanto isso.",cf:"Se alguém empurrou depois do seu último fetch, o <i>lease</i> falha e o push é <b>recusado</b> — que é exatamente o que você quer. <b>Erro comum:</b> usar <code class=\"i\">--force</code> por hábito e apagar commits de outra pessoa; do lado dela, o trabalho simplesmente desaparece do remoto.",ex:"git fetch origin                    # atualize o lease primeiro\ngit push --force-with-lease origin minha-branch\n\n# e o alias que evita o dedo pesado:\ngit config --global alias.pushf \"push --force-with-lease\""}
+]},
+{g:"05",n:"Segredos e confiança",s:"o vazamento e a identidade",c:"var(--red)",cs:"var(--red-soft)",items:[
+ {t:"Segredo no histórico",x:"apagar o arquivo não basta",oq:"Um segredo commitado continua no histórico mesmo depois de o arquivo ser apagado — qualquer clone antigo ainda o tem.",ps:"Responder a um vazamento na ordem certa, que começa por onde quase ninguém começa.",cf:"A ordem é: <b>(1) rotacione a credencial imediatamente</b> — é a única ação que realmente resolve; (2) só então limpe o histórico com <code class=\"i\">git filter-repo</code>; (3) force o push e avise todo mundo a reclonar; (4) acrescente o padrão ao <code class=\"i\">.gitignore</code> e um hook que barre o próximo. <b>Erro comum:</b> gastar horas limpando o histórico antes de rotacionar — enquanto isso a credencial continua válida.",caso:"Se o repositório é público, considere a credencial comprometida no <b>minuto</b> em que foi publicada: existem varredores automáticos que a encontram em segundos. Limpar o histórico depois é higiene, não contenção.",ex:"# 1. ROTACIONE. sempre primeiro.\n# 2. so entao:\ngit filter-repo --path config/secrets.yml --invert-paths\n# 3. force com lease e avise o time para reclonar\n# 4. previna:\necho \"*.env\" >> .gitignore"},
+ {t:"Assinatura e identidade",x:"quem realmente fez aquele commit",oq:"O campo <i>author</i> é texto livre: qualquer pessoa pode commitar com o seu nome e e-mail. A assinatura criptográfica é o que prova autoria.",ps:"Ter garantia real de quem assinou, em repositório que exige rastreabilidade.",cf:"Com GPG ou SSH, o commit ganha uma assinatura verificável e o serviço mostra o selo. Tags de release assinadas são a forma mais comum de começar. <b>Erro comum:</b> confiar no nome exibido como se fosse identidade — sem assinatura, ele não prova nada.",ex:"git config --global commit.gpgsign true\ngit config --global gpg.format ssh\ngit config --global user.signingkey ~/.ssh/id_ed25519.pub\n\ngit tag -s v1.4.0 -m \"release 1.4.0\"\ngit log --show-signature -1"}
+]},
+{g:"06",n:"Colaborar",s:"pull request, versão e o fluxo do time",c:"var(--pink)",cs:"var(--pink-soft)",items:[
+ {t:"Pull request como unidade",x:"o tamanho é a variável que importa",oq:"O PR é a unidade de mudança revisável: um propósito, um conjunto coerente de commits, uma descrição que explica a decisão.",ps:"Revisão que encontra problema de verdade — o que só acontece quando o PR cabe na cabeça de quem revisa.",cf:"PR grande recebe aprovação sem leitura; PR pequeno recebe comentário útil. A descrição deve responder <b>por que</b>, não repetir o <i>o quê</i> (que o diff já mostra). <b>Erro comum:</b> juntar refatoração e mudança de comportamento no mesmo PR — ninguém consegue revisar os dois ao mesmo tempo."},
+ {t:"Conventional Commits, hooks e CI",x:"o que a máquina verifica",oq:"Padrão de mensagem (<code class=\"i\">feat:</code>, <code class=\"i\">fix:</code>, <code class=\"i\">chore:</code>) que permite gerar changelog e decidir a versão automaticamente. Hooks rodam verificações locais; a CI repete no servidor.",ps:"Tirar da revisão humana tudo que uma máquina verifica melhor.",cf:"Hook local dá retorno rápido, mas é <b>opcional</b> — pode ser pulado com <code class=\"i\">--no-verify</code> e não existe em clone novo. Por isso a CI precisa repetir: o hook é conveniência, a CI é garantia. <b>Erro comum:</b> confiar só no hook e descobrir que metade do time nunca o instalou.",ex:"feat(pedido): aceita pagamento parcelado\nfix(estoque): corrige contagem em compra simultanea\nchore(deps): atualiza spring-boot para 3.3.4\n\n# pre-commit que barra segredo e formata\n# .git/hooks/pre-commit  — ou, melhor, via pre-commit/husky"},
+ {t:"Tags, SemVer e release",x:"o que o número comunica",oq:"<b>MAIOR.MENOR.CORREÇÃO</b>: maior quebra compatibilidade, menor acrescenta compatível, correção conserta.",ps:"Permitir que quem consome decida se pode atualizar sem ler o changelog inteiro.",cf:"Use tag <b>anotada</b> (<code class=\"i\">-a</code> ou <code class=\"i\">-s</code>), que é um objeto com autor, data e mensagem — a tag leve é só um ponteiro solto. Tags não vão no push por padrão. <b>Erro comum:</b> subir MENOR quando a mudança quebra contrato — e quebrar quem atualizou confiando no número.",ex:"git tag -a v1.4.0 -m \"suporte a pagamento parcelado\"\ngit push origin v1.4.0        # tags NAO vao no push normal\n\ngit describe --tags           # v1.4.0-12-ga1b2c3d\n#                                tag-commits depois-hash"},
+ {t:"Trunk-based, GitHub Flow e GitFlow",x:"escolha pela frequência de entrega",oq:"<b>Trunk-based</b>: todos integram na main várias vezes ao dia, com branches de horas. <b>GitHub Flow</b>: branch curto por mudança, merge após revisão. <b>GitFlow</b>: develop, release e hotfix separados.",ps:"Escolher pelo ritmo de entrega, não por hábito.",cf:"GitFlow foi desenhado para software com versões lançadas periodicamente e várias versões suportadas ao mesmo tempo. Para quem entrega continuamente, ele adiciona cerimônia sem benefício. <b>Erro comum:</b> adotar GitFlow por padrão e conviver com merges intermináveis entre develop e main."}
+]},
+{g:"07",n:"Investigar",s:"arqueologia responsável no histórico",c:"var(--blue)",cs:"var(--blue-soft)",items:[
+ {t:"Log, show, diff e range-diff",x:"as perguntas que o histórico responde",oq:"<code class=\"i\">log</code> lista commits, <code class=\"i\">show</code> abre um, <code class=\"i\">diff</code> compara estados, <code class=\"i\">range-diff</code> compara <b>duas versões de uma mesma série</b>.",ps:"Responder 'o que mudou, quando e por quê' sem sair do terminal.",cf:"O <code class=\"i\">range-diff</code> é o menos conhecido e o mais útil em revisão: depois de um rebase, ele mostra o que mudou <b>além</b> da mudança de base — separando o que você realmente alterou do ruído da reaplicação. <b>Erro comum:</b> revisar um PR rebaseado comparando os diffs completos, e não achar a alteração real.",ex:"git log --oneline --graph --all\ngit log -S \"nomeDaFuncao\"      # commits que ADICIONARAM ou REMOVERAM o termo\ngit log -p -- caminho/arquivo  # o historico de um arquivo, com diff\ngit range-diff main..@{1} main..HEAD"},
+ {t:"Blame e pickaxe",x:"quem mudou, e quando entrou",oq:"<code class=\"i\">blame</code> mostra o último commit que tocou cada linha. O <i>pickaxe</i> (<code class=\"i\">-S</code>) procura commits que introduziram ou removeram um trecho.",ps:"Encontrar o contexto de uma decisão — a mensagem do commit e o PR que a explicam.",cf:"<code class=\"i\">blame -w -C</code> ignora espaço em branco e segue código movido entre arquivos, o que evita atribuir tudo a quem reformatou. <b>Erro comum:</b> usar blame para achar culpado. O objetivo é achar <b>contexto</b>: o que a pessoa estava resolvendo, e se aquilo ainda vale.",ex:"git blame -w -C -L 40,60 arquivo.java\ngit log -S \"taxaJuros\" --oneline    # quando esse termo entrou\ngit log --follow -- arquivo.java    # atravessa renomeacoes"},
+ {t:"Ignore, attributes e fim de linha",x:"o ruído que polui todo diff",oq:"<code class=\"i\">.gitignore</code> impede que arquivos entrem. <code class=\"i\">.gitattributes</code> define como tratar conteúdo — fim de linha, diff, merge.",ps:"Evitar o diff em que o arquivo inteiro aparece alterado porque alguém trocou de sistema operacional.",cf:"<code class=\"i\">.gitignore</code> não afeta o que <b>já</b> está versionado: é preciso <code class=\"i\">git rm --cached</code>. Para fim de linha, <code class=\"i\">* text=auto</code> no <code class=\"i\">.gitattributes</code> normaliza no repositório e resolve de uma vez para todo o time — melhor que depender da configuração local de cada máquina. <b>Erro comum:</b> resolver por <code class=\"i\">core.autocrlf</code> individual e o problema voltar com o próximo integrante.",ex:"# .gitattributes\n* text=auto\n*.sh text eol=lf\n*.bat text eol=crlf\n*.png binary\n\n# ja versionado por engano:\ngit rm --cached config/local.yml"}
+]},
+{g:"08",n:"Internos",s:"o que acontece no disco",c:"var(--yellow)",cs:"var(--yellow-soft)",items:[
+ {t:"Packfiles e GC",x:"por que o repositório não incha",oq:"Objetos soltos são periodicamente compactados em <i>packfiles</i>, com compressão por delta entre objetos parecidos.",ps:"Explicar por que um histórico de dez anos ocupa menos que a pasta de trabalho.",cf:"O <code class=\"i\">gc</code> roda sozinho de tempos em tempos: compacta, e remove objetos sem referência cujo reflog já expirou. <b>Erro comum:</b> rodar <code class=\"i\">gc --prune=now</code> logo depois de um acidente — isso apaga exatamente os objetos órfãos que o reflog recuperaria.",ex:"git count-objects -vH       # quanto ocupa, solto e empacotado\ngit gc                      # compacta\n\n# encontrar os maiores objetos do historico:\ngit rev-list --objects --all |\n  git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |\n  sort -k3 -rn | head"},
+ {t:"O commit é imutável",x:"e o que isso implica",oq:"O hash é calculado sobre o conteúdo <b>inteiro</b> do commit: árvore, pais, autor, data e mensagem. Mudar qualquer campo produz outro commit.",ps:"Fechar o raciocínio do documento — é daqui que vêm quase todas as regras.",cf:"Por isso <code class=\"i\">amend</code> não edita: cria outro. Por isso rebase recria. Por isso reescrever histórico compartilhado quebra o de quem já puxou. E por isso nada se perde de imediato: o objeto antigo continua lá, sem nome, até o coletor passar. <b>Erro comum:</b> pensar em Git como banco de dados mutável; ele é um repositório de objetos endereçados por conteúdo."}
+]},
+{g:"09",n:"Como aprender de verdade",s:"num repositório descartável, destruir é de graça",c:"var(--amber)",cs:"var(--amber-soft)",items:[
+ {t:"O ciclo",x:"quebrar e recuperar",dg:"ciclo",oq:"Ler aqui → criar um repositório de teste → destruir de propósito → recuperar pelo reflog → escrever o que aprendeu.",ps:"A confiança de saber recuperar é o que permite usar as ferramentas boas — rebase interativo, bisect, cherry-pick.",cf:"Quase todo mundo usa três comandos de Git por medo dos outros. O antídoto é um repositório descartável: faça <code class=\"i\">reset --hard</code> errado, apague um branch, rebaseie o que não devia, e traga tudo de volta. Depois de recuperar três vezes, o medo passa. <b>Erro comum:</b> aprender Git só em repositório de trabalho, onde errar custa caro — e por isso nunca experimentar."},
+ {t:"Canais e cursos em português",x:"para este assunto",oq:"Fontes em PT-BR que tratam de Git além dos três comandos básicos.",ps:"Ter o vocabulário do grafo antes de atravessar a documentação oficial.",cf:"<b>Rodrigo Branas</b> tem material sólido de Git em português, incluindo fluxos de trabalho. <b>Fabio Akita</b> explica o funcionamento interno, que é o recorte dos marcos 01 e 08. <b>Willian Justen</b> e <b>Código Fonte TV</b> cobrem bem o básico e o fluxo de PR. Em texto, o <b>Pro Git</b> (Chacon e Straub) está <b>traduzido para o português e é gratuito</b> no site oficial — é a melhor referência única que existe, e a que eu consultaria antes de qualquer vídeo."},
+ {t:"Praticar",x:"o laboratório dos cinco acidentes",oq:"Reproduzir, num repositório de teste, os cinco acidentes mais comuns — e recuperar de cada um.",ps:"Você não aprende a recuperar lendo sobre recuperação.",cf:"(1) <code class=\"i\">reset --hard</code> perdendo três commits, e o resgate pelo reflog; (2) commit no branch errado, movido com cherry-pick e removido da origem; (3) uma regressão plantada de propósito, encontrada com bisect; (4) um histórico bagunçado, limpo com <code class=\"i\">rebase -i --autosquash</code>; (5) um segredo commitado, com a resposta completa na ordem certa.",ex:"# o laboratorio inteiro cabe em um diretorio\nmkdir lab-git && cd lab-git && git init\nfor i in 1 2 3 4 5; do\n  echo \"linha $i\" >> arquivo.txt\n  git add . && git commit -m \"commit $i\"\ndone\n\ngit reset --hard HEAD~3     # 'perdeu' tres\ngit reflog                  # eles estao aqui\ngit branch resgate <sha>    # de volta",star:true}
+]}
+];
+
+/* ---------- render ---------- */
+var nav=document.getElementById("nav");
+var navMap={};
+function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
+var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
+flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
+var KEYT="git-completo-CL-trilha-v1";
+var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
+var track=document.getElementById("track"),lg=document.getElementById("lg");
+navHead("A trilha · 9 marcos");
+T.forEach(function(g,gi){
+  var sec=document.createElement("section");
+  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
+  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
+  var ms=document.createElement("div");ms.className="milestone";
+  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
+  var box=document.createElement("div");box.className="cluster";
+  g.items.forEach(function(it){
+    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
+    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
+    b.addEventListener("click",function(){open(it._i);});
+    box.appendChild(b);
+  });
+  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
+  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
+  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
+  navMap["g"+g.g]=a;
+});
+var fim=document.createElement("div");fim.className="trail-end";
+fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
+track.appendChild(fim);
+var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
+function open(i){
+  cur=i;var it=flat[i];
+  panel.style.setProperty("--pc",it._g.c);
+  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
+  document.getElementById("pTitle").textContent=it.t;
+  document.getElementById("pSub").textContent=it.x;
+  var h='';
+  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
+  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
+  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
+  if(it.caso)h+='<div class="blk"><h4>No caso concreto</h4><p>'+it.caso+'</p></div>';
+  if(it.map)h+='<div class="blk"><h4>Onde a teoria mora</h4><table class="vmap"><tbody>'+it.map.map(function(r){return '<tr><td class="vp">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</tbody></table></div>';
+  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
+  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+hlCode(it.ex)+'</code></pre></div>';
+  document.getElementById("pBody").innerHTML=h;
+  document.getElementById("pBody").scrollTop=0;
+  syncMark();
+  panel.classList.add("on");scrim.classList.add("on");
+  document.getElementById("pX").focus();
+}
+function hlCode(code){
+  var e=code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  e=e.replace(/(#[^\n]*)/g,'<span class="c">$1</span>');
+  e=e.replace(/"([^"\n]*)"/g,'<span class="s">"$1"</span>');
+  e=e.replace(/\b(git|checkout|switch|restore|reset|revert|rebase|merge|cherry|pick|stash|worktree|bisect|reflog|fsck|commit|push|pull|fetch|branch|tag|log|show|diff|blame|add|status|clone|remote|init)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/(--[a-z-]+)/g,'<span class="t">$1</span>');
+  return e;
+}
+function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("pX").addEventListener("click",closeP);
+scrim.addEventListener("click",closeP);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeP();
+  if(!panel.classList.contains("on"))return;
+  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
+});
+function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
+document.getElementById("pNext").addEventListener("click",function(){go(1);});
+document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
+var mark=document.getElementById("pMark");
+function syncMark(){
+  var on=!!doneT[flat[cur]._id];
+  mark.classList.toggle("is",on);
+  mark.textContent=on?"✓ estudado":"marcar estudado";
+}
+mark.addEventListener("click",function(){
+  var id=flat[cur]._id;
+  if(doneT[id])delete doneT[id];else doneT[id]=1;
+  localStorage.setItem(KEYT,JSON.stringify(doneT));
+  syncMark();paint();
+});
+var parts=[].slice.call(document.querySelectorAll("section.part"));
+var entries=[];
+navHead("O conteúdo · 9 partes");
+parts.forEach(function(sec){
+  var num=sec.querySelector(".ph .num").textContent.trim();
+  var h2=sec.querySelector(".ph h2").textContent;
+  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
+  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
+  sec.querySelectorAll("article.topic").forEach(function(t){
+    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
+    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
+    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
+  });
+});
+var KEYM="git-completo-CL-conteudo-v1";
+var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
+var botoes=[].slice.call(document.querySelectorAll(".done"));
+botoes.forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.k;
+    if(doneM[k])delete doneM[k];else doneM[k]=1;
+    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
+  });
+});
+function paint(){
+  var n=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
+    b.classList.toggle("done",on);if(on)n++;
+  });
+  var m=0;
+  botoes.forEach(function(b){
+    var k=b.dataset.k,on=!!doneM[k];
+    b.classList.toggle("is",on);
+    b.textContent=on?"✓ dominado":"marcar dominado";
+    var la=nav.querySelector('a[data-k="'+k+'"]');
+    if(la)la.classList.toggle("ok",on);
+    if(on)m++;
+  });
+  var tot=flat.length+botoes.length,fez=n+m;
+  var pct=tot?Math.round(fez/tot*100):0;
+  document.getElementById("rdone").textContent=fez+" de "+tot;
+  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+}
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
+  doneT={};doneM={};
+  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
+  paint();if(cur>=0)syncMark();
+});
+function onScroll(){
+  var y=window.scrollY+140,c=null,i;
+  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
+  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
+  var h=document.body.scrollHeight-window.innerHeight;
+  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
+  document.getElementById("up").classList.toggle("on",window.scrollY>700);
+}
+document.addEventListener("scroll",onScroll,{passive:true});
+document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+var q=document.getElementById("q");
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase(),vis=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];
+    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf+" "+(it.caso||"")).toLowerCase();
+    var hit=v&&txt.indexOf(v)>-1;
+    b.classList.toggle("hit",!!hit);
+    b.classList.toggle("dim",!!v&&!hit);
+    if(hit)vis++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){g.classList.remove("hide");return;}
+    g.classList.toggle("hide",!g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(t){
+    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
+    t.classList.toggle("hide",!hit);
+    var la=nav.querySelector('a[data-k="'+t.id+'"]');
+    if(la)la.classList.toggle("hide",!hit);
+    if(hit&&v)vis++;
+  });
+  parts.forEach(function(sec){
+    var algum=sec.querySelector("article.topic:not(.hide)");
+    sec.style.display=algum?"":"none";
+    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa)sa.classList.toggle("hide",!algum);
+  });
+  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
+});
+function hl(el){
+  var e=el.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  var store=[];
+  function keep(cls,txt){store.push('<span class="'+cls+'">'+txt+'</span>');return "§"+(store.length-1)+"§";}
+  e=e.replace(/(#[^\n]*)/g,function(m){return keep("c",m);});
+  e=e.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g,function(m){return keep("s",m);});
+  e=e.replace(/(--?[a-zA-Z][a-zA-Z0-9-]*)/g,function(m){return keep("t",m);});
+  e=e.replace(/\b(git|add|commit|push|pull|fetch|clone|init|remote|branch|checkout|switch|restore|reset|revert|merge|rebase|tag|log|show|diff|status|stash|worktree|bisect|reflog|fsck|blame|apply|format|patch|gc|config|submodule|cherry)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/\b([0-9a-f]{7,40})\b/g,'<span class="n">$1</span>');
+  e=e.replace(/§(\d+)§/g,function(_,i){return store[+i];});
+  el.innerHTML=e;
+}
+document.querySelectorAll("section.part pre code").forEach(hl);
+paint();onScroll();
+(function(){
+ var RK="git-completo-CL-rev-v1";
+ var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
+ var test=false,revealed=false;
+ var P=document.getElementById("panel"),B=document.getElementById("pBody");
+ var mB=document.getElementById("mode"),rB=document.getElementById("review");
+ var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
+ var _open=open;
+ open=function(i){_open(i);after(flat[i]);};
+ function after(it){
+  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
+  if(test){
+   var g=document.createElement("div");g.className="gate";
+   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
+   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
+   g.querySelector(".reveal-btn").addEventListener("click",reveal);
+   B.insertBefore(g,B.firstChild);
+  }
+  grade();
+ }
+ function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
+ function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
+ function cid(){return(cur>=0)?flat[cur]._id:null;}
+ function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
+ ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
+ no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
+ mB.addEventListener("click",function(){
+  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
+  if(P.classList.contains("on")&&cur>=0)open(cur);
+ });
+ rB.addEventListener("click",function(){
+  var k=Object.keys(rev);if(!k.length)return;
+  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
+  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
+ });
+ function pr(){
+  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
+  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
+ }
+ pr();
+})();
+</script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+<script>
+(function(){
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  if(!("IntersectionObserver" in window))return;
+  document.documentElement.classList.add("dganim");
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");dispara(e.target);io.unobserve(e.target)}
+  })},{threshold:.18,rootMargin:"0px 0px -6% 0px"});
+  function pt(p,l){var o=p.getPointAtLength(l);return [o.x,o.y]}
+  function segs(f){
+    var arr=[].slice.call(f.querySelectorAll("svg path.l,svg path.lt,svg path.lb,svg path.lr,svg path.ln"));
+    return arr.map(function(p){
+      try{
+        var t=p.getTotalLength(); if(!t||t<12)return null;
+        var b=p.getBBox(); var a=pt(p,0),z=pt(p,t);
+        return {p:p,t:t,x:b.x,y:(a[1]+z[1])/2,a:a,z:z};
+      }catch(_){return null}
+    }).filter(Boolean);
+  }
+  function faixas(ss){
+    var out=[];
+    ss.slice().sort(function(a,b){return a.y-b.y}).forEach(function(s){
+      for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-s.y)<34){out[i].itens.push(s);return} }
+      out.push({y:s.y,itens:[s]});
+    });
+    return out.filter(function(g){return g.itens.length>=2})
+              .sort(function(a,b){return b.itens.length-a.itens.length}).slice(0,3);
+  }
+  function traco(itens){
+    itens.sort(function(a,b){return a.x-b.x});
+    var d="",n=0;
+    itens.forEach(function(s){
+      var N=Math.max(2,Math.min(14,Math.round(s.t/14)));
+      for(var i=0;i<=N;i++){ var q=pt(s.p,s.t*i/N); d+=(n++?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)+" "}
+    });
+    return n>1?d:null;
+  }
+  function fio(f){
+    if(f.querySelector(".pulse"))return;
+    var svg=f.querySelector("svg"); if(!svg)return;
+    var ss=segs(f); if(ss.length<2)return;
+    var ciclo=ss.some(function(s){return s.a[0]-s.z[0]>80});
+    var gs=faixas(ss); if(!gs.length)return;
+    var NS="http://www.w3.org/2000/svg";
+    gs.forEach(function(g,gi){
+      var d=traco(g.itens); if(!d)return;
+      var cor=getComputedStyle(g.itens[0].p).stroke;
+      if(!cor||cor==="none")cor="currentColor";
+      var wrap=document.createElementNS(NS,"g");
+      wrap.setAttribute("class","pulse gen");
+      wrap.style.setProperty("--pd",(1.15+gi*0.18).toFixed(2)+"s");
+      var c=document.createElementNS(NS,"circle");
+      c.setAttribute("r","4.2"); c.setAttribute("fill",cor);
+      var mo=document.createElementNS(NS,"animateMotion");
+      mo.setAttribute("path",d);
+      mo.setAttribute("calcMode","linear");
+      mo.setAttribute("begin","indefinite");
+      if(ciclo){
+        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
+      }else{
+        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
+        var fade=document.createElementNS(NS,"animate");
+        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
+        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
+        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
+        c.appendChild(fade); wrap.__fade=fade;
+      }
+      c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
+      wrap.__mo=mo;
+    });
+    f.__fios=[].slice.call(svg.querySelectorAll(".pulse.gen"));
+  }
+  function dispara(f){
+    (f.__fios||[]).forEach(function(w){
+      try{ w.__mo&&w.__mo.beginElement(); w.__fade&&w.__fade.beginElement(); w.classList.add("go") }catch(_){}
+    });
+  }
+  function px(n){try{return n.getBBox().x}catch(_){return 0}}
+  function prep(f){
+    if(f.getAttribute("data-dg"))return;
+    f.setAttribute("data-dg","1");
+    var ns=[].slice.call(f.querySelectorAll("svg *")).filter(function(n){return n.getBBox});
+    ns.forEach(function(n){
+      if(n.getTotalLength&&n.tagName!=="text"){try{n.setAttribute("pathLength",100)}catch(_){}}
+    });
+    ns.map(function(n){return [n,px(n)]})
+      .sort(function(a,b){return a[1]-b[1]})
+      .forEach(function(p,i){p[0].style.setProperty("--d",(i*0.035).toFixed(3)+"s")});
+    try{fio(f)}catch(_){}
+    io.observe(f);
+  }
+  function scan(r){[].slice.call((r||document).querySelectorAll("figure.dg")).forEach(prep)}
+  scan(document);
+  /* o painel da trilha injeta diagramas depois do carregamento */
+  new MutationObserver(function(ms){
+    for(var i=0;i<ms.length;i++){
+      var a=ms[i].addedNodes;
+      for(var j=0;j<a.length;j++){
+        var n=a[j];
+        if(n.nodeType===1){ if(n.matches&&n.matches("figure.dg")) prep(n); else scan(n); }
+      }
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+</body>
+</html>

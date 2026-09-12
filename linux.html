@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux e terminal completo — trilha visual + conteúdo · o térreo dos outros nove</title>
+<meta name="description" content="O décimo documento: o chão que todos os outros pressupõem. Trilha visual em 9 marcos, mais 22 tópicos em 9 partes — o shell e o PATH, tudo é arquivo, permissões e o container non-root, processos e sinais, SIGTERM contra SIGKILL e o PID 1, os três descritores e os pipes, grep/sed/awk, disco cheio e memória que parece acabada, a porta que não responde, systemd e journalctl, e o que muda quando você está dentro de um container. Cada conceito com o caso concreto. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+
+/* ===================== DRACULA — tema único ===================== */
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+.conta{margin:18px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.conta>div{border:1px solid var(--line2);border-radius:12px;padding:13px 15px;background:var(--code)}
+.conta code{display:block;font:600 .9rem/1.5 "Cascadia Code",monospace;color:var(--teal);white-space:pre-wrap}
+.conta small{display:block;margin-top:7px;font:400 .82rem/1.5 Georgia,serif;color:var(--muted)}
+/* tabela de comandos */
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{white-space:nowrap;width:1%}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px;white-space:nowrap}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>$_</i><b>Linux</b></div>
+    <p class="sub">O térreo que os outros nove pressupõem.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (sinal, pipe, chmod, PID 1)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Linux e terminal · setembro 2026</span>
+      <h1>O <em>térreo</em> de tudo que você já estudou.</h1>
+      <p class="lede">O décimo documento, e o que estava faltando embaixo dos outros. Todo laboratório do acervo roda num container; o Docker e Kubernetes fala em <b>PID 1 e SIGTERM</b>; o System Design manda rodar <code class="i">EXPLAIN ANALYZE</code> pelo <code class="i">psql</code>; a Nuvem exige <b>teardown por comando</b>. Os nove documentos pressupõem o terminal — e nenhum explica. Em cima, a <b>trilha visual</b>: 35 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 16 tópicos em 9 partes. E a mesma regra do nono: <b>nenhum conceito sem o caso concreto</b> — o container que ignora o <code class="i">Ctrl+C</code>, o disco que encheu sem nenhum arquivo grande, a porta que não responde, o log que sumiu porque foi para o lugar errado.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>do shell ao que muda dentro do container</a>
+      </div>
+      <div class="legenda">
+        <div><b>Sempre com caso</b><span>Cada tópico abre com o sintoma que você vai encontrar de verdade.</span></div>
+        <div><b>Para quem usa Windows</b><span>WSL, container e servidor: onde os três diferem e onde não.</span></div>
+        <div><b>O que muda no container</b><span>Uma parte inteira sobre por que as ferramentas mentem lá dentro.</span></div>
+        <div><b>Onde a teoria mora</b><span>Link para o documento que aprofunda, em vez de reexplicar.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do prompt ao processo dentro do container</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>O shell: o que acontece antes do programa rodar</h2><p>Quase todo comportamento estranho do terminal se explica por uma coisa só — a expansão acontece antes de o programa existir.</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>O shell expande; o programa nunca vê o asterisco</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> quando você aperta Enter, o shell separa a linha em palavras, <b>expande</b> o que precisa ser expandido, e só então chama o programa. O programa recebe a lista já resolvida.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um script de limpeza roda há meses. Um dia alguém cria um diretório com espaço no nome, o script apaga a pasta errada, e ninguém entende — o código não mudou.</p>
+          <p>Mudou o <b>dado</b>. <code class="i">rm -rf $DIR/*</code> com <code class="i">DIR="meus dados"</code> vira <code class="i">rm -rf meus dados/*</code>: dois argumentos. O shell dividiu por espaço antes de o <code class="i">rm</code> existir.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O shell é o secretário que lê o bilhete antes de repassar. Se o bilhete diz "traga todas as pastas azuis", ele não repassa essa frase — ele vai, procura, e entrega uma pilha. Quem recebe nunca soube que a palavra "todas" existiu.</p></div>
+
+        <div class="duo o">
+          <div><h4>A ordem exata</h4><p>Separação em palavras → expansão de til (<code class="i">~</code>) → expansão de variável (<code class="i">$VAR</code>) → substituição de comando (<code class="i">$(...)</code>) → divisão por espaço → expansão de curinga (<code class="i">*</code>, <code class="i">?</code>) → remoção de aspas → execução.</p>
+            <div class="repl"><b>O que isso substituiu:</b> nos primeiros sistemas, cada programa implementava a própria expansão de curinga. Centralizar no shell garantiu que <code class="i">*</code> significasse a mesma coisa em toda parte — ao custo de o programa perder a informação de que houve um curinga.</p></div>
+          </div>
+          <div><h4>As três formas de citar</h4><ul>
+            <li><b>Sem aspas:</b> divide por espaço e expande curinga.</li>
+            <li><b>Aspas duplas:</b> preserva espaço, ainda expande variável e <code class="i">$(...)</code>.</li>
+            <li><b>Aspas simples:</b> literal, sem exceção.</li>
+          </ul><p style="margin-top:9px">A regra prática que evita quase todo bug: <b>aspas duplas em volta de toda variável</b>, salvo quando você quer a divisão de propósito.</p></div>
+        </div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — sem proteção</div><pre><code>#!/bin/bash
+DIR=$1
+rm -rf $DIR/*
+
+# DIR vazio  → rm -rf /*
+# DIR com espaco → apaga dois lugares
+# nenhum erro, nenhum aviso</code></pre></div>
+          <div class="depois"><div class="lab">depois — o mínimo de um script sério</div><pre><code>#!/bin/bash
+set -euo pipefail
+# -e  sai no primeiro erro
+# -u  variavel nao definida e erro
+# -o pipefail  falha em qualquer etapa do pipe
+
+DIR="${1:?uso: limpar.sh DIRETORIO}"
+[[ -d "$DIR" ]] || { echo "nao e diretorio"; exit 1; }
+rm -rf -- "${DIR:?}"/*</code></pre></div>
+        </div>
+
+        <p>O <code class="i">${DIR:?}</code> merece atenção: ele aborta se a variável estiver vazia. É uma linha que já evitou um número desconhecido de desastres, e custa quatro caracteres.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Variável sem aspas.</b> Funciona até o primeiro nome com espaço, e aí faz algo em outro lugar.</li>
+            <li><b>Curinga sem aspas onde o programa deveria recebê-lo.</b> <code class="i">find . -name *.log</code> falha se houver um <code class="i">.log</code> no diretório atual — o shell expande antes.</li>
+            <li><b>Esquecer o <code class="i">--</code>.</b> Um arquivo chamado <code class="i">-rf</code> vira opção. O <code class="i">--</code> encerra as opções.</li>
+            <li><b>Confiar no <code class="i">set -e</code> sozinho.</b> Ele não dispara dentro de <code class="i">if</code>, de <code class="i">&amp;&amp;</code> nem em pipe sem <code class="i">pipefail</code>.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie um arquivo chamado <code class="i">-rf</code> e outro chamado <code class="i">meu arquivo.txt</code> num diretório descartável. Tente apagá-los sem aspas e depois com. Os dois erros ensinam mais que a explicação.</div>
+          <div><b>prova de domínio</b>Você explica por que <code class="i">echo *</code> e <code class="i">echo "*"</code> imprimem coisas diferentes — e quem é o responsável pela diferença.</div>
+        </div>
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>PATH: onde o shell procura, e por que a versão errada roda</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">command not found</code> quase nunca significa "não está instalado". Significa "não está em nenhum diretório do <code class="i">PATH</code>".</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você instala o Java 21, confere com <code class="i">java -version</code> e vê 17. Reinstala, reinicia o terminal, continua 17.</p>
+          <p>O <code class="i">type -a java</code> conta a história: existem dois, e o antigo aparece primeiro no <code class="i">PATH</code>. O shell usa o primeiro que encontra e para de procurar.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É uma lista de endereços em ordem. O entregador vai ao primeiro que tem o produto e volta. Não adianta ter o produto melhor no terceiro endereço se o primeiro nunca esvazia.</p></div>
+
+        <p>O <code class="i">PATH</code> é uma variável de ambiente com diretórios separados por dois-pontos. Quando o comando não tem barra no nome, o shell percorre essa lista <b>na ordem</b>. Se tem barra — <code class="i">./script.sh</code>, <code class="i">/usr/bin/java</code> — ele vai direto, sem consultar o PATH.</p>
+        <p>A ausência do diretório atual no PATH é <b>deliberada</b>, e é por isso que o <code class="i">./</code> existe. Se o diretório atual fosse buscado, entrar numa pasta com um arquivo chamado <code class="i">ls</code> e digitar <code class="i">ls</code> executaria o programa de outra pessoa. O <code class="i">./</code> é uma declaração explícita de intenção.</p>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>O que responde</th></tr></thead>
+          <tbody>
+            <tr><td><code>which java</code></td><td>Qual seria executado — só o primeiro.</td></tr>
+            <tr><td><code>type -a java</code></td><td><b>Todos</b> os candidatos, na ordem, incluindo apelido e função do shell.</td></tr>
+            <tr><td><code>command -v java</code></td><td>Versão portável do <code>which</code>, a preferida em script.</td></tr>
+            <tr><td><code>echo $PATH</code></td><td>A lista inteira, em ordem de prioridade.</td></tr>
+            <tr><td><code>hash -r</code></td><td>Limpa o cache de caminhos do bash — resolve o caso em que você moveu o binário e o shell insiste no antigo.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>Apelido e função têm prioridade sobre o PATH.</b> É por isso que <code class="i">type -a</code> importa mais que <code class="i">which</code>: se alguém definiu <code class="i">alias ls='ls --color'</code>, o <code class="i">which ls</code> mostra o binário, mas o que roda é o apelido. Num script, isso é uma fonte de diferença entre "funciona no meu terminal" e "falha no cron".</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Editar o PATH no arquivo errado.</b> <code class="i">.bashrc</code> vale para shell interativo; <code class="i">.profile</code> para login. O cron não lê nenhum dos dois — ele roda com um PATH mínimo, e é por isso que o script que funciona no terminal falha às três da manhã.</li>
+            <li><b>Acrescentar no fim esperando prioridade.</b> Para que o novo ganhe, ele precisa vir <b>antes</b>: <code class="i">PATH="/novo:$PATH"</code>.</li>
+            <li><b>Perder o PATH inteiro.</b> <code class="i">PATH=/meu/bin</code> sem o <code class="i">:$PATH</code> deixa o terminal sem quase nenhum comando.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">type -a</code> no comando que você mais usa. Se aparecer mais de um resultado, você tem uma versão dormente esperando confundir.</div>
+          <div><b>prova de domínio</b>Um script funciona no seu terminal e falha no cron com <i>command not found</i>. Você sabe a causa antes de olhar o script.</div>
+        </div>
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Tudo é arquivo — e permissão é número</h2><p>A frase é repetida sem explicação. Ela significa que a mesma interface — abrir, ler, escrever, fechar — serve para arquivo, disco, terminal, socket e processo.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>Permissões: rwx, o octal e o x que significa outra coisa</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> r=4, w=2, x=1. Some e você tem o octal. E <b>em diretório o x não é executar: é atravessar</b>.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Num prédio: <b>r</b> no andar é poder ler a lista de moradores; <b>x</b> no andar é poder passar pelo corredor. Sem r mas com x, você chega no apartamento 302 se souber o número — só não consegue descobrir quais existem. Sem x, o corredor está trancado e a lista não adianta.</p></div>
+
+        <p>Essa distinção resolve a confusão mais comum da parte: um diretório com <code class="i">r</code> e sem <code class="i">x</code> permite <code class="i">ls</code> mas não permite entrar nem ler nada lá dentro. Um diretório com <code class="i">x</code> e sem <code class="i">r</code> permite abrir <code class="i">/dados/relatorio.pdf</code> se você souber o nome, mas o <code class="i">ls</code> falha. E é assim que se cria um diretório de "só quem sabe o caminho".</p>
+
+        <table class="cmd">
+          <thead><tr><th>Octal</th><th>Significa</th><th>Uso típico</th></tr></thead>
+          <tbody>
+            <tr><td><code>644</code></td><td>dono lê e escreve, resto só lê</td><td>arquivo comum</td></tr>
+            <tr><td><code>755</code></td><td>dono tudo, resto lê e executa</td><td>script e diretório</td></tr>
+            <tr><td><code>600</code></td><td>só o dono</td><td>chave privada, <code>.env</code></td></tr>
+            <tr><td><code>640</code></td><td>dono escreve, grupo lê</td><td>config com segredo compartilhado no time</td></tr>
+            <tr><td><code>777</code></td><td>todo mundo tudo</td><td><b>nunca</b> — é abrir escrita para qualquer processo</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>O SSH recusa chave com permissão folgada</b>, e isso confunde muita gente na primeira vez. Se <code class="i">~/.ssh/id_rsa</code> estiver <code class="i">644</code>, o cliente se recusa a usar e a mensagem não é óbvia. O correto é <code class="i">600</code> — e o mesmo vale para o diretório <code class="i">~/.ssh</code>, que precisa ser <code class="i">700</code>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>chmod 777 como solução.</b> Resolve o sintoma e abre o sistema. Quase sempre o problema real é o <b>dono</b>, não a permissão.</li>
+            <li><b>chmod -R em árvore mista.</b> <code class="i">chmod -R 755</code> torna executável todo arquivo de dados. Use <code class="i">find -type d</code> e <code class="i">-type f</code> separados.</li>
+            <li><b>Esquecer o umask.</b> Ele mascara a permissão de arquivos <b>novos</b>. Se algo nasce com permissão diferente da esperada, o umask é o suspeito.</li>
+          </ul>
+        </div>
+
+        <pre><code># o par correto para arvore mista
+find /app -type d -exec chmod 755 {} \;
+find /app -type f -exec chmod 644 {} \;
+
+umask          # mostra a mascara atual (022 e o comum)
+# 022 significa: tire w do grupo e dos outros</code></pre>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie um diretório, tire o <code class="i">r</code> e mantenha o <code class="i">x</code>. Tente <code class="i">ls</code> e depois tente abrir um arquivo lá dentro pelo nome exato. A diferença entre os dois erros é a lição.</div>
+          <div><b>prova de domínio</b>Você converte <code class="i">-rwxr-x---</code> para octal de cabeça e explica o que muda para alguém que está no grupo mas não é o dono.</div>
+        </div>
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b2">
+        <div class="th"><h3>UID, GID e o volume que o container não escreve</h3><div class="badges"><span class="badge b-imp">container</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> o kernel compara <b>números</b>, não nomes. O nome de usuário é uma tradução feita por quem está olhando — e host e container têm tabelas diferentes.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você monta <code class="i">./dados</code> no container. No host, <code class="i">ls -l</code> mostra você como dono e tudo parece certo. Dentro do container, a aplicação recebe <i>permission denied</i> ao gravar.</p>
+          <p>O <code class="i">id</code> no host diz <code class="i">uid=1000</code>. O <code class="i">id</code> dentro do container diz <code class="i">uid=1001</code>. Para o kernel, são pessoas diferentes — e o diretório pertence à primeira.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Dois prédios usam o mesmo sistema de crachá numerado, mas listas de nomes diferentes. O crachá 1000 abre a sala; você tem o crachá 1001 e o seu nome também é "Thallys" na lista do seu prédio. A porta não lê nomes.</p></div>
+
+        <div class="duo">
+          <div><h4>As três saídas</h4><ul>
+            <li><b>Alinhar o UID na imagem:</b> <code class="i">useradd -u 1000</code> no Dockerfile. É a mais limpa.</li>
+            <li><b>Passar o seu UID na execução:</b> <code class="i">-u "$(id -u):$(id -g)"</code>. Boa para desenvolvimento.</li>
+            <li><b>Ajustar o dono do diretório montado</b> no host. Funciona, mas espalha a responsabilidade.</li>
+          </ul></div>
+          <div><h4>A saída errada</h4><p>Rodar o container como root. Resolve na hora e cria dois problemas: o processo passa a ter privilégio que não precisa, e os arquivos que ele criar no volume ficam pertencendo ao root <b>no host também</b> — e aí você não consegue apagá-los sem <code class="i">sudo</code>.</p>
+            <p style="margin-top:9px">É exatamente o que o critério de aceite do projeto <code class="ic">A03</code> proíbe: <i>"imagem roda sem root e sem segredo embutido"</i>.</p></div>
+        </div>
+
+        <pre><code># diagnostico, nos dois lados
+id                                    # no host
+docker run --rm -it minha-app id      # dentro
+
+# Dockerfile com UID fixo
+RUN useradd -u 1000 -m app
+USER app
+
+# ou, para desenvolvimento, empreste o seu
+docker run --rm -u "$(id -u):$(id -g)" \
+  -v "$PWD/dados:/app/dados" minha-app</code></pre>
+
+        <div class="ver"><b>onde a teoria mora</b>O ciclo de vida da imagem, o usuário não-root e o empacotamento estão em <a href="docker-kubernetes.html">Docker e Kubernetes completo</a>. Identidade da workload na nuvem, em <a href="nuvem.html">Nuvem completo</a>. Aqui é só o mecanismo do kernel por baixo dos dois.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">docker run --rm -v "$PWD:/x" -w /x alpine touch teste</code> e depois tente apagar <code class="i">teste</code> no host sem sudo. O erro que você vai receber é o assunto deste tópico.</div>
+          <div><b>prova de domínio</b>Você explica por que <code class="i">chmod 777</code> no volume "resolve" e por que ainda assim é a resposta errada.</div>
+        </div>
+        <button class="done" type="button" data-k="b2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Processos e sinais: o deploy que corta pela metade</h2><p>A parte que o Docker e Kubernetes completo pressupõe e não explica — e que decide se o seu deploy é limpo.</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>SIGTERM pede, SIGKILL arranca</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> SIGTERM é um pedido que a aplicação pode tratar. SIGKILL não chega à aplicação — o kernel a remove. Nada é gravado, nenhuma conexão é devolvida.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Toda vez que sobe uma versão, alguns usuários veem erro por alguns segundos e o banco acumula conexões órfãs. O time culpa o pool.</p>
+          <p>O culpado é outro: a aplicação não trata SIGTERM. O orquestrador pede educadamente, ninguém escuta, e trinta segundos depois vem o SIGKILL — que corta as requisições em andamento no meio e não devolve nada.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> SIGTERM é o aviso de que a loja vai fechar: você para de deixar gente nova entrar, atende quem está na fila, fecha o caixa e apaga a luz. SIGKILL é o disjuntor geral sendo desligado de fora — no meio de uma venda, com a gaveta aberta.</p></div>
+
+        <div class="duo o">
+          <div><h4>Como funciona por dentro</h4><p>O sinal é uma notificação assíncrona entregue pelo kernel. O processo registra um <i>handler</i> e o kernel o invoca. Dois sinais não aceitam handler, por decisão de projeto: <code class="i">SIGKILL</code> e <code class="i">SIGSTOP</code> — porque o sistema precisa de uma forma de encerrar qualquer processo, inclusive um travado ou malicioso.</p>
+            <div class="repl"><b>O que veio substituir:</b> antes de haver sinais padronizados, cada programa inventava o próprio protocolo de encerramento — arquivo de controle, porta, marca no disco. O sinal deu ao sistema operacional uma linguagem única.</p></div>
+          </div>
+          <div><h4>Os que aparecem no seu dia</h4><ul>
+            <li><b>SIGTERM (15)</b> — o padrão do <code class="i">kill</code>, e o que o orquestrador manda.</li>
+            <li><b>SIGINT (2)</b> — o seu Ctrl+C.</li>
+            <li><b>SIGKILL (9)</b> — o último recurso.</li>
+            <li><b>SIGHUP (1)</b> — o terminal fechou; muitos serviços o reaproveitam como "releia a configuração".</li>
+            <li><b>SIGSTOP / SIGCONT</b> — o Ctrl+Z e o <code class="i">fg</code>.</li>
+          </ul></div>
+        </div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — nada tratado</div><pre><code>#!/bin/bash
+tmp=$(mktemp)
+processa > "$tmp"
+mv "$tmp" /destino/saida.txt
+
+# Ctrl+C ou TERM no meio:
+# o arquivo temporario fica para sempre em /tmp
+# e ninguem sabe que ele existe</code></pre></div>
+          <div class="depois"><div class="lab">depois — com limpeza garantida</div><pre><code>#!/bin/bash
+set -euo pipefail
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT INT TERM
+
+processa > "$tmp"
+mv "$tmp" /destino/saida.txt
+
+# EXIT cobre saida normal E os sinais tratados
+# o arquivo some em qualquer caminho de saida</code></pre></div>
+        </div>
+
+        <div class="cs"><b>Os códigos de saída falam.</b> <code class="i">128 + número do sinal</code>. Um container que sai com <b>137</b> morreu de SIGKILL (128+9) — quase sempre OOM ou grace period estourado. Com <b>143</b>, morreu de SIGTERM (128+15) — encerramento normal. Saber ler esses dois números economiza a busca por uma exceção que não existe no log.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">kill -9</code> por reflexo.</b> Ele garante que nada seja salvo. Tente TERM primeiro, sempre.</li>
+            <li><b>Processo em estado D.</b> Nem o KILL resolve: ele está em I/O ininterrompível, esperando o disco ou a rede. O alvo é a causa do I/O.</li>
+            <li><b>Handler que faz muita coisa.</b> O tempo é limitado pelo grace period. Feche conexões e saia; não tente processar a fila inteira.</li>
+            <li><b>Ctrl+C que não mata o filho.</b> O SIGINT vai para o grupo em primeiro plano; um processo em segundo plano não recebe.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva um script com <code class="i">trap</code> que imprime uma mensagem e apaga um temporário. Rode, dê Ctrl+C, e confirme que o arquivo sumiu. Depois mate com <code class="i">-9</code> e confirme que ficou.</div>
+          <div><b>prova de domínio</b>Dado um container que sai com 137, você lista as duas causas possíveis e sabe onde procurar a evidência de cada uma.</div>
+        </div>
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c2">
+        <div class="th"><h3>PID 1: onde o sinal se perde</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-imp">container</span></div></div>
+        <p class="direto"><b>Direto:</b> o PID 1 tem tratamento especial do kernel — sinais <b>sem handler explícito são ignorados</b>. E no container, o PID 1 é o seu entrypoint.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p><code class="i">docker stop</code> demora exatos 10 segundos, sempre. Localmente ninguém nota; em produção, cada rollout de vinte pods acumula minutos de espera e termina em morte suja.</p>
+          <p>A causa está numa linha do Dockerfile: <code class="i">CMD java -jar app.jar</code>. Nessa forma, o Docker executa <code class="i">/bin/sh -c "java -jar app.jar"</code>. O <code class="i">sh</code> vira o PID 1, a JVM vira um filho — e o <code class="i">sh</code> não repassa o sinal.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Você liga para o escritório pedindo para avisarem o gerente. A recepcionista atende, anota — e não avisa. Do lado de fora, parece que o gerente ignorou; ele nunca soube.</p></div>
+
+        <p>Existem duas formas de escrever <code class="i">CMD</code> e <code class="i">ENTRYPOINT</code>, e a diferença entre elas é exatamente esta. Na <b>forma exec</b> (lista JSON), o Docker executa o binário diretamente: a sua aplicação é o PID 1 e recebe o sinal. Na <b>forma shell</b> (string), há um shell no meio.</p>
+
+        <pre><code># ERRADO: forma shell — o sh vira PID 1
+CMD java -jar app.jar
+
+# CERTO: forma exec — a JVM e o PID 1
+CMD ["java","-jar","app.jar"]
+
+# quando voce PRECISA de shell (expandir variavel, encadear),
+# passe a bola com exec: o shell e SUBSTITUIDO pela JVM
+CMD ["sh","-c","exec java $JAVA_OPTS -jar app.jar"]</code></pre>
+
+        <p>O <code class="i">exec</code> no terceiro caso é o detalhe que resolve: em vez de criar um processo filho, ele <b>substitui</b> o processo atual. O shell deixa de existir, a JVM herda o PID 1, e o sinal chega.</p>
+        <p>Há ainda o problema dos <b>zumbis</b>: como o PID 1 também é o adotador de processos órfãos, ele deveria recolher os códigos de saída. Aplicações comuns não fazem isso. Se o seu container cria subprocessos, use <code class="i">--init</code> (que insere um init mínimo como PID 1) ou <code class="i">tini</code>.</p>
+
+        <div class="ver"><b>onde a teoria mora</b>O grace period, o <code class="i">preStop</code>, o rollout e o comportamento do pod estão em <a href="docker-kubernetes.html">Docker e Kubernetes completo</a>. O <i>graceful shutdown</i> do Spring Boot — o que ele fecha e em que ordem — está em <a href="spring.html">Spring completo</a>. Este tópico é o mecanismo do kernel embaixo dos dois.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Testar só localmente com Ctrl+C.</b> Você fecha o terminal e não percebe. O sintoma aparece no deploy.</li>
+            <li><b>Script de entrypoint sem <code class="i">exec</code> na última linha.</b> O mesmo problema, escondido num arquivo <code class="i">.sh</code>.</li>
+            <li><b>Aumentar o grace period para "resolver".</b> Você só aumentou a espera; ninguém está escutando do outro lado.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Suba dois containers da mesma imagem, um com <code class="i">CMD</code> em forma shell e outro em exec. Rode <code class="i">time docker stop</code> nos dois. A diferença de tempo é a demonstração inteira.</div>
+          <div><b>prova de domínio</b>Você olha um Dockerfile e diz, antes de rodar, se aquele container vai responder ao SIGTERM.</div>
+        </div>
+        <button class="done" type="button" data-k="c2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Os três descritores e a composição</h2><p>Entender 0, 1 e 2 transforma o terminal de lista de comandos decorados em ferramenta que você combina.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>stdout, stderr e a ordem do <code class="ic">2&gt;&amp;1</code></h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">&gt;</code> redireciona só o descritor 1. O erro continua na tela porque ele é o descritor 2 — e a separação é proposital.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Uma tarefa do cron grava em log há meses. Um dia ela falha em silêncio: o log só tem o começo, e nada explica. O <code class="i">crontab</code> dizia <code class="i">/script.sh &gt;&gt; /var/log/s.log</code>.</p>
+          <p>Só o stdout estava sendo gravado. Toda mensagem de erro ia para o stderr, que o cron tenta mandar por e-mail — e num servidor sem e-mail configurado, evapora.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Uma esteira de produção e um alto-falante de aviso. A esteira (stdout) alimenta a próxima máquina; o alto-falante (stderr) fala com a pessoa. Misturar os dois entope a esteira com recados; ignorar o alto-falante é não saber que a máquina parou.</p></div>
+
+        <p>A separação existe justamente para que o dado possa ser canalizado enquanto o diagnóstico continua visível. É por isso que <code class="i">cmd | grep x</code> não filtra as mensagens de erro: elas nunca entraram no pipe.</p>
+
+        <p>E então vem a pegadinha clássica. <code class="i">2&gt;&amp;1</code> significa <i>"mande o descritor 2 para onde o descritor 1 <b>está agora</b>"</i>. A ordem decide o resultado:</p>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">errado — o erro fica na tela</div><pre><code>cmd 2>&1 > saida.txt
+
+# 1. o 2 aponta para onde o 1 esta: o TERMINAL
+# 2. o 1 muda para o arquivo
+# resultado: saida no arquivo, erro na tela</code></pre></div>
+          <div class="depois"><div class="lab">certo — os dois no arquivo</div><pre><code>cmd > saida.txt 2>&1
+
+# 1. o 1 muda para o arquivo
+# 2. o 2 aponta para onde o 1 esta: o ARQUIVO
+# resultado: tudo no arquivo</code></pre></div>
+        </div>
+
+        <table class="cmd">
+          <thead><tr><th>Forma</th><th>Efeito</th></tr></thead>
+          <tbody>
+            <tr><td><code>cmd &gt; f</code></td><td>Sobrescreve <code>f</code> com o stdout.</td></tr>
+            <tr><td><code>cmd &gt;&gt; f</code></td><td>Acrescenta ao fim.</td></tr>
+            <tr><td><code>cmd 2&gt; f</code></td><td>Só o erro.</td></tr>
+            <tr><td><code>cmd &gt; f 2&gt;&amp;1</code></td><td>Os dois no mesmo arquivo. <b>A ordem importa.</b></td></tr>
+            <tr><td><code>cmd &amp;&gt; f</code></td><td>Atalho do bash para o anterior.</td></tr>
+            <tr><td><code>cmd 2&gt;/dev/null</code></td><td>Descarta o erro — use com consciência.</td></tr>
+            <tr><td><code>cmd &lt; entrada.txt</code></td><td>Alimenta o stdin a partir de um arquivo.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Cron sem <code class="i">2&gt;&amp;1</code>.</b> O erro some e a tarefa falha em silêncio. É o caso acima, e é frequente.</li>
+            <li><b><code class="i">2&gt;/dev/null</code> para "limpar a saída".</b> Você acabou de desligar o alarme.</li>
+            <li><b><code class="i">cmd &gt; f</code> com o próprio <code class="i">f</code> como entrada.</b> O shell trunca o arquivo <b>antes</b> de o comando rodar. <code class="i">sort f &gt; f</code> esvazia o arquivo.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">ls /existe /naoexiste &gt; s.txt</code> e veja o erro na tela com a saída no arquivo. Depois teste as duas ordens do <code class="i">2&gt;&amp;1</code> e confirme a diferença.</div>
+          <div><b>prova de domínio</b>Você explica, sem consultar, por que <code class="i">cmd 2&gt;&amp;1 &gt; f</code> e <code class="i">cmd &gt; f 2&gt;&amp;1</code> fazem coisas diferentes.</div>
+        </div>
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d2">
+        <div class="th"><h3>Pipes: por que existem programas tão pequenos</h3><div class="badges"><span class="badge b-prof">a filosofia</span></div></div>
+        <p class="direto"><b>Direto:</b> o pipe liga a saída de um programa à entrada do próximo, em memória. Os dois rodam <b>ao mesmo tempo</b> — não um depois do outro.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Uma linha de montagem, não uma fila de espera. A segunda estação já está trabalhando na primeira peça enquanto a primeira estação produz a segunda. Se a segunda parar, a primeira acumula até travar — que é exatamente o que acontece quando o buffer do pipe enche.</p></div>
+
+        <div class="duo o">
+          <div><h4>De onde veio</h4><p>O pipe foi acrescentado ao Unix em 1973, por Doug McIlroy, e reorganizou a forma de escrever software: em vez de programas grandes com muitas opções, programas pequenos que fazem uma coisa e falam texto.</p>
+            <div class="repl"><b>O que veio substituir:</b> arquivos temporários. Antes, encadear era gravar em <code class="i">/tmp</code> e ler de volta — mais lento, com limpeza manual, e sem paralelismo. O pipe é um buffer no kernel, sem tocar o disco.</p></div>
+          </div>
+          <div><h4>O que isso permite</h4><p>Você resolve, numa linha, um problema que ninguém programou. A pergunta <i>"quais os 10 IPs que mais bateram na API hoje"</i> não tem programa dedicado — e mesmo assim é resolvida em segundos:</p>
+            <pre style="margin-top:9px"><code>awk '{print $1}' access.log |
+  sort | uniq -c | sort -rn | head -10</code></pre></div>
+        </div>
+
+        <p>Vale desmontar essa linha, porque ela contém três ideias. O <code class="i">awk</code> recorta a coluna. O <code class="i">sort</code> agrupa as iguais — necessário porque o <code class="i">uniq</code> só junta linhas <b>adjacentes</b>. O <code class="i">uniq -c</code> conta. O segundo <code class="i">sort -rn</code> ordena por esse contador, numericamente e do maior para o menor. O <code class="i">head</code> corta.</p>
+
+        <div class="cs"><b>O código de saída de um pipe é o do último comando.</b> Isso significa que <code class="i">gera_dados | processa</code> retorna sucesso mesmo se <code class="i">gera_dados</code> falhar — e o script segue adiante com dados vazios. O <code class="i">set -o pipefail</code> corrige: o pipe passa a falhar se <b>qualquer</b> etapa falhar. É a terceira letra do <code class="i">set -euo pipefail</code>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">uniq</code> sem <code class="i">sort</code> antes.</b> Ele só junta adjacentes. Sem ordenar, você conclui que não havia duplicata.</li>
+            <li><b>Esperar que o erro entre no pipe.</b> Só o stdout entra. Para incluir o erro: <code class="i">cmd 2&gt;&amp;1 | ...</code>.</li>
+            <li><b><code class="i">cat arquivo | grep x</code>.</b> Funciona, mas o <code class="i">grep</code> abre arquivo sozinho: <code class="i">grep x arquivo</code>. Um processo a menos.</li>
+            <li><b>Pipe com comando interativo no meio.</b> Programas que detectam se a saída é um terminal mudam de comportamento — é por isso que a cor some quando você canaliza.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue um log do seu sistema e responda três perguntas só com pipe: quantas linhas de erro, quais os cinco erros mais frequentes, e em qual hora do dia eles se concentram.</div>
+          <div><b>prova de domínio</b>Você monta uma linha de quatro comandos para uma pergunta nova, sem consultar, e sabe explicar por que cada etapa está naquela posição.</div>
+        </div>
+        <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>grep, sed e awk: o trio que resolve</h2><p>Três ferramentas, três propósitos distintos. A confusão entre elas é a causa de linhas de comando ilegíveis.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Qual dos três, e quando</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>grep</b> escolhe linhas. <b>sed</b> transforma linhas. <b>awk</b> trabalha com colunas e agrega. Quando você usa o errado, a linha fica ilegível.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Numa pilha de papéis: o grep separa as folhas que interessam; o sed passa corretivo e reescreve trechos; o awk lê as colunas de cada folha e faz a soma no fim. Dá para somar com o sed? Dá. Fica horrível.</p></div>
+
+        <table class="cmd">
+          <thead><tr><th>Pergunta</th><th>Ferramenta</th><th>Exemplo</th></tr></thead>
+          <tbody>
+            <tr><td>Quais linhas contêm X?</td><td>grep</td><td><code>grep -i erro app.log</code></td></tr>
+            <tr><td>Trocar X por Y em todo lugar</td><td>sed</td><td><code>sed -i.bak 's/8080/9090/g' conf</code></td></tr>
+            <tr><td>Somar a terceira coluna</td><td>awk</td><td><code>awk '{s+=$3} END{print s}'</code></td></tr>
+            <tr><td>Contar ocorrências por valor</td><td>awk + sort</td><td><code>awk '{c[$1]++} END{...}'</code></td></tr>
+            <tr><td>Mostrar contexto em volta do erro</td><td>grep</td><td><code>grep -C 3 Exception app.log</code></td></tr>
+          </tbody>
+        </table>
+
+        <p><b>grep</b> — quatro flags rendem quase tudo. <code class="i">-i</code> ignora caixa. <code class="i">-v</code> inverte, e é como se remove o ruído do DEBUG. <code class="i">-r</code> percorre diretórios. E <code class="i">-C 3</code>, a mais subestimada: três linhas de contexto em volta. Num <i>stack trace</i>, a linha que casa raramente é a que explica.</p>
+
+        <p><b>sed</b> — a forma é <code class="i">s/procura/troca/g</code>. O separador não precisa ser barra: com caminhos, use <code class="i">|</code> e evite a cerca de escapes. A flag <code class="i">-i</code> altera o arquivo no lugar, e <b>sempre</b> deve vir com sufixo de backup: <code class="i">-i.bak</code>. Não existe desfazer.</p>
+
+        <p><b>awk</b> — <code class="i">$1</code> é a primeira coluna, <code class="i">$NF</code> a última, <code class="i">NR</code> o número da linha. Os blocos <code class="i">BEGIN</code> e <code class="i">END</code> rodam uma vez cada, e é no <code class="i">END</code> que a agregação é impressa. Ele divide por espaços múltiplos naturalmente, que é onde o <code class="i">cut</code> falha.</p>
+
+        <pre><code># o erro com contexto, que e onde a explicacao mora
+grep -C 5 "OutOfMemoryError" app.log
+
+# trocar porta em toda a arvore, com backup
+find . -name "*.yml" -exec sed -i.bak 's/8080/9090/g' {} +
+
+# quanto cada cliente gastou, do maior para o menor
+awk -F',' '{t[$2]+=$4} END{for(c in t) printf "%.2f %s\n", t[c], c}' \
+  vendas.csv | sort -rn | head
+
+# tempo medio de resposta na ultima hora
+grep "$(date -d '1 hour ago' +%H):" access.log |
+  awk '{s+=$NF; n++} END{print s/n \" ms\"}'</code></pre>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code class="i">sed -i</code> sem backup.</b> Uma expressão errada reescreve o arquivo e não há volta.</li>
+            <li><b>Padrão sem aspas.</b> O shell expande antes e o programa recebe outra coisa.</li>
+            <li><b><code class="i">cut</code> com espaços múltiplos.</b> Ele conta cada espaço como separador; use <code class="i">awk</code>.</li>
+            <li><b>Diferenças entre GNU e BSD.</b> No macOS, <code class="i">sed -i</code> exige o sufixo mesmo vazio: <code class="i">sed -i ''</code>. Script que funciona no Linux falha lá.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue um <code class="i">access.log</code> — ou gere um — e responda: quantos 5xx houve, em qual endpoint se concentram, e qual o tempo médio deles. Uma linha para cada pergunta.</div>
+          <div><b>prova de domínio</b>Dada uma tarefa de texto, você escolhe a ferramenta certa de primeira e justifica por que as outras duas seriam piores.</div>
+        </div>
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Os três sintomas de madrugada</h2><p>Disco cheio, memória que parece ter acabado, porta que não responde. Os três têm causa conhecida e diagnóstico de um minuto.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>O disco encheu e o <code class="ic">du</code> não acha o culpado</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> quando <code class="i">df</code> e <code class="i">du</code> discordam, a diferença é um arquivo <b>apagado que ainda está aberto</b>. É quase sempre isso.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p><code class="i">df -h</code> diz 100% em <code class="i">/var</code>, num disco de 50 GB. <code class="i">du -sh /var/*</code> soma 2 GB. Faltam 48 e não há arquivo grande em lugar nenhum.</p>
+          <p><code class="i">lsof +L1</code> entrega: um log de 46 GB, apagado por um script de limpeza, com a aplicação ainda segurando o descritor. O nome sumiu — por isso o <code class="i">du</code> não vê — mas o inode continua alocado, e o <code class="i">df</code> vê.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Você tira a etiqueta da caixa no depósito. O <code class="i">du</code> conta as caixas etiquetadas e diz que há espaço. A caixa continua ocupando o mesmo lugar no chão — e o <code class="i">df</code>, que mede o chão, sabe disso.</p></div>
+
+        <p>O mecanismo é a contagem de referências do inode. Um arquivo só é liberado quando o último <b>nome</b> e o último <b>descritor aberto</b> desaparecem. Apagar remove o nome; se um processo mantém o arquivo aberto, os blocos continuam alocados até ele fechar ou morrer.</p>
+        <p>Duas saídas: reiniciar o processo — o que devolve o espaço na hora — ou, na prevenção, <b>truncar em vez de apagar</b>. Truncar zera o conteúdo mantendo o descritor válido, e é o que o <code class="i">logrotate</code> com <code class="i">copytruncate</code> faz.</p>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — apaga e não resolve</div><pre><code>rm /var/log/app.log
+df -h /var     # continua 100%
+
+# o processo ainda segura o descritor;
+# o espaco so volta quando ele morrer</code></pre></div>
+          <div class="depois"><div class="lab">depois — trunca e devolve na hora</div><pre><code>: > /var/log/app.log
+df -h /var     # espaco liberado
+
+# o arquivo continua existindo e aberto,
+# com zero bytes — a aplicacao nem percebe</code></pre></div>
+        </div>
+
+        <div class="cs"><b>E existe o segundo tipo de "disco cheio", que confunde ainda mais:</b> acabaram os <b>inodes</b>, não o espaço. <code class="i">df -h</code> mostra espaço sobrando e a gravação falha mesmo assim. Acontece em diretório com milhões de arquivos minúsculos — cache, sessão, fila em disco. O diagnóstico é <code class="i">df -i</code>, e quase ninguém lembra dele na primeira hora.</div>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>Responde</th></tr></thead>
+          <tbody>
+            <tr><td><code>df -h</code></td><td>Quanto o sistema de arquivos acha que está usado.</td></tr>
+            <tr><td><code>df -i</code></td><td>Inodes. <b>O segundo tipo de disco cheio.</b></td></tr>
+            <tr><td><code>du -sh /var/* | sort -h</code></td><td>Os maiores, entre os que têm nome.</td></tr>
+            <tr><td><code>lsof +L1</code></td><td>Apagados e ainda abertos — a diferença.</td></tr>
+            <tr><td><code>du -xsh /*</code></td><td>Sem atravessar pontos de montagem, que é o que você quer.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Apagar log de aplicação em produção.</b> Não devolve espaço e ainda cega a investigação. Trunque.</li>
+            <li><b><code class="i">du</code> sem <code class="i">-x</code>.</b> Ele atravessa montagens e soma o que não é daquele disco.</li>
+            <li><b>Esquecer o <code class="i">df -i</code>.</b> Meia hora procurando arquivo grande quando o problema era quantidade.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Num container descartável: crie um arquivo grande, abra-o com <code class="i">tail -f</code> em segundo plano, apague, e compare <code class="i">df</code> com <code class="i">du</code>. Depois mate o <code class="i">tail</code> e veja o espaço voltar.</div>
+          <div><b>prova de domínio</b>Dado um disco 100% cheio sem arquivo grande visível, você chega à causa em dois comandos.</div>
+        </div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f2">
+        <div class="th"><h3>A memória que não acabou — e o <code class="ic">free</code> que mente no container</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-imp">container</span></div></div>
+        <p class="direto"><b>Direto:</b> o Linux usa toda RAM ociosa como cache de disco. <b>Memória livre baixa é saúde, não doença.</b> A coluna que importa é <i>available</i>.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Uma bancada de trabalho vazia não é organização — é desperdício. O sistema deixa material à mão porque isso acelera o próximo movimento, e guarda tudo instantaneamente quando precisa do espaço.</p></div>
+
+        <p><code class="i">free</code> é o valor que não está sendo usado para <b>nada</b>. <code class="i">available</code> é o que uma aplicação nova conseguiria obter — incluindo todo o cache que o kernel devolveria sem hesitar. Olhar <code class="i">free</code> e concluir que a memória acabou é o diagnóstico errado mais repetido em Linux.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um pod com limite de 512 MB, rodando num nó de 64 GB, morre com <b>137</b> e nenhuma exceção no log. A aplicação nem foi avisada: o OOM killer do cgroup usa SIGKILL.</p>
+          <p>A causa histórica: a JVM lia <code class="i">/proc/meminfo</code>, via os 64 GB do <b>nó</b>, e dimensionava o heap por esse número. As versões modernas respeitam o cgroup — mas só se o container não estiver mascarando isso, e vale conferir em vez de supor.</p>
+        </div>
+
+        <pre><code># o que a ferramenta diz: a maquina inteira
+free -h ; nproc
+
+# o que voce REALMENTE tem (cgroup v2)
+cat /sys/fs/cgroup/memory.max
+cat /sys/fs/cgroup/cpu.max
+
+# confirme o que a JVM decidiu
+java -XX:+PrintFlagsFinal -version | grep -E "MaxHeapSize|ActiveProcessorCount"
+
+# e a forma explicita, que nao depende de deteccao
+java -XX:MaxRAMPercentage=75 -jar app.jar</code></pre>
+
+        <div class="ver"><b>onde a teoria mora</b>Requests, limits, OOMKilled e throttling de CPU estão em <a href="docker-kubernetes.html">Docker e Kubernetes completo</a>. O comportamento do coletor de lixo e o dimensionamento do heap estão em <a href="java.html">Java completo</a>. Aqui é só a leitura correta do que o sistema está reportando.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Olhar <code class="i">free</code> em vez de <code class="i">available</code>.</b> Leva a aumentar memória que não faltava.</li>
+            <li><b>Confiar no <code class="i">free</code> dentro do container.</b> Ele reporta o host. O limite está no cgroup.</li>
+            <li><b>Procurar exceção no log depois de um 137.</b> Não vai ter. O rastro está no <code class="i">dmesg</code> do host ou no <code class="i">kubectl describe pod</code>.</li>
+            <li><b>Esquecer o limite de CPU.</b> O throttling não mata — só deixa tudo lento de um jeito que parece problema de código.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">free -h</code> no seu servidor e compare <i>free</i> com <i>available</i>. Depois rode dentro de um container com <code class="i">-m 64m</code> e confira o <code class="i">memory.max</code>.</div>
+          <div><b>prova de domínio</b>Você explica por que um servidor com 200 MB livres de 32 GB pode estar perfeitamente saudável.</div>
+        </div>
+        <button class="done" type="button" data-k="f2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f3">
+        <div class="th"><h3>A porta que não responde: quatro perguntas em ordem</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> antes de culpar o firewall, confirme em <b>qual interface</b> o processo está escutando. É a causa mais comum, e a mais rápida de verificar.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O serviço sobe, o log diz <i>Started on port 8080</i>, e de fora nada responde. O firewall é liberado, o mapeamento de porta é conferido, ninguém entende.</p>
+          <p><code class="i">ss -tlnp</code> mostra <code class="i">127.0.0.1:8080</code>. Ele escuta só no loopback — só aceita conexão que nasceu na própria máquina. Dentro de um container, isso significa que nem o mapeamento do Docker alcança.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> A loja está aberta, mas só a porta interna que dá para o depósito. Quem vem da rua encontra parede. Não adianta liberar o estacionamento.</p></div>
+
+        <p><code class="i">0.0.0.0:8080</code> significa todas as interfaces. <code class="i">127.0.0.1:8080</code> significa só o loopback. É uma configuração da aplicação, não da rede — no Spring, <code class="i">server.address</code>; em muitos servidores, o <i>bind address</i>.</p>
+
+        <table class="cmd">
+          <thead><tr><th>Ordem</th><th>Comando</th><th>O que elimina</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>ss -tlnp</code></td><td>Alguém escuta? Em qual interface?</td></tr>
+            <tr><td>2</td><td><code>dig +short host</code></td><td>O nome resolve? Para o IP certo?</td></tr>
+            <tr><td>3</td><td><code>curl -v http://host:porta/</code></td><td>Onde a conexão para: DNS, TCP ou aplicação?</td></tr>
+            <tr><td>4</td><td><code>sudo lsof -i :porta</code></td><td>Quem é o dono da porta — às vezes é outro processo.</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code># o essencial do ss: TCP, escutando, numerico, com processo
+ss -tlnp
+
+# ler a saida:
+# LISTEN 0 128 0.0.0.0:8080  → todas as interfaces, ok
+# LISTEN 0 128 127.0.0.1:8080 → SO local: eis o problema
+#          ^backlog
+
+# curl que mede, em vez de so mostrar
+curl -sS -o /dev/null \
+  -w "%{http_code}  dns:%{time_namelookup}s  conn:%{time_connect}s  total:%{time_total}s\n" \
+  https://api.exemplo.com/health</code></pre>
+
+        <div class="cs"><b>O <code class="i">-w</code> do curl é subestimado.</b> Ele separa o tempo de DNS, de conexão TCP, de handshake TLS e o total. Com esses quatro números você sabe se a lentidão é de resolução de nome, de rede ou da aplicação — sem abrir mais nada.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Culpar o firewall primeiro.</b> É o último suspeito, não o primeiro.</li>
+            <li><b><code class="i">lsof</code> sem sudo.</b> Você vê só os seus processos e conclui que ninguém segura a porta.</li>
+            <li><b>Testar com <code class="i">localhost</code> de dentro da própria máquina.</b> Funciona justamente no caso que está quebrado. Teste de fora.</li>
+            <li><b>Confundir <code class="i">ping</code> com disponibilidade.</b> ICMP responder não diz nada sobre a porta 8080.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Suba qualquer serviço amarrado em <code class="i">127.0.0.1</code> dentro de um container, mapeie a porta e tente acessar de fora. Depois mude para <code class="i">0.0.0.0</code> e compare o <code class="i">ss -tlnp</code>.</div>
+          <div><b>prova de domínio</b>Diante de "o serviço não responde", você chega à camada culpada em quatro comandos e sabe o que cada um eliminou.</div>
+        </div>
+        <button class="done" type="button" data-k="f3">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 07 ===================== -->
+    <section class="part" id="p7">
+      <div class="ph"><span class="num">07</span><div><h2>systemd e onde o log realmente está</h2><p>A resposta certa para "precisa subir sozinho e reiniciar se cair" — e três destinos de log com regras diferentes.</p></div></div>
+
+      <article class="topic" id="g1">
+        <div class="th"><h3>Serviço, unit e as cinco flags do <code class="ic">journalctl</code></h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <code class="i">start</code> sobe agora; <code class="i">enable</code> faz subir no boot. São coisas diferentes, e esquecer a segunda é descobrir no próximo reinício.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> <code class="i">start</code> é acender a luz. <code class="i">enable</code> é programar o timer para acender sozinha todo dia. Acender hoje não programa nada.</p></div>
+
+        <p>O systemd é o PID 1 da máquina — o processo que o kernel inicia e que inicia todo o resto. Uma <i>unit</i> é um arquivo declarativo: o que executar, com qual usuário, de que depende, e o que fazer quando morrer.</p>
+
+        <pre><code># /etc/systemd/system/minha-app.service
+[Unit]
+Description=Minha aplicacao
+After=network-online.target postgresql.service
+
+[Service]
+Type=simple
+User=app
+WorkingDirectory=/opt/app
+ExecStart=/usr/bin/java -jar /opt/app/app.jar
+Restart=on-failure
+RestartSec=5s
+# o systemd manda TERM e espera; o mesmo contrato do Kubernetes
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+        <div class="cs"><b>Repare no <code class="i">TimeoutStopSec</code>.</b> É o mesmo contrato do <i>grace period</i> do Kubernetes, e o mesmo da Parte 03: manda SIGTERM, espera, e só então SIGKILL. Se a sua aplicação trata TERM, ela funciona igual nos dois mundos — o que é um bom argumento para tratar.</div>
+
+        <table class="cmd">
+          <thead><tr><th>Comando</th><th>Quando</th></tr></thead>
+          <tbody>
+            <tr><td><code>systemctl enable --now app</code></td><td>Sobe agora <b>e</b> no boot. O que você quase sempre quer.</td></tr>
+            <tr><td><code>systemctl daemon-reload</code></td><td>Depois de <b>editar a unit</b>. Esquecer isso é a confusão nº 1.</td></tr>
+            <tr><td><code>systemctl restart app</code></td><td>Depois de trocar o binário.</td></tr>
+            <tr><td><code>journalctl -u app -f</code></td><td>Acompanhar ao vivo.</td></tr>
+            <tr><td><code>journalctl -u app --since "1 hour ago"</code></td><td>Recortar por tempo, em linguagem natural.</td></tr>
+            <tr><td><code>journalctl -u app -p err</code></td><td>Só erro e acima.</td></tr>
+            <tr><td><code>journalctl -b -1</code></td><td>O boot <b>anterior</b> — para investigar o que derrubou a máquina.</td></tr>
+          </tbody>
+        </table>
+
+        <p>Sobre <b>onde o log está</b>, são três destinos com regras diferentes. Serviço do systemd vai para o <b>journal</b>, que é binário, indexado e consultado pelo <code class="i">journalctl</code>. Aplicações mais antigas escrevem em <code class="i">/var/log</code>, com rotação pelo <code class="i">logrotate</code>. E <b>container escreve no stdout</b> — que é o certo: quem coleta, roda e agrega é a plataforma.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Editar a unit e não dar <code class="i">daemon-reload</code>.</b> O systemd continua com a versão antiga em memória.</li>
+            <li><b>Journal volátil.</b> Em várias distribuições ele não persiste entre reinícios por padrão — e você perde exatamente o log do problema. <code class="i">Storage=persistent</code> resolve.</li>
+            <li><b>Aplicação em container gravando em arquivo.</b> O log some com o container e enche o disco do nó no caminho.</li>
+            <li><b><code class="i">Restart=always</code> com falha de configuração.</b> O serviço entra em laço de reinício e esconde o erro na enxurrada.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva uma unit para um script bobo que imprime a hora a cada cinco segundos. Dê <code class="i">enable --now</code>, acompanhe com <code class="i">journalctl -f</code>, mate o processo e veja o <code class="i">Restart</code> agir.</div>
+          <div><b>prova de domínio</b>Você explica a diferença entre <code class="i">start</code>, <code class="i">enable</code>, <code class="i">restart</code> e <code class="i">daemon-reload</code> — e quando cada um é necessário.</div>
+        </div>
+        <button class="done" type="button" data-k="g1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 08 ===================== -->
+    <section class="part" id="p8">
+      <div class="ph"><span class="num">08</span><div><h2>Dentro do container: por que as ferramentas mentem</h2><p>Container não é máquina virtual. É o mesmo kernel, com a vista recortada e a cota aplicada — e isso muda o que cada comando responde.</p></div></div>
+
+      <article class="topic" id="h1">
+        <div class="th"><h3>Namespace é o que você vê; cgroup é o que você pode</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> não há kernel dentro do container. Há <b>um</b> kernel, mostrando a cada processo uma fatia diferente da realidade.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Um escritório aberto com divisórias. Cada equipe vê só a própria baia e acha que aquilo é o escritório (namespace), e cada uma tem cota de impressão (cgroup). Não são prédios separados: o ar-condicionado é o mesmo, e se ele quebra, todos sentem.</p></div>
+
+        <div class="duo o">
+          <div><h4>Os namespaces que importam</h4><ul>
+            <li><b>PID</b> — cada container tem o próprio PID 1.</li>
+            <li><b>Mount</b> — a própria raiz do sistema de arquivos.</li>
+            <li><b>Network</b> — a própria pilha, com as próprias interfaces e portas.</li>
+            <li><b>UTS</b> — o próprio hostname.</li>
+            <li><b>User</b> — o mapeamento de UID, quando habilitado.</li>
+          </ul>
+            <div class="repl"><b>O que veio substituir:</b> a máquina virtual para isolamento de aplicação. A VM emula hardware e carrega um kernel inteiro; o container recorta a visão e sobe em milissegundos. Em troca, o isolamento é mais fraco — é o mesmo kernel.</p></div>
+          </div>
+          <div><h4>Consequências práticas</h4><ul>
+            <li>Container não dá <i>boot</i>. Ele só executa um processo.</li>
+            <li>Falha de kernel derruba todos os containers do nó.</li>
+            <li>Rodar como root lá dentro importa de verdade, porque a fronteira é mais fina que a de uma VM.</li>
+            <li><code class="i">/proc</code> costuma refletir o host — e é daí que vem a mentira das ferramentas.</li>
+          </ul></div>
+        </div>
+
+        <p>Esse último ponto é o que gera o erro caro. <code class="i">top</code>, <code class="i">free</code> e <code class="i">nproc</code> leem <code class="i">/proc</code>. Como o <code class="i">/proc</code> montado não é recortado pelo cgroup na maioria das configurações, eles reportam a <b>máquina inteira</b>. Você pede 512 MB, está num nó de 64 GB, e a ferramenta diz 64 GB.</p>
+
+        <pre><code># o limite REAL (cgroup v2)
+cat /sys/fs/cgroup/memory.max      # bytes, ou "max"
+cat /sys/fs/cgroup/cpu.max         # quota periodo
+
+# quantos processadores voce pode usar de fato
+nproc                              # mente
+cat /sys/fs/cgroup/cpu.max | awk '{print $1/$2}'   # a verdade
+
+# e o basico que funciona em qualquer imagem, ate distroless
+cat /proc/1/cmdline | tr '\0' ' '  # quem e o PID 1
+cat /proc/self/cgroup</code></pre>
+
+        <div class="ver"><b>onde a teoria mora</b>Namespaces, cgroups, camadas de imagem e o comportamento do cluster estão em <a href="docker-kubernetes.html">Docker e Kubernetes completo</a>. Aqui o recorte é o de quem está <b>dentro</b> do container tentando diagnosticar.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Dimensionar pelo <code class="i">nproc</code> dentro do container.</b> Pools de thread nascem com o tamanho do nó, não do seu limite.</li>
+            <li><b>Tratar container como VM.</b> Esperar isolamento de segurança equivalente é uma suposição perigosa.</li>
+            <li><b>Gravar em disco dentro do container.</b> A camada de escrita morre com ele — é o mesmo princípio de aplicação sem estado, visto de baixo.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Rode <code class="i">docker run --rm -m 256m alpine sh -c "free -h; cat /sys/fs/cgroup/memory.max"</code>. Os dois números vão discordar, e essa discordância é a lição inteira.</div>
+          <div><b>prova de domínio</b>Você explica por que o <code class="i">top</code> dentro do container mostra processos e memória que não são seus — e onde buscar o número correto.</div>
+        </div>
+        <button class="done" type="button" data-k="h1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="h2">
+        <div class="th"><h3>Depurar a imagem que não tem shell</h3><div class="badges"><span class="badge b-prof">operação</span></div></div>
+        <p class="direto"><b>Direto:</b> imagem <i>distroless</i> não tem shell, nem <code class="i">ps</code>, nem <code class="i">curl</code>. É proposital. A resposta não é adicionar ferramentas na imagem de produção.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O pod está com problema. Você roda <code class="i">kubectl exec -it pod -- bash</code> e recebe <i>executable file not found</i>. Tenta <code class="i">sh</code>: o mesmo.</p>
+          <p>A imagem é distroless — tem a JVM e o seu jar, e nada mais. Menos superfície de ataque, menos CVE para corrigir, e nenhuma ferramenta para você.</p>
+        </div>
+
+        <div class="duo">
+          <div><h4>As três saídas, em ordem</h4><ul>
+            <li><b>Container efêmero de depuração:</b> <code class="i">kubectl debug</code> anexa um container com ferramentas, compartilhando os namespaces do alvo. Não altera a imagem e some depois.</li>
+            <li><b><code class="i">nsenter</code> do host:</b> entra nos namespaces do processo com as ferramentas do nó.</li>
+            <li><b>Imagem de depuração separada:</b> mesma base, com ferramentas, usada só quando necessário.</li>
+          </ul></div>
+          <div><h4>A saída errada</h4><p>Acrescentar <code class="i">bash</code>, <code class="i">curl</code> e <code class="i">netcat</code> à imagem de produção "para facilitar". Isso desfaz o motivo de a imagem ser mínima, e ninguém remove depois — a ferramenta de depuração vira dependência permanente e superfície de ataque permanente.</p></div>
+        </div>
+
+        <pre><code># container efemero, ao lado, com ferramentas
+kubectl debug -it meu-pod --image=busybox --target=app
+
+# a partir do host, nos namespaces de rede do processo
+sudo nsenter -t "$(pidof java)" -n ss -tlnp
+
+# o que quase toda imagem tem, mesmo sem shell:
+cat /proc/1/cmdline | tr '\0' ' '    # a linha de comando
+cat /proc/1/environ | tr '\0' '\n'   # o ambiente
+ls -l /proc/1/fd                      # os descritores abertos</code></pre>
+
+        <div class="cs"><b>O <code class="i">/proc</code> é o depurador de última instância.</b> Mesmo sem nenhuma ferramenta instalada, ele expõe linha de comando, ambiente, descritores abertos, uso de memória e estado de cada processo — porque tudo é arquivo, que é onde esta Parte encontra a Parte 02.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Suba um container distroless e tente entrar. Depois use <code class="i">docker run --pid=container:NOME</code> com uma imagem que tenha ferramentas e investigue de fora.</div>
+          <div><b>prova de domínio</b>Você diagnostica um container sem shell sem alterar a imagem dele.</div>
+        </div>
+        <button class="done" type="button" data-k="h2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 09 ===================== -->
+    <section class="part" id="p9">
+      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>A única área do acervo em que quebrar não custa nada — e é por isso que é a que mais recompensa a prática deliberada.</p></div></div>
+
+      <article class="topic" id="i1">
+        <div class="th"><h3>O ciclo, as fontes e o laboratório dos sintomas</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
+        <p class="direto"><b>Direto:</b> ler aqui → conferir no <code class="i">man</code> → <b>quebrar de propósito</b> num container descartável → consertar → escrever o que aprendeu. Vídeo dá o mapa, documentação dá a precisão, laboratório fixa.</p>
+
+        <p>Terminal é a única área deste acervo em que o laboratório é gratuito e sem risco. Um <code class="i">docker run --rm -it debian bash</code> é um ambiente que você pode destruir: encha o disco, mate o PID 1, tire a permissão de um diretório, corrompa a configuração de um serviço. Nada sobrevive ao <code class="i">--rm</code>, e é exatamente essa liberdade que falta nos outros documentos do acervo.</p>
+        <p>O que <b>não</b> funciona é estudar comando lendo lista de comandos. O que fixa é a sequência <b>sintoma → hipótese → verificação</b>, que é a mesma do <i>Como investigar qualquer problema</i> da Biblioteca.</p>
+
+        <p><b>Canais e cursos em português.</b> <b>Diolinux</b> é a referência em PT-BR para Linux em geral, com bom material de fundamentos. <b>Linux Tips</b>, do Jeferson Fernando, trata de Linux com foco em operação e DevOps — que é exatamente o recorte deste documento. <b>Fabio Akita</b> tem material excelente sobre o funcionamento por baixo. Em texto, o <b>Guia Foca Linux</b> e o <b>Linux Journey</b> cobrem o básico de forma organizada.</p>
+        <p><b>A regra que acompanha:</b> confirme toda flag no <code class="i">man</code> da <b>sua</b> versão. As opções variam entre distribuições, entre GNU e BSD, e entre GNU e BusyBox — e é justamente a BusyBox que está na imagem Alpine que você usa em container. Um script testado no Ubuntu falha no Alpine por isso.</p>
+
+        <h4 class="codelab">o laboratório: reproduza os quatro sintomas</h4>
+        <pre><code># 1 — o disco que nao volta
+docker run --rm -it debian bash
+  dd if=/dev/zero of=/tmp/grande bs=1M count=500
+  tail -f /tmp/grande &      # segura o descritor
+  rm /tmp/grande
+  df -h /tmp ; du -sh /tmp   # discordam
+  lsof +L1                   # o culpado
+
+# 2 — o sinal que se perde
+# Dockerfile A: CMD java -jar app.jar        (forma shell)
+# Dockerfile B: CMD ["java","-jar","app.jar"] (forma exec)
+time docker stop container-a    # ~10 s de espera inutil
+time docker stop container-b    # imediato
+
+# 3 — a porta que nao responde
+# suba amarrado em 127.0.0.1, mapeie a porta, tente de fora
+ss -tlnp | grep 8080
+
+# 4 — o 137
+docker run --rm -m 64m minha-imagem-java
+echo $?                          # 137
+dmesg -T | grep -i "killed process"</code></pre>
+
+        <div class="cs"><b>O que registrar em cada experimento:</b> o sintoma que você viu, a hipótese que formulou <b>antes</b> de verificar, o comando que confirmou ou negou, e a conclusão. Quando a verificação contraria a hipótese, é ali que existe aprendizado. Sem escrever a hipótese antes, acertar e errar viram a mesma sensação.</div>
+
+        <div class="ver"><b>a bancada correspondente</b>Os aquecimentos <code class="ic">P03</code> (o arquivo que não sobrevive ao kill), <code class="ic">P08</code> (segredo que não mora no jar) e <code class="ic">P09</code> (os três fatores) do <a href="projetos.html">Laboratório de projetos</a> exercitam diretamente o que está aqui. E o projeto <code class="ic">C03</code> leva a mesma imagem ao Kubernetes local.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escolha <b>um</b> dos quatro e faça hoje. O do sinal é o mais rápido e o mais útil: vale por todo deploy futuro.</div>
+          <div><b>prova de domínio</b>Você tem, num repositório, os quatro sintomas reproduzidos, com o comando que diagnosticou cada um e uma linha explicando a causa.</div>
+        </div>
+        <button class="done" type="button" data-k="i1">marcar dominado</button>
+      </article>
+    </section>
+
+
+    <footer class="foot">
+      <p>Linux e terminal completo · setembro de 2026 · o décimo documento do acervo, em tema Dracula. Fica <b>fora da semana</b>, como o Conceitos de Backend: é ferramenta de uso contínuo, aberta em qualquer dia, não assunto que se estuda em bloco e termina. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code>, <code class="i">Conceitos de Backend completo</code>, <code class="i">Biblioteca completa</code> e <code class="i">System Design completo</code>. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script>
+function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
+var DG={
+ shell:W(156,'<text x="170" y="16" class="bt">o que acontece quando você aperta Enter</text><rect x="6" y="34" width="66" height="30" rx="8" class="b2"/><text x="39" y="53" class="bs">você digita</text><path d="M74,49 L96,49" class="l"/><path d="M96,49 L88,45 L88,53 Z" class="h"/><rect x="98" y="34" width="70" height="30" rx="8" class="b2"/><text x="133" y="49" class="bs">shell separa</text><text x="133" y="60" class="bs">palavras</text><path d="M170,49 L192,49" class="l"/><path d="M192,49 L184,45 L184,53 Z" class="h"/><rect x="194" y="34" width="66" height="30" rx="8" class="b4"/><text x="227" y="49" class="bs">expande</text><text x="227" y="60" class="bs">* $VAR ~</text><path d="M262,49 L284,49" class="l"/><path d="M284,49 L276,45 L276,53 Z" class="h"/><rect x="286" y="34" width="48" height="30" rx="8" class="b1"/><text x="310" y="53" class="bs">executa</text><text x="170" y="84" class="bs">a expansão acontece ANTES do programa existir</text><text x="170" y="100" class="bs">por isso o programa nunca vê o asterisco — vê a lista de arquivos</text><text x="170" y="124" class="bt">e é por isso que aspas mudam tudo</text><text x="170" y="140" class="bs">rm *.txt e rm "*.txt" fazem coisas diferentes</text>'),
+ perm:W(164,'<text x="170" y="16" class="bt">-rwxr-xr--  1 thallys devs</text><rect x="16" y="32" width="34" height="26" rx="6" class="b3"/><text x="33" y="49" class="bs">tipo</text><rect x="56" y="32" width="60" height="26" rx="6" class="b1"/><text x="86" y="49" class="bs">rwx dono</text><rect x="122" y="32" width="60" height="26" rx="6" class="b2"/><text x="152" y="49" class="bs">r-x grupo</text><rect x="188" y="32" width="60" height="26" rx="6" class="b5"/><text x="218" y="49" class="bs">r-- outros</text><text x="86" y="74" class="bs">7</text><text x="152" y="74" class="bs">5</text><text x="218" y="74" class="bs">4</text><text x="152" y="92" class="bt">754</text><text x="170" y="116" class="bs">r=4  w=2  x=1 — some e pronto</text><text x="170" y="134" class="bs">em diretório, x significa ATRAVESSAR, não executar</text><text x="170" y="154" class="bt">sem x no diretório, você não entra nem sabendo o caminho</text>'),
+ sinal:W(176,'<text x="170" y="16" class="bt">SIGTERM pede · SIGKILL arranca</text><rect x="10" y="34" width="96" height="46" rx="9" class="b1"/><text x="58" y="52" class="bs">SIGTERM (15)</text><text x="58" y="65" class="bs">o processo escuta</text><text x="58" y="76" class="bs">e decide o que fazer</text><rect x="126" y="34" width="96" height="46" rx="9" class="b5"/><text x="174" y="52" class="bs">SIGKILL (9)</text><text x="174" y="65" class="bs">o kernel mata</text><text x="174" y="76" class="bs">ninguém escuta</text><rect x="242" y="34" width="92" height="46" rx="9" class="b2"/><text x="288" y="52" class="bs">SIGINT (2)</text><text x="288" y="65" class="bs">o seu Ctrl+C</text><text x="288" y="76" class="bs">vai para o grupo</text><text x="170" y="104" class="bs">SIGKILL não deixa fechar arquivo, gravar buffer nem devolver conexão</text><text x="170" y="128" class="bt">por isso o grace period existe</text><text x="170" y="144" class="bs">o Kubernetes manda TERM, espera, e só então KILL</text><text x="170" y="164" class="bs">se a sua app ignora TERM, você tem 30 s de espera inútil a cada deploy</text>'),
+ pid1:W(172,'<text x="86" y="16" class="bt">✗ shell form</text><text x="254" y="16" class="bt">✓ exec form</text><line x1="170" y1="24" x2="170" y2="146" class="l d"/><rect x="14" y="32" width="144" height="24" rx="6" class="b5"/><text x="86" y="48" class="bs">CMD java -jar app.jar</text><rect x="30" y="64" width="112" height="26" rx="7" class="b5"/><text x="86" y="81" class="bs">PID 1 = /bin/sh</text><rect x="46" y="96" width="96" height="26" rx="7" class="bx"/><text x="94" y="113" class="bs">PID 7 = java</text><path d="M86,90 L86,94" class="l"/><text x="86" y="138" class="bs">o sh não repassa o sinal</text><rect x="182" y="32" width="144" height="24" rx="6" class="b1"/><text x="254" y="48" class="bs">CMD ["java","-jar","app.jar"]</text><rect x="198" y="70" width="112" height="30" rx="7" class="b1"/><text x="254" y="89" class="bs">PID 1 = java</text><text x="254" y="126" class="bs">o sinal chega direto</text><text x="254" y="140" class="bs">shutdown limpo</text><text x="170" y="166" class="bt">a diferença aparece só no deploy — e some no teste local</text>'),
+ fd:W(168,'<text x="170" y="16" class="bt">os três descritores</text><rect x="120" y="60" width="100" height="44" rx="10" class="b2"/><text x="170" y="80" class="bs">o programa</text><text x="170" y="95" class="bs">não sabe para onde vai</text><path d="M60,50 L118,66" class="lt"/><path d="M118,66 L110,64 L112,71 Z" class="ht"/><rect x="6" y="36" width="52" height="26" rx="7" class="b1"/><text x="32" y="53" class="bs">0 stdin</text><path d="M222,66 L286,44" class="lt"/><path d="M286,44 L278,45 L280,52 Z" class="ht"/><rect x="288" y="30" width="46" height="26" rx="7" class="b1"/><text x="311" y="47" class="bs">1 out</text><path d="M222,96 L286,116" class="lr"/><path d="M286,116 L278,113 L277,120 Z" class="hr"/><rect x="288" y="102" width="46" height="26" rx="7" class="b5"/><text x="311" y="119" class="bs">2 err</text><text x="170" y="134" class="bs">cmd &gt; log.txt redireciona só o 1 — o erro continua na tela</text><text x="170" y="152" class="bs">2&gt;&amp;1 manda o 2 para onde o 1 JÁ está: a ordem importa</text>'),
+ pipe:W(150,'<text x="170" y="16" class="bt">cada programa faz uma coisa e passa adiante</text><rect x="6" y="40" width="62" height="30" rx="8" class="b2"/><text x="37" y="59" class="bs">cat log</text><path d="M70,55 L88,55" class="lt"/><path d="M88,55 L80,51 L80,59 Z" class="ht"/><rect x="90" y="40" width="62" height="30" rx="8" class="b2"/><text x="121" y="59" class="bs">grep ERRO</text><path d="M154,55 L172,55" class="lt"/><path d="M172,55 L164,51 L164,59 Z" class="ht"/><rect x="174" y="40" width="54" height="30" rx="8" class="b2"/><text x="201" y="59" class="bs">sort</text><path d="M230,55 L248,55" class="lt"/><path d="M248,55 L240,51 L240,59 Z" class="ht"/><rect x="250" y="40" width="84" height="30" rx="8" class="b1"/><text x="292" y="55" class="bs">uniq -c</text><text x="292" y="66" class="bs">contagem</text><text x="170" y="92" class="bs">nenhum deles sabe que os outros existem</text><text x="170" y="112" class="bt">o pipe é um cano na memória, não um arquivo</text><text x="170" y="130" class="bs">e roda tudo ao mesmo tempo — não um depois do outro</text>'),
+ disco:W(168,'<text x="170" y="16" class="bt">df diz cheio · du não acha nada</text><rect x="14" y="34" width="140" height="62" rx="9" class="b5"/><text x="84" y="54" class="bs">df -h  →  100% usado</text><text x="84" y="70" class="bs">du -sh * →  2 GB só</text><text x="84" y="86" class="bs">onde estão os outros 48?</text><path d="M156,66 L186,66" class="l"/><path d="M186,66 L178,62 L178,70 Z" class="h"/><rect x="188" y="34" width="146" height="62" rx="9" class="b1"/><text x="261" y="52" class="bs">arquivo APAGADO</text><text x="261" y="66" class="bs">com processo ainda segurando</text><text x="261" y="82" class="bs">lsof +L1 mostra</text><text x="170" y="118" class="bs">o inode só some quando o último descritor fecha</text><text x="170" y="136" class="bt">apagar o log não devolve o disco</text><text x="170" y="154" class="bs">é preciso reiniciar o processo — ou truncar em vez de apagar</text>'),
+ conta:W(160,'<text x="170" y="16" class="bt">"a memória acabou" quase nunca é verdade</text><rect x="14" y="34" width="312" height="34" rx="8" class="bx"/><rect x="16" y="36" width="110" height="30" rx="7" class="b2"/><text x="71" y="55" class="bs">apps</text><rect x="128" y="36" width="150" height="30" rx="7" class="b1"/><text x="203" y="51" class="bs">cache de página</text><text x="203" y="63" class="bs">devolvível na hora</text><rect x="280" y="36" width="44" height="30" rx="7" class="b3"/><text x="302" y="55" class="bs">livre</text><text x="170" y="88" class="bs">o Linux usa toda RAM ociosa como cache de disco</text><text x="170" y="106" class="bt">olhe available, não free</text><text x="170" y="124" class="bs">free baixo é saúde; available baixo é problema</text><text x="170" y="146" class="bs">e dentro do container, o free mente: ele mostra a máquina inteira</text>'),
+ ns:W(180,'<text x="170" y="16" class="bt">o container é o mesmo kernel, com a vista recortada</text><rect x="10" y="30" width="320" height="104" rx="10" class="b3"/><text x="170" y="46" class="bs">kernel do host — um só</text><rect x="26" y="56" width="134" height="66" rx="9" class="b2"/><text x="93" y="74" class="bs">container A</text><text x="93" y="90" class="bs">PID 1, 7, 12</text><text x="93" y="106" class="bs">/ próprio · rede própria</text><rect x="180" y="56" width="134" height="66" rx="9" class="b1"/><text x="247" y="74" class="bs">container B</text><text x="247" y="90" class="bs">PID 1, 5</text><text x="247" y="106" class="bs">/ próprio · rede própria</text><text x="170" y="152" class="bs">namespace = o que você ENXERGA · cgroup = quanto você PODE usar</text><text x="170" y="172" class="bt">top e free leem /proc do host: por isso mentem lá dentro</text>'),
+ ciclo:W(150,'<text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="66" height="30" rx="8" class="b2"/><text x="43" y="53" class="bs">ler aqui</text><path d="M78,49 L96,49" class="l"/><path d="M96,49 L88,45 L88,53 Z" class="h"/><rect x="98" y="34" width="66" height="30" rx="8" class="b2"/><text x="131" y="53" class="bs">man / --help</text><path d="M166,49 L184,49" class="l"/><path d="M184,49 L176,45 L176,53 Z" class="h"/><rect x="186" y="34" width="66" height="30" rx="8" class="b2"/><text x="219" y="53" class="bs">quebrar</text><path d="M254,49 L272,49" class="l"/><path d="M272,49 L264,45 L264,53 Z" class="h"/><rect x="274" y="34" width="60" height="30" rx="8" class="b1"/><text x="304" y="53" class="bs">consertar</text><path d="M304,66 L304,88 L43,88 L43,66" class="lt d"/><path d="M43,66 L39,74 L47,74 Z" class="ht"/><text x="170" y="104" class="bs">num container descartável, quebrar é de graça</text><text x="170" y="126" class="bt">esta é a única área em que o laboratório não tem risco</text><text x="170" y="142" class="bs">docker run --rm -it debian bash — e destrua à vontade</text>')
+};
+
+var T=[
+{g:"01",n:"O shell",s:"o que acontece entre o Enter e o programa rodar",c:"var(--purple)",cs:"var(--purple-soft)",items:[
+ {t:"Terminal, shell e programa",x:"três coisas que ninguém separa",dg:"shell",oq:"O terminal é a janela; o shell é o programa que lê o que você digita e decide o que executar; o comando é um terceiro programa que o shell chama.",ps:"Sem essa separação, metade do comportamento estranho do terminal fica inexplicável.",cf:"Quando você aperta Enter, o shell separa a linha em palavras, <b>expande</b> o que precisa ser expandido (curinga, variável, til, subcomando) e só então executa. O programa nunca vê o <code class=\"i\">*</code> — vê a lista de arquivos que o shell já resolveu. <b>Erro comum:</b> achar que o programa interpreta o asterisco. É por isso que aspas mudam o resultado.",ex:"ls *.txt          # o shell vira: ls a.txt b.txt c.txt\nls \"*.txt\"        # o programa recebe o asterisco literal\n\necho $HOME        # expande\necho '$HOME'      # nao expande: aspas simples travam tudo"},
+ {t:"PATH e command not found",x:"onde o shell procura",oq:"<code class=\"i\">PATH</code> é a lista de diretórios, separados por dois-pontos, onde o shell procura um executável pelo nome.",ps:"Explicar de uma vez o erro mais comum de quem começa — e o segundo mais comum, que é o programa errado rodando.",cf:"Se o nome não tem barra, o shell varre o PATH na ordem e usa o <b>primeiro</b> que encontrar. <code class=\"i\">which</code> mostra qual seria; <code class=\"i\">type -a</code> mostra todos, inclusive apelidos e funções que têm prioridade sobre o PATH. <b>Erro comum:</b> instalar uma versão nova e continuar rodando a antiga, porque ela aparece antes no PATH.",ex:"echo $PATH | tr ':' '\\n'   # uma por linha, na ordem de busca\ntype -a python             # TODOS os candidatos, na ordem\nwhich -a java\n\n# o ./ existe por seguranca: sem ele, o shell nao\n# procura no diretorio atual — e isso e proposital\n./meu-script.sh"},
+ {t:"Aspas e expansão",x:"a fonte de metade dos bugs de script",oq:"Aspas duplas preservam espaços mas ainda expandem variáveis; aspas simples travam tudo; sem aspas, o shell divide por espaço e expande curinga.",ps:"Um script sem aspas funciona até o dia em que um caminho tem espaço — e aí faz algo destrutivo em outro lugar.",cf:"A regra prática é simples: <b>sempre use aspas duplas em volta de variável</b>, salvo quando você quer a divisão por espaço de propósito. <b>Erro comum:</b> <code class=\"i\">rm -rf $DIR/</code> com <code class=\"i\">DIR</code> vazio vira <code class=\"i\">rm -rf /</code>.",ex:"arq=\"meu relatorio.pdf\"\nrm $arq      # vira: rm meu   relatorio.pdf  → dois arquivos\nrm \"$arq\"    # certo\n\n# e a protecao que todo script serio tem na primeira linha:\nset -euo pipefail"},
+ {t:"Onde pedir ajuda",x:"man, --help e o resto",oq:"<code class=\"i\">man</code> traz o manual completo; <code class=\"i\">--help</code> traz o resumo; <code class=\"i\">tldr</code> traz exemplos de uso real.",ps:"Saber consultar vale mais que decorar flag — e o manual está na máquina, offline.",cf:"Dentro do <code class=\"i\">man</code>, <code class=\"i\">/palavra</code> busca, <code class=\"i\">n</code> vai para a próxima ocorrência, <code class=\"i\">q</code> sai. As seções importam: <code class=\"i\">man 1 printf</code> é o comando, <code class=\"i\">man 3 printf</code> é a função em C. <b>Erro comum:</b> procurar no navegador o que o <code class=\"i\">man</code> responderia mais rápido e para a sua versão exata."}
+]},
+{g:"02",n:"Tudo é arquivo",s:"permissões, donos e o container que não escreve",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
+ {t:"Permissões e o octal",x:"rwx, e por que 754",dg:"perm",oq:"Cada arquivo tem três conjuntos de permissão — dono, grupo e outros — com três bits cada: ler, escrever, executar.",ps:"É o mecanismo que decide se o seu container consegue gravar, e a causa da metade dos <i>permission denied</i>.",cf:"Some os valores: r=4, w=2, x=1. <code class=\"i\">rwx</code>=7, <code class=\"i\">r-x</code>=5, <code class=\"i\">r--</code>=4, daí 754. <b>Em diretório o x significa outra coisa:</b> atravessar. Sem x no diretório você não entra nem sabendo o caminho completo; sem r você não lista, mas ainda acessa um arquivo cujo nome você já conhece. <b>Erro comum:</b> resolver tudo com 777, que é abrir escrita para qualquer processo da máquina.",ex:"chmod 640 config.yml    # dono le/escreve, grupo le, resto nada\nchmod +x script.sh      # adiciona x para todos\nchmod u+x script.sh     # so para o dono\n\nls -l\n# -rw-r--r--  1 thallys devs  1240 config.yml\n#  ^tipo ^dono ^grupo ^outros"},
+ {t:"Dono, grupo e o container non-root",x:"o volume que aparece só-leitura",oq:"Todo arquivo tem um dono numérico (UID) e um grupo (GID). O nome é só uma tradução feita pela máquina que está olhando.",ps:"Entender por que um volume montado no container aparece sem permissão mesmo estando certo no host.",cf:"O kernel compara <b>números</b>, não nomes. Um arquivo do UID 1000 no host, montado num container cujo processo roda como UID 1001, é de outra pessoa — e o container não escreve. <b>Erro comum:</b> rodar o container como root para resolver, o que funciona e é exatamente o que o A03 do Laboratório manda não fazer.",caso:"Você monta <code class=\"i\">./dados</code> no container, a aplicação tenta gravar e recebe <i>permission denied</i>. No host o <code class=\"i\">ls -l</code> mostra o seu usuário como dono e tudo parece certo. O que está errado é o número: dentro do container o processo é outro UID. A saída limpa é alinhar o UID na build (<code class=\"i\">useradd -u 1000</code>) ou ajustar o dono do diretório montado.",ex:"id                       # seu UID/GID no host\ndocker run --rm -it -u \"$(id -u):$(id -g)\" \\\n  -v \"$PWD/dados:/app/dados\" minha-app\n\n# no Dockerfile, o usuario com UID fixo:\n# RUN useradd -u 1000 -m app\n# USER app"},
+ {t:"Links: simbólico e duro",x:"atalho contra segundo nome",oq:"O link simbólico guarda um caminho de texto. O link duro é um segundo nome para o mesmo inode — o mesmo arquivo, com dois nomes igualmente reais.",ps:"Explica por que apagar um não apaga o outro, e por que o simbólico quebra quando o alvo sai do lugar.",cf:"Apagar o alvo deixa o simbólico apontando para o vazio (<i>dangling</i>); apagar um dos nomes do link duro não apaga nada, porque o inode só some quando o último nome e o último descritor somem. <b>Erro comum:</b> copiar uma árvore com links simbólicos relativos e não entender por que quebraram do outro lado.",ex:"ln -s /opt/app/config.yml config.yml   # simbolico\nln  arquivo.txt outro-nome.txt         # duro\n\nls -l config.yml    # mostra -> /opt/app/config.yml\nls -i arquivo.txt outro-nome.txt   # MESMO numero de inode"},
+ {t:"Encontrar arquivos",x:"find, e por que ele é diferente",oq:"<code class=\"i\">find</code> percorre a árvore aplicando testes e ações — não é uma busca por nome, é um percurso com filtros.",ps:"É a ferramenta para as perguntas que o <code class=\"i\">ls</code> não responde: o que mudou nas últimas 24 horas, o que é maior que 100 MB, o que ninguém abriu em um ano.",cf:"Combine com <code class=\"i\">-exec</code> ou com <code class=\"i\">xargs</code> para agir sobre o resultado. Use <code class=\"i\">-print0</code> com <code class=\"i\">xargs -0</code> quando os nomes puderem ter espaço. <b>Erro comum:</b> <code class=\"i\">find . -name *.log</code> sem aspas — o shell expande o curinga antes e o find recebe outra coisa.",ex:"find /var/log -name \"*.log\" -size +100M\nfind . -type f -mtime -1            # mudou nas ultimas 24h\nfind . -name \"*.tmp\" -delete\n\n# com espacos no nome, o par seguro:\nfind . -name \"*.log\" -print0 | xargs -0 gzip"}
+]},
+{g:"03",n:"Processos e sinais",s:"SIGTERM contra SIGKILL — e o PID 1 do seu container",c:"var(--green)",cs:"var(--green-soft)",items:[
+ {t:"O que é um processo",x:"PID, PPID e o pai que some",oq:"Um programa em execução, com identificador próprio (PID), um pai (PPID), memória isolada e uma tabela de arquivos abertos.",ps:"É a unidade que você mata, observa e limita — tudo em operação gira em torno dela.",cf:"Todo processo nasce de um <code class=\"i\">fork</code> do pai seguido de <code class=\"i\">exec</code>. Se o pai morre antes, o filho é adotado pelo PID 1. Processo que terminou e cujo pai não recolheu o código de saída vira <b>zumbi</b>: não consome CPU, mas ocupa uma entrada na tabela. <b>Erro comum:</b> tentar matar um zumbi — o alvo certo é o pai que não está recolhendo.",ex:"ps -ef --forest         # a arvore de processos\nps -o pid,ppid,stat,cmd -p 1234\n\n# STAT: S dormindo · R rodando · Z zumbi · D I/O ininterrompivel\n# D e o estado que nem kill -9 resolve — ele espera o disco"},
+ {t:"Sinais",x:"TERM pede, KILL arranca",dg:"sinal",oq:"Sinal é uma notificação assíncrona que o kernel entrega a um processo. O processo pode tratar quase todos — menos <code class=\"i\">SIGKILL</code> e <code class=\"i\">SIGSTOP</code>.",ps:"É o mecanismo por trás de todo encerramento, e a diferença entre um deploy limpo e um deploy que corta conexões pela metade.",cf:"<b>SIGTERM (15)</b> é um pedido: a aplicação escuta, para de aceitar requisição nova, termina as em andamento, fecha conexões e sai. <b>SIGKILL (9)</b> não chega à aplicação — o kernel a remove. Nada é salvo, nenhum buffer é gravado, nenhuma conexão é devolvida. <b>SIGINT (2)</b> é o seu Ctrl+C, e vai para o grupo de processos em primeiro plano. <b>Erro comum:</b> usar <code class=\"i\">kill -9</code> por reflexo e culpar o banco pela conexão órfã.",caso:"O Kubernetes manda SIGTERM, espera o <i>grace period</i> (30 s por padrão) e então manda SIGKILL. Se a sua aplicação não trata TERM, você paga 30 segundos de espera inútil em cada pod, a cada deploy — e mesmo assim morre de forma suja no fim.",ex:"kill 1234        # TERM: o padrao, e o educado\nkill -9 1234     # KILL: ultimo recurso\nkill -l           # lista todos os sinais\n\n# no shell script, capturar para limpar antes de sair:\ntrap 'echo limpando; rm -f \"$tmp\"' EXIT INT TERM"},
+ {t:"PID 1 e o entrypoint",x:"onde o sinal se perde",dg:"pid1",oq:"Dentro do container, o processo do entrypoint é o PID 1 — e o PID 1 tem tratamento especial do kernel: sinais sem handler explícito são <b>ignorados</b>.",ps:"É a causa número um de container que não responde ao Ctrl+C nem ao TERM do orquestrador.",cf:"Na forma shell (<code class=\"i\">CMD java -jar app.jar</code>), o Docker roda <code class=\"i\">/bin/sh -c</code>, que vira o PID 1 e <b>não repassa</b> o sinal ao filho. Na forma exec (<code class=\"i\">CMD [\"java\",\"-jar\",\"app.jar\"]</code>), a sua aplicação é o PID 1 e recebe direto. <b>Erro comum:</b> o problema só aparece no deploy — localmente você fecha o terminal e nem nota.",map:[["Docker e Kubernetes","O ciclo de vida do pod, o grace period e o preStop no detalhe."],["Spring","Graceful shutdown do Spring Boot e o que ele fecha."]],ex:"# ERRADO — sh vira PID 1 e engole o sinal\nCMD java -jar app.jar\n\n# CERTO — a JVM e o PID 1\nCMD [\"java\",\"-jar\",\"app.jar\"]\n\n# quando precisar mesmo de shell, passe a bola com exec:\n# CMD [\"sh\",\"-c\",\"exec java -jar app.jar\"]"},
+ {t:"Primeiro e segundo plano",x:"jobs, nohup e o processo que morreu junto",oq:"O shell organiza os processos que ele iniciou em <i>jobs</i>: em primeiro plano (segurando o terminal) ou em segundo (liberando o prompt).",ps:"Explica por que o processo morre quando você fecha a sessão SSH — e como evitar.",cf:"Ao encerrar a sessão, o shell manda <code class=\"i\">SIGHUP</code> aos jobs. <code class=\"i\">nohup</code> ignora esse sinal; <code class=\"i\">disown</code> tira o job da lista do shell. Para algo que precisa sobreviver de verdade, a resposta certa não é nenhum dos dois: é <b>um serviço do systemd</b>. <b>Erro comum:</b> deixar processo de produção rodando em <code class=\"i\">nohup</code> dentro de um <code class=\"i\">screen</code> que ninguém sabe que existe.",ex:"comando &          # segundo plano\njobs               # lista os jobs deste shell\nfg %1              # traz para o primeiro plano\nCtrl+Z             # suspende (SIGTSTP)\nbg                 # continua em segundo plano\n\nnohup ./demorado.sh > saida.log 2>&1 &"},
+ {t:"Limites e o OOM killer",x:"quem escolhe quem morre",oq:"Quando a memória acaba, o kernel escolhe um processo e o mata. A escolha usa uma pontuação por consumo e por ajuste configurado.",ps:"É a explicação do <i>Exit Code 137</i> e do container que some sem log de erro nenhum.",cf:"137 = 128 + 9, ou seja, morreu por SIGKILL — e quando vem do OOM, não há chance de gravar nada. Em container, o limite é do cgroup, não da máquina. <b>Erro comum:</b> procurar exceção no log da aplicação. Não vai ter: ela não foi avisada. O rastro está no <code class=\"i\">dmesg</code> do host ou no <code class=\"i\">kubectl describe pod</code>.",ex:"dmesg -T | grep -i \"killed process\"\nkubectl describe pod meu-pod | grep -A3 \"Last State\"\n\n# Exit Code 137 = 128 + 9 (SIGKILL)\n# Exit Code 143 = 128 + 15 (SIGTERM)"}
+]},
+{g:"04",n:"Entrada, saída e pipes",s:"os três descritores e a filosofia que sustenta tudo",c:"var(--orange)",cs:"var(--orange-soft)",items:[
+ {t:"Os três descritores",x:"0, 1 e 2",dg:"fd",oq:"Todo processo nasce com três canais abertos: entrada padrão (0), saída padrão (1) e saída de erro (2).",ps:"Separar dado de diagnóstico — para que um possa ser processado enquanto o outro é lido por uma pessoa.",cf:"O programa não sabe para onde eles apontam: pode ser o terminal, um arquivo, um pipe. Quem decide é quem chamou. <b>Erro comum:</b> <code class=\"i\">cmd &gt; log.txt</code> e estranhar que o erro continua na tela — o <code class=\"i\">&gt;</code> redireciona só o descritor 1.",ex:"cmd > saida.txt        # so o stdout\ncmd 2> erros.txt       # so o stderr\ncmd > tudo.txt 2>&1    # os dois no mesmo lugar\ncmd &> tudo.txt        # atalho do bash para o de cima\ncmd 2>/dev/null        # descarta o erro"},
+ {t:"A ordem do 2>&1",x:"o detalhe que inverte o resultado",oq:"<code class=\"i\">2&gt;&amp;1</code> significa: mande o descritor 2 para onde o descritor 1 <b>está agora</b>.",ps:"É a pegadinha clássica de shell, e ela silenciosamente joga fora o log de erro.",cf:"<code class=\"i\">cmd &gt; f 2&gt;&amp;1</code> manda o 1 para o arquivo e depois o 2 para o mesmo arquivo: funciona. <code class=\"i\">cmd 2&gt;&amp;1 &gt; f</code> manda o 2 para o terminal (onde o 1 ainda está) e só depois muda o 1 para o arquivo: o erro fica na tela. <b>Erro comum:</b> escrever a segunda forma achando que é a mesma coisa.",ex:"cmd > f 2>&1     # OS DOIS no arquivo\ncmd 2>&1 > f     # erro na TELA, saida no arquivo\n\n# e o caso que aparece em cron:\n0 3 * * * /script.sh >> /var/log/s.log 2>&1"},
+ {t:"Pipes",x:"a filosofia Unix em um caractere",dg:"pipe",oq:"O pipe liga a saída de um programa à entrada do próximo, em memória, sem arquivo intermediário.",ps:"Permite compor ferramentas pequenas em soluções que ninguém programou — que é a ideia central do Unix.",cf:"Os programas rodam <b>ao mesmo tempo</b>, não um depois do outro: o segundo já começa a consumir enquanto o primeiro ainda produz. Se o segundo morre, o primeiro recebe <code class=\"i\">SIGPIPE</code>. <b>Erro comum:</b> esquecer que só o stdout entra no pipe — para canalizar erro também, <code class=\"i\">2&gt;&amp;1 |</code> ou <code class=\"i\">|&amp;</code>.",ex:"cat app.log | grep ERRO | sort | uniq -c | sort -rn | head\n\n# o codigo de saida do pipe e o do ULTIMO comando.\n# para pegar a falha de qualquer etapa:\nset -o pipefail"},
+ {t:"tee e /dev/null",x:"ver e gravar ao mesmo tempo",oq:"<code class=\"i\">tee</code> escreve na saída padrão <b>e</b> num arquivo. <code class=\"i\">/dev/null</code> é o descarte oficial do sistema.",ps:"Acompanhar um processo demorado sem perder o registro dele.",cf:"Combine com <code class=\"i\">sudo</code> para resolver o caso em que o redirecionamento falha: o <code class=\"i\">&gt;</code> é executado pelo <b>seu</b> shell, não pelo sudo. <b>Erro comum:</b> <code class=\"i\">sudo echo x &gt; /etc/arquivo</code> — o echo roda como root, mas quem abre o arquivo é o seu shell, sem permissão.",ex:"./build.sh 2>&1 | tee build.log        # ve e grava\n./build.sh | tee -a build.log          # acrescenta\n\n# o caso do sudo:\necho \"linha\" | sudo tee -a /etc/hosts > /dev/null"}
+]},
+{g:"05",n:"O trio do texto",s:"grep, sed e awk — e a montagem que resolve",c:"var(--pink)",cs:"var(--pink-soft)",items:[
+ {t:"grep",x:"o primeiro passo de toda investigação",oq:"Filtra linhas que casam com um padrão. É a ferramenta mais usada de toda a lista, e a que mais rende quando você aprende quatro flags.",ps:"Reduzir milhões de linhas ao punhado que interessa, antes de olhar com atenção.",cf:"As quatro que mudam tudo: <code class=\"i\">-i</code> ignora maiúsculas, <code class=\"i\">-v</code> inverte, <code class=\"i\">-r</code> percorre diretórios, e <code class=\"i\">-C 3</code> mostra três linhas de contexto em volta — essencial em log, porque o erro raramente está sozinho. <b>Erro comum:</b> esquecer as aspas no padrão e deixar o shell expandir antes.",ex:"grep -i \"erro\" app.log\ngrep -C 3 \"OutOfMemory\" app.log     # com contexto\ngrep -rn \"TODO\" src/                # recursivo, com linha\ngrep -v \"DEBUG\" app.log             # tudo MENOS debug\ngrep -c \"ERRO\" app.log              # so conta"},
+ {t:"sed",x:"substituição em fluxo",oq:"Editor de fluxo: lê linha a linha, aplica um comando, escreve. O uso dominante é a substituição.",ps:"Trocar em massa, extrair um trecho, apagar linhas — sem abrir editor e sem carregar o arquivo na memória.",cf:"A forma é <code class=\"i\">s/procura/troca/</code>, com <code class=\"i\">g</code> para todas as ocorrências da linha. O separador não precisa ser <code class=\"i\">/</code>: com caminhos, use <code class=\"i\">|</code> e evite a cerca de barras escapadas. <b>Erro comum:</b> <code class=\"i\">-i</code> sem backup. Ele altera o arquivo no lugar, e não há desfazer.",ex:"sed 's/antigo/novo/g' arquivo.txt          # imprime\nsed -i.bak 's/antigo/novo/g' arquivo.txt   # altera, com backup\nsed -n '10,20p' arquivo.txt                # so as linhas 10 a 20\nsed '/^#/d' config.conf                    # remove comentarios\n\nsed 's|/caminho/antigo|/caminho/novo|g' f  # separador alternativo"},
+ {t:"awk",x:"colunas e agregação",oq:"Uma linguagem pequena orientada a linhas e campos: divide cada linha em colunas e executa uma ação por linha.",ps:"Somar, contar, agrupar e formatar direto no terminal, sem exportar para lugar nenhum.",cf:"<code class=\"i\">$1</code> é a primeira coluna, <code class=\"i\">$NF</code> a última, <code class=\"i\">NR</code> o número da linha. Blocos <code class=\"i\">BEGIN</code> e <code class=\"i\">END</code> rodam antes e depois de tudo — e é no END que a agregação é impressa. <b>Erro comum:</b> usar <code class=\"i\">cut</code> para colunas separadas por múltiplos espaços; o awk lida com isso naturalmente e o cut não.",ex:"awk '{print $1, $NF}' arquivo\nawk -F',' '{soma+=$3} END {print soma}' vendas.csv\nawk '$3 > 100 {print}' dados.txt\nawk '{c[$1]++} END {for(k in c) print c[k], k}' log | sort -rn"},
+ {t:"A montagem",x:"sort, uniq, cut, wc, xargs",oq:"Os utilitários pequenos que ligam os grandes: ordenar, contar repetição, recortar coluna, contar linhas, transformar lista em argumento.",ps:"É a composição que transforma três comandos numa resposta.",cf:"<code class=\"i\">uniq</code> só junta linhas <b>adjacentes</b> — por isso quase sempre vem depois de <code class=\"i\">sort</code>. <code class=\"i\">sort -rn</code> ordena por número, do maior para o menor, que é o par natural de <code class=\"i\">uniq -c</code>. <b>Erro comum:</b> <code class=\"i\">uniq</code> sem <code class=\"i\">sort</code> antes, e concluir que não havia duplicata.",caso:"A pergunta “quais os 10 IPs que mais bateram na API hoje” é uma linha só, e ela resume esta parte inteira: recorta a coluna, ordena, conta repetição, ordena pelo contador, pega os dez primeiros.",ex:"awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -10\n\nwc -l app.log                    # quantas linhas\ncut -d',' -f1,3 dados.csv        # colunas 1 e 3\nls *.log | xargs gzip            # lista vira argumento"}
+]},
+{g:"06",n:"Disco, memória e rede",s:"os três sintomas que você vai encontrar de madrugada",c:"var(--yellow)",cs:"var(--yellow-soft)",items:[
+ {t:"O disco encheu",x:"e o du não acha o culpado",dg:"disco",oq:"<code class=\"i\">df</code> pergunta ao sistema de arquivos quanto está ocupado; <code class=\"i\">du</code> soma o tamanho dos arquivos que consegue ver.",ps:"Quando os dois discordam, a diferença é a resposta — e é sempre a mesma resposta.",cf:"Um arquivo apagado cujo processo ainda mantém aberto continua ocupando disco: o <code class=\"i\">du</code> não o vê, porque o nome sumiu; o <code class=\"i\">df</code> vê, porque o inode continua lá. O espaço só volta quando o último descritor fecha. <b>Erro comum:</b> apagar o log gigante e o disco continuar cheio.",caso:"<code class=\"i\">df -h</code> diz 100% em <code class=\"i\">/var</code>. <code class=\"i\">du -sh /var/*</code> soma 2 GB num disco de 50. O <code class=\"i\">lsof +L1</code> mostra o culpado: um log de 46 GB apagado por um script de limpeza, com a aplicação ainda segurando o descritor. A correção é reiniciar o processo — ou, da próxima vez, <b>truncar em vez de apagar</b>.",ex:"df -h                    # por sistema de arquivos\ndf -i                    # INODES: enchem antes do espaco\n                         # em diretorio com milhoes de arquivos pequenos\ndu -sh /var/* | sort -h  # os maiores\nlsof +L1                 # apagados e ainda abertos\n\n# truncar em vez de apagar devolve o espaco na hora:\n: > /var/log/app.log"},
+ {t:"A memória que parece ter acabado",x:"free baixo é saúde",dg:"conta",oq:"O Linux usa toda RAM ociosa como cache de disco. Memória livre é memória desperdiçada, e o sistema devolve o cache na hora em que alguém precisar.",ps:"Parar de diagnosticar errado o servidor que “está sem memória”.",cf:"A coluna que importa é <b>available</b>, não <b>free</b>: available é o que uma aplicação nova conseguiria, incluindo o cache que seria devolvido. <b>Erro comum:</b> dentro do container, o <code class=\"i\">free</code> mostra a memória da <b>máquina inteira</b>, não o limite do cgroup — e a JVM antiga dimensionava o heap por esse número, o que gerava o OOM misterioso.",ex:"free -h\n#         total  usado  livre  buff/cache  disponivel\n#                              ^devolvivel  ^o que importa\n\n# o limite REAL dentro do container:\ncat /sys/fs/cgroup/memory.max          # cgroup v2\n\n# e a flag que ensinou a JVM a respeitar o cgroup:\njava -XX:MaxRAMPercentage=75 -jar app.jar"},
+ {t:"A porta que não responde",x:"ss, curl, dig e lsof",oq:"Quatro perguntas em sequência: alguém está escutando? o nome resolve? a conexão fecha? quem é o dono da porta?",ps:"Transformar “não conecta” numa das quatro causas possíveis, em menos de um minuto.",cf:"Faça na ordem: <code class=\"i\">ss -tlnp</code> mostra quem escuta e em qual interface — escutar em <code class=\"i\">127.0.0.1</code> em vez de <code class=\"i\">0.0.0.0</code> é a causa clássica de container inacessível. <code class=\"i\">dig</code> resolve o nome. <code class=\"i\">curl -v</code> mostra onde parou. <b>Erro comum:</b> culpar o firewall antes de olhar a interface.",caso:"O serviço sobe, o log diz <i>Started on port 8080</i>, e de fora nada responde. O <code class=\"i\">ss -tlnp</code> revela <code class=\"i\">127.0.0.1:8080</code>: ele está escutando só no loopback. Dentro do container isso significa que nem o mapeamento de porta do Docker alcança.",ex:"ss -tlnp                 # TCP, escutando, numerico, com processo\nss -tnp | grep 8080      # conexoes nessa porta\n\ncurl -v http://localhost:8080/health\ncurl -sS -o /dev/null -w \"%{http_code} %{time_total}s\\n\" URL\n\ndig +short api.exemplo.com\nlsof -i :8080            # quem e o dono da porta"},
+ {t:"Quem está segurando",x:"lsof, o canivete",oq:"Lista arquivos abertos — e como quase tudo é arquivo, isso inclui sockets, pipes, bibliotecas e diretórios.",ps:"Responder “quem está usando isso?” para porta, arquivo, ponto de montagem ou disco que não desmonta.",cf:"<code class=\"i\">-i</code> filtra rede, <code class=\"i\">-p</code> filtra por processo, <code class=\"i\">+L1</code> mostra os apagados-mas-abertos. Em sistema com muitos processos ele é lento: filtre sempre. <b>Erro comum:</b> rodar sem <code class=\"i\">sudo</code> e ver só os seus processos, concluindo que ninguém está segurando.",ex:"sudo lsof -i :5432          # quem usa a porta do Postgres\nsudo lsof -p 1234           # tudo que o processo 1234 abriu\nsudo lsof +D /mnt/dados     # quem impede o umount\nsudo lsof +L1               # apagados, ainda ocupando disco"}
+]},
+{g:"07",n:"systemd e logs",s:"serviço, unit e journalctl",c:"var(--blue)",cs:"var(--blue-soft)",items:[
+ {t:"Serviço e unit",x:"a resposta certa para 'precisa subir sozinho'",oq:"O systemd é o PID 1 da máquina. Uma <i>unit</i> descreve um serviço: o que executar, como reiniciar, de que depende e com qual usuário rodar.",ps:"É o que substitui o <code class=\"i\">nohup</code> dentro de um <code class=\"i\">screen</code> — com reinício automático, log centralizado e ordem de dependência.",cf:"<code class=\"i\">Restart=on-failure</code> reinicia só quando sai com erro; <code class=\"i\">always</code> reinicia sempre. <code class=\"i\">enable</code> faz subir no boot, <code class=\"i\">start</code> sobe agora — são coisas diferentes. <b>Erro comum:</b> dar <code class=\"i\">start</code> e não dar <code class=\"i\">enable</code>, e descobrir no próximo reboot.",ex:"systemctl status app\nsystemctl start app        # agora\nsystemctl enable app       # no boot\nsystemctl enable --now app # os dois\n\nsystemctl daemon-reload    # depois de EDITAR a unit\nsystemctl restart app      # depois de trocar o BINARIO"},
+ {t:"journalctl",x:"as cinco flags que resolvem",oq:"O journal é o log estruturado do systemd: guarda a saída dos serviços com carimbo de tempo, prioridade e unidade de origem.",ps:"Investigar sem saber de antemão em qual arquivo o serviço resolveu escrever.",cf:"<code class=\"i\">-u</code> filtra a unidade, <code class=\"i\">-f</code> acompanha ao vivo, <code class=\"i\">--since</code> corta por tempo em linguagem natural, <code class=\"i\">-p err</code> filtra por prioridade, <code class=\"i\">-b</code> limita ao boot atual. <b>Erro comum:</b> não configurar persistência e perder tudo no reboot — por padrão, em muitas distribuições, o journal é volátil.",ex:"journalctl -u app -f                 # ao vivo\njournalctl -u app --since \"1 hour ago\"\njournalctl -u app -p err             # so erro e acima\njournalctl -b -1                     # o boot ANTERIOR\njournalctl --disk-usage\n\n# tornar persistente:\n# /etc/systemd/journald.conf → Storage=persistent"},
+ {t:"Onde o log realmente está",x:"journal, /var/log e o stdout do container",oq:"Três destinos diferentes, com regras diferentes de rotação e retenção.",ps:"Saber onde procurar antes de procurar.",cf:"Serviço do systemd vai para o journal. Aplicações antigas escrevem em <code class=\"i\">/var/log</code>, com rotação pelo <code class=\"i\">logrotate</code>. <b>Container escreve no stdout</b> — e o certo é exatamente esse: quem coleta é a plataforma. <b>Erro comum:</b> aplicação em container gravando em arquivo dentro do contêiner; o log some junto com ele, e ainda enche o disco do nó no caminho.",map:[["Docker e Kubernetes","Por que o log do container vai para stdout e quem o recolhe."],["Conceitos de Backend","Observabilidade: logs, métricas e traces, e o que cada um responde."]]}
+]},
+{g:"08",n:"Dentro do container",s:"por que as ferramentas mentem lá dentro",c:"var(--red)",cs:"var(--red-soft)",items:[
+ {t:"Namespaces e cgroups",x:"o que você vê contra o que você pode",dg:"ns",oq:"Namespace recorta o que o processo <b>enxerga</b> — processos, rede, sistema de arquivos, usuários. Cgroup limita o que ele <b>pode consumir</b> — CPU, memória, I/O.",ps:"Entender que container não é máquina virtual: é o mesmo kernel, com a vista recortada e a cota aplicada.",cf:"É por isso que não existe <i>boot</i> de container, que ele sobe em milissegundos, e que uma falha de kernel derruba todos. <b>Erro comum:</b> tratar o container como VM e esperar isolamento de segurança equivalente — não é, e é por isso que rodar como root lá dentro importa.",map:[["Docker e Kubernetes","Namespaces, cgroups e camadas de imagem no detalhe."]]},
+ {t:"As ferramentas que mentem",x:"top, free e nproc",oq:"<code class=\"i\">top</code>, <code class=\"i\">free</code> e <code class=\"i\">nproc</code> leem <code class=\"i\">/proc</code>, que na maioria das montagens ainda reflete a <b>máquina inteira</b> — não o limite do seu cgroup.",ps:"Evitar o diagnóstico errado mais caro que existe em container: dimensionar pelo número da máquina.",cf:"Leia o limite real no cgroup, não na ferramenta. <b>Erro comum:</b> um pod com limite de 512 MB, num nó de 64 GB, com uma JVM que dimensionava o heap por esses 64 GB — e morria com 137 sem nenhuma exceção no log.",ex:"# o que a ferramenta diz (a maquina toda)\nfree -h ; nproc\n\n# o que voce REALMENTE tem (cgroup v2)\ncat /sys/fs/cgroup/memory.max\ncat /sys/fs/cgroup/cpu.max\n\n# a JVM moderna ja respeita, mas confirme:\njava -XX:+PrintFlagsFinal -version | grep MaxHeapSize"},
+ {t:"Depurar sem ferramenta",x:"a imagem mínima que não tem shell",oq:"Imagens <i>distroless</i> ou <code class=\"i\">scratch</code> não têm shell, nem <code class=\"i\">ps</code>, nem <code class=\"i\">curl</code>. É proposital: menos superfície de ataque.",ps:"Saber investigar quando <code class=\"i\">docker exec ... bash</code> responde <i>executable file not found</i>.",cf:"Três saídas, em ordem de preferência: <b>container efêmero de depuração</b> compartilhando os namespaces do alvo (<code class=\"i\">kubectl debug</code>); <code class=\"i\">nsenter</code> a partir do host; ou, no pior caso, uma imagem de build separada com as ferramentas. <b>Erro comum:</b> adicionar <code class=\"i\">bash</code> e <code class=\"i\">curl</code> à imagem de produção para facilitar a depuração — e manter para sempre.",ex:"# entra ao lado do pod, com ferramentas, sem alterar a imagem\nkubectl debug -it meu-pod --image=busybox --target=app\n\n# a partir do host, nos namespaces do processo\nsudo nsenter -t <pid> -n ss -tlnp\n\n# e o basico que quase toda imagem tem, mesmo minima:\ncat /proc/1/cmdline | tr '\\0' ' '"},
+ {t:"O sistema de arquivos em camadas",x:"e o dado que some",oq:"A imagem é um empilhamento de camadas somente-leitura; o container acrescenta uma camada de escrita por cima, que morre com ele.",ps:"Entender por que o arquivo gravado dentro do container desaparece — e por que isso é a regra, não o defeito.",cf:"Tudo que precisa sobreviver vai para volume ou para serviço externo. <b>Erro comum:</b> gravar upload, cache ou log em disco dentro do container e descobrir na primeira reinicialização. É o mesmo princípio que o de <i>aplicação sem estado</i> do System Design, visto de baixo.",map:[["System Design","Os três fatores que você quebra sem perceber — e o terceiro é sempre este."],["Nuvem","Armazenamento de objetos: onde o arquivo deveria estar."]]}
+]},
+{g:"09",n:"Como aprender de verdade",s:"a única área em que quebrar é de graça",c:"var(--amber)",cs:"var(--amber-soft)",items:[
+ {t:"O ciclo",x:"ler, consultar, quebrar, consertar",dg:"ciclo",oq:"Ler aqui → conferir no <code class=\"i\">man</code> → quebrar de propósito num container descartável → consertar → escrever o que aprendeu.",ps:"Terminal é a única área do acervo em que o laboratório não tem risco nenhum: o container morre e você recomeça.",cf:"Um <code class=\"i\">docker run --rm -it debian bash</code> é um ambiente onde você pode apagar o que quiser. Use isso: encha o disco de propósito, mate o PID 1, tire a permissão de um diretório, veja o que acontece. <b>Erro comum:</b> estudar comando de terminal lendo lista de comandos — o que fixa é a sequência sintoma → hipótese → verificação."},
+ {t:"Canais e cursos em português",x:"para este assunto",oq:"Fontes em PT-BR que tratam de Linux e linha de comando com profundidade.",ps:"Ter o vocabulário em português antes de atravessar o <code class=\"i\">man</code>, que é em inglês e denso.",cf:"<b>Diolinux</b> é a referência em português para Linux em geral, com bom material de fundamentos. <b>Linux Tips</b> (Jeferson Fernando) trata de Linux com foco em operação e DevOps, que é exatamente o recorte deste documento. <b>Fabio Akita</b> tem material sobre o funcionamento por baixo. Em texto, o <b>Linux Journey</b> e o <b>Guia Foca</b> (em português) cobrem o básico de forma organizada. <b>Regra:</b> confirme toda flag no <code class=\"i\">man</code> da sua versão — as opções variam entre distribuições e entre GNU e BusyBox."},
+ {t:"Praticar",x:"o laboratório dos sintomas",oq:"Reproduzir, num container descartável, os quatro sintomas deste documento.",ps:"Você não aprende a investigar lendo sobre investigação.",cf:"(1) Crie um arquivo grande, apague-o com um processo segurando e reproduza o <code class=\"i\">df</code>/<code class=\"i\">du</code> divergente; (2) suba um container com <code class=\"i\">CMD</code> em forma shell e outro em forma exec, mande TERM nos dois e compare; (3) suba um serviço escutando em <code class=\"i\">127.0.0.1</code> e descubra pelo <code class=\"i\">ss</code> por que não responde de fora; (4) ponha um limite de memória baixo e provoque o 137.",ex:"# 1 — o disco que nao volta\ndocker run --rm -it debian bash\n  dd if=/dev/zero of=/tmp/g bs=1M count=500\n  tail -f /tmp/g &        # segura o descritor\n  rm /tmp/g\n  df -h /tmp ; du -sh /tmp   # discordam\n  lsof +L1                   # o culpado\n\n# 2 — o sinal que se perde\ndocker run --name a -d imagem   # CMD shell form\ndocker stop a                   # cronometre: 10 s de espera\n\n# 4 — o 137\ndocker run --rm -m 64m imagem-java\n# morre sem excecao; o rastro esta no dmesg do host",star:true}
+]}
+];
+
+
+/* ---------- render ---------- */
+var nav=document.getElementById("nav");
+var navMap={};
+function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
+var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
+flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
+var KEYT="linux-terminal-completo-CL-trilha-v1";
+var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
+var track=document.getElementById("track"),lg=document.getElementById("lg");
+navHead("A trilha · 9 marcos");
+T.forEach(function(g,gi){
+  var sec=document.createElement("section");
+  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
+  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
+  var ms=document.createElement("div");ms.className="milestone";
+  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
+  var box=document.createElement("div");box.className="cluster";
+  g.items.forEach(function(it){
+    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
+    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
+    b.addEventListener("click",function(){open(it._i);});
+    box.appendChild(b);
+  });
+  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
+  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
+  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
+  navMap["g"+g.g]=a;
+});
+var fim=document.createElement("div");fim.className="trail-end";
+fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
+track.appendChild(fim);
+var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
+function open(i){
+  cur=i;var it=flat[i];
+  panel.style.setProperty("--pc",it._g.c);
+  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
+  document.getElementById("pTitle").textContent=it.t;
+  document.getElementById("pSub").textContent=it.x;
+  var h='';
+  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
+  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
+  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
+  if(it.caso)h+='<div class="blk"><h4>No caso concreto</h4><p>'+it.caso+'</p></div>';
+  if(it.map)h+='<div class="blk"><h4>Onde a teoria mora</h4><table class="vmap"><tbody>'+it.map.map(function(r){return '<tr><td class="vp">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</tbody></table></div>';
+  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
+  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+hlCode(it.ex)+'</code></pre></div>';
+  document.getElementById("pBody").innerHTML=h;
+  document.getElementById("pBody").scrollTop=0;
+  syncMark();
+  panel.classList.add("on");scrim.classList.add("on");
+  document.getElementById("pX").focus();
+}
+function hlCode(code){
+  var e=code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  e=e.replace(/(#[^\n]*)/g,'<span class="c">$1</span>');
+  e=e.replace(/"([^"\n]*)"/g,'<span class="s">"$1"</span>');
+  e=e.replace(/\b(if|then|else|fi|for|do|done|while|case|esac|function|return|export|local|echo|cd|exec|trap|kill|sudo|chmod|chown|grep|sed|awk|sort|uniq|cut|wc|find|xargs|ps|top|df|du|free|lsof|ss|curl|dig|systemctl|journalctl|docker|kubectl)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/(\$[A-Za-z_]\w*|\$\{[^}]*\})/g,'<span class="t">$1</span>');
+  return e;
+}
+function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("pX").addEventListener("click",closeP);
+scrim.addEventListener("click",closeP);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeP();
+  if(!panel.classList.contains("on"))return;
+  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
+});
+function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
+document.getElementById("pNext").addEventListener("click",function(){go(1);});
+document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
+var mark=document.getElementById("pMark");
+function syncMark(){
+  var on=!!doneT[flat[cur]._id];
+  mark.classList.toggle("is",on);
+  mark.textContent=on?"✓ estudado":"marcar estudado";
+}
+mark.addEventListener("click",function(){
+  var id=flat[cur]._id;
+  if(doneT[id])delete doneT[id];else doneT[id]=1;
+  localStorage.setItem(KEYT,JSON.stringify(doneT));
+  syncMark();paint();
+});
+var parts=[].slice.call(document.querySelectorAll("section.part"));
+var entries=[];
+navHead("O conteúdo · 9 partes");
+parts.forEach(function(sec){
+  var num=sec.querySelector(".ph .num").textContent.trim();
+  var h2=sec.querySelector(".ph h2").textContent;
+  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
+  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
+  sec.querySelectorAll("article.topic").forEach(function(t){
+    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
+    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
+    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
+  });
+});
+var KEYM="linux-terminal-completo-CL-conteudo-v1";
+var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
+var botoes=[].slice.call(document.querySelectorAll(".done"));
+botoes.forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.k;
+    if(doneM[k])delete doneM[k];else doneM[k]=1;
+    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
+  });
+});
+function paint(){
+  var n=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
+    b.classList.toggle("done",on);if(on)n++;
+  });
+  var m=0;
+  botoes.forEach(function(b){
+    var k=b.dataset.k,on=!!doneM[k];
+    b.classList.toggle("is",on);
+    b.textContent=on?"✓ dominado":"marcar dominado";
+    var la=nav.querySelector('a[data-k="'+k+'"]');
+    if(la)la.classList.toggle("ok",on);
+    if(on)m++;
+  });
+  var tot=flat.length+botoes.length,fez=n+m;
+  var pct=tot?Math.round(fez/tot*100):0;
+  document.getElementById("rdone").textContent=fez+" de "+tot;
+  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+}
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
+  doneT={};doneM={};
+  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
+  paint();if(cur>=0)syncMark();
+});
+function onScroll(){
+  var y=window.scrollY+140,c=null,i;
+  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
+  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
+  var h=document.body.scrollHeight-window.innerHeight;
+  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
+  document.getElementById("up").classList.toggle("on",window.scrollY>700);
+}
+document.addEventListener("scroll",onScroll,{passive:true});
+document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+var q=document.getElementById("q");
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase(),vis=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];
+    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf+" "+(it.caso||"")).toLowerCase();
+    var hit=v&&txt.indexOf(v)>-1;
+    b.classList.toggle("hit",!!hit);
+    b.classList.toggle("dim",!!v&&!hit);
+    if(hit)vis++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){g.classList.remove("hide");return;}
+    g.classList.toggle("hide",!g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(t){
+    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
+    t.classList.toggle("hide",!hit);
+    var la=nav.querySelector('a[data-k="'+t.id+'"]');
+    if(la)la.classList.toggle("hide",!hit);
+    if(hit&&v)vis++;
+  });
+  parts.forEach(function(sec){
+    var algum=sec.querySelector("article.topic:not(.hide)");
+    sec.style.display=algum?"":"none";
+    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa)sa.classList.toggle("hide",!algum);
+  });
+  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
+});
+function hl(el){
+  var e=el.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  var store=[];
+  function keep(cls,txt){store.push('<span class="'+cls+'">'+txt+'</span>');return "§"+(store.length-1)+"§";}
+  e=e.replace(/(#[^\n]*)/g,function(m){return keep("c",m);});
+  e=e.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g,function(m){return keep("s",m);});
+  e=e.replace(/(\$[A-Za-z_]\w*|\$\{[^}]*\})/g,function(m){return keep("t",m);});
+  e=e.replace(/\b(if|then|else|elif|fi|for|do|done|while|until|case|esac|function|return|export|local|readonly|set|trap|exec|source|echo|printf|cd|kill|sudo|su|chmod|chown|chgrp|umask|ln|ls|cat|less|head|tail|grep|egrep|sed|awk|sort|uniq|cut|tr|wc|find|xargs|tee|ps|top|htop|kill|pkill|nohup|jobs|bg|fg|df|du|free|lsof|ss|netstat|curl|wget|dig|ping|systemctl|journalctl|mount|umount|tar|gzip|docker|kubectl|nsenter)\b/g,'<span class="k">$1</span>');
+  e=e.replace(/\b(\d[\d_]*)\b/g,'<span class="n">$1</span>');
+  e=e.replace(/§(\d+)§/g,function(_,i){return store[+i];});
+  el.innerHTML=e;
+}
+document.querySelectorAll("section.part pre code").forEach(hl);
+paint();onScroll();
+(function(){
+ var RK="linux-terminal-completo-CL-rev-v1";
+ var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
+ var test=false,revealed=false;
+ var P=document.getElementById("panel"),B=document.getElementById("pBody");
+ var mB=document.getElementById("mode"),rB=document.getElementById("review");
+ var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
+ var _open=open;
+ open=function(i){_open(i);after(flat[i]);};
+ function after(it){
+  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
+  if(test){
+   var g=document.createElement("div");g.className="gate";
+   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
+   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
+   g.querySelector(".reveal-btn").addEventListener("click",reveal);
+   B.insertBefore(g,B.firstChild);
+  }
+  grade();
+ }
+ function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
+ function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
+ function cid(){return(cur>=0)?flat[cur]._id:null;}
+ function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
+ ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
+ no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
+ mB.addEventListener("click",function(){
+  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
+  if(P.classList.contains("on")&&cur>=0)open(cur);
+ });
+ rB.addEventListener("click",function(){
+  var k=Object.keys(rev);if(!k.length)return;
+  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
+  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
+ });
+ function pr(){
+  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
+  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
+ }
+ pr();
+})();
+</script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+<script>
+(function(){
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  if(!("IntersectionObserver" in window))return;
+  document.documentElement.classList.add("dganim");
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");dispara(e.target);io.unobserve(e.target)}
+  })},{threshold:.18,rootMargin:"0px 0px -6% 0px"});
+  function pt(p,l){var o=p.getPointAtLength(l);return [o.x,o.y]}
+  function segs(f){
+    var arr=[].slice.call(f.querySelectorAll("svg path.l,svg path.lt,svg path.lb,svg path.lr,svg path.ln"));
+    return arr.map(function(p){
+      try{
+        var t=p.getTotalLength(); if(!t||t<12)return null;
+        var b=p.getBBox(); var a=pt(p,0),z=pt(p,t);
+        return {p:p,t:t,x:b.x,y:(a[1]+z[1])/2,a:a,z:z};
+      }catch(_){return null}
+    }).filter(Boolean);
+  }
+  function faixas(ss){
+    var out=[];
+    ss.slice().sort(function(a,b){return a.y-b.y}).forEach(function(s){
+      for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-s.y)<34){out[i].itens.push(s);return} }
+      out.push({y:s.y,itens:[s]});
+    });
+    return out.filter(function(g){return g.itens.length>=2})
+              .sort(function(a,b){return b.itens.length-a.itens.length}).slice(0,3);
+  }
+  function traco(itens){
+    itens.sort(function(a,b){return a.x-b.x});
+    var d="",n=0;
+    itens.forEach(function(s){
+      var N=Math.max(2,Math.min(14,Math.round(s.t/14)));
+      for(var i=0;i<=N;i++){ var q=pt(s.p,s.t*i/N); d+=(n++?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)+" "}
+    });
+    return n>1?d:null;
+  }
+  function fio(f){
+    if(f.querySelector(".pulse"))return;
+    var svg=f.querySelector("svg"); if(!svg)return;
+    var ss=segs(f); if(ss.length<2)return;
+    var ciclo=ss.some(function(s){return s.a[0]-s.z[0]>80});
+    var gs=faixas(ss); if(!gs.length)return;
+    var NS="http://www.w3.org/2000/svg";
+    gs.forEach(function(g,gi){
+      var d=traco(g.itens); if(!d)return;
+      var cor=getComputedStyle(g.itens[0].p).stroke;
+      if(!cor||cor==="none")cor="currentColor";
+      var wrap=document.createElementNS(NS,"g");
+      wrap.setAttribute("class","pulse gen");
+      wrap.style.setProperty("--pd",(1.15+gi*0.18).toFixed(2)+"s");
+      var c=document.createElementNS(NS,"circle");
+      c.setAttribute("r","4.2"); c.setAttribute("fill",cor);
+      var mo=document.createElementNS(NS,"animateMotion");
+      mo.setAttribute("path",d);
+      mo.setAttribute("calcMode","linear");
+      mo.setAttribute("begin","indefinite");
+      if(ciclo){
+        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
+      }else{
+        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
+        var fade=document.createElementNS(NS,"animate");
+        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
+        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
+        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
+        c.appendChild(fade); wrap.__fade=fade;
+      }
+      c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
+      wrap.__mo=mo;
+    });
+    f.__fios=[].slice.call(svg.querySelectorAll(".pulse.gen"));
+  }
+  function dispara(f){
+    (f.__fios||[]).forEach(function(w){
+      try{ w.__mo&&w.__mo.beginElement(); w.__fade&&w.__fade.beginElement(); w.classList.add("go") }catch(_){}
+    });
+  }
+  function px(n){try{return n.getBBox().x}catch(_){return 0}}
+  function prep(f){
+    if(f.getAttribute("data-dg"))return;
+    f.setAttribute("data-dg","1");
+    var ns=[].slice.call(f.querySelectorAll("svg *")).filter(function(n){return n.getBBox});
+    ns.forEach(function(n){
+      if(n.getTotalLength&&n.tagName!=="text"){try{n.setAttribute("pathLength",100)}catch(_){}}
+    });
+    ns.map(function(n){return [n,px(n)]})
+      .sort(function(a,b){return a[1]-b[1]})
+      .forEach(function(p,i){p[0].style.setProperty("--d",(i*0.035).toFixed(3)+"s")});
+    try{fio(f)}catch(_){}
+    io.observe(f);
+  }
+  function scan(r){[].slice.call((r||document).querySelectorAll("figure.dg")).forEach(prep)}
+  scan(document);
+  /* o painel da trilha injeta diagramas depois do carregamento */
+  new MutationObserver(function(ms){
+    for(var i=0;i<ms.length;i++){
+      var a=ms[i].addedNodes;
+      for(var j=0;j<a.length;j++){
+        var n=a[j];
+        if(n.nodeType===1){ if(n.matches&&n.matches("figure.dg")) prep(n); else scan(n); }
+      }
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+</body>
+</html>

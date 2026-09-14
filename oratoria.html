@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oratória e comunicação — trilha visual + conteúdo · ser entendido sob pressão</title>
+<meta name="description" content="O décimo terceiro documento: a camada que faz os outros doze pagarem. Trilha visual em 9 marcos, mais 15 tópicos em 9 partes — a reavaliação da ansiedade como empolgação, exposição gradual, estrutura antes de slide, defender uma ADR, conduzir postmortem sem culpado, explicar trade-off para quem não é técnico, a entrevista de System Design como prova oral, palco e conteúdo público, e a conversa difícil com o modelo SBI. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre-wrap;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{width:1%;white-space:nowrap}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px}
+/* fala pronta, com a leitura embaixo */
+.frase{margin:14px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.frase>div{padding:11px 15px;border-top:1px solid var(--line)}
+.frase>div:first-child{border-top:0}
+.frase .en{background:var(--code);font:500 .95rem/1.55 Georgia,serif;color:var(--cyan)}
+.frase .pt{background:var(--card);font-size:.9rem;color:var(--muted)}
+.frase .pt b{color:var(--ink2);font-weight:600}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>◉</i><b>Oratória</b></div>
+    <p class="sub">Ser entendido sob pressão.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (ADR, SBI, postmortem)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Oratória e comunicação · setembro 2026</span>
+      <h1>A decisão certa que <em>ninguém comprou</em>.</h1>
+      <p class="lede">O décimo terceiro documento, e a camada que faz os outros doze pagarem. O acervo inteiro é sobre <b>saber</b>; este é sobre <b>transmitir</b> — e a diferença entre os dois é onde muita carreira trava. O próprio material que você já tem aponta para cá: o de Arquitetura termina em <i>"comunicar a decisão: o trabalho que faz a arquitetura acontecer"</i>, e o de System Design lista, entre os erros que eliminam candidato, <b>pensar sem narrar</b>. Em cima, a <b>trilha visual</b>: 33 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 12 tópicos em 9 partes, cobrindo os quatro contextos — a decisão técnica no trabalho, a entrevista, o palco, e a conversa difícil.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>do nervosismo à conversa difícil</a>
+      </div>
+      <div class="legenda">
+        <div><b>Com evidência</b><span>Reavaliação da ansiedade e exposição gradual têm estudo por trás, não só conselho.</span></div>
+        <div><b>Quatro contextos</b><span>Decisão técnica, entrevista, palco e conversa difícil — cada um com o seu método.</span></div>
+        <div><b>Estrutura antes de slide</b><span>Quem começa pelo slide já perdeu. A ordem correta é outra.</span></div>
+        <div><b>Ligado ao acervo</b><span>ADR, postmortem e System Design aparecem aqui do lado de quem fala.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do nervosismo à conversa difícil</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>O corpo antes da fala</h2><p>O nervosismo tem mecanismo — e duas intervenções com evidência, que não são "respira fundo e relaxa".</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>Reavaliar a ansiedade em vez de tentar acalmá-la</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">com evidência</span></div></div>
+        <p class="direto"><b>Direto:</b> dizer <b>"estou empolgado"</b> funciona melhor que tentar se acalmar. Ansiedade e empolgação produzem sintomas quase idênticos — a diferença está no rótulo, e o rótulo é escolha sua.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Cinco minutos antes de apresentar o desenho para o time, o coração acelera. Você tenta se acalmar, respira fundo, e o esforço de suprimir consome exatamente a atenção que você precisaria para falar.</p>
+          <p>A intervenção alternativa leva três segundos: <i>"estou empolgado"</i>. Num estudo de Alison Wood Brooks (Harvard, 2014), participantes que renomearam a ativação como empolgação antes de falar em público apresentaram melhor e foram avaliados como <b>mais persuasivos, confiantes e competentes</b>.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a mesma métrica com dois painéis. Uso de CPU em 80% pode ser "está saturando" ou "está trabalhando bem". O número é o mesmo; o que muda é o que você faz em seguida — e o rótulo é que decide.</p></div>
+
+        <div class="duo o">
+          <div><h4>Por que funciona</h4><p>Ansiedade e empolgação compartilham quase toda a assinatura fisiológica: frequência cardíaca elevada, adrenalina, atenção aguçada. São estados de <b>alta ativação</b>. A diferença é a valência — ameaça ou oportunidade.</p>
+            <p style="margin-top:9px">Ir de <i>alta ativação negativa</i> para <i>calma</i> é atravessar duas dimensões. Ir para <i>alta ativação positiva</i> é atravessar uma. O caminho mais curto ganha.</p>
+            <div class="repl"><b>O que veio substituir:</b> "respira fundo e relaxa", conselho bem-intencionado que pede o salto difícil. E pior: falhar em se acalmar vira evidência de que está ainda mais nervoso.</p></div>
+          </div>
+          <div><h4>Como usar</h4><p>Literalmente. Em voz baixa ou mentalmente, nos segundos antes: <b>"estou empolgado"</b>. O estudo original usou exatamente isso, dito em voz alta.</p>
+            <p style="margin-top:9px">Parece bobo. Funciona mesmo assim — e o constrangimento de dizer é menor que o de travar.</p></div>
+        </div>
+
+        <div class="cs"><b>E a parte que a respiração realmente resolve:</b> a ativação fisiológica cai com <b>expiração mais longa que a inspiração</b>, por cerca de um minuto. Isso tem base — o que não tem é respirar fundo e <b>rápido</b>, que aumenta a ativação. Se for usar respiração, use a lenta, e use junto com a reavaliação, não no lugar dela.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Tentar suprimir o nervosismo.</b> Supressão consome recurso mental que você precisa para falar.</li>
+            <li><b>Interpretar o sintoma como sinal de despreparo.</b> Quem se prepara também sente — a diferença é o que faz com isso.</li>
+            <li><b>Pedir desculpa pelo nervosismo.</b> Dirige a atenção da plateia para o que ninguém tinha notado.</li>
+            <li><b>Imaginar a plateia sem roupa.</b> Folclore. Adiciona uma tarefa cognitiva no pior momento.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Na próxima vez que sentir a ativação — reunião, ligação, qualquer coisa — diga "estou empolgado" antes de começar. Uma vez. E repare no que muda.</div>
+          <div><b>prova de domínio</b>Você explica por que "acalme-se" é um conselho pior que "fique empolgado" — usando a razão fisiológica, não a opinião.</div>
+        </div>
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>Exposição gradual, e a gravação que ninguém assiste</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>a evitação é o que mantém o medo vivo.</b> Cada repetição bem-sucedida ensina ao sistema nervoso que a ameaça foi superestimada — e a literatura aponta redução mensurável já em três a quatro sessões.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o teste de carga. Você não descobre o limite do sistema evitando tráfego — descobre aplicando carga crescente em ambiente controlado. Cada rodada bem-sucedida vira evidência, e a evidência é o que substitui o medo por estimativa.</p></div>
+
+        <p>Os degraus, do mais protegido ao real: <b>sozinho em voz alta</b> → <b>gravando e assistindo</b> → <b>para uma pessoa de confiança</b> → <b>para um grupo pequeno</b> → <b>o real</b>. Cada um é confortável o bastante para você fazer, e desconfortável o bastante para produzir evidência.</p>
+        <p>O erro clássico é pular do ensaio mental direto para a apresentação. Os degraus do meio não são preparação opcional — são <b>onde a evidência é coletada</b>. Sem eles, você chega ao real com a mesma previsão catastrófica de sempre, porque nada a contradisse.</p>
+
+        <div class="cs"><b>Sobre a gravação:</b> é desconfortável nas primeiras vezes, e isso é esperado — você está vendo a diferença entre o que achou que fez e o que saiu. Assista <b>uma vez procurando uma coisa só</b>: o ritmo, ou as muletas, ou para onde você olha. Tentar corrigir tudo de uma vez não corrige nada. E gravar sem assistir transforma o exercício em teatro.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Ensaiar só mentalmente.</b> A fala em voz alta usa musculatura e ritmo que o ensaio mental não treina — e é na voz alta que você descobre as frases que não fecham.</li>
+            <li><b>Decorar palavra por palavra.</b> Cria um ponto único de falha: esqueceu uma frase, perdeu o fio inteiro. Decore a <b>estrutura</b>.</li>
+            <li><b>Ensaiar uma vez e achar suficiente.</b> A primeira passada é para descobrir os buracos; a segunda é a que melhora.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Grave três minutos explicando qualquer coisa técnica que você domina. Assista hoje mesmo procurando <b>só</b> as muletas — "tipo", "então", "né". Não corrija mais nada.</div>
+          <div><b>prova de domínio</b>Você tem duas gravações do mesmo conteúdo, com uma semana de diferença, e consegue apontar o que melhorou.</div>
+        </div>
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Estrutura antes de slide</h2><p>Quem abre o editor de slides primeiro já perdeu. A ferramenta convida a preencher, e preencher não é decidir.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>A frase única — e três apoios, não sete</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> se não cabe numa frase, você ainda não decidiu o que dizer. E vai descobrir isso no meio da apresentação, na frente de todo mundo.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você precisa apresentar a migração para mensageria. Abre o editor, faz quarenta slides bonitos, ensaia. No dia, alguém pergunta "mas por que agora?" — e você percebe que nunca respondeu isso, nem para si mesmo.</p>
+          <p>Os quarenta slides cobriam o <b>assunto</b>. Nenhum deles carregava a <b>tese</b>.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É escrever código antes de saber o requisito. Sai muito código, ele funciona, e resolve o problema errado. A frase única é o requisito da sua apresentação.</p></div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — assunto</div><pre><code>"Vou falar sobre a migracao para mensageria."
+
+Isso e um TEMA. Nao afirma nada,
+nao pede nada, nao pode ser
+discordado — e por isso tambem
+nao pode ser aprovado.</code></pre></div>
+          <div class="depois"><div class="lab">depois — tese</div><pre><code>"Devemos adotar outbox agora, porque a
+duplicidade de cobranca ja aconteceu
+duas vezes, e implementar custa duas
+semanas."
+
+Afirma, justifica e quantifica.
+Da para discordar — logo, da para
+concordar.</code></pre></div>
+        </div>
+
+        <p>A frase não precisa ser dita em voz alta. Ela é o <b>critério</b>: todo slide, todo exemplo, toda digressão passa pelo teste de "isso sustenta a frase?". O que não sustenta, sai — e é essa poda que transforma quarenta slides em doze.</p>
+
+        <p>Depois da tese, <b>três apoios</b>. Não sete. Quem ouve retém a tese e, com sorte, dois ou três apoios; o resto não acrescenta, dilui. Cobrir muitos tópicos não demonstra profundidade — demonstra que você não escolheu.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Abrir o editor de slides primeiro.</b> A ferramenta sugere preencher, e o preenchimento vira substituto do pensamento.</li>
+            <li><b>Tese vaga.</b> "Precisamos melhorar a arquitetura" não é tese — não diz o que fazer nem por quê.</li>
+            <li><b>Sete apoios.</b> Um deles seria lembrado se estivesse sozinho; sete garantem que nenhum será.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue a última apresentação que você fez e tente escrever a tese dela em uma frase, agora. Se não conseguir, você acabou de descobrir por que a reunião não decidiu nada.</div>
+          <div><b>prova de domínio</b>Você escreve a frase única <b>antes</b> de abrir qualquer ferramenta — e ela sobrevive ao ensaio sem mudar.</div>
+        </div>
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b2">
+        <div class="th"><h3>O slide é o último passo — e o tempo é restrição de projeto</h3><div class="badges"><span class="badge b-imp">execução</span></div></div>
+        <p class="direto"><b>Direto:</b> slide existe para mostrar o que <b>não</b> cabe na fala — um diagrama, um número, uma comparação. Se o slide tem o texto do que você vai dizer, ele compete com você. E a leitura ganha, porque é mais rápida.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É comentário de código que repete a linha. <code class="i">// incrementa o contador</code> acima de <code class="i">i++</code> não acrescenta nada e ainda ocupa espaço. Slide que repete a fala é isso, projetado.</p></div>
+
+        <p>O teste é direto: se a plateia consegue entender o slide sem você, você virou narrador do próprio material. E se você precisa do slide para lembrar o que dizer, isso não é slide — são as suas anotações, e existe um campo próprio para elas.</p>
+
+        <div class="cs"><b>Sobre o tempo:</b> planeje para <b>80%</b> do disponível. Os outros 20% vão embora com pergunta, problema técnico e digressão — sempre. Quem planeja para 100% corta no palco, e o corte no palco sempre sacrifica a conclusão, que era justamente a parte que importava. Ensaiar com cronômetro é o único jeito de saber, porque a estimativa de quanto tempo leva é sistematicamente otimista.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Ler o slide em voz alta.</b> A forma mais eficiente de perder a plateia.</li>
+            <li><b>Usar o slide como roteiro.</b> Para isso existem as anotações do apresentador.</li>
+            <li><b>Planejar para o tempo cheio.</b> Garante conclusão atropelada.</li>
+            <li><b>Slide com tabela de dez linhas.</b> Ninguém lê. Se o dado importa, mostre uma linha; se não importa, corte.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o seu slide mais cheio e reduza a uma ideia. Depois ensaie os dois e compare qual você explica melhor — normalmente é o reduzido, porque o cheio te faz ler.</div>
+          <div><b>prova de domínio</b>Você apresenta 20 minutos com menos de dez slides, e nenhum deles tem parágrafo.</div>
+        </div>
+        <button class="done" type="button" data-k="b2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Defender uma decisão técnica</h2><p>Onde este documento encontra o de Arquitetura — que termina exatamente aqui, em "comunicar a decisão".</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>A ordem que convence: restrição, opções, escolha, preço</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">ADR</span></div></div>
+        <p class="direto"><b>Direto:</b> quem começa pela solução obriga a plateia a avaliar sem contexto — e a reação natural é resistir. Quem começa pela <b>restrição</b> faz a plateia chegar sozinha ao conjunto de opções.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você abre a reunião com "proponho adotar outbox". Antes da segunda frase, alguém pergunta "não dá para fazer mais simples?" e a conversa vira defesa.</p>
+          <p>A alternativa começa três passos antes: "hoje, quando a rede falha entre o commit e a publicação, o evento se perde — aconteceu duas vezes este ano". Agora todo mundo está no mesmo problema, e a proposta vira <b>resposta</b> a uma pergunta que a sala já tem.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre entregar o resultado e entregar o plano de execução. O número sozinho convida à desconfiança; o plano mostra por que aquele caminho foi escolhido, e a conclusão deixa de ser pedido de fé.</p></div>
+
+        <p>A ordem tem quatro partes, e a quarta é a que mais pesa:</p>
+
+        <table class="cmd">
+          <thead><tr><th>Passo</th><th>O que dizer</th></tr></thead>
+          <tbody>
+            <tr><td><b>1. Restrição</b></td><td>Qual problema real existia, com número se possível. Coloca todos no mesmo ponto de partida.</td></tr>
+            <tr><td><b>2. Opções</b></td><td>Duas ou três alternativas <b>reais</b>, com o critério de comparação explícito.</td></tr>
+            <tr><td><b>3. Escolha</b></td><td>Qual, e por quê — ancorado no critério do passo 2, não em preferência.</td></tr>
+            <tr><td><b>4. Preço</b></td><td>O que essa escolha custa. <b>Sempre.</b></td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>Por que o preço convence em vez de enfraquecer:</b> quem nomeia o próprio custo parece <b>dono da decisão</b>; quem esconde parece vendedor. E há uma razão prática: o preço vai aparecer de qualquer jeito — ou você o nomeia agora, com contexto, ou alguém o descobre depois, sem contexto e com desconfiança.</div>
+
+        <p>E uma armadilha específica: apresentar <b>uma opção só</b> soa como decisão já tomada, e as pessoas resistem ao que não participaram. Mas apresentar uma alternativa obviamente ruim só para ter o que descartar é pior — todo mundo percebe, e você perde credibilidade nas duas.</p>
+
+        <div class="ver"><b>onde a teoria mora</b>ADR, a régua de profundidade e o próprio tópico <i>"comunicar a decisão: o trabalho que faz a arquitetura acontecer"</i> estão em <a href="arquitetura.html">Arquitetura completo</a>. Nomear o trade-off como parte da proposta está em <a href="system-design.html">System Design completo</a>. Aqui é o lado de quem fala.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Começar pela solução.</b> A plateia avalia sem contexto e resiste.</li>
+            <li><b>Omitir o preço.</b> Parece vendedor, e o custo aparece depois pior.</li>
+            <li><b>Uma opção só.</b> Soa como decisão fechada.</li>
+            <li><b>Alternativa de palha.</b> Todo mundo percebe, e custa credibilidade.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue uma decisão técnica que você tomou este mês e escreva os quatro passos. Se travar no passo 4, você encontrou o que ainda não pensou.</div>
+          <div><b>prova de domínio</b>Você apresenta uma decisão e alguém que discordava no início concorda no fim — sem você ter subido o tom.</div>
+        </div>
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c2">
+        <div class="th"><h3>Trade-off para quem não é técnico — e o postmortem sem culpado</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> traduza o mecanismo em <b>risco, custo e prazo</b>. Simplificar é trocar o nível de detalhe — não a verdade.</p>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">para o time</div><pre><code>"Implementar transactional outbox com
+relay e publisher confirms, e inbox
+com unique(event_id) no consumidor."</code></pre></div>
+          <div class="depois"><div class="lab">para quem aprova orçamento</div><pre><code>"Hoje, quando a rede falha no momento
+errado, o cliente pode ser cobrado duas
+vezes — ja aconteceu duas vezes este ano.
+
+A correcao custa duas semanas e adia X.
+
+Sem ela, o risco continua e cresce junto
+com o volume."</code></pre></div>
+        </div>
+
+        <p>Mesmo conteúdo, outro nível de detalhe, nenhuma mentira. O erro que estraga isso é simplificar até virar imprecisão — dizer "vai ficar mais rápido" quando o ganho é de confiabilidade, ou prometer que "resolve o problema" quando reduz a probabilidade. Quem aprova orçamento lembra da promessa.</p>
+
+        <p><b>E o postmortem</b>, que é a apresentação mais difícil do trabalho técnico: o formato decide o resultado. A regra é simples de enunciar e difícil de cumprir — <b>nenhuma frase nomeia pessoa como causa</b>.</p>
+
+        <div class="frase">
+          <div class="en">"Quem fez o deploy?"</div>
+          <div class="pt"><b>Encerra a investigação.</b> A partir daqui, todo mundo protege a própria versão.</div>
+          <div class="en">"O que permitiu que um deploy causasse isso?"</div>
+          <div class="pt"><b>Abre a investigação.</b> A resposta é sobre o sistema, e o sistema é o que dá para consertar.</div>
+        </div>
+
+        <div class="cs"><b>Por que isso não é gentileza, é eficácia:</b> quando há culpado, as pessoas param de contar o que realmente aconteceu — e você perde justamente a informação de que precisa. A estrutura que funciona é a mesma da investigação técnica: linha do tempo, que sinal existia, que decisão foi tomada <b>com a informação disponível naquela hora</b>, e o que faltava para decidir melhor.</div>
+
+        <div class="ver"><b>onde a teoria mora</b>Observabilidade, o método de cinco passos e o runbook estão em <a href="conceitos-backend.html">Conceitos de Backend completo</a>. A sala de incidente — hipótese, correlação, evidência — está em <a href="spring.html">Spring completo</a>. Aqui é como conduzir a conversa.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Simplificar até virar mentira.</b> Troque o detalhe, nunca a verdade.</li>
+            <li><b>Usar jargão com quem aprova.</b> Não impressiona; afasta.</li>
+            <li><b>Prometer resolução total.</b> Diga "reduz o risco de X para Y", não "resolve".</li>
+            <li><b>Postmortem com nome.</b> Uma vez que aparece, ninguém mais conta o que sabe.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o último incidente e reescreva a causa sem citar pessoa nenhuma. Se não conseguir, a análise ainda não chegou à causa real.</div>
+          <div><b>prova de domínio</b>Você explica um trade-off técnico para alguém de negócio e a pessoa consegue <b>repetir</b> o raciocínio para outra.</div>
+        </div>
+        <button class="done" type="button" data-k="c2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>A entrevista é uma prova oral</h2><p>Especialmente a de System Design — em que o desenho certo, não narrado, vale zero.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>Narrar enquanto pensa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">System Design</span></div></div>
+        <p class="direto"><b>Direto:</b> o entrevistador avalia o <b>processo</b>, e processo que não é narrado não existe para ele. Trinta segundos de silêncio custam mais que uma hipótese descartada em voz alta.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o processo que não emite log. Pode estar trabalhando perfeitamente; de fora, é indistinguível de travado. Narrar é o <code class="i">stdout</code> do seu raciocínio — e sem ele, quem observa só tem o silêncio para interpretar.</p></div>
+
+        <p>O documento de System Design já lista <i>pensar sem narrar</i> entre os erros que eliminam candidato. Aqui está o conserto, e ele é mecânico: <b>frases de transição</b> que compram tempo enquanto sinalizam que há raciocínio em curso.</p>
+
+        <div class="frase">
+          <div class="en">"Deixa eu pensar em voz alta."</div>
+          <div class="pt"><b>Abre a narração.</b> Autoriza você a dizer coisas incompletas sem que pareçam respostas erradas.</div>
+          <div class="en">"Meu primeiro instinto é X, mas isso implicaria Y — então talvez Z."</div>
+          <div class="pt"><b>Mostra o descarte.</b> Considerar e rejeitar uma opção vale mais que acertar de primeira sem explicar.</div>
+          <div class="en">"Vou começar pelo simples e aumentar a complexidade conforme a gente conversa."</div>
+          <div class="pt"><b>Condução.</b> Você definiu o roteiro, e ninguém vai achar que você está sendo simplista.</div>
+        </div>
+
+        <p><b>E perguntar é a primeira resposta</b>, não um preâmbulo. Converter o enunciado vago em requisito — contrato, workload, gargalo — é bom método <b>e</b> boa oratória ao mesmo tempo: demonstra senioridade e compra os segundos que você precisa para organizar. Duas ou três perguntas bastam; mais que isso vira fuga.</p>
+        <p>O detalhe que separa quem pergunta de verdade de quem cumpre protocolo: <b>usar a resposta explicitamente</b>. "Como você disse que leitura domina, vou priorizar o caminho de leitura" mostra que a pergunta não era ritual.</p>
+
+        <div class="ver"><b>onde a teoria mora</b>O método, as perguntas de carga e a escada de decisão estão em <a href="system-design.html">System Design completo</a> — aqui eles viram roteiro de fala. As mesmas frases em inglês, com o vocabulário de reunião, estão em <a href="ingles.html">Inglês técnico completo</a>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Silêncio para montar a resposta perfeita.</b> Interpretado como não saber.</li>
+            <li><b>Perguntar e não usar a resposta.</b> Revela que era protocolo.</li>
+            <li><b>Narrar só o que deu certo.</b> O descarte é metade da evidência de raciocínio.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Grave cinco minutos resolvendo um problema de System Design em voz alta, sozinho, sem parar. Ouça e conte quantas vezes você ficou em silêncio mais de cinco segundos.</div>
+          <div><b>prova de domínio</b>Você narra um raciocínio <b>incompleto</b> sem desconforto — inclusive as hipóteses que vai abandonar.</div>
+        </div>
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d2">
+        <div class="th"><h3>A pergunta hostil e a que você não sabe responder</h3><div class="badges"><span class="badge b-imp">pressão</span></div></div>
+        <p class="direto"><b>Direto:</b> na hostil, <b>não defenda por reflexo</b> — reconheça a parte válida e mantenha o núcleo. Na que não sabe, <b>diga que não sabe</b> e mostre como descobriria. Inventar é o único caminho que fecha portas.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você apresenta o desenho e o entrevistador diz, seco: <i>"isso não escala"</i>.</p>
+          <p>A reação instintiva é defender tudo. Mas a frase não é uma refutação — é um teste. Ele quer ver se você sustenta a posição com critério ou desmorona. E, em alguns casos, ele está certo e quer saber se você percebe.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É um relatório de bug sem passos de reprodução. A resposta certa não é "funciona na minha máquina" nem "vou reescrever tudo" — é pedir a condição específica em que falha.</p></div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — defesa reflexa</div><pre><code>— "Isso nao escala."
+
+— "Escala sim, o Postgres aguenta
+   tranquilo, eu ja usei isso em
+   producao e nunca deu problema."
+
+Voce nao perguntou em que cenario.
+Agora e a sua palavra contra a dele —
+e ele conduz a entrevista.</code></pre></div>
+          <div class="depois"><div class="lab">depois — critério</div><pre><code>— "Isso nao escala."
+
+— "Em que cenario, especificamente?
+   Se for acima de N por segundo,
+   concordo — e ai a saida seria X.
+   Abaixo disso, o custo de X nao se
+   paga, e por isso escolhi o simples."
+
+Voce nomeou o limite. Agora a conversa
+e sobre numero, nao sobre quem tem razao.</code></pre></div>
+        </div>
+
+        <p><b>E a que você não sabe.</b> Existe uma resposta que funciona e não é "não sei" seco:</p>
+
+        <div class="frase">
+          <div class="en">"Não sei, e prefiro não chutar. Eu descobriria medindo Y com uma carga de Z. Mas posso raciocinar sobre as possibilidades, se ajudar."</div>
+          <div class="pt"><b>E aí raciocine.</b> O "não sei" isolado encerra; o "não sei, mas eis como eu descobriria" demonstra método — que é justamente o que está sendo avaliado.</div>
+        </div>
+
+        <div class="cs"><b>E conduzir o tempo é sua responsabilidade também.</b> Quarenta e cinco minutos são seus: sinalize etapas, avise quando vai aprofundar, e ofereça escolha — <i>"vou desenhar o básico primeiro e depois aprofundo onde você preferir"</i>. Esperar ser conduzido é como acabar a entrevista sem ter chegado à parte que você domina, e lamentar que "não deu tempo".</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Tratar discordância como ataque.</b> Endurecer é o sinal mais claro de insegurança.</li>
+            <li><b>Inventar.</b> Um chute detectado contamina tudo que você disse antes.</li>
+            <li><b>Concordar com tudo para agradar.</b> Mostra que você não tinha critério.</li>
+            <li><b>Parar no "não sei".</b> A segunda metade da frase é a que conta.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Peça a alguém que conteste uma decisão técnica sua com uma frase seca. Pratique responder pedindo o cenário específico, sem defender nada antes.</div>
+          <div><b>prova de domínio</b>Você diz "não sei" numa entrevista e a conversa <b>melhora</b> em vez de esfriar.</div>
+        </div>
+        <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>O palco</h2><p>Meetup, palestra e vídeo. E o degrau que quase todo mundo pula na hora de começar.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Abertura, uma ideia só, e começar pequeno</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> os primeiros trinta segundos decidem a atenção do resto. Gastá-los com "bom dia, meu nome é, a agenda é" é usar o momento de maior atenção com o que menos importa.</p>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — protocolo</div><pre><code>"Bom dia, meu nome e X, trabalho na Y ha
+tres anos, e hoje vou falar sobre
+mensageria. A agenda e: primeiro um
+pouco de teoria, depois..."
+
+Trinta segundos gastos. Ninguem ainda
+sabe por que deveria prestar atencao.</code></pre></div>
+          <div class="depois"><div class="lab">depois — problema</div><pre><code>"Dois clientes foram cobrados duas vezes
+no mesmo mes.
+
+O codigo estava certo. O banco estava
+certo. Os testes passaram.
+
+Vou mostrar onde estava o problema."
+
+O nome vem depois, em cinco segundos.</code></pre></div>
+        </div>
+
+        <p><b>Uma ideia por palestra.</b> Palestra não comporta a densidade de um documento — se você transformar 25 tópicos em 40 slides, ninguém sai com nada. Escolha uma ideia, sustente bem, e deixe o resto no repositório e no texto que você linka no final. Ser lembrado por uma coisa vale mais que ter coberto muito.</p>
+
+        <p><b>Vídeo é outro formato.</b> Sem retorno ao vivo, a edição substitui a leitura da sala, e o ritmo precisa ser mais rápido — pausas que funcionam no palco parecem lentidão na gravação. Em compensação, você pode refazer, e a segunda gravação é quase sempre substancialmente melhor. Tentar acertar de primeira e publicar a primeira tomada desperdiça a única vantagem do formato.</p>
+
+        <div class="cs"><b>E o degrau que todo mundo pula:</b> esperar "ter algo digno de conferência". A ordem correta é a exposição gradual do marco 01 aplicada ao palco — apresente primeiro <b>para o time</b>, depois para a empresa, depois num meetup local. Falar internamente já é palestra, é o degrau mais fácil de conseguir, e é a prática que produz o material — não o contrário.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Abrir pedindo desculpa.</b> Pelo nervosismo, pelo inglês, pelo slide — você dirigiu a atenção para o defeito.</li>
+            <li><b>Agenda no primeiro slide.</b> Ninguém decide prestar atenção por causa de uma agenda.</li>
+            <li><b>Resumir um documento inteiro.</b> Densidade de leitura não sobrevive à escuta.</li>
+            <li><b>Esperar o convite.</b> Meetup local aceita proposta; empresa aceita ainda mais fácil.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva a abertura de trinta segundos de uma palestra que você daria sobre algo do acervo. Sem o seu nome, sem agenda — só o problema.</div>
+          <div><b>prova de domínio</b>Você apresentou internamente para o time pelo menos uma vez, gravou, e assistiu.</div>
+        </div>
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>A conversa difícil</h2><p>Dar retorno, discordar de quem decide, e receber crítica — a metade que ninguém treina.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>SBI: fato antes de julgamento</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">modelo</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>Situação, Comportamento, Impacto.</b> O modelo do Center for Creative Leadership mantém a conversa no observável — e o observável não é discutível.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um colega comenta "isso está errado" em quatro pontos do seu PR, sem explicar. Você passa a tarde adivinhando o que mudar e não pergunta, para não parecer perdido.</p>
+          <p>Você quer dar esse retorno. A versão que sai naturalmente é <i>"você é muito duro nas revisões"</i> — e essa frase transforma a conversa num debate sobre quem ele é.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre um relatório de bug e uma reclamação. "O sistema é lento" gera defesa. "Na página de pedidos, com filtro de data, o carregamento leva 12 segundos — medi três vezes" gera investigação. Retorno é relatório de bug sobre comportamento.</p></div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — julgamento</div><pre><code>"Voce e muito duro nas revisoes."
+
+O outro defende o carater.
+A conversa morre, e nada muda —
+porque nao ficou claro o que mudar.</code></pre></div>
+          <div class="depois"><div class="lab">depois — SBI</div><pre><code>S: "Na review do PR 412, ontem de manha,"
+
+B: "voce comentou 'isso esta errado' em
+    quatro pontos, sem explicar o porque,"
+
+I: "e eu passei a tarde tentando adivinhar
+    o que mudar. Acabei nao perguntando
+    para nao parecer perdido."
+
+Nada aqui e discutivel. Aconteceu.</code></pre></div>
+        </div>
+
+        <p>Repare no que <b>não</b> está ali: nenhum "você é", nenhuma generalização, nenhum adjetivo sobre a pessoa. Só quando, o quê, e o efeito — e o efeito é sobre você, que é a única coisa sobre a qual você tem autoridade total.</p>
+
+        <div class="cs"><b>E o quarto passo, que quase ninguém dá:</b> <b>perguntar a intenção</b>. "O que você tinha em mente naqueles comentários?" Na esmagadora maioria dos casos, a intenção era boa e o impacto foi ruim — e separar as duas coisas abre espaço para a pessoa explicar sem se defender. Frequentemente revela um mal-entendido em vez de um conflito. Ir à conversa com a interpretação já fechada transforma a "conversa" num veredito.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Pular direto para o impacto.</b> Sem situação e comportamento, soa como acusação genérica.</li>
+            <li><b>Adjetivo sobre a pessoa.</b> "Agressivo", "desorganizado" — tudo isso é discutível e leva à defesa.</li>
+            <li><b>Guardar por semanas.</b> O retorno perde precisão e ganha carga emocional.</li>
+            <li><b>Sanduíche de elogio.</b> Todo mundo já sabe que o recheio é a crítica; o elogio em volta só a desvaloriza.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva um retorno que você vem adiando, no formato SBI, com a pergunta de intenção no fim. Escrever já muda como você vai falar.</div>
+          <div><b>prova de domínio</b>Você dá um retorno difícil e a pessoa responde explicando a intenção — em vez de se defender.</div>
+        </div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f2">
+        <div class="th"><h3>Discordar de quem decide — e receber crítica</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> três movimentos para discordar sem virar oposição — mostrar que entendeu, ancorar no <b>risco concreto</b>, e oferecer um teste que resolve com dado. E um quarto: <b>discordar e comprometer-se</b>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Seu gestor quer entregar na sexta. Você sabe que sem o índice a consulta leva 4 segundos, e não sabe o que acontece com o tráfego do lançamento.</p>
+          <p>Repetir "não dá" mais alto não funciona. O que funciona é transformar a discordância em <b>medição</b>.</p>
+        </div>
+
+        <pre><code>"Deixa eu ver se entendi a sua posicao: voce quer entregar
+ na sexta porque o cliente ja foi avisado. Faz sentido.
+
+ O risco que eu vejo e concreto: sem o indice, a consulta
+ leva 4 segundos com o volume atual — medi ontem. Na sexta,
+ com o trafego do lancamento, eu nao sei o que acontece.
+
+ Proposta: eu meco com carga hoje a tarde. Se aguentar,
+ entrego na sexta sem reclamar. Se nao, a gente decide
+ com o numero na mao."</code></pre>
+
+        <p>Os três movimentos estão todos ali. <b>Explicitar que entendeu</b> desarma — a outra pessoa para de repetir o argumento dela. <b>Ancorar no risco concreto e medido</b> tira a conversa do campo da preferência. <b>Oferecer o teste</b> transforma um impasse em uma tarefa de três horas.</p>
+
+        <div class="cs"><b>E o quarto movimento, que é o mais adulto:</b> <b>discordar e comprometer-se</b>. Se a decisão for entregar mesmo assim, registre a divergência — por escrito, sem drama — e entregue <b>bem</b>. Sabotar passivamente o que foi decidido é o que realmente queima capital político, muito mais que discordar em voz alta. E se você estava certo, o registro fala por si depois; se estava errado, ninguém vai cobrar.</div>
+
+        <p><b>Receber crítica é a metade que ninguém treina</b> — e é o que faz as pessoas continuarem te dando retorno, que é o insumo de toda melhoria. Três passos: <b>ouvir até o fim sem interromper</b>, fazer <b>uma</b> pergunta de esclarecimento, e <b>agradecer antes de responder</b> — mesmo discordando.</p>
+        <p>Explicar imediatamente é o erro padrão: a explicação soa como defesa, e a pessoa aprende que dar retorno a você custa caro. Se a crítica for injusta, você pode dizer isso depois, com calma, e vai ser ouvido melhor.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Repetir o mesmo argumento mais alto.</b> Se não convenceu duas vezes, o problema não é volume.</li>
+            <li><b>Discordar sem oferecer caminho.</b> Vira obstáculo, não contribuição.</li>
+            <li><b>Sabotar passivamente o que foi decidido.</b> O que mais custa reputação.</li>
+            <li><b>Explicar antes de agradecer.</b> Fecha o canal de retorno para sempre.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Na próxima crítica que receber, faça só isto: ouça até o fim, pergunte uma coisa, agradeça. Responda depois — ou no dia seguinte.</div>
+          <div><b>prova de domínio</b>Você discordou de uma decisão, ela foi tomada contra você, e você a executou bem — com a divergência registrada.</div>
+        </div>
+        <button class="done" type="button" data-k="f2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 07 ===================== -->
+    <section class="part" id="p7">
+      <div class="ph"><span class="num">07</span><div><h2>A reunião</h2><p>Participar, conduzir, e os trinta segundos finais que evitam duas semanas.</p></div></div>
+
+      <article class="topic" id="g1">
+        <div class="th"><h3>Tomar a vez, conduzir e recapitular</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> a vez é <b>tomada</b>, não concedida. A pausa educada não vem — e esperar por ela costuma significar sair da reunião com a objeção não dita.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É esperar o pool de conexões esvaziar sozinho. Não esvazia — tem sempre alguém pedindo. Ou você entra com estratégia, ou fica fora.</p></div>
+
+        <p>Frases de entrada fazem duas coisas ao mesmo tempo: sinalizam que você vai falar e compram o segundo que você precisa. "Posso entrar aqui?", "complementando o que a Ana disse", "um comentário rápido sobre isso". E o erro que anula tudo: montar a frase inteira antes de abrir a boca — quando você termina de montar, o assunto mudou. Comece pela frase de entrada e monte o resto falando.</p>
+
+        <p><b>Conduzir é falar menos.</b> Facilitar uma reunião é garantir que a decisão saia, não apresentar. Abra com objetivo e tempo, chame quem não falou, e feche recapitulando. Se quem convocou falou 80% do tempo, não era reunião — era comunicado, e podia ter sido uma mensagem.</p>
+
+        <div class="cs"><b>Os trinta segundos que mais rendem em qualquer reunião:</b> recapitular no fim, em voz alta — <b>o que foi decidido, quem faz, até quando</b>. É onde o mal-entendido aparece, e ali ele é barato. Confiar na ata escrita depois não funciona: quem leu a ata já tinha entendido, e quem entendeu errado não vai reler. É a mesma técnica da confirmação de nível 3 do documento de inglês, aplicada ao grupo.</div>
+
+        <div class="ver"><b>o par deste documento</b>As mesmas frases de entrada e de confirmação, em inglês e com o vocabulário de reunião remota, estão em <a href="ingles.html">Inglês técnico completo</a>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Esperar o silêncio perfeito.</b> Ele não vem.</li>
+            <li><b>Quem convoca falar o tempo todo.</b> Era comunicado, não reunião.</li>
+            <li><b>Terminar sem dono e prazo.</b> "A gente se fala" é a forma educada de não decidir.</li>
+            <li><b>Não chamar quem ficou calado.</b> Frequentemente é quem tinha a objeção que importava.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Na próxima reunião que você não conduz, faça a recapitulação no fim mesmo assim. Ninguém vai reclamar, e você vai descobrir pelo menos um desalinhamento.</div>
+          <div><b>prova de domínio</b>Você entra numa conversa em andamento sem ser convidado e sem pedir desculpa.</div>
+        </div>
+        <button class="done" type="button" data-k="g1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 08 ===================== -->
+    <section class="part" id="p8">
+      <div class="ph"><span class="num">08</span><div><h2>A escrita que fala</h2><p>O texto é a sua oratória assíncrona — a apresentação que roda sem você na sala.</p></div></div>
+
+      <article class="topic" id="h1">
+        <div class="th"><h3>ADR, pedido e leitura em diagonal</h3><div class="badges"><span class="badge b-prof">escala</span></div></div>
+        <p class="direto"><b>Direto:</b> um texto bom convence gente que você nunca vai encontrar. É a forma mais escalável de influência que existe no trabalho técnico.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre atender uma requisição e publicar um cache. A conversa resolve uma pessoa por vez; o documento resolve todas as que vierem, inclusive as que você não sabe que existem.</p></div>
+
+        <p>A ordem do marco 03 — restrição, opções, escolha, preço — funciona no texto, com uma diferença crucial: <b>você não pode ler a sala</b>. Então precisa antecipar a objeção e respondê-la no próprio documento. Uma seção de "alternativas consideradas e por que não" faz metade do trabalho de convencimento sozinha.</p>
+        <p>O erro que estraga documento técnico é escrever <b>para se proteger</b> em vez de para convencer. Texto defensivo é longo, vago, cheio de ressalva — e ninguém lê. Se o objetivo é não poder ser culpado depois, o documento já falhou.</p>
+
+        <p><b>E escrever para ser lido em diagonal</b>, porque é assim que leem. A primeira frase de cada parágrafo precisa bastar: quem ler só as primeiras frases tem que sair com a mensagem inteira. Construir o argumento com a conclusão no fim é formato de artigo acadêmico — péssimo para leitura de trabalho, em que a pessoa decide nos primeiros dez segundos se continua.</p>
+
+        <div class="cs"><b>Para pedido assíncrono, a estrutura é outra:</b> <b>o pedido no começo</b>, contexto mínimo, o que você já tentou, e a urgência real. Narrativa cronológica com o pedido no fim faz a pessoa abandonar no terceiro parágrafo. E dizer "sem pressa" quando não é urgente compra boa vontade para quando for.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Escrever para se proteger.</b> Longo, vago, não lido.</li>
+            <li><b>Conclusão no fim.</b> Formato acadêmico em contexto de trabalho.</li>
+            <li><b>Sem seção de alternativas.</b> A primeira pergunta de todo leitor fica sem resposta.</li>
+            <li><b>Pedido no fim da mensagem.</b> Custa um ciclo de resposta.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue um documento seu e leia <b>só</b> a primeira frase de cada parágrafo. Se a mensagem não se sustenta, reescreva essas frases.</div>
+          <div><b>prova de domínio</b>Alguém que você não conhece toma uma decisão baseada num documento seu, sem precisar te procurar.</div>
+        </div>
+        <button class="done" type="button" data-k="h1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 09 ===================== -->
+    <section class="part" id="p9">
+      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: a gravação é a medição</h2><p>Oratória não melhora pensando sobre oratória. Melhora vendo o que saiu.</p></div></div>
+
+      <article class="topic" id="i1">
+        <div class="th"><h3>O ciclo, onde praticar, e as quatro falas</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
+        <p class="direto"><b>Direto:</b> preparar → gravar → <b>assistir</b> → refazer, com <b>uma</b> correção por rodada. O passo que ensina é o terceiro, e é o que todo mundo pula.</p>
+
+        <p>É o mesmo princípio de medição dos outros doze documentos: número antes, número depois. Aqui a medição é a sua própria voz — e é por isso que ela é desconfortável e insubstituível ao mesmo tempo. Ler sobre técnicas de oratória e nunca gravar é o equivalente a estudar System Design sem nunca desenhar.</p>
+
+        <p><b>Onde praticar com plateia real.</b> O <b>Toastmasters</b> é uma organização educacional sem fins lucrativos, com clubes que se reúnem online e presencialmente; está no Brasil desde 2007, com dezenas de clubes, e a metodologia atual — <i>Pathways</i> — organiza o desenvolvimento em trilhas com projetos.</p>
+        <p>Duas peças do formato explicam o resultado: você <b>discursa</b> e você <b>avalia</b> os outros. Avaliar treina o olho que depois corrige a sua própria fala — é o mesmo mecanismo de revisar código alheio para melhorar o próprio. E há clubes em português, em inglês e em espanhol, o que permite treinar as duas competências deste par de documentos ao mesmo tempo.</p>
+
+        <div class="cs"><b>O erro de quem quer entrar:</b> esperar estar bom. O clube existe exatamente para quem não está — e o ambiente é construído para isso. É a exposição gradual do marco 01, com estrutura e retorno semanal, que é a coisa mais difícil de arranjar sozinho.</div>
+
+        <h4 class="codelab">o laboratório das quatro falas</h4>
+        <pre><code>SEMANA 1 — defender uma decisao
+  grave 3 min sobre uma decisao tecnica REAL que voce tomou,
+  na ordem: restricao -> opcoes -> escolha -> PRECO
+
+SEMANA 2 — traduzir
+  grave 2 min explicando o MESMO trade-off para alguem de
+  negocio. Nenhum termo tecnico. Risco, custo e prazo.
+
+SEMANA 3 — narrar sob pressao
+  grave 5 min de System Design em voz alta, sem parar.
+  Conte quantos silencios acima de 5 s.
+
+SEMANA 4 — a conversa dificil
+  escreva uma conversa real em SBI, ensaie em voz alta,
+  e entao TENHA a conversa.
+
+SEMANA 5
+  regrave a fala 1 e compare com a original.
+
+O registro:
+  data | contexto | duracao | UMA coisa a corrigir</code></pre>
+
+        <div class="ver"><b>o par e o acervo</b>A camada linguística — narrar, tomar a vez e confirmar em inglês — está em <a href="ingles.html">Inglês técnico completo</a>. E o material das quatro falas sai direto do acervo: as decisões estão em <a href="arquitetura.html">Arquitetura</a>, os casos em <a href="system-design.html">System Design</a>, e os projetos do <a href="projetos.html">Laboratório</a> pedem ADR e evidência — que são exatamente o conteúdo que você vai defender.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça a fala da semana 1 hoje. Três minutos, gravados, sobre algo que você já decidiu. É o exercício mais curto deste documento e o que mais muda.</div>
+          <div><b>prova de domínio</b>Você tem cinco gravações e consegue apontar, na quinta, três coisas que melhoraram desde a primeira.</div>
+        </div>
+        <button class="done" type="button" data-k="i1">marcar dominado</button>
+      </article>
+    </section>
+
+
+
+    <footer class="foot">
+      <p>Oratória e comunicação · setembro de 2026 · o décimo terceiro documento do acervo, em tema Dracula. Fica <b>fora da semana</b>, junto com o Inglês, o Linux, o Git e o Conceitos de Backend: é competência de uso contínuo. O par deste arquivo é o <code class="ic">Inglês técnico completo</code> — os dois tratam da mesma coisa por ângulos diferentes: ser entendido. E ele fecha o acervo pelo lado que faltava: os outros doze ensinam a decidir certo; este, a fazer a decisão acontecer.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script>
+function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
+var DG={
+ reapp:W(164,'<text x="170" y="16" class="bt">o mesmo corpo, dois nomes</text><rect x="100" y="30" width="140" height="38" rx="9" class="b3"/><text x="170" y="47" class="bs">coracao acelerado · adrenalina</text><text x="170" y="61" class="bs">mãos frias · alerta</text><path d="M140,70 L86,96" class="lr"/><path d="M86,96 L94,94 L92,101 Z" class="hr"/><path d="M200,70 L254,96" class="lt"/><path d="M254,96 L246,94 L248,101 Z" class="ht"/><rect x="14" y="98" width="134" height="36" rx="9" class="b5"/><text x="81" y="114" class="bs">"estou ansioso"</text><text x="81" y="128" class="bs">ameaça · evitar</text><rect x="192" y="98" width="134" height="36" rx="9" class="b1"/><text x="259" y="114" class="bs">"estou empolgado"</text><text x="259" y="128" class="bs">oportunidade · agir</text><text x="170" y="154" class="bt">de ativado para calmo é um salto · para empolgado, um passo</text>'),
+ exposicao:W(156,'<text x="170" y="16" class="bt">exposição gradual: o ensaio que conta</text><rect x="10" y="34" width="72" height="34" rx="8" class="b1"/><text x="46" y="50" class="bs">sozinho</text><text x="46" y="63" class="bs">em voz alta</text><path d="M84,51 L100,51" class="l"/><path d="M100,51 L92,47 L92,55 Z" class="h"/><rect x="102" y="34" width="72" height="34" rx="8" class="b1"/><text x="138" y="50" class="bs">gravando</text><text x="138" y="63" class="bs">e ouvindo</text><path d="M176,51 L192,51" class="l"/><path d="M192,51 L184,47 L184,55 Z" class="h"/><rect x="194" y="34" width="68" height="34" rx="8" class="b2"/><text x="228" y="50" class="bs">1 pessoa</text><text x="228" y="63" class="bs">amiga</text><path d="M264,51 L280,51" class="l"/><path d="M280,51 L272,47 L272,55 Z" class="h"/><rect x="282" y="34" width="50" height="34" rx="8" class="b4"/><text x="307" y="56" class="bs">o real</text><text x="170" y="88" class="bs">cada degrau ensina ao sistema nervoso que a ameaça foi superestimada</text><text x="170" y="112" class="bt">a evitação é o que mantém o medo vivo</text><text x="170" y="132" class="bs">três a quatro sessões já reduzem de forma mensurável</text>'),
+ estrutura:W(158,'<text x="86" y="16" class="bt">✗ começa pelo slide</text><text x="254" y="16" class="bt">✓ começa pela frase</text><line x1="170" y1="24" x2="170" y2="134" class="l d"/><rect x="14" y="32" width="140" height="26" rx="7" class="b5"/><text x="84" y="49" class="bs">abre o editor</text><rect x="14" y="64" width="140" height="26" rx="7" class="b5"/><text x="84" y="81" class="bs">40 slides bonitos</text><rect x="14" y="96" width="140" height="26" rx="7" class="b5"/><text x="84" y="113" class="bs">sem tese</text><rect x="184" y="32" width="142" height="26" rx="7" class="b1"/><text x="255" y="49" class="bs">1 frase: a tese</text><rect x="184" y="64" width="142" height="26" rx="7" class="b1"/><text x="255" y="81" class="bs">3 apoios</text><rect x="184" y="96" width="142" height="26" rx="7" class="b1"/><text x="255" y="113" class="bs">slide por último</text><text x="170" y="150" class="bt">se não cabe numa frase, você ainda não decidiu o que dizer</text>'),
+ adr:W(166,'<text x="170" y="16" class="bt">defender uma decisão: a ordem que convence</text><rect x="10" y="32" width="150" height="28" rx="8" class="b2"/><text x="85" y="50" class="bs">1 · a restrição que existia</text><rect x="10" y="66" width="150" height="28" rx="8" class="b2"/><text x="85" y="84" class="bs">2 · as opções reais</text><rect x="10" y="100" width="150" height="28" rx="8" class="b1"/><text x="85" y="118" class="bs">3 · o que escolhi e o PREÇO</text><rect x="182" y="32" width="148" height="28" rx="8" class="b5"/><text x="256" y="50" class="bs">✗ começar pela solução</text><rect x="182" y="66" width="148" height="28" rx="8" class="b5"/><text x="256" y="84" class="bs">✗ omitir o preço</text><rect x="182" y="100" width="148" height="28" rx="8" class="b5"/><text x="256" y="118" class="bs">✗ só uma opção</text><text x="170" y="146" class="bs">quem nomeia o próprio preço parece dono da decisão</text><text x="170" y="160" class="bt">quem esconde parece vendedor</text>'),
+ sbi:W(160,'<text x="170" y="16" class="bt">SBI: fato antes de julgamento</text><rect x="8" y="32" width="100" height="46" rx="9" class="b2"/><text x="58" y="50" class="bs">SITUAÇÃO</text><text x="58" y="64" class="bs">quando e onde</text><text x="58" y="75" class="bs">"na review de ontem"</text><rect x="118" y="32" width="104" height="46" rx="9" class="b2"/><text x="170" y="50" class="bs">COMPORTAMENTO</text><text x="170" y="64" class="bs">o que foi observável</text><text x="170" y="75" class="bs">"você disse X"</text><rect x="232" y="32" width="100" height="46" rx="9" class="b1"/><text x="282" y="50" class="bs">IMPACTO</text><text x="282" y="64" class="bs">o efeito em você</text><text x="282" y="75" class="bs">"eu travei"</text><path d="M110,55 L116,55" class="l"/><path d="M224,55 L230,55" class="l"/><text x="170" y="100" class="bs">nada aqui é "você é" — tudo é "aconteceu" e "eu senti"</text><text x="170" y="124" class="bt">e o quarto passo que quase ninguém dá:</text><text x="170" y="142" class="bs">perguntar a intenção. "o que você tinha em mente?"</text>'),
+ ciclo:W(150,'<text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="66" height="30" rx="8" class="b2"/><text x="43" y="53" class="bs">preparar</text><path d="M78,49 L96,49" class="l"/><path d="M96,49 L88,45 L88,53 Z" class="h"/><rect x="98" y="34" width="66" height="30" rx="8" class="b2"/><text x="131" y="53" class="bs">gravar</text><path d="M166,49 L184,49" class="l"/><path d="M184,49 L176,45 L176,53 Z" class="h"/><rect x="186" y="34" width="66" height="30" rx="8" class="b5"/><text x="219" y="53" class="bs">assistir</text><path d="M254,49 L272,49" class="l"/><path d="M272,49 L264,45 L264,53 Z" class="h"/><rect x="274" y="34" width="60" height="30" rx="8" class="b1"/><text x="304" y="53" class="bs">refazer</text><path d="M304,66 L304,88 L43,88 L43,66" class="lt d"/><path d="M43,66 L39,74 L47,74 Z" class="ht"/><text x="170" y="104" class="bs">assistir a própria gravação é desconfortável — e é o passo que ensina</text><text x="170" y="126" class="bt">é a mesma prova dos outros documentos: medir antes e depois</text><text x="170" y="142" class="bs">e aqui a medição é a sua própria voz</text>')
+};
+
+var T=[
+{g:"01",n:"O corpo antes da fala",s:"o nervosismo tem mecanismo — e conserto com evidência",c:"var(--purple)",cs:"var(--purple-soft)",items:[
+ {t:"Reavaliar, não acalmar",x:"'estou empolgado' bate 'calma'",dg:"reapp",oq:"Em vez de tentar se acalmar, <b>renomear</b> a ativação como empolgação. Um estudo de Alison Wood Brooks (Harvard, 2014) mostrou que quem faz isso antes de falar em público apresenta melhor e é avaliado como mais persuasivo, confiante e competente.",ps:"Substituir o conselho inútil — 'relaxa' — por uma intervenção de três segundos que funciona.",cf:"A razão é fisiológica: ansiedade e empolgação produzem sintomas quase idênticos — coração acelerado, adrenalina, atenção aguçada. A diferença está no <b>rótulo</b>, e ir de ativado para calmo é um salto grande; de ativado para empolgado, um passo. <b>Erro comum:</b> tentar suprimir o nervosismo. A supressão consome recurso mental que você precisaria para falar.",ex:"Antes de comecar, em voz baixa ou mentalmente:\n\n  \"Estou empolgado.\"\n\nDito literalmente. Parece bobo e funciona.\nO estudo original usou exatamente isso, em voz alta."},
+ {t:"Exposição gradual",x:"a evitação é o que mantém o medo",dg:"exposicao",oq:"Ensaiar em condições progressivamente mais realistas: sozinho, gravando, para uma pessoa, para poucas, no real.",ps:"Reduzir a ansiedade de forma mensurável — a literatura aponta efeito perceptível já em três a quatro sessões.",cf:"Cada repetição bem-sucedida ensina ao sistema nervoso que a ameaça foi superestimada. E o inverso também é verdade: <b>evitar é o que mantém o medo vivo</b>, porque você nunca coleta a evidência contrária. <b>Erro comum:</b> pular do ensaio mental direto para a apresentação real — os degraus do meio são justamente os que produzem a evidência."},
+ {t:"A gravação que ninguém faz",x:"desconfortável e insubstituível",oq:"Gravar o próprio ensaio e assistir.",ps:"Ver a diferença entre o que você acha que fez e o que saiu — a única forma de corrigir o que você não percebe.",cf:"É desconfortável nas primeiras vezes e isso é esperado. Assista uma vez procurando <b>uma</b> coisa só: ritmo, ou muletas, ou onde você olha. Corrigir tudo de uma vez não funciona. <b>Erro comum:</b> gravar e não assistir — o que transforma o exercício em teatro."},
+ {t:"Respiração e o corpo",x:"o que funciona e o que é folclore",oq:"Respiração lenta e diafragmática reduz a ativação fisiológica; postura e gesto também têm efeito medido sobre ansiedade autorrelatada e frequência cardíaca.",ps:"Ter uma ferramenta física para o minuto antes, quando o argumento racional não alcança.",cf:"O que funciona: expiração <b>mais longa</b> que a inspiração, por um minuto. O que é folclore: imaginar a plateia sem roupa, e decorar a fala inteira para 'não errar'. <b>Erro comum:</b> respirar fundo e rápido, que aumenta a ativação em vez de reduzir."}
+]},
+{g:"02",n:"Estrutura antes de slide",s:"se não cabe numa frase, você ainda não decidiu",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
+ {t:"A frase única",x:"a tese, antes de tudo",dg:"estrutura",oq:"Escrever, em <b>uma</b> frase, o que você quer que a pessoa faça ou acredite ao final.",ps:"É o teste que revela se você tem algo a dizer ou só material a mostrar.",cf:"Se não cabe numa frase, você ainda não decidiu o que dizer — e vai descobrir isso no meio da apresentação, na frente de todo mundo. A frase não precisa ser dita em voz alta; ela é o critério para incluir ou cortar tudo o mais. <b>Erro comum:</b> abrir o editor de slides primeiro. A ferramenta sugere preencher, e preencher não é decidir.",ex:"RUIM  \"Vou falar sobre a migracao para mensageria.\"\n      (isso e um assunto, nao uma tese)\n\nBOM   \"Devemos adotar outbox agora, porque a duplicidade\n       de cobranca ja aconteceu duas vezes e o custo de\n       implementar e de duas semanas.\"\n      (afirma, justifica e quantifica)"},
+ {t:"Três apoios, não sete",x:"o que a memória do outro suporta",oq:"Sustentar a tese com três blocos, cada um com um argumento e uma evidência.",ps:"Caber na memória de quem ouve — que é o limite real, não o do tempo.",cf:"Quem ouve não retém sete pontos. Retém a tese e, com sorte, dois ou três apoios. Mais que isso não acrescenta: dilui. <b>Erro comum:</b> achar que cobrir mais tópicos demonstra profundidade. Demonstra falta de escolha."},
+ {t:"O slide é o último passo",x:"e muitos nem precisam de slide",oq:"Slide existe para mostrar o que <b>não</b> cabe na fala: um diagrama, um número, uma comparação.",ps:"Parar de ler slide em voz alta, que é o formato mais eficiente de perder a plateia.",cf:"Se o slide tem o texto do que você vai dizer, ele compete com você — e a leitura ganha, porque é mais rápida. Slide bom tem uma ideia e quase nenhuma palavra. <b>Erro comum:</b> usar o slide como roteiro pessoal. Para isso existem as anotações do apresentador."},
+ {t:"O tempo é restrição de projeto",x:"corte antes, não no palco",oq:"Ensaiar com cronômetro e cortar até caber com folga.",ps:"Evitar a apresentação que acelera no fim e entrega a conclusão atropelada.",cf:"Planeje para 80% do tempo disponível: pergunta, problema técnico e digressão consomem o resto. <b>Erro comum:</b> cortar no palco, o que sempre sacrifica a conclusão — que era a parte que importava."}
+]},
+{g:"03",n:"Defender uma decisão técnica",s:"ADR, trade-off e a plateia que não é técnica",c:"var(--green)",cs:"var(--green-soft)",items:[
+ {t:"A ordem que convence",x:"restrição, opções, escolha e preço",dg:"adr",oq:"Apresentar a decisão na ordem: a restrição que existia, as opções reais consideradas, a escolhida — e <b>o preço que ela cobra</b>.",ps:"Transformar 'eu acho' em decisão defensável, com o mesmo conteúdo.",cf:"Quem começa pela solução obriga a plateia a avaliar sem contexto, e a reação natural é resistir. Quem começa pela restrição faz a plateia chegar sozinha ao conjunto de opções — e aí a escolha parece consequência, não preferência. <b>Erro comum:</b> omitir o preço. Quem nomeia o próprio preço parece dono da decisão; quem esconde parece vendedor.",map:[["Arquitetura","ADR, a régua de profundidade e comunicar a decisão."],["System Design","Nomear o trade-off é o que separa proposta de lista."]]},
+ {t:"Apresentar uma opção só é armadilha",x:"a plateia precisa ver a alternativa",oq:"Mostrar ao menos duas opções reais, com o motivo de descartar a outra.",ps:"Dar à plateia o material para concordar — em vez de pedir que confie.",cf:"Opção única soa como decisão já tomada, e as pessoas resistem ao que não participaram. Duas opções, com critério explícito, convidam ao acordo. <b>Erro comum:</b> apresentar uma alternativa obviamente ruim só para ter o que descartar. Todo mundo percebe."},
+ {t:"Trade-off para quem não é técnico",x:"traduzir sem simplificar errado",oq:"Explicar a escolha em termos de <b>risco, custo e prazo</b> — a linguagem de quem decide orçamento.",ps:"Conseguir aprovação de quem não vai entender a parte técnica, e não precisa.",cf:"Troque o mecanismo pelo efeito: em vez de 'vamos usar outbox com relay', diga 'a cobrança duplicada para de acontecer; custa duas semanas e adia a outra entrega'. <b>Erro comum:</b> simplificar até virar mentira. Simplificar é trocar o nível de detalhe, não a verdade.",ex:"TECNICO   \"Implementar transactional outbox com relay\n           e publisher confirms.\"\n\nNEGOCIO   \"Hoje, quando a rede falha no momento errado,\n           o cliente pode ser cobrado duas vezes — ja\n           aconteceu duas vezes este ano.\n           A correcao custa duas semanas e adia X.\n           Sem ela, o risco continua e cresce com o volume.\"\n\nMesmo conteudo. Outro nivel de detalhe. Nenhuma mentira."},
+ {t:"Postmortem sem culpado",x:"o formato decide o resultado",oq:"Conduzir a análise de um incidente focando em <b>sistema e processo</b>, não em pessoa.",ps:"Conseguir que as pessoas contem o que realmente aconteceu — o que só ocorre quando ninguém teme a consequência.",cf:"A regra é simples e difícil: nenhuma frase do documento ou da reunião nomeia pessoa como causa. Timeline, sinal, decisão tomada com a informação disponível na hora, e o que faltava. <b>Erro comum:</b> perguntar 'quem fez o deploy?'. A pergunta certa é 'o que permitiu que um deploy causasse isso?'.",map:[["Conceitos de Backend","Observabilidade e o método de cinco passos."],["Spring","A sala de incidente: hipótese, evidência e runbook."]]}
+]},
+{g:"04",n:"A entrevista",s:"prova oral, inclusive a de System Design",c:"var(--orange)",cs:"var(--orange-soft)",items:[
+ {t:"Narrar enquanto pensa",x:"o silêncio é lido como não saber",oq:"Verbalizar o raciocínio em andamento, incluindo as hipóteses que você vai descartar.",ps:"O entrevistador avalia o <b>processo</b>, e processo que não é narrado não existe para ele.",cf:"O documento de System Design já lista <i>pensar sem narrar</i> entre os erros eliminatórios. Frases de transição resolvem: 'deixa eu pensar em voz alta', 'meu primeiro instinto é X, mas isso implicaria Y'. <b>Erro comum:</b> ficar em silêncio montando a resposta perfeita. Trinta segundos de silêncio custam mais que uma hipótese descartada em voz alta.",map:[["System Design","O método, as perguntas de carga e a escada — o roteiro da narração."],["Inglês","As frases de narrar e de ganhar tempo, em inglês."]]},
+ {t:"Perguntar é a primeira resposta",x:"e compra tempo de quebra",oq:"Antes de propor, converter o enunciado vago em requisito — contrato, workload, gargalo.",ps:"É bom método <b>e</b> boa oratória ao mesmo tempo: você demonstra senioridade e ganha segundos para organizar.",cf:"Duas ou três perguntas bastam; mais que isso vira fuga. E use as respostas explicitamente depois: 'como você disse que leitura domina, vou priorizar...'. <b>Erro comum:</b> perguntar e não usar a resposta, o que revela que a pergunta era protocolo."},
+ {t:"A pergunta hostil",x:"e a que você não sabe responder",oq:"Perguntas que testam se você sustenta a posição ou desmorona — e as que você simplesmente não sabe.",ps:"Sair bem das duas, que é possível e depende de coisas diferentes.",cf:"Na hostil: não defenda por reflexo. Reconheça a parte válida, mantenha o núcleo — 'você tem razão de que X é um risco; ainda assim escolhi Y por Z'. Na que não sabe: <b>diga que não sabe</b> e mostre como descobriria. Inventar é o único caminho que fecha portas. <b>Erro comum:</b> tratar discordância como ataque e endurecer.",ex:"HOSTIL\n  — \"Isso nao escala.\"\n  — \"Em que cenario, especificamente? Se for acima de\n     N por segundo, concordo — e ai a saida seria X.\n     Abaixo disso, o custo de X nao se paga.\"\n\nNAO SEI\n  — \"Nao sei, e prefiro nao chutar. Eu descobriria\n     medindo Y com uma carga de Z. Se voce quiser,\n     posso raciocinar sobre as possibilidades.\"\n     (e ai VOLTE a raciocinar — nao pare no 'nao sei')"},
+ {t:"Conduzir o tempo",x:"quarenta e cinco minutos são seus",oq:"Gerenciar o ritmo da própria entrevista: sinalizar etapas, avisar quando vai aprofundar, oferecer escolha.",ps:"Evitar gastar trinta minutos no desenho inicial e não chegar à parte que você domina.",cf:"Frases de condução — 'vou desenhar o básico primeiro e depois aprofundo onde você preferir' — transferem parte do controle e evitam a surpresa de acabar o tempo no lugar errado. <b>Erro comum:</b> esperar ser conduzido, e depois lamentar que 'não deu tempo de falar sobre'."}
+]},
+{g:"05",n:"O palco",s:"meetup, palestra e conteúdo gravado",c:"var(--pink)",cs:"var(--pink-soft)",items:[
+ {t:"A abertura que compra atenção",x:"trinta segundos decidem",oq:"Começar por um problema concreto, um número surpreendente ou uma pergunta — nunca por agradecimento e agenda.",ps:"Atenção é alocada nos primeiros segundos, e recuperá-la depois é muito mais caro.",cf:"'Bom dia, meu nome é, hoje vou falar sobre, agenda' gasta o momento de maior atenção com o que menos importa. Abra pelo problema; o seu nome cabe depois. <b>Erro comum:</b> pedir desculpa na abertura — pelo nervosismo, pelo inglês, pelo slide. Você acabou de dirigir a atenção para o defeito.",ex:"RUIM  \"Bom dia, meu nome e X, trabalho na Y, e hoje vou\n       falar sobre mensageria. A agenda e...\"\n\nBOM   \"Dois clientes foram cobrados duas vezes no mesmo mes.\n       O codigo estava certo. O banco estava certo.\n       Vou mostrar onde estava o problema.\"\n       (e o nome vem depois, em cinco segundos)"},
+ {t:"Uma ideia por palestra",x:"não é resumo do documento",oq:"Palestra não comporta a densidade de um documento. Escolha uma ideia e sustente.",ps:"Ser lembrado por algo, em vez de ter coberto muito e marcado nada.",cf:"O material excedente vira o repositório e o texto que você linka no final. <b>Erro comum:</b> transformar um documento de 25 tópicos em 40 slides. Ninguém sai com nada."},
+ {t:"Vídeo e conteúdo gravado",x:"o que muda sem plateia",oq:"Sem retorno ao vivo, a edição substitui a leitura da sala — e o ritmo precisa ser mais rápido.",ps:"Adaptar em vez de gravar uma palestra que ficaria boa ao vivo.",cf:"Pausas que funcionam no palco parecem lentidão no vídeo. Em compensação, você pode refazer — e a segunda gravação quase sempre é substancialmente melhor. <b>Erro comum:</b> tentar acertar de primeira e publicar a primeira tomada."},
+ {t:"Começar pequeno",x:"o meetup antes da conferência",oq:"Apresentar primeiro para o time, depois para a empresa, depois para um meetup local.",ps:"É a exposição gradual do marco 01 aplicada ao palco.",cf:"Cada degrau produz a evidência de que deu certo e reduz a ansiedade do próximo. Falar internamente também é palestra — e é o degrau mais fácil de conseguir. <b>Erro comum:</b> esperar 'ter algo digno de conferência'. A prática é que produz o material, não o contrário."}
+]},
+{g:"06",n:"A conversa difícil",s:"discordar, dar retorno, sustentar posição",c:"var(--red)",cs:"var(--red-soft)",items:[
+ {t:"O modelo SBI",x:"situação, comportamento, impacto",dg:"sbi",oq:"Estrutura do Center for Creative Leadership para retorno: descrever <b>quando e onde</b>, <b>o que foi observável</b>, e <b>o efeito</b> — sem julgamento sobre a pessoa.",ps:"Dar retorno corretivo sem que a conversa vire defesa de caráter.",cf:"A força está em ficar no observável: 'na review de ontem, você disse X; eu travei e não trouxe o contra-argumento' não é discutível — aconteceu. 'Você é agressivo nas reviews' é, e a conversa vira debate sobre quem você é. <b>Erro comum:</b> pular direto para o impacto sem a situação, o que soa como acusação genérica.",ex:"SEM ESTRUTURA\n  \"Voce e muito duro nas revisoes.\"\n  -> o outro defende o carater. a conversa morre.\n\nCOM SBI\n  S: \"Na review do PR 412, ontem de manha,\"\n  B: \"voce comentou 'isso esta errado' em quatro pontos,\n      sem explicar o porque,\"\n  I: \"e eu passei a tarde tentando adivinhar o que mudar,\n      e acabei nao perguntando para nao parecer perdido.\"\n\n  E o quarto passo:\n  \"O que voce tinha em mente naqueles comentarios?\""},
+ {t:"Perguntar a intenção",x:"o passo que quase ninguém dá",oq:"Depois do SBI, perguntar o que a pessoa pretendia — em vez de assumir.",ps:"Separar <b>intenção</b> de <b>impacto</b>, que quase nunca coincidem.",cf:"Na esmagadora maioria dos casos a intenção era boa e o impacto foi ruim. Perguntar abre espaço para a pessoa explicar sem se defender, e frequentemente revela um mal-entendido em vez de um conflito. <b>Erro comum:</b> ir à conversa com a interpretação já fechada — o que faz da 'conversa' um veredito."},
+ {t:"Discordar de quem decide",x:"sem virar oposição",oq:"Sustentar uma posição técnica contra alguém com mais autoridade formal.",ps:"Ser ouvido sem queimar capital político — e saber quando parar.",cf:"Três movimentos: explicite que você entendeu a posição da outra pessoa antes de discordar; ancore no <b>risco concreto</b>, não na preferência; e ofereça um teste que resolveria a discordância com dado. E o quarto, que é o mais adulto: <b>discordar e comprometer-se</b> — registrar a divergência e executar bem a decisão tomada. <b>Erro comum:</b> repetir o mesmo argumento mais alto. Se não convenceu duas vezes, o problema não é volume.",ex:"\"Deixa eu ver se entendi a sua posicao: voce quer entregar\n na sexta porque o cliente ja foi avisado. Faz sentido.\n\n O risco que eu vejo e concreto: sem o indice, a consulta\n leva 4 s com o volume atual — medi ontem. Na sexta, com\n o trafego do lancamento, nao sei o que acontece.\n\n Proposta: eu meco com carga hoje a tarde. Se aguentar,\n entrego na sexta sem reclamar. Se nao, a gente decide\n com o numero na mao.\"\n\nE se a decisao for entregar mesmo assim:\n registre a divergencia, e entregue BEM."},
+ {t:"Receber crítica",x:"a metade que ninguém treina",oq:"Ouvir retorno negativo sem se defender por reflexo.",ps:"É o que faz as pessoas continuarem te dando retorno — e retorno é o insumo de toda melhoria.",cf:"Três passos: ouvir até o fim sem interromper, fazer <b>uma</b> pergunta de esclarecimento, e agradecer antes de responder — mesmo discordando. Se a crítica for injusta, você pode dizer isso depois, com calma. <b>Erro comum:</b> explicar imediatamente. A explicação soa como defesa e encerra o canal."}
+]},
+{g:"07",n:"A reunião",s:"conduzir, participar e sobreviver à interrupção",c:"var(--blue)",cs:"var(--blue-soft)",items:[
+ {t:"Tomar a vez",x:"ela é tomada, não concedida",oq:"Entrar numa conversa em andamento com uma frase de entrada, em vez de esperar a pausa educada.",ps:"Participar de verdade — e não sair da reunião com a objeção não dita.",cf:"A pausa perfeita não vem. Frases de entrada — 'posso entrar aqui?', 'complementando o que a Ana disse' — sinalizam que você vai falar e compram o segundo que você precisa. <b>Erro comum:</b> montar a frase inteira antes de abrir a boca; quando termina, o assunto mudou.",map:[["Inglês","As mesmas frases de entrada, em inglês, com o vocabulário de reunião."]]},
+ {t:"Conduzir sem virar palestra",x:"quem conduz fala menos",oq:"Facilitar uma reunião é garantir que a decisão saia — não apresentar.",ps:"Sair com decisão tomada e responsável definido, em vez de 'a gente se fala'.",cf:"Abra com o objetivo e o tempo, chame quem não falou, e feche recapitulando decisão, dono e prazo. <b>Erro comum:</b> quem convoca falar 80% do tempo — nesse caso não era reunião, era comunicado, e podia ter sido uma mensagem."},
+ {t:"Recapitular no fim",x:"trinta segundos que evitam duas semanas",oq:"Repetir, em voz alta, o que foi decidido, quem faz e até quando.",ps:"Alinhar entendimentos divergentes enquanto todos ainda estão na sala.",cf:"É onde o mal-entendido aparece — e é barato ali. <b>Erro comum:</b> confiar na ata escrita depois. Quem leu a ata já tinha entendido; quem entendeu errado não vai reler.",map:[["Inglês","A confirmação de nível 3: devolver o entendimento para ser corrigido."]]}
+]},
+{g:"08",n:"A escrita que fala",s:"o texto é a sua oratória assíncrona",c:"var(--yellow)",cs:"var(--yellow-soft)",items:[
+ {t:"ADR, RFC e proposta escrita",x:"a apresentação que roda sem você",oq:"Documento que apresenta uma decisão para quem vai ler sem você estar junto para explicar.",ps:"Escalar a sua influência: um texto bom convence gente que você nunca vai encontrar.",cf:"A mesma ordem do marco 03 — restrição, opções, escolha, preço — funciona no texto, com uma diferença: você não pode ler a sala, então precisa antecipar a objeção e respondê-la no próprio documento. <b>Erro comum:</b> escrever para se proteger, não para convencer. Texto defensivo é longo, vago e ninguém lê."},
+ {t:"A mensagem que pede algo",x:"pedido primeiro, contexto depois",oq:"Estrutura para pedir ajuda, aprovação ou informação de forma assíncrona.",ps:"Conseguir resposta na primeira tentativa.",cf:"Pedido no começo, contexto mínimo, o que você já tentou, e a urgência real. <b>Erro comum:</b> narrativa cronológica com o pedido no fim — a pessoa abandona antes de chegar lá."},
+ {t:"Escrever para ser lido em diagonal",x:"porque é assim que leem",oq:"Estruturar com negrito, título e primeira frase de parágrafo carregando a informação.",ps:"Sobreviver à leitura real, que é rápida e seletiva.",cf:"A primeira frase de cada parágrafo deve bastar. Quem ler só as primeiras frases precisa sair com a mensagem inteira. <b>Erro comum:</b> construir argumento com a conclusão no fim — formato de artigo acadêmico, péssimo para leitura de trabalho."}
+]},
+{g:"09",n:"Como aprender de verdade",s:"a gravação é a medição",c:"var(--amber)",cs:"var(--amber-soft)",items:[
+ {t:"O ciclo",x:"preparar, gravar, assistir, refazer",dg:"ciclo",oq:"Preparar a fala, gravar, <b>assistir</b>, e refazer com uma correção por vez.",ps:"Oratória não melhora pensando sobre oratória — melhora vendo o que saiu.",cf:"Assistir à própria gravação é desconfortável e é exatamente o passo que ensina, porque revela o que você não percebe enquanto fala. Corrija <b>uma</b> coisa por rodada. <b>Erro comum:</b> ler sobre técnicas e nunca gravar — que é o equivalente a estudar System Design sem nunca desenhar."},
+ {t:"Onde praticar de graça",x:"e por que Toastmasters funciona",oq:"O Toastmasters é uma organização educacional sem fins lucrativos com clubes que se reúnem online e presencialmente; no Brasil desde 2007, hoje com dezenas de clubes. A metodologia atual, <i>Pathways</i>, organiza o desenvolvimento em trilhas com projetos.",ps:"Ter plateia real e retorno estruturado toda semana, que é a coisa mais difícil de arranjar sozinho.",cf:"O formato tem duas peças que explicam o resultado: você <b>discursa</b> e você <b>avalia</b> — e avaliar treina o olho que depois corrige a sua própria fala. Há clubes em português, em inglês e em espanhol, o que permite treinar as duas competências deste documento ao mesmo tempo. <b>Erro comum:</b> esperar estar bom para entrar. O clube existe para quem não está."},
+ {t:"Praticar: o laboratório de quatro falas",x:"uma por semana, gravada",oq:"Quatro exercícios que cobrem os quatro contextos deste documento.",ps:"Sair da leitura e produzir evidência da própria evolução.",cf:"<b>1:</b> grave 3 minutos defendendo uma decisão técnica real que você tomou, na ordem restrição → opções → escolha → preço. <b>2:</b> grave 2 minutos explicando o mesmo trade-off para alguém de negócio, sem termo técnico. <b>3:</b> grave 5 minutos de System Design narrando em voz alta, sem parar. <b>4:</b> escreva e ensaie uma conversa difícil real usando SBI — e depois tenha a conversa.",ex:"O registro:\n  data | contexto | duracao | UMA coisa a corrigir\n\nNa semana 5, regrave a fala 1 e compare com a original.\nA diferenca entre as duas e a unica prova que interessa.",star:true}
+]}
+];
+
+/* ---------- render ---------- */
+var nav=document.getElementById("nav");
+var navMap={};
+function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
+var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
+flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
+var KEYT="oratoria-completo-CL-trilha-v1";
+var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
+var track=document.getElementById("track"),lg=document.getElementById("lg");
+navHead("A trilha · 9 marcos");
+T.forEach(function(g,gi){
+  var sec=document.createElement("section");
+  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
+  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
+  var ms=document.createElement("div");ms.className="milestone";
+  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
+  var box=document.createElement("div");box.className="cluster";
+  g.items.forEach(function(it){
+    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
+    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
+    b.addEventListener("click",function(){open(it._i);});
+    box.appendChild(b);
+  });
+  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
+  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
+  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
+  navMap["g"+g.g]=a;
+});
+var fim=document.createElement("div");fim.className="trail-end";
+fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
+track.appendChild(fim);
+var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
+function open(i){
+  cur=i;var it=flat[i];
+  panel.style.setProperty("--pc",it._g.c);
+  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
+  document.getElementById("pTitle").textContent=it.t;
+  document.getElementById("pSub").textContent=it.x;
+  var h='';
+  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
+  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
+  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
+  if(it.caso)h+='<div class="blk"><h4>No caso concreto</h4><p>'+it.caso+'</p></div>';
+  if(it.map)h+='<div class="blk"><h4>Onde a teoria mora</h4><table class="vmap"><tbody>'+it.map.map(function(r){return '<tr><td class="vp">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</tbody></table></div>';
+  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
+  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+esc(it.ex)+'</code></pre></div>';
+  document.getElementById("pBody").innerHTML=h;
+  document.getElementById("pBody").scrollTop=0;
+  syncMark();
+  panel.classList.add("on");scrim.classList.add("on");
+  document.getElementById("pX").focus();
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("pX").addEventListener("click",closeP);
+scrim.addEventListener("click",closeP);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeP();
+  if(!panel.classList.contains("on"))return;
+  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
+});
+function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
+document.getElementById("pNext").addEventListener("click",function(){go(1);});
+document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
+var mark=document.getElementById("pMark");
+function syncMark(){
+  var on=!!doneT[flat[cur]._id];
+  mark.classList.toggle("is",on);
+  mark.textContent=on?"✓ estudado":"marcar estudado";
+}
+mark.addEventListener("click",function(){
+  var id=flat[cur]._id;
+  if(doneT[id])delete doneT[id];else doneT[id]=1;
+  localStorage.setItem(KEYT,JSON.stringify(doneT));
+  syncMark();paint();
+});
+var parts=[].slice.call(document.querySelectorAll("section.part"));
+var entries=[];
+navHead("O conteúdo · 9 partes");
+parts.forEach(function(sec){
+  var num=sec.querySelector(".ph .num").textContent.trim();
+  var h2=sec.querySelector(".ph h2").textContent;
+  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
+  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
+  sec.querySelectorAll("article.topic").forEach(function(t){
+    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
+    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
+    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
+  });
+});
+var KEYM="oratoria-completo-CL-conteudo-v1";
+var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
+var botoes=[].slice.call(document.querySelectorAll(".done"));
+botoes.forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.k;
+    if(doneM[k])delete doneM[k];else doneM[k]=1;
+    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
+  });
+});
+function paint(){
+  var n=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
+    b.classList.toggle("done",on);if(on)n++;
+  });
+  var m=0;
+  botoes.forEach(function(b){
+    var k=b.dataset.k,on=!!doneM[k];
+    b.classList.toggle("is",on);
+    b.textContent=on?"✓ dominado":"marcar dominado";
+    var la=nav.querySelector('a[data-k="'+k+'"]');
+    if(la)la.classList.toggle("ok",on);
+    if(on)m++;
+  });
+  var tot=flat.length+botoes.length,fez=n+m;
+  var pct=tot?Math.round(fez/tot*100):0;
+  document.getElementById("rdone").textContent=fez+" de "+tot;
+  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+}
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
+  doneT={};doneM={};
+  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
+  paint();if(cur>=0)syncMark();
+});
+function onScroll(){
+  var y=window.scrollY+140,c=null,i;
+  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
+  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
+  var h=document.body.scrollHeight-window.innerHeight;
+  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
+  document.getElementById("up").classList.toggle("on",window.scrollY>700);
+}
+document.addEventListener("scroll",onScroll,{passive:true});
+document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+var q=document.getElementById("q");
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase(),vis=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];
+    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf+" "+(it.caso||"")).toLowerCase();
+    var hit=v&&txt.indexOf(v)>-1;
+    b.classList.toggle("hit",!!hit);
+    b.classList.toggle("dim",!!v&&!hit);
+    if(hit)vis++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){g.classList.remove("hide");return;}
+    g.classList.toggle("hide",!g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(t){
+    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
+    t.classList.toggle("hide",!hit);
+    var la=nav.querySelector('a[data-k="'+t.id+'"]');
+    if(la)la.classList.toggle("hide",!hit);
+    if(hit&&v)vis++;
+  });
+  parts.forEach(function(sec){
+    var algum=sec.querySelector("article.topic:not(.hide)");
+    sec.style.display=algum?"":"none";
+    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa)sa.classList.toggle("hide",!algum);
+  });
+  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
+});
+paint();onScroll();
+(function(){
+ var RK="oratoria-completo-CL-rev-v1";
+ var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
+ var test=false,revealed=false;
+ var P=document.getElementById("panel"),B=document.getElementById("pBody");
+ var mB=document.getElementById("mode"),rB=document.getElementById("review");
+ var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
+ var _open=open;
+ open=function(i){_open(i);after(flat[i]);};
+ function after(it){
+  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
+  if(test){
+   var g=document.createElement("div");g.className="gate";
+   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
+   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
+   g.querySelector(".reveal-btn").addEventListener("click",reveal);
+   B.insertBefore(g,B.firstChild);
+  }
+  grade();
+ }
+ function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
+ function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
+ function cid(){return(cur>=0)?flat[cur]._id:null;}
+ function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
+ ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
+ no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
+ mB.addEventListener("click",function(){
+  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
+  if(P.classList.contains("on")&&cur>=0)open(cur);
+ });
+ rB.addEventListener("click",function(){
+  var k=Object.keys(rev);if(!k.length)return;
+  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
+  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
+ });
+ function pr(){
+  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
+  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
+ }
+ pr();
+})();
+</script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+<script>
+(function(){
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  if(!("IntersectionObserver" in window))return;
+  document.documentElement.classList.add("dganim");
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");dispara(e.target);io.unobserve(e.target)}
+  })},{threshold:.18,rootMargin:"0px 0px -6% 0px"});
+  function pt(p,l){var o=p.getPointAtLength(l);return [o.x,o.y]}
+  function segs(f){
+    var arr=[].slice.call(f.querySelectorAll("svg path.l,svg path.lt,svg path.lb,svg path.lr,svg path.ln"));
+    return arr.map(function(p){
+      try{
+        var t=p.getTotalLength(); if(!t||t<12)return null;
+        var b=p.getBBox(); var a=pt(p,0),z=pt(p,t);
+        return {p:p,t:t,x:b.x,y:(a[1]+z[1])/2,a:a,z:z};
+      }catch(_){return null}
+    }).filter(Boolean);
+  }
+  function faixas(ss){
+    var out=[];
+    ss.slice().sort(function(a,b){return a.y-b.y}).forEach(function(s){
+      for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-s.y)<34){out[i].itens.push(s);return} }
+      out.push({y:s.y,itens:[s]});
+    });
+    return out.filter(function(g){return g.itens.length>=2})
+              .sort(function(a,b){return b.itens.length-a.itens.length}).slice(0,3);
+  }
+  function traco(itens){
+    itens.sort(function(a,b){return a.x-b.x});
+    var d="",n=0;
+    itens.forEach(function(s){
+      var N=Math.max(2,Math.min(14,Math.round(s.t/14)));
+      for(var i=0;i<=N;i++){ var q=pt(s.p,s.t*i/N); d+=(n++?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)+" "}
+    });
+    return n>1?d:null;
+  }
+  function fio(f){
+    if(f.querySelector(".pulse"))return;
+    var svg=f.querySelector("svg"); if(!svg)return;
+    var ss=segs(f); if(ss.length<2)return;
+    var ciclo=ss.some(function(s){return s.a[0]-s.z[0]>80});
+    var gs=faixas(ss); if(!gs.length)return;
+    var NS="http://www.w3.org/2000/svg";
+    gs.forEach(function(g,gi){
+      var d=traco(g.itens); if(!d)return;
+      var cor=getComputedStyle(g.itens[0].p).stroke;
+      if(!cor||cor==="none")cor="currentColor";
+      var wrap=document.createElementNS(NS,"g");
+      wrap.setAttribute("class","pulse gen");
+      wrap.style.setProperty("--pd",(1.15+gi*0.18).toFixed(2)+"s");
+      var c=document.createElementNS(NS,"circle");
+      c.setAttribute("r","4.2"); c.setAttribute("fill",cor);
+      var mo=document.createElementNS(NS,"animateMotion");
+      mo.setAttribute("path",d);
+      mo.setAttribute("calcMode","linear");
+      mo.setAttribute("begin","indefinite");
+      if(ciclo){
+        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
+      }else{
+        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
+        var fade=document.createElementNS(NS,"animate");
+        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
+        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
+        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
+        c.appendChild(fade); wrap.__fade=fade;
+      }
+      c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
+      wrap.__mo=mo;
+    });
+    f.__fios=[].slice.call(svg.querySelectorAll(".pulse.gen"));
+  }
+  function dispara(f){
+    (f.__fios||[]).forEach(function(w){
+      try{ w.__mo&&w.__mo.beginElement(); w.__fade&&w.__fade.beginElement(); w.classList.add("go") }catch(_){}
+    });
+  }
+  function px(n){try{return n.getBBox().x}catch(_){return 0}}
+  function prep(f){
+    if(f.getAttribute("data-dg"))return;
+    f.setAttribute("data-dg","1");
+    var ns=[].slice.call(f.querySelectorAll("svg *")).filter(function(n){return n.getBBox});
+    ns.forEach(function(n){
+      if(n.getTotalLength&&n.tagName!=="text"){try{n.setAttribute("pathLength",100)}catch(_){}}
+    });
+    ns.map(function(n){return [n,px(n)]})
+      .sort(function(a,b){return a[1]-b[1]})
+      .forEach(function(p,i){p[0].style.setProperty("--d",(i*0.035).toFixed(3)+"s")});
+    try{fio(f)}catch(_){}
+    io.observe(f);
+  }
+  function scan(r){[].slice.call((r||document).querySelectorAll("figure.dg")).forEach(prep)}
+  scan(document);
+  /* o painel da trilha injeta diagramas depois do carregamento */
+  new MutationObserver(function(ms){
+    for(var i=0;i<ms.length;i++){
+      var a=ms[i].addedNodes;
+      for(var j=0;j<a.length;j++){
+        var n=a[j];
+        if(n.nodeType===1){ if(n.matches&&n.matches("figure.dg")) prep(n); else scan(n); }
+      }
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inglês técnico completo — trilha visual + conteúdo · a entrada vem primeiro</title>
+<meta name="description" content="O décimo segundo documento, calibrado para quem lê documentação com esforço e trava em vídeo sem legenda. Trilha visual em 9 marcos, mais 14 tópicos em 9 partes — CEFR e o EF SET gratuito, input compreensível e a regra dos 95%, escuta extensiva contra intensiva, a documentação como treino de leitura, vocabulário por frequência e repetição espaçada, shadowing e inteligibilidade, e a produção no trabalho: standup, code review, PR e a reunião ao vivo. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre-wrap;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{width:1%;white-space:nowrap}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px}
+/* frase pronta em inglês, com a tradução embaixo */
+.frase{margin:14px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.frase>div{padding:11px 15px;border-top:1px solid var(--line)}
+.frase>div:first-child{border-top:0}
+.frase .en{background:var(--code);font:500 .95rem/1.55 "Cascadia Code",monospace;color:var(--cyan)}
+.frase .pt{background:var(--card);font-size:.9rem;color:var(--muted)}
+.frase .pt b{color:var(--ink2);font-weight:600}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>EN</i><b>Inglês</b></div>
+    <p class="sub">A entrada vem primeiro.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (shadowing, standup, CEFR)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Inglês técnico · setembro 2026</span>
+      <h1>A <em>entrada</em> vem antes da saída.</h1>
+      <p class="lede">O décimo segundo documento, e o primeiro que não é sobre backend — é sobre o que faz os outros onze renderem. Toda fonte primária que eles citam está <b>em inglês</b>: a documentação do PostgreSQL, do Kubernetes, do Spring, o <i>Pro Git</i>, os livros da Biblioteca. Este documento está calibrado para um ponto específico: você <b>lê documentação com esforço e trava em vídeo sem legenda</b>. Por isso ele começa pela <b>entrada</b> — escuta e leitura — e só depois vai para a produção. Em cima, a <b>trilha visual</b>: 32 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 14 tópicos em 9 partes, com as frases prontas que você usa no standup, no code review e na reunião em que não entendeu o que disseram.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>medir, entrar, e só então falar</a>
+      </div>
+      <div class="legenda">
+        <div><b>Medir antes</b><span>O EF SET é gratuito e calibrado ao CEFR. Saber o ponto de partida muda o método.</span></div>
+        <div><b>Entrada primeiro</b><span>Escuta e leitura constroem o que a fala depois usa. Forçar produção cedo trava.</span></div>
+        <div><b>Frases prontas</b><span>Cada situação do trabalho com o que dizer, em inglês e em português.</span></div>
+        <div><b>Sem vergonha</b><span>Pedir repetição é habilidade profissional, não fraqueza.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: da medição à reunião ao vivo</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>Medir antes de estudar</h2><p>"Meu inglês é mais ou menos" não é diagnóstico. E existe um teste gratuito e sério para trocar isso por um ponto concreto.</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>O CEFR e o teste que não custa nada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">faça hoje</span></div></div>
+        <p class="direto"><b>Direto:</b> o <b>EF SET</b> é gratuito, adaptativo e o primeiro teste padronizado totalmente alinhado ao CEFR. Cinquenta minutos, sem agendamento, sem cartão. Faça hoje e anote o resultado com a data.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você já tentou estudar inglês três vezes e parou. Uma das razões é invisível: sem ponto de partida, não existe progresso perceptível — e o que não se percebe não sustenta hábito.</p>
+          <p>Com um número na mão e outro daqui a seis meses, a mesma dedicação vira evidência. <b>A variação é o dado, não o valor absoluto.</b></p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o <code class="i">EXPLAIN ANALYZE</code> do inglês. Você não otimiza consulta por intuição — roda o plano, vê onde está o custo, mexe, e roda de novo para comparar. Estudar idioma sem medir é otimizar sem plano.</p></div>
+
+        <p>O CEFR descreve <b>o que a pessoa consegue fazer</b>, não quanta gramática sabe — e é por isso que ele é útil. As faixas, traduzidas para a sua realidade:</p>
+
+        <table class="cmd">
+          <thead><tr><th>Nível</th><th>No trabalho isso significa</th></tr></thead>
+          <tbody>
+            <tr><td><b>A1–A2</b></td><td>Frases prontas, assunto previsível. Documentação técnica ainda é tradução.</td></tr>
+            <tr><td><b>B1</b></td><td>Lê com apoio, entende o assunto de um vídeo com legenda. Reunião ao vivo dói.</td></tr>
+            <tr><td><b>B2</b></td><td><b>O alvo prático.</b> Acompanha reunião, escreve PR, sustenta entrevista de 45 min.</td></tr>
+            <tr><td><b>C1</b></td><td>Flui, lida com nuance e ironia. É o que vaga internacional costuma pedir.</td></tr>
+            <tr><td><b>C2</b></td><td>Aproximadamente nativo culto. Quase ninguém precisa — e mirar aqui adia o uso real.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>O seu perfil tem um nome e uma solução conhecida.</b> Ler melhor do que escutar é o padrão de quem aprendeu inglês por texto — documentação, código, legenda. A leitura te deu vocabulário e estrutura; faltou ligar isso ao <b>som</b>. Não é um problema de nível: é de canal. E é por isso que este documento inteiro começa pela escuta.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Tratar o resultado como veredito.</b> É uma foto, e a foto de hoje serve para comparar com a de daqui a seis meses.</li>
+            <li><b>Mirar C2.</b> Perfeccionismo disfarçado de ambição — e o custo é adiar o uso real por anos.</li>
+            <li><b>Não anotar a data.</b> Sem ela, o segundo teste não significa nada.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Abra <code class="i">efset.org</code> e faça o teste de 50 minutos. Anote nível, pontuação e data num arquivo que você vá encontrar em seis meses.</div>
+          <div><b>prova de domínio</b>Você sabe dizer o seu nível em letra do CEFR e o que falta, concretamente, para o próximo.</div>
+        </div>
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>Certificação paga: quando vale e quando é ansiedade</h3><div class="badges"><span class="badge b-imp">decisão</span></div></div>
+        <p class="direto"><b>Direto:</b> certificação serve para <b>provar</b> nível a uma instituição. Para vaga de tecnologia, a prova é a entrevista — e ninguém pede certificado antes de marcá-la.</p>
+
+        <div class="conta">
+          <div><code>EF SET
+gratuito</code><small>50 min, online, alinhado ao CEFR. A opção de 4 habilidades emite certificado.</small></div>
+          <div><code>Duolingo English Test
+~US$ 65</code><small>1 hora, totalmente online, adaptativo. Aceito por mais de 6.600 universidades.</small></div>
+          <div><code>TOEFL iBT
+~US$ 200–250</code><small>Padrão para universidade nos EUA. Centro de teste ou em casa.</small></div>
+          <div><code>IELTS
+~US$ 230–260</code><small>Padrão no Reino Unido e Austrália, com entrevista presencial de fala.</small></div>
+        </div>
+
+        <p><b>Quando vale:</b> aplicação para universidade, processo de imigração, ou exigência formal explícita de um empregador. <b>Quando não vale:</b> praticamente todo o resto — inclusive vaga internacional remota de engenharia, em que a avaliação é a conversa com o time.</p>
+
+        <div class="cs"><b>E a armadilha do "pago para me obrigar":</b> muita gente compra a prova como compromisso forçado. Não funciona — dinheiro gasto não cria hábito diário, e o resultado costuma ser a prova adiada três vezes. Se você quer converter dinheiro em progresso, o mesmo valor de um TOEFL compra vários meses de conversação com professor, que é exatamente o que falta para quem lê bem e trava ao falar.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Estudar "para a prova" em vez de para usar.</b> Você fica bom em fazer prova.</li>
+            <li><b>Adiar o uso real até ter certificado.</b> A ordem correta é o contrário.</li>
+            <li><b>Confundir aceitação com equivalência.</b> Cada instituição define a própria nota mínima; confirme antes de escolher o teste.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva, em uma linha, para que você quer inglês. Se a resposta não envolve uma instituição pedindo comprovante, você acabou de economizar duzentos dólares.</div>
+          <div><b>prova de domínio</b>Você justifica a decisão de não certificar sem sentir que está se desculpando.</div>
+        </div>
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>A entrada vem primeiro</h2><p>O material certo é o que você quase entende inteiro. Essa frase resolve metade dos problemas de método.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>Input compreensível e a regra dos 95%</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> adquire-se língua entendendo mensagens <b>um passo</b> acima do nível atual. A faixa útil é de 95 a 98% de compreensão — acima disso você não cresce, abaixo você decodifica em vez de adquirir.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É levantar peso. Leve demais não estimula; pesado demais você não levanta e ainda se machuca. O ganho está na faixa em que você <b>quase</b> não consegue — e essa faixa é mais leve do que o orgulho sugere.</p></div>
+
+        <div class="duo o">
+          <div><h4>De onde vem</h4><p>A hipótese do <i>input</i> de Stephen Krashen, dos anos 1980. Os detalhes teóricos foram muito debatidos, mas o núcleo envelheceu bem: entrada compreensível é hoje aceita como <b>necessária</b> para aquisição, e a ideia sobrevive na pesquisa atual com outros nomes.</p>
+            <div class="repl"><b>O que veio substituir:</b> o método de gramática e tradução, em que se estudava a língua <i>sobre</i> a língua — conjugar verbo em tabela, traduzir frase solta. Ele produz quem sabe explicar o <i>present perfect</i> e não consegue pedir um café.</p></div>
+          </div>
+          <div><h4>A crítica que também procede</h4><p>Só entrada não basta. A <i>hipótese do output</i> aponta que produzir força você a processar a gramática, <b>notar o que falta</b> e testar hipóteses — coisas que escutar não exige.</p>
+            <p style="margin-top:9px"><b>A síntese honesta:</b> entrada em volume, produção em baixa pressão desde cedo. Escrever um comentário de PR conta como produção.</p></div>
+        </div>
+
+        <p>Na prática, o teste é simples: se você precisa pausar mais de duas ou três vezes por minuto, o material está acima do seu nível. Não é falta de esforço — é a escolha errada de material, e insistir nela é o que cansa e faz desistir.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Escolher pelo interesse e ignorar o nível.</b> Um podcast nativo a 180 palavras por minuto com 50% de compreensão não ensina nada — só frustra.</li>
+            <li><b>Confundir dificuldade com eficiência.</b> Sofrer não é sinal de que está funcionando.</li>
+            <li><b>Ficar no confortável demais.</b> Entender 100% é revisão, não aquisição.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o último vídeo em inglês que você viu e estime sua compreensão sem legenda. Se ficou abaixo de 90%, procure algo mais fácil — não é regressão, é calibração.</div>
+          <div><b>prova de domínio</b>Você escolhe material novo pelo critério de compreensão, não pelo assunto ou pela recomendação.</div>
+        </div>
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="b2">
+        <div class="th"><h3>Vinte minutos por dia vencem três horas no sábado</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> aquisição depende de exposição <b>distribuída</b>. Vinte minutos diários somam mais de duas horas por semana — e, o que importa mais, mantêm contato constante com o som.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O plano de uma hora por dia dura onze dias. Depois vem uma semana ruim no trabalho, o plano quebra, e a culpa faz você não voltar por seis meses.</p>
+          <p>Um plano de vinte minutos sobrevive à semana ruim — e é isso que faz dele superior, não a eficiência por minuto.</p>
+        </div>
+
+        <p>A ordem também importa, e ela não é a intuitiva. Escuta constrói o modelo sonoro; leitura acrescenta vocabulário e estrutura; produção testa e revela lacunas. Tentar falar antes de ter escutado o suficiente produz <b>tradução mental</b> — você monta a frase em português e traduz, o que é lento demais para uma reunião ao vivo. É exatamente esse mecanismo que faz travar.</p>
+
+        <div class="cs"><b>Mas não espere estar "pronto" para produzir.</b> A produção entra desde cedo, em <b>baixa pressão</b>: escrever, não falar ao vivo. Um comentário de PR em inglês dá tempo para revisar, tem retorno real, e é prática deliberada. A regra é: entrada em volume, saída sem plateia.</p>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Plano ambicioso demais.</b> O melhor plano é o que você ainda cumpre no pior dia do mês.</li>
+            <li><b>Contar escuta passiva como estudo.</b> Passiva é manutenção; ativa é crescimento.</li>
+            <li><b>Parar depois de falhar um dia.</b> Falhar um dia é ruído; falhar uma semana é sinal.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escolha o horário de vinte minutos e amarre a um hábito que já existe — depois do café, antes do primeiro commit. Hábito novo pendurado em hábito velho sobrevive melhor.</div>
+          <div><b>prova de domínio</b>Você tem sete dias seguidos registrados. Esse é o marco que importa, não o conteúdo deles.</div>
+        </div>
+        <button class="done" type="button" data-k="b2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Escuta: o seu gargalo</h2><p>Você lê melhor do que escuta porque aprendeu por texto. O conserto é ligar o que você já sabe ao som.</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>A escada da legenda</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">o seu caso</span></div></div>
+        <p class="direto"><b>Direto:</b> legenda em português faz você <b>ler</b>, não escutar. Suba um degrau por vez — e no mesmo material, não em material novo.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você assiste a uma palestra técnica com legenda em português e entende tudo. Tira a legenda e entende quase nada. A conclusão comum — "não adianta, meu inglês é ruim" — está errada.</p>
+          <p>O que aconteceu é que o áudio nunca foi processado: virou trilha sonora de uma leitura. A escuta não foi treinada porque nunca foi exigida.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É usar o preenchimento automático da IDE para tudo. Funciona, o código sai — e você não aprende a API. A legenda em português é o preenchimento automático da compreensão.</p></div>
+
+        <p>Os quatro degraus, e o que cada um treina:</p>
+
+        <table class="cmd">
+          <thead><tr><th>Degrau</th><th>O que acontece</th></tr></thead>
+          <tbody>
+            <tr><td><b>1. Legenda PT</b></td><td>Você lê. O áudio não é processado. Serve só para conhecer o conteúdo.</td></tr>
+            <tr><td><b>2. Legenda EN</b></td><td><b>O degrau que muda tudo para você.</b> Liga som à grafia que você já conhece.</td></tr>
+            <tr><td><b>3. Só quando travar</b></td><td>Sem legenda; pausa e liga quando perder o fio. Treina tolerância à incerteza.</td></tr>
+            <tr><td><b>4. Sem legenda</b></td><td>O objetivo. Aceitar entender 90% e seguir.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cs"><b>A técnica que acelera:</b> reassistir o <b>mesmo</b> vídeo um degrau acima vale mais que assistir um vídeo novo. Na segunda passada você já sabe o conteúdo, então a atenção fica livre para o som — que é exatamente o que precisa treinar. A sensação de "estou repetindo" é falsa: você está treinando outra coisa.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Pular do degrau 1 direto para o 4.</b> Não entender nada e concluir que não tem jeito.</li>
+            <li><b>Esperar entender 100% para subir.</b> O degrau seguinte é confortável em 90%.</li>
+            <li><b>Legenda dupla.</b> Algumas extensões mostram as duas — e o olho vai para o português, sempre.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escolha um vídeo técnico de 10 minutos que você já viu em português. Assista com legenda em inglês. Amanhã, assista de novo sem legenda.</div>
+          <div><b>prova de domínio</b>Você assiste a uma palestra técnica com legenda em inglês e acompanha sem reler.</div>
+        </div>
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="c2">
+        <div class="th"><h3>Material no seu nível — e a técnica das três passadas</h3><div class="badges"><span class="badge b-prof">método</span></div></div>
+        <p class="direto"><b>Direto:</b> conteúdo técnico é <b>mais fácil</b> que série, mesmo com vocabulário mais difícil — porque você prevê o que vem. Use a sua maior vantagem.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Ler um <i>stack trace</i> numa linguagem que você não conhece ainda é mais fácil que ler um poema na sua. A estrutura previsível carrega você. É a mesma coisa com áudio sobre um assunto que você domina.</p></div>
+
+        <p>Série e filme são o material <b>mais difícil</b> que existe: gíria, sotaques variados, fala sobreposta, áudio misturado com trilha. Começar por aí é escolher a montanha mais íngreme. Palestra técnica gravada tem o oposto: fala pausada, vocabulário que você já conhece em português, legenda oficial e assunto previsível.</p>
+
+        <p><b>As três passadas</b> transformam frustração em procedimento:</p>
+
+        <div class="duo">
+          <div><h4>O procedimento</h4><ul>
+            <li><b>1ª:</b> sem parar, para pegar o assunto geral. Não anote nada.</li>
+            <li><b>2ª:</b> com pausa apenas nos trechos que <b>impediram</b> a compreensão.</li>
+            <li><b>3ª:</b> sem legenda, seguido.</li>
+          </ul></div>
+          <div><h4>O detalhe que importa</h4><p>Na segunda passada, anote só o que <b>bloqueou</b> — não toda palavra desconhecida. A maioria você adivinha pelo contexto, e anotar tudo mata o ritmo e transforma vinte minutos de escuta em uma hora de dicionário.</p>
+            <p style="margin-top:9px">Se você pausa mais de duas ou três vezes por minuto, o problema não é sua atenção: é o material.</p></div>
+        </div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Começar por série.</b> O material mais difícil, escolhido por ser o mais divertido.</li>
+            <li><b>Anotar toda palavra nova.</b> Vira trabalho de tradução, não escuta.</li>
+            <li><b>Trocar de material toda vez.</b> A repetição no mesmo material é onde o ganho acontece.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Procure uma palestra de conferência sobre um assunto que você domina — banco de dados, Kubernetes, Java. Aplique as três passadas esta semana.</div>
+          <div><b>prova de domínio</b>Você consegue explicar, em português, uma palestra técnica que assistiu sem legenda.</div>
+        </div>
+        <button class="done" type="button" data-k="c2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Leitura e vocabulário</h2><p>Você já lê documentação todo dia. Faltam duas mudanças pequenas para isso virar aquisição.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>A documentação como treino — e o vocabulário que realmente falta</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> o que te falta raramente é <i>throughput</i> ou <i>idempotent</i>. É <i>albeit</i>, <i>whereas</i>, <i>provided that</i>, <i>unless otherwise specified</i> — os conectivos que carregam a lógica da frase.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você lê um parágrafo da documentação do PostgreSQL, entende todos os termos técnicos, e mesmo assim não sabe se a frase está afirmando ou ressalvando.</p>
+          <p>O que bloqueou não foi o vocabulário de domínio — foi um <i>albeit</i>, um <i>whereas</i>, um <i>notwithstanding</i>. São palavras invisíveis que decidem o sentido inteiro, e ninguém as ensina porque não parecem "técnicas".</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É saber todos os nomes de classe de um código e não conhecer <code class="i">if</code>, <code class="i">unless</code> e <code class="i">else</code>. Você lê os substantivos e perde a estrutura de controle.</p></div>
+
+        <p>As duas mudanças que transformam a leitura que você já faz:</p>
+        <p><b>Primeira: não traduza parágrafo.</b> Leia até o fim e só volte se não entendeu a <i>ideia</i>. Traduzir frase a frase mantém a dependência do português e impede a leitura direta — que é o que você quer construir.</p>
+        <p><b>Segunda: anote estrutura, não termo técnico.</b> <i>Throughput</i> você já sabe. Anote os conectivos que te fizeram reler.</p>
+
+        <pre><code>Os conectivos que mais aparecem em documentacao tecnica:
+
+albeit            ainda que, embora
+whereas           ao passo que, enquanto (contraste)
+provided that     desde que
+unless            a menos que
+hence / thus      portanto
+notwithstanding   apesar de
+insofar as        na medida em que
+accordingly       consequentemente
+conversely        inversamente
+namely            a saber, isto e
+regardless of     independentemente de
+subject to        sujeito a
+
+"The query will use the index, provided that the leading
+ column appears in the WHERE clause."
+ -> DESDE QUE. a frase inteira e uma condicao.</code></pre>
+
+        <div class="cs"><b>Um sinal prático de que você mudou de patamar:</b> quando parar de reler a mesma frase duas vezes. Reler é quase sempre sintoma de conectivo não reconhecido — você entendeu as palavras e perdeu a relação entre elas.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Traduzir mentalmente frase a frase.</b> Lento demais e impede a leitura direta.</li>
+            <li><b>Só anotar termo técnico.</b> É o vocabulário que você <b>menos</b> precisa.</li>
+            <li><b>Ler só documentação.</b> Ela tem registro estreito. Um livro técnico em inglês traz variedade que a documentação não tem.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Na próxima página de documentação, marque toda palavra <b>não técnica</b> que te fez reler. Se aparecerem cinco, você achou a sua lista de estudo da semana.</div>
+          <div><b>prova de domínio</b>Você lê um parágrafo de documentação e sabe dizer se ele afirma, ressalva ou condiciona — sem reler.</div>
+        </div>
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d2">
+        <div class="th"><h3>Frequência, repetição espaçada e os falsos amigos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> mil famílias de palavras cobrem ~80% de um texto; três mil chegam perto de 95%. Como a faixa de aquisição é 95–98%, a meta é <b>chegar às três mil</b> e depois especializar.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a distribuição de Zipf do System Design: 20% das chaves levam 80% dos acessos. Vocabulário se comporta igual — e por isso vale cachear o núcleo antes de se preocupar com a cauda.</p></div>
+
+        <div class="duo o">
+          <div><h4>Repetição espaçada</h4><p>Revisar no momento em que você está prestes a esquecer. Cada acerto espaça o próximo intervalo, e o que se lembra fica cada vez mais barato de manter.</p>
+            <div class="repl"><b>O que veio substituir:</b> reler lista. Reler dá sensação de saber — você reconhece a palavra na página — sem construir a recuperação ativa, que é o que a reunião vai exigir.</p></div>
+          </div>
+          <div><h4>O cartão que funciona</h4><p>Com <b>frase</b>, não palavra solta: o contexto é metade da memória. E colhida da <b>sua</b> leitura, não de baralho pronto — a palavra que você encontrou na documentação de ontem tem gancho; a de uma lista genérica não tem.</p></div>
+        </div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">cartão ruim</div><pre><code>Frente:  albeit
+Verso:   embora
+
+Voce aprende a traduzir o cartao.
+Nao reconhece a palavra em uso.</code></pre></div>
+          <div class="depois"><div class="lab">cartão bom</div><pre><code>Frente:  The migration succeeded, ______ slower
+         than expected.
+Verso:   albeit  (ainda que / embora)
+
+Contexto, lacuna, e a frase veio da SUA leitura.</code></pre></div>
+        </div>
+
+        <p><b>E os falsos amigos</b>, que são especialmente perigosos porque o erro soa natural e ninguém corrige:</p>
+
+        <pre><code>actually     na verdade        (atualmente  = currently)
+eventually   por fim, enfim    (eventualmente = occasionally)
+pretend      fingir            (pretender   = intend)
+realize      perceber          (realizar    = carry out)
+exquisite    primoroso         (esquisito   = weird)
+push / pull  empurrar / puxar  (e por isso git push e git pull)
+
+O que mais pega em reuniao:
+  "We will eventually fix it."
+  Voce quis dizer "talvez, um dia".
+  Voce disse: "no fim das contas, vamos consertar" — uma PROMESSA.</code></pre>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Baralho pronto de 5.000 cartões.</b> Abandonado em duas semanas. Cinco cartões seus por dia batem qualquer baralho comprado.</li>
+            <li><b>Decorar palavra difícil e travar em conectivo.</b> Prioridade invertida.</li>
+            <li><b>Cartão só no sentido inglês → português.</b> Reconhecer é mais fácil que produzir; treine os dois sentidos no que você quer <b>usar</b>.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie cinco cartões hoje, com frases retiradas de algo que você leu no trabalho. Cinco, não cinquenta.</div>
+          <div><b>prova de domínio</b>Você tem trinta dias de revisão sem interrupção — e reconhece, na leitura, palavras que aprendeu no cartão.</div>
+        </div>
+        <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Pronúncia: inteligibilidade, não sotaque</h2><p>O alvo é ser entendido sem esforço. Sotaque não é defeito — é origem.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Shadowing, e os sons que realmente mudam a compreensão</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> shadowing é repetir por cima do áudio, cerca de um segundo atrás, imitando a melodia — sem traduzir e sem esperar a frase terminar.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É tocar junto com a gravação, não estudar a partitura. Você treina o gesto inteiro — ritmo, respiração, ligação entre notas — em vez de notas isoladas. E é por isso que funciona para fluência de fala e não só para pronúncia de palavras.</p></div>
+
+        <p>Estudos apontam melhora significativa em entonação, fluência e pronúncia com a inclusão da técnica. A explicação é motora: você treina o gesto articulatório completo, não sons soltos. Funciona melhor do nível intermediário em diante, e <b>como complemento</b> — não como método único.</p>
+
+        <pre><code>Como praticar, 10 minutos:
+
+1. escolha 60 segundos de audio que voce JA entende inteiro
+2. ouca uma vez acompanhando a transcricao
+3. repita por cima, ~1 s atras, olhando o texto
+4. repita sem o texto
+5. GRAVE a sua versao e compare com o original
+
+O passo 5 e o que quase todo mundo pula.
+E o unico que mostra a diferenca entre o que voce
+acha que falou e o que saiu.</code></pre>
+
+        <div class="cs"><b>Sobre o alvo:</b> perseguir sotaque nativo é gastar energia no que menos muda resultado. O que atrapalha de verdade é outra coisa — e é corrigível. <b>Sílaba tônica errada</b> torna a palavra irreconhecível; sotaque, não. <b>Vogal curta contra longa</b> muda a palavra: <i>ship</i> e <i>sheep</i>, <i>bit</i> e <i>beat</i>. E a <b>vogal acrescentada no fim</b> — <i>help-i</i>, <i>Facebook-i</i> — é a marca mais forte do português e uma das mais fáceis de corrigir.</div>
+
+        <div class="duo">
+          <div><h4>Os cinco que valem trabalhar</h4><ul>
+            <li><b>th</b> de <i>think</i> e de <i>this</i> — dois sons diferentes.</li>
+            <li><b>Vogal curta × longa:</b> <i>ship/sheep</i>, <i>full/fool</i>.</li>
+            <li><b>h aspirado</b> de <i>hello</i>, que o português não tem.</li>
+            <li><b>Encontro final:</b> <i>asked</i>, <i>texts</i>, <i>worlds</i>.</li>
+            <li><b>Sílaba tônica</b> — a que mais muda compreensão.</li>
+          </ul></div>
+          <div><h4>O que não vale</h4><p>O <i>r</i> perfeito. A escolha entre sotaque americano e britânico. Eliminar todo traço de português.</p>
+            <p style="margin-top:9px">Ninguém no seu time se importa com isso. O que importa é a pessoa não precisar pedir "sorry, again?" três vezes — e isso se resolve com tônica e vogal, não com sotaque.</p></div>
+        </div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Shadowing em material difícil.</b> O objetivo é a melodia; use algo que você já entende inteiro.</li>
+            <li><b>Nunca se gravar.</b> Sem isso, você reforça o erro achando que está acertando.</li>
+            <li><b>Perseguir sotaque.</b> Alvo caro e irrelevante profissionalmente.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Grave sessenta segundos lendo em voz alta, hoje. Guarde o arquivo. Grave o mesmo trecho daqui a trinta dias — a comparação é o retorno mais concreto que este documento oferece.</div>
+          <div><b>prova de domínio</b>Você identifica, na própria gravação, uma palavra com tônica errada — e corrige.</div>
+        </div>
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>O trabalho escrito: onde você tem vantagem</h2><p>Na escrita você controla o ritmo. É a porta de entrada para a produção — e já é o seu dia a dia.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>Code review sem soar rude</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> em inglês profissional, o pedido direto soa <b>mais duro</b> que em português. Três suavizadores resolvem quase tudo: perguntar em vez de mandar, usar <i>could/would</i>, e separar sugestão de bloqueio.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você escreve <i>"Change this to a HashMap"</i> num code review, achando que está sendo objetivo. Para o autor do PR, soa como ordem — e o clima da revisão muda sem que ninguém diga nada.</p>
+          <p>Você traduziu "muda isso para um HashMap" literalmente. Em português, o imperativo entre colegas é neutro; em inglês profissional, ele carrega hierarquia.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre <code class="i">DELETE</code> sem <code class="i">WHERE</code> e <code class="i">DELETE</code> com condição. Tecnicamente os dois executam; um deles causa um estrago que você só percebe depois.</p></div>
+
+        <div class="frase">
+          <div class="en">Change this to a HashMap.</div>
+          <div class="pt"><b>Soa como ordem.</b> Objetivo demais para o registro de revisão entre pares.</div>
+          <div class="en">Could we use a HashMap here? It'd make the lookup O(1).</div>
+          <div class="pt"><b>Melhor.</b> Pergunta, justifica, deixa espaço para o outro discordar.</div>
+        </div>
+
+        <div class="frase">
+          <div class="en">This is wrong.</div>
+          <div class="pt"><b>Soa como julgamento.</b> E se você estiver errado, fica pior ainda.</div>
+          <div class="en">I think this might break when the list is empty — did I miss something?</div>
+          <div class="pt"><b>Melhor.</b> Aponta o cenário concreto e admite a própria falibilidade.</div>
+        </div>
+
+        <pre><code>As marcacoes que todo time entende:
+
+nit:       detalhe de estilo, pode ignorar
+blocking:  precisa mudar antes de eu aprovar
+question:  duvida genuina, nao critica disfarcada
+praise:    elogio — use, e raro e faz diferenca
+
+LGTM       Looks Good To Me
+PTAL       Please Take Another Look
+WDYT       What Do You Think?
+IIRC       If I Recall Correctly
+FWIW       For What It's Worth</code></pre>
+
+        <div class="cs"><b>Uma sutileza que vale saber:</b> o excesso também comunica. Encher de <i>maybe</i>, <i>just</i>, <i>I might be wrong but</i> em toda frase enfraquece o retorno e faz você parecer inseguro. O equilíbrio é: suavizar a <b>forma</b>, manter firme o <b>conteúdo</b>. <i>"This will break with an empty list"</i> dito com dado é firme e educado ao mesmo tempo.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Traduzir o imperativo literalmente.</b> A fonte de atrito mais comum e mais invisível.</li>
+            <li><b>Suavizar demais.</b> Retorno que ninguém entende como pedido não é retorno.</li>
+            <li><b>Nunca elogiar.</b> Revisão só com crítica cria defensividade — <i>praise:</i> custa cinco segundos.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o seu último comentário de review em português e reescreva em inglês usando os três suavizadores. Use no próximo PR.</div>
+          <div><b>prova de domínio</b>Você dá um retorno bloqueante em inglês sem que o autor fique na defensiva.</div>
+        </div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f2">
+        <div class="th"><h3>Mensagem assíncrona: contexto primeiro, pergunta antes</h3><div class="badges"><span class="badge b-imp">time distribuído</span></div></div>
+        <p class="direto"><b>Direto:</b> em time distribuído, cada troca custa horas de fuso. A <b>estrutura</b> da mensagem importa mais que a gramática dela.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você manda <i>"Hi! Are you there?"</i> às 9h. A pessoa responde <i>"Hi!"</i> às 15h. Você faz a pergunta às 15h05. Ela responde no dia seguinte.</p>
+          <p>Dois dias para uma pergunta de trinta segundos. O custo não foi o inglês — foi a estrutura.</p>
+        </div>
+
+        <div class="vs">
+          <div class="antes"><div class="lab">antes — custa dois dias</div><pre><code>Hi! Are you there?</code></pre></div>
+          <div class="depois"><div class="lab">depois — resolve num ciclo</div><pre><code>Hi! Quick question about the payment service —
+
+I'm getting a 409 on POST /charges with an
+idempotency key I've used before. Is that the
+expected behavior, or a bug?
+
+I checked the docs and the logs, no clue so far.
+No rush — tomorrow works.</code></pre></div>
+        </div>
+
+        <p>A estrutura que funciona tem quatro partes: <b>a pergunta logo no começo</b>, o contexto mínimo necessário, <b>o que você já tentou</b> — que evita a resposta "já olhou a documentação?" — e a urgência real. Essa última é subestimada: dizer <i>"no rush"</i> quando não é urgente compra boa vontade para quando for.</p>
+
+        <div class="cs"><b>E sobre a gramática:</b> ela importa menos do que você teme. Mensagem escrita com erro pequeno e estrutura boa resolve o problema; mensagem impecável e mal estruturada custa dois dias. Priorize clareza e estrutura, e aceite o erro pequeno — ninguém vai reparar.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>"Hi" sozinho.</b> Custa um ciclo de fuso inteiro.</li>
+            <li><b>Contexto longo antes da pergunta.</b> A pessoa abandona no terceiro parágrafo.</li>
+            <li><b>Não dizer a urgência.</b> Sem ela, tudo parece urgente — ou nada parece.</li>
+            <li><b>Revisar dez vezes.</b> O tempo gasto na perfeição vale mais aplicado na estrutura.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Escreva a sua próxima dúvida ao time no formato de quatro partes, em inglês. Meça quantas trocas levou até a resposta.</div>
+          <div><b>prova de domínio</b>Suas perguntas assíncronas costumam ser resolvidas na primeira resposta.</div>
+        </div>
+        <button class="done" type="button" data-k="f2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 07 ===================== -->
+    <section class="part" id="p7">
+      <div class="ph"><span class="num">07</span><div><h2>A reunião ao vivo</h2><p>Onde todo mundo trava. E onde as três habilidades que resolvem não são de gramática.</p></div></div>
+
+      <article class="topic" id="g1">
+        <div class="th"><h3>Não entendi: a habilidade mais subestimada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> quem pede repetição passa por <b>cuidadoso</b>, não por limitado. Nativos também pedem — você só não reparava, porque quando eles pedem não soa como deficiência.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Na reunião, alguém diz algo rápido sobre a ordem entre o retry e o fallback. Você não pega a metade final. Acena, anota "retry / fallback", e segue.</p>
+          <p>Duas semanas depois, a implementação está invertida. O custo do mal-entendido de trinta segundos foi duas semanas — e o custo de ter perguntado seria de três segundos.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É engolir uma exceção com <code class="i">catch (Exception e) {}</code>. O programa continua rodando e parece que está tudo bem. O erro aparece longe da causa, quando já é caro.</p></div>
+
+        <p>Existem três níveis, e o terceiro é o que separa quem se vira de quem é eficaz:</p>
+
+        <div class="frase">
+          <div class="en">Sorry, could you repeat that?</div>
+          <div class="pt"><b>Nível 1 — repetir.</b> Resolve quando você perdeu o áudio, não o sentido.</div>
+          <div class="en">Could you say that again, a bit slower? / Sorry, I didn't catch the last part.</div>
+          <div class="pt"><b>Nível 2 — específico.</b> Diz <i>o que</i> faltou, então a pessoa não repete tudo igual.</div>
+          <div class="en">Just to make sure I got it right: you want the retry to happen <i>before</i> the fallback, not after?</div>
+          <div class="pt"><b>Nível 3 — confirmar.</b> O melhor dos três. Você devolve o entendimento e a pessoa corrige na hora.</div>
+        </div>
+
+        <div class="cs"><b>Por que o nível 3 é superior:</b> ele não expõe que você não entendeu — expõe que você está <b>verificando</b>. É a mesma prática que o documento de Arquitetura chama de confirmar a decisão antes de executar, e ninguém a associa a limitação. Além disso, funciona mesmo quando você entendeu: reduz mal-entendido dos dois lados.</div>
+
+        <pre><code>Varie, para nao repetir a mesma frase toda hora:
+
+Sorry, could you repeat that?
+Sorry, I missed the last bit.
+Could you say that again, a bit slower?
+I want to make sure I follow — you said X, right?
+Let me repeat it back: the deadline is Friday, not Wednesday?
+So if I understand correctly, you're asking whether...
+
+E quando e so uma palavra:
+Sorry, what does "throttling" mean in this context?
+   (perguntar significado NAO e vergonha — inclusive
+    entre nativos, porque o termo pode ser interno do time)</code></pre>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Acenar e seguir.</b> O erro mais caro desta parte inteira.</li>
+            <li><b>Repetir sempre a mesma frase.</b> É a repetição que chama atenção, não o pedido.</li>
+            <li><b>Pedir só no fim.</b> Perguntar no momento custa três segundos; perguntar depois custa reconstruir o contexto.</li>
+            <li><b>Se desculpar demais.</b> Um <i>sorry</i> basta. Três seguidos deslocam o foco para o seu inglês.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Na próxima reunião — em português, inclusive — use a confirmação de nível 3 uma vez. O hábito é o mesmo nos dois idiomas, e treinar no confortável facilita usar no difícil.</div>
+          <div><b>prova de domínio</b>Você pede confirmação sem sentir que está admitindo uma falha.</div>
+        </div>
+        <button class="done" type="button" data-k="g1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="g2">
+        <div class="th"><h3>Tomar a vez e ganhar tempo</h3><div class="badges"><span class="badge b-imp">participação</span></div></div>
+        <p class="direto"><b>Direto:</b> em reunião com nativos, a vez é <b>tomada</b>, não concedida. Esperar a pausa educada costuma significar não falar.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você tem uma objeção importante sobre o desenho proposto. Espera o momento certo. A conversa muda de assunto. A decisão é tomada sem a sua observação — e você sai da reunião com a sensação de ter sido invisível.</p>
+          <p>O problema não foi o inglês: foi esperar um silêncio que não vem. Falantes nativos se interrompem o tempo todo, e isso é neutro na cultura da reunião.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É esperar o pool de conexões esvaziar sozinho. Não esvazia — tem sempre alguém pedindo. Ou você entra na fila com uma estratégia, ou fica fora.</p></div>
+
+        <p>Frases de entrada resolvem porque fazem duas coisas ao mesmo tempo: <b>sinalizam</b> que você vai falar e <b>compram</b> o segundo que você precisa para montar a frase.</p>
+
+        <pre><code>--- tomar a vez ---
+Can I jump in here?
+Can I add something to that?
+Quick thought on that —
+Building on what Sarah said...
+Sorry to interrupt, but I think this matters:
+
+--- se atropelaram voce ---
+Sorry, I wasn't finished — just one more thing.
+Let me finish that thought.
+
+--- ganhar tempo, o que TODO nativo faz ---
+That's a good question — let me think for a second.
+Well, it depends on...
+I mean, the way I see it...
+So, if I understand correctly, you're asking whether...
+
+--- quando realmente nao sabe ---
+I'm not sure — let me check and get back to you today.
+   (e depois VOLTE. isso vale mais que ter sabido na hora)</code></pre>
+
+        <div class="cs"><b>Sobre "ganhar tempo":</b> isso não é enrolação — é fala natural. Todo nativo usa <i>well</i>, <i>I mean</i>, <i>let me think</i> exatamente com essa função. O que soa mal é o silêncio longo, que o outro interpreta como não ter entendido, e o <i>ãããã</i> em português, que quebra o ritmo e chama mais atenção que a pausa.</div>
+
+        <div class="ver"><b>o par deste documento</b>Tomar a vez, sustentar posição e lidar com interrupção são habilidades de <b>comunicação</b>, não de idioma — elas aparecem em português também. O tratamento completo está em <a href="oratoria.html">Oratória e comunicação</a>; aqui está só a camada linguística.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Esperar o silêncio perfeito.</b> Ele não vem.</li>
+            <li><b>Preparar a frase inteira antes de abrir a boca.</b> Quando terminar de montar, o assunto mudou. Comece com a frase de entrada e monte o resto falando.</li>
+            <li><b>Sumir depois do "let me check".</b> A promessa não cumprida custa mais que não ter sabido.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Decore <b>duas</b> frases de entrada. Duas, não dez. Use uma na próxima reunião, mesmo que só para concordar com alguém.</div>
+          <div><b>prova de domínio</b>Você entra numa conversa em andamento sem esperar ser convidado — e sem pedir desculpas por isso.</div>
+        </div>
+        <button class="done" type="button" data-k="g2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 08 ===================== -->
+    <section class="part" id="p8">
+      <div class="ph"><span class="num">08</span><div><h2>A entrevista em inglês</h2><p>Quarenta e cinco minutos sustentados sob pressão — e o que é avaliado não é a gramática.</p></div></div>
+
+      <article class="topic" id="h1">
+        <div class="th"><h3>System Design em inglês: narrar enquanto pensa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <p class="direto"><b>Direto:</b> a entrevista de System Design é uma <b>prova oral</b>. E o nosso documento de System Design já lista, entre os erros eliminatórios, <b>pensar sem narrar</b> — que em inglês vira o erro dobrado.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O entrevistador propõe o problema. Você entende, sabe a resposta, e fica trinta segundos em silêncio montando a frase em inglês.</p>
+          <p>Do outro lado, o silêncio é lido como <b>não saber</b>. Você tinha o conteúdo e perdeu no canal — que é exatamente a situação que este documento inteiro existe para evitar.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o processo que não emite log. Ele pode estar trabalhando perfeitamente; de fora, é indistinguível de travado. Narrar é o <code class="i">stdout</code> do seu raciocínio.</p></div>
+
+        <p>A boa notícia é que a estrutura do documento de System Design funciona como <b>roteiro linguístico</b>. Perguntar antes de propor não é só bom método — dá tempo. Cada etapa tem frases previsíveis, e frase previsível é frase que você pode ensaiar.</p>
+
+        <pre><code>--- abertura: comprar tempo com boa pratica ---
+Before I start designing, can I ask a few questions?
+When you say 10k requests per second — is that HTTP
+requests, or database queries?
+What's the read/write ratio?
+What latency are we targeting — p95 or p99?
+
+--- narrar o raciocinio ---
+Let me think out loud here.
+My first instinct is X, but that would mean Y, so maybe Z.
+I'm going to start simple and add complexity as we go.
+Let me write down the constraints first.
+
+--- nomear o preco, que e o que impressiona ---
+One trade-off here is that we gain X but pay Y.
+This buys us speed, but it costs us consistency.
+I'd want to measure before deciding.
+
+--- fechar com honestidade ---
+If I had more time, I'd also look into...
+I'm not confident about this part — in a real project
+I'd validate it with a load test.</code></pre>
+
+        <div class="cs"><b>O que realmente é avaliado:</b> se você consegue trabalhar com o time. Erro de tempo verbal não reprova ninguém. O que reprova é não conseguir explicar uma decisão, responder outra coisa por não ter pedido esclarecimento, ou travar e desistir. <b>Gastar a preparação com gramática em vez de narração em voz alta é otimizar o recurso errado.</b></div>
+
+        <p>E a única pergunta que vale ensaiar de verdade é a de abertura. <i>Tell me about yourself</i> abre quase toda entrevista, você sabe que vem, e começar bem compra confiança para o resto. Dois minutos, três partes: o que faz hoje, uma coisa relevante que construiu, por que esta vaga.</p>
+
+        <pre><code>I'm a backend engineer, mostly Java and Spring, with about
+X years of experience.
+
+Most recently I worked on [sistema] — the interesting part
+was [problema concreto e o que voce decidiu].
+
+I'm looking for [o que a vaga tem] because [motivo real].
+
+2 minutos. Ensaie em voz alta, GRAVANDO. Nao decore palavra —
+decore a estrutura, e deixe as palavras mudarem.</code></pre>
+
+        <div class="ver"><b>onde a teoria mora</b>O método, as perguntas de carga e a escada de decisão estão em <a href="system-design.html">System Design completo</a> — aqui eles viram roteiro de fala. Conduzir o tempo, lidar com interrupção e com pergunta hostil estão em <a href="oratoria.html">Oratória e comunicação</a>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Silêncio para montar a frase.</b> Narre o processo enquanto monta: <i>"let me think out loud"</i> resolve.</li>
+            <li><b>Decorar a resposta palavra por palavra.</b> Soa artificial e desmorona na primeira pergunta de acompanhamento.</li>
+            <li><b>Pedir desculpa pelo inglês no começo.</b> Chama atenção para o que ninguém tinha notado ainda.</li>
+            <li><b>Não perguntar nada.</b> Em System Design, perguntar <b>é</b> a primeira parte da resposta.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Grave dois minutos respondendo <i>tell me about yourself</i>. Ouça. Você vai querer refazer — e é essa a segunda gravação que vale.</div>
+          <div><b>prova de domínio</b>Você narra um raciocínio técnico incompleto em inglês, em voz alta, sem parar para traduzir.</div>
+        </div>
+        <button class="done" type="button" data-k="h1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 09 ===================== -->
+    <section class="part" id="p9">
+      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: o ciclo e o laboratório</h2><p>A constância é o mecanismo. A intensidade é ilusão de progresso.</p></div></div>
+
+      <article class="topic" id="i1">
+        <div class="th"><h3>O ciclo diário, as fontes e os 30 dias</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
+        <p class="direto"><b>Direto:</b> vinte minutos de entrada, cinco frases anotadas, revisão espaçada, e <b>um uso real no mesmo dia</b>. O uso pode ser uma frase num comentário de PR — isso já fecha o ciclo.</p>
+
+        <p><b>Fontes que valem, e por quê.</b> Para <b>pronúncia</b>, <i>Rachel's English</i> é a referência em mecânica articulatória — ela mostra a posição da boca, que é o que falta em quase todo material. Para <b>escuta graduada</b>, material de notícias em velocidade reduzida e conferências técnicas com legenda oficial. Para <b>inglês do trabalho</b>, existe hoje conteúdo específico de inglês para tecnologia cobrindo standup, code review e reunião — e ele é mais útil que curso geral, porque trabalha o vocabulário que você já domina em português.</p>
+        <p>Em português, sobre <b>método</b>: prefira quem fala de aquisição e input a quem promete fluência em trinta dias. <b>A regra que mais economiza tempo:</b> escolha duas fontes e fique com elas por três meses. Trocar de método toda semana é a forma mais comum de não sair do lugar — e é confortável, porque sempre parece que você está fazendo algo.</p>
+
+        <h4 class="codelab">o laboratório de 30 dias</h4>
+        <pre><code>SEMANA 1 — medir e comecar a entrada
+  [ ] EF SET: anote nivel, pontuacao e data
+  [ ] 20 min/dia de escuta com legenda EM INGLES
+      no mesmo material tecnico
+
+SEMANA 2 — vocabulario
+  [ ] mantenha os 20 min
+  [ ] + 5 cartoes/dia, com FRASE, colhidos da sua leitura
+      de documentacao
+
+SEMANA 3 — producao em baixa pressao
+  [ ] mantenha os 20 min + cartoes
+  [ ] + 10 min de shadowing
+  [ ] grave 60 s da sua voz e guarde o arquivo
+
+SEMANA 4 — uso real
+  [ ] mantenha tudo
+  [ ] escreva 3 comentarios de PR em ingles
+  [ ] prepare o standup por escrito antes de falar
+
+DIA 30
+  [ ] refaca o EF SET
+  [ ] regrave os mesmos 60 s e compare com a semana 3
+
+O registro:
+  data | min de entrada | 5 frases | 1 uso real</code></pre>
+
+        <div class="cs"><b>O que registrar, e por quê:</b> a variação é o dado — não o valor absoluto. Se no dia 30 o EF SET não mudou de faixa, isso é <b>normal</b>: trinta dias raramente mudam de nível CEFR. O que muda é a gravação, e é ela que dá o retorno emocional que sustenta o hábito até o ponto em que o nível se move.</div>
+
+        <div class="ver"><b>o par e a bancada</b>A camada de comunicação — narrar, sustentar posição, conversa difícil — está em <a href="oratoria.html">Oratória e comunicação</a>. E todos os documentos do <a href="acervo.html">acervo</a> citam fontes primárias em inglês: a documentação do Kubernetes, do PostgreSQL, do Spring, o <i>Pro Git</i>. Cada uma delas é material de escuta e leitura calibrado ao seu interesse.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Faça o EF SET hoje e marque o horário dos vinte minutos no calendário, amarrado a um hábito que já existe.</div>
+          <div><b>prova de domínio</b>Você tem trinta dias registrados e duas gravações da sua voz para comparar.</div>
+        </div>
+        <button class="done" type="button" data-k="i1">marcar dominado</button>
+      </article>
+    </section>
+
+
+
+    <footer class="foot">
+      <p>Inglês técnico completo · setembro de 2026 · o décimo segundo documento do acervo, em tema Dracula. Fica <b>fora da semana</b>, junto com o Linux, o Git e o Conceitos de Backend: é competência de uso contínuo, não assunto que termina. O par deste arquivo é o <code class="ic">Oratória e comunicação</code> — os dois tratam da mesma coisa por ângulos diferentes: ser entendido. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script>
+function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
+var DG={
+ cefr:W(162,'<text x="170" y="16" class="bt">o que cada nível significa no trabalho</text><rect x="8" y="32" width="52" height="30" rx="7" class="b3"/><text x="34" y="51" class="bs">A1 A2</text><rect x="64" y="32" width="52" height="30" rx="7" class="b5"/><text x="90" y="51" class="bs">B1</text><rect x="120" y="32" width="52" height="30" rx="7" class="b6"/><text x="146" y="51" class="bs">B2</text><rect x="176" y="32" width="52" height="30" rx="7" class="b1"/><text x="202" y="51" class="bs">C1</text><rect x="232" y="32" width="52" height="30" rx="7" class="b1"/><text x="258" y="51" class="bs">C2</text><text x="34" y="78" class="bs">básico</text><text x="90" y="78" class="bs">lê com apoio</text><text x="146" y="78" class="bs">trabalha</text><text x="202" y="78" class="bs">flui</text><text x="258" y="78" class="bs">nativo-like</text><path d="M120,92 L120,104 L284,104" class="lt"/><text x="200" y="118" class="bs">a faixa que o mercado pede</text><text x="170" y="140" class="bt">B2 é o alvo prático: reunião, PR e entrevista</text><text x="170" y="156" class="bs">C1 abre vaga internacional · abaixo de B2, a reunião ao vivo dói</text>'),
+ input:W(160,'<text x="170" y="16" class="bt">a regra dos 95%</text><rect x="10" y="34" width="96" height="52" rx="9" class="b5"/><text x="58" y="54" class="bs">entende 50%</text><text x="58" y="70" class="bs">decodifica</text><text x="58" y="82" class="bs">não adquire</text><rect x="122" y="34" width="96" height="52" rx="9" class="b1"/><text x="170" y="54" class="bs">entende 95-98%</text><text x="170" y="70" class="bs">adquire o resto</text><text x="170" y="82" class="bs">pelo contexto</text><rect x="234" y="34" width="96" height="52" rx="9" class="b3"/><text x="282" y="54" class="bs">entende 100%</text><text x="282" y="70" class="bs">confortável</text><text x="282" y="82" class="bs">não cresce</text><text x="170" y="108" class="bs">o material certo é o que voce quase entende inteiro</text><text x="170" y="130" class="bt">i + 1 — um passo além, não dez</text><text x="170" y="148" class="bs">se precisa pausar a cada frase, o material esta acima do seu nível</text>'),
+ ordem:W(150,'<text x="170" y="16" class="bt">por que a entrada vem primeiro</text><rect x="12" y="34" width="86" height="40" rx="9" class="b1"/><text x="55" y="52" class="bs">ESCUTA</text><text x="55" y="66" class="bs">construir o modelo</text><path d="M100,54 L124,54" class="lt"/><path d="M124,54 L116,50 L116,58 Z" class="ht"/><rect x="126" y="34" width="86" height="40" rx="9" class="b1"/><text x="169" y="52" class="bs">LEITURA</text><text x="169" y="66" class="bs">vocabulario e forma</text><path d="M214,54 L238,54" class="lt"/><path d="M238,54 L230,50 L230,58 Z" class="ht"/><rect x="240" y="34" width="88" height="40" rx="9" class="b2"/><text x="284" y="52" class="bs">FALA e ESCRITA</text><text x="284" y="66" class="bs">testar hipoteses</text><text x="170" y="96" class="bs">a produção não é o fim da fila — é o que revela as lacunas</text><text x="170" y="118" class="bt">mas sem entrada suficiente, ela vira tradução mental</text><text x="170" y="136" class="bs">e traduzir na cabeça é o que faz você travar na reunião</text>'),
+ legenda:W(156,'<text x="170" y="16" class="bt">a escada da legenda</text><rect x="8" y="34" width="74" height="44" rx="8" class="b5"/><text x="45" y="52" class="bs">PT-BR</text><text x="45" y="66" class="bs">você lê, não escuta</text><rect x="90" y="34" width="74" height="44" rx="8" class="b6"/><text x="127" y="52" class="bs">inglês</text><text x="127" y="66" class="bs">liga som e grafia</text><rect x="172" y="34" width="74" height="44" rx="8" class="b1"/><text x="209" y="52" class="bs">só quando trava</text><text x="209" y="66" class="bs">pausa e confere</text><rect x="254" y="34" width="78" height="44" rx="8" class="b1"/><text x="293" y="52" class="bs">sem legenda</text><text x="293" y="66" class="bs">o objetivo</text><path d="M8,90 L332,90" class="l d"/><text x="170" y="112" class="bs">legenda em português é conforto — e impede a escuta de trabalhar</text><text x="170" y="134" class="bt">suba um degrau por vez, no mesmo material</text><text x="170" y="150" class="bs">reassistir o mesmo vídeo um degrau acima vale mais que um vídeo novo</text>'),
+ freq:W(150,'<text x="170" y="16" class="bt">a curva de frequência</text><path d="M20,110 L320,110" class="l"/><path d="M20,110 L20,30" class="l"/><path d="M22,36 C70,96 150,106 318,108" class="lt"/><text x="60" y="126" class="bs">1.000</text><text x="140" y="126" class="bs">3.000</text><text x="240" y="126" class="bs">10.000</text><text x="170" y="140" class="bs">palavras conhecidas</text><text x="72" y="52" class="bs">~80% do texto</text><text x="170" y="80" class="bs">~95%</text><text x="272" y="96" class="bs">~98%</text><text x="170" y="26" class="bs">cobertura</text>'),
+ shadow:W(150,'<text x="170" y="16" class="bt">shadowing: repetir por cima, sem esperar</text><rect x="12" y="38" width="90" height="34" rx="8" class="b2"/><text x="57" y="59" class="bs">áudio nativo</text><path d="M104,55 L128,55" class="lt"/><path d="M128,55 L120,51 L120,59 Z" class="ht"/><rect x="130" y="38" width="90" height="34" rx="8" class="b1"/><text x="175" y="55" class="bs">você repete</text><text x="175" y="68" class="bs">~1 s atrás</text><path d="M222,55 L246,55" class="lt"/><path d="M246,55 L238,51 L238,59 Z" class="ht"/><rect x="248" y="38" width="84" height="34" rx="8" class="b1"/><text x="290" y="59" class="bs">ritmo e ligação</text><text x="170" y="92" class="bs">não é traduzir nem entender — é imitar a melodia</text><text x="170" y="114" class="bt">o ganho é em ritmo, ligação de palavras e confiança</text><text x="170" y="132" class="bs">funciona melhor do intermediário em diante, e como complemento</text>'),
+ reuniao:W(160,'<text x="170" y="16" class="bt">não entendi — o que fazer</text><rect x="10" y="32" width="150" height="30" rx="8" class="b5"/><text x="85" y="51" class="bs">✗ acenar e seguir</text><rect x="180" y="32" width="150" height="30" rx="8" class="b1"/><text x="255" y="51" class="bs">✓ pedir e confirmar</text><rect x="10" y="72" width="150" height="46" rx="8" class="b3"/><text x="85" y="90" class="bs">o erro aparece</text><text x="85" y="104" class="bs">duas semanas depois</text><rect x="180" y="72" width="150" height="46" rx="8" class="b3"/><text x="255" y="88" class="bs">"Sorry, could you</text><text x="255" y="101" class="bs">repeat that?"</text><text x="255" y="113" class="bs">custo: 3 segundos</text><text x="170" y="140" class="bt">quem pede confirmação passa por cuidadoso, não por limitado</text><text x="170" y="156" class="bs">e o nativo também pede — você só não reparava</text>'),
+ ciclo:W(150,'<text x="170" y="16" class="bt">o ciclo diário</text><rect x="10" y="34" width="70" height="30" rx="8" class="b2"/><text x="45" y="53" class="bs">entrada 20 min</text><path d="M82,49 L100,49" class="l"/><path d="M100,49 L92,45 L92,53 Z" class="h"/><rect x="102" y="34" width="66" height="30" rx="8" class="b2"/><text x="135" y="53" class="bs">anotar 5</text><path d="M170,49 L188,49" class="l"/><path d="M188,49 L180,45 L180,53 Z" class="h"/><rect x="190" y="34" width="66" height="30" rx="8" class="b2"/><text x="223" y="53" class="bs">revisar</text><path d="M258,49 L276,49" class="l"/><path d="M276,49 L268,45 L268,53 Z" class="h"/><rect x="278" y="34" width="56" height="30" rx="8" class="b1"/><text x="306" y="53" class="bs">usar</text><path d="M306,66 L306,88 L45,88 L45,66" class="lt d"/><path d="M45,66 L41,74 L49,74 Z" class="ht"/><text x="170" y="104" class="bs">20 minutos todo dia batem 3 horas no sábado</text><text x="170" y="126" class="bt">a constância é o mecanismo — não a intensidade</text><text x="170" y="142" class="bs">e "usar" pode ser uma frase no PR: isso já conta</text>')
+};
+
+var T=[
+{g:"01",n:"Medir antes de estudar",s:"o CEFR, o teste gratuito e o alvo realista",c:"var(--purple)",cs:"var(--purple-soft)",items:[
+ {t:"O CEFR em uma tela",x:"o que cada letra significa no trabalho",dg:"cefr",oq:"Escala europeia de A1 a C2 que descreve o que a pessoa <b>consegue fazer</b> — não quanta gramática sabe.",ps:"Trocar 'meu inglês é mais ou menos' por um ponto concreto, que permite escolher método e material.",cf:"<b>B1</b> lê com apoio e se vira em conversa previsível. <b>B2</b> é o alvo prático: acompanha reunião, escreve PR, sustenta entrevista. <b>C1</b> flui e lida com nuance — é o que vaga internacional costuma pedir. <b>Erro comum:</b> mirar C2 por perfeccionismo. C2 é aproximadamente nativo culto; quase ninguém precisa, e mirar nele adia o uso real por anos."},
+ {t:"O EF SET",x:"gratuito e calibrado ao CEFR",oq:"Teste online gratuito da Education First, o primeiro padronizado totalmente alinhado ao CEFR. Tem versão de 50 minutos (leitura e escuta) e uma de 4 habilidades com certificado.",ps:"Medir sem pagar nada, para decidir se alguma certificação paga faz sentido — e para ter um número de partida.",cf:"É adaptativo: as perguntas mudam conforme você acerta. A pontuação mapeia para as faixas A1–C2 e também para equivalências de IELTS e TOEFL. <b>Erro comum:</b> tratar o resultado como veredito. Ele é uma foto — o valor está em repetir daqui a seis meses e comparar.",ex:"efset.org — 50 min, gratuito, sem agendamento\n\nFaça hoje, anote o resultado, e guarde a data.\nRepita em 6 meses. A variação é o dado, nao o valor absoluto."},
+ {t:"Certificação paga vale?",x:"quase sempre não",oq:"TOEFL iBT custa cerca de US$ 200–250; IELTS, US$ 230–260; o Duolingo English Test, cerca de US$ 65 e leva uma hora.",ps:"Decidir com número em vez de ansiedade.",cf:"Certificação existe para quem precisa <b>provar</b> o nível a uma instituição — universidade, imigração, alguns processos formais. Para vaga de tecnologia, a prova é a entrevista em inglês, não o certificado. <b>Erro comum:</b> pagar certificação como forma de se obrigar a estudar. O dinheiro não cria constância; o hábito diário cria.",caso:"Se o objetivo é vaga internacional remota, o que é avaliado é a sua conversa de 45 minutos com o time. Nenhum recrutador de tecnologia pediu TOEFL antes de marcar essa conversa. Invista o valor da prova em conversação com um professor por alguns meses — rende muito mais."},
+ {t:"O alvo realista",x:"B2 funcional em vez de C2 imaginário",oq:"Definir o objetivo em termos de situação concreta: acompanhar a daily sem perder o fio, escrever PR sem revisar dez vezes, sustentar 45 minutos de entrevista.",ps:"Objetivo mensurável em vez de 'ficar fluente', que nunca chega porque não tem linha de chegada.",cf:"Escreva as três situações que você quer dominar, com prazo. Elas viram o critério de parada de cada etapa. <b>Erro comum:</b> 'quero ser fluente' — sem definição, qualquer progresso parece insuficiente e a desistência vem no terceiro mês."}
+]},
+{g:"02",n:"A entrada vem primeiro",s:"input compreensível e a regra dos 95%",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
+ {t:"Input compreensível",x:"i + 1, não i + 10",dg:"input",oq:"A hipótese de Krashen: adquire-se língua entendendo mensagens <b>um passo acima</b> do nível atual — o famoso <i>i + 1</i>.",ps:"Escolher material pelo critério certo, que é o que mais economiza tempo.",cf:"A pesquisa aponta para 95–98% de compreensão como faixa ideal: você entende quase tudo e adquire o resto pelo contexto. Abaixo disso, você <b>decodifica</b> em vez de adquirir — e decodificar cansa sem ensinar. <b>Erro comum:</b> escolher material pelo interesse e ignorar o nível. Um podcast nativo a 180 palavras por minuto com 50% de compreensão não está te ensinando nada."},
+ {t:"Extensiva contra intensiva",x:"muito fácil ou pouco difícil",oq:"<b>Extensiva</b> é volume em material confortável. <b>Intensiva</b> é pouco material, estudado a fundo, com pausa e dicionário.",ps:"As duas são necessárias e resolvem coisas diferentes — e fazer só a segunda é o erro mais comum.",cf:"A extensiva constrói fluência de processamento: você se acostuma ao ritmo, à ligação entre palavras, ao som real. A intensiva constrói precisão: vocabulário novo, estrutura, detalhe. A proporção saudável é bem mais extensiva que intensiva. <b>Erro comum:</b> só intensiva — estudar dez minutos de vídeo por uma hora e nunca desenvolver velocidade."},
+ {t:"Por que a produção vem depois",x:"e por que não vem por último",dg:"ordem",oq:"Entrada constrói o modelo interno; produção testa e revela lacunas. As duas são necessárias, mas a ordem importa no começo.",ps:"Evitar o travamento que vem de tentar falar sem ter escutado o suficiente.",cf:"A compreensão auditiva prevê fluência de longo prazo melhor que fala forçada cedo. Mas a crítica ao modelo de Krashen também procede: só entrada não basta — produzir força você a processar a gramática, notar o que falta e testar hipóteses, coisas que escutar não exige. <b>A síntese honesta:</b> entrada em volume, produção em baixa pressão, desde cedo — escrever um comentário de PR conta.",caso:"É a mesma diferença entre ler sobre Kubernetes e rodar <code class=\"i\">kubectl</code>. Você precisa dos dois; mas tentar operar um cluster sem ter lido nada só produz frustração — e tentar falar sem ter escutado produz a tradução mental que faz travar na reunião."},
+ {t:"Quanto tempo por dia",x:"20 minutos ganham de 3 horas no sábado",oq:"Aquisição depende de exposição distribuída, não concentrada.",ps:"Definir um compromisso que sobrevive a semana ruim.",cf:"Vinte minutos diários somam mais de duas horas por semana e, o que importa mais, mantêm o cérebro em contato constante com o som da língua. Três horas no sábado somam menos e ainda perdem o efeito da distribuição. <b>Erro comum:</b> plano ambicioso de uma hora por dia que dura onze dias."}
+]},
+{g:"03",n:"Escuta",s:"o gargalo real — e a escada da legenda",c:"var(--green)",cs:"var(--green-soft)",items:[
+ {t:"A escada da legenda",x:"quatro degraus, no mesmo material",dg:"legenda",oq:"Legenda em português, legenda em inglês, legenda só quando travar, e sem legenda.",ps:"Sair da legenda sem sofrimento, um degrau por vez.",cf:"Legenda em português faz você <b>ler</b>, não escutar — o áudio vira trilha sonora. Legenda em inglês já ajuda: liga o som à grafia, que é metade do problema para quem lê melhor do que escuta. <b>Erro comum:</b> pular do primeiro degrau direto para o último, não entender nada e concluir que 'não tem jeito'.",caso:"Reassistir o <b>mesmo</b> vídeo um degrau acima vale mais que assistir um vídeo novo. Na segunda passada você já sabe o conteúdo, então a atenção fica livre para o som — que é exatamente o que precisa treinar."},
+ {t:"Onde arrumar material no seu nível",x:"e por que técnico ajuda",oq:"Conteúdo com vocabulário que você já domina em português reduz a carga: você não está aprendendo o assunto <b>e</b> a língua ao mesmo tempo.",ps:"Aproveitar a sua maior vantagem — você já sabe backend.",cf:"Uma palestra sobre bancos de dados é mais fácil que um vídeo sobre culinária, mesmo com vocabulário mais difícil, porque você prevê o que vem. <b>Comece por:</b> conferências gravadas com legenda oficial, canais técnicos com fala clara, e os vídeos de documentação dos próprios projetos. <b>Erro comum:</b> começar por série ou filme, que tem gíria, sotaque variado e áudio ruim — o material mais difícil que existe."},
+ {t:"Escuta ativa e passiva",x:"as duas contam, de formas diferentes",oq:"<b>Ativa</b> é com atenção total, muitas vezes com anotação. <b>Passiva</b> é deixar rodar durante outra tarefa.",ps:"Aproveitar as horas mortas sem se enganar sobre o que elas rendem.",cf:"A passiva mantém o ouvido acostumado ao ritmo e ajuda a consolidar o que você já entende. Ela <b>não</b> ensina o que você ainda não sabe. <b>Erro comum:</b> contar podcast de fundo como estudo e estranhar a falta de progresso. Passiva é manutenção; ativa é crescimento."},
+ {t:"O que fazer quando não entendeu",x:"a técnica das três passadas",oq:"Primeira passada sem parar, para pegar o assunto. Segunda com pausa nos trechos escuros. Terceira sem legenda.",ps:"Transformar frustração em procedimento.",cf:"Na segunda passada, anote apenas as palavras que <b>impediram</b> a compreensão — não todas as desconhecidas. A maioria das palavras novas você adivinha pelo contexto, e anotar todas mata o ritmo. <b>Erro comum:</b> pausar a cada palavra nova. Se você pausa mais de duas ou três vezes por minuto, o material está acima do seu nível."}
+]},
+{g:"04",n:"Leitura e vocabulário",s:"a documentação que você já lê, virando treino",c:"var(--orange)",cs:"var(--orange-soft)",items:[
+ {t:"A documentação como treino",x:"você já faz isso — só falta o método",oq:"Você lê documentação técnica todos os dias. Falta transformar essa leitura em aquisição em vez de decodificação.",ps:"Aproveitar horas que já existem, sem acrescentar tempo ao dia.",cf:"Duas mudanças pequenas: <b>não traduza</b> o parágrafo inteiro — leia até o fim e só volte se não entendeu a ideia; e <b>anote a estrutura</b>, não só o termo técnico. O vocabulário que te falta raramente é <i>throughput</i> ou <i>idempotent</i>: é <i>albeit</i>, <i>whereas</i>, <i>provided that</i>, <i>unless otherwise specified</i>. <b>Erro comum:</b> traduzir mentalmente frase a frase, o que impede a leitura direta e mantém a dependência do português."},
+ {t:"A curva de frequência",x:"2.000 palavras cobrem 80%",dg:"freq",oq:"A distribuição do vocabulário é muito desigual: um núcleo pequeno cobre a maior parte de qualquer texto.",ps:"Priorizar. Estudar palavra rara antes do núcleo é desperdício.",cf:"Cerca de mil famílias de palavras cobrem perto de 80% de um texto geral; três mil chegam perto de 95%; dez mil, de 98%. Como a faixa de aquisição confortável é 95–98%, a meta prática é <b>chegar às três mil e depois especializar</b> no vocabulário da sua área. <b>Erro comum:</b> decorar listas de palavras difíceis e continuar travando em conectivo simples."},
+ {t:"Repetição espaçada",x:"Anki, e o cartão que funciona",oq:"Revisar no momento em que você está prestes a esquecer, o que espaça os intervalos e consolida a longo prazo.",ps:"Fazer o vocabulário grudar sem reler listas.",cf:"O cartão que funciona tem <b>frase</b>, não palavra solta — o contexto é metade da memória. E o sentido certo é reconhecer primeiro (inglês → significado), produzir depois. <b>Erro comum:</b> cartão com palavra isolada e tradução. Você aprende a traduzir o cartão, não a reconhecer a palavra em uso.",ex:"RUIM   albeit = embora\n\nBOM    The migration succeeded, albeit slower than expected.\n       ___________ = ainda que / embora\n\nColha as frases da SUA leitura: documentação, PR, livro.\nCartão criado por você rende muito mais que baralho pronto."},
+ {t:"Falsos amigos que pegam dev",x:"as palavras que parecem e não são",oq:"Palavras parecidas com o português e com sentido diferente.",ps:"Evitar o erro que passa despercebido justamente por soar natural.",cf:"<code class=\"i\">actually</code> é 'na verdade', não 'atualmente' (<i>currently</i>). <code class=\"i\">eventually</code> é 'por fim', não 'eventualmente' (<i>occasionally</i>). <code class=\"i\">pretend</code> é 'fingir', não 'pretender' (<i>intend</i>). <code class=\"i\">push</code> é empurrar, <code class=\"i\">pull</code> é puxar — e isso explica a direção do <code class=\"i\">git push</code>. <b>Erro comum:</b> usar <i>eventually</i> achando que suaviza. Você acabou de prometer que vai acontecer.",ex:"actually    → na verdade      (atualmente = currently)\neventually  → por fim, enfim  (eventualmente = occasionally)\npretend     → fingir          (pretender = intend)\nrealize     → perceber        (realizar = carry out)\nsupport     → apoiar/suportar peso (aguentar dor = endure)\nexquisite   → primoroso       (esquisito = weird)"}
+]},
+{g:"05",n:"Pronúncia",s:"shadowing e inteligibilidade — não sotaque",c:"var(--pink)",cs:"var(--pink-soft)",items:[
+ {t:"Shadowing",x:"repetir por cima, um segundo atrás",dg:"shadow",oq:"Ouvir e repetir quase simultaneamente, imitando ritmo e entonação — sem traduzir e sem esperar a frase terminar.",ps:"Treinar a musculatura e o ritmo da fala, que é o que mais diferencia quem soa travado de quem soa natural.",cf:"Estudos apontam melhora significativa em entonação, fluência e pronúncia. A explicação é motora: você treina o gesto articulatório inteiro, não palavras isoladas. Funciona melhor do nível intermediário em diante, e <b>como complemento</b>, não como método único. <b>Erro comum:</b> tentar shadowing em material difícil. Use algo que você já entende inteiro — o objetivo é a melodia, não o conteúdo.",ex:"Como praticar, 10 minutos:\n1. escolha 60 s de áudio que voce JA entende\n2. ouça uma vez lendo a transcrição\n3. repita por cima, ~1 s atrás, olhando o texto\n4. repita sem o texto\n5. grave a sua versão e compare com o original\n\nO passo 5 é o que quase todo mundo pula — e é o que ensina."},
+ {t:"Inteligibilidade, não sotaque",x:"o alvo certo",oq:"O objetivo é ser <b>entendido sem esforço</b>, não soar nativo. Sotaque não é defeito — é origem.",ps:"Parar de gastar energia num alvo que não muda resultado profissional.",cf:"O que atrapalha de verdade é um punhado de sons e padrões: o <i>th</i>, a distinção entre vogais curtas e longas, a sílaba tônica errada, e a tendência a acrescentar vogal no fim de palavra terminada em consoante — <i>help-i</i>, <i>Facebook-i</i>. <b>Erro comum:</b> perseguir sotaque americano e ignorar tônica. Trocar a sílaba tônica torna a palavra irreconhecível; sotaque, não."},
+ {t:"Os sons que o português não tem",x:"cinco que valem trabalhar",oq:"Português e inglês não compartilham todo o inventário de sons; alguns não existem por aqui.",ps:"Concentrar o esforço no que muda compreensão.",cf:"O <b>th</b> de <i>think</i> e <i>this</i>. A diferença entre <b>ship</b> e <b>sheep</b>, <b>bit</b> e <b>beat</b> — vogal curta contra longa, que em português não distingue significado. O <b>h</b> aspirado de <i>hello</i>. O <b>r</b> retroflexo. E o encontro consonantal final, em <i>asked</i> ou <i>texts</i>. <b>Erro comum:</b> tratar tudo como igualmente importante. A distinção curta/longa muda palavra; o <i>r</i> perfeito, não."}
+]},
+{g:"06",n:"O trabalho escrito",s:"PR, mensagem assíncrona e documentação",c:"var(--yellow)",cs:"var(--yellow-soft)",items:[
+ {t:"Escrever é onde você tem vantagem",x:"tempo para revisar",oq:"Na escrita você controla o ritmo: pode rascunhar, reler e corrigir antes de publicar.",ps:"Começar a produzir com baixa pressão — é a porta de entrada para a produção oral depois.",cf:"Todo comentário de PR que você escreve em inglês é prática deliberada com retorno. E o texto técnico premia clareza simples sobre elaboração — o que joga a seu favor. <b>Erro comum:</b> esperar 'melhorar o inglês' para começar a escrever. A escrita <b>é</b> a melhora."},
+ {t:"Code review sem soar rude",x:"a diferença entre pedir e mandar",oq:"Em inglês profissional, o pedido direto soa mais duro do que em português. Isso pega muita gente sem querer.",ps:"Dar retorno técnico firme sem criar atrito desnecessário.",cf:"Três suavizadores resolvem quase tudo: perguntar em vez de mandar, usar <i>could/would</i> em vez de imperativo, e separar sugestão de bloqueio (<i>nit:</i> para detalhe, <i>blocking:</i> para o que impede aprovar). <b>Erro comum:</b> traduzir 'muda isso' literalmente: <i>change this</i> soa como ordem.",ex:"DURO    Change this to a HashMap.\nMELHOR  Could we use a HashMap here? It'd make the lookup O(1).\n\nDURO    This is wrong.\nMELHOR  I think this might break when the list is empty — did I miss something?\n\nnit: minor style, feel free to ignore\nblocking: this needs to change before I approve\nLGTM = Looks Good To Me"},
+ {t:"Mensagem assíncrona",x:"contexto primeiro, pergunta depois",oq:"Em time distribuído, cada mensagem custa horas de espera. A estrutura importa mais que a gramática.",ps:"Conseguir resposta na primeira tentativa em vez de na terceira.",cf:"Coloque a <b>pergunta</b> ou o <b>pedido</b> no começo, contexto depois, e diga o que você já tentou. Uma mensagem que começa com 'oi, tudo bem?' e chega à pergunta no quinto parágrafo desperdiça um ciclo de fuso. <b>Erro comum:</b> mandar 'hi' sozinho e esperar. A pessoa responde 'hi' e você perdeu seis horas.",ex:"RUIM\n  Hi! Are you there?\n\nBOM\n  Hi! Quick question about the payment service —\n  I'm getting a 409 on POST /charges with an idempotency\n  key I've used before. Expected behavior, or a bug?\n  I checked the docs and the logs; no clue so far.\n  No rush, tomorrow works."}
+]},
+{g:"07",n:"A reunião ao vivo",s:"onde todo mundo trava — e o que dizer",c:"var(--blue)",cs:"var(--blue-soft)",items:[
+ {t:"O standup em três frases",x:"decore a estrutura, não o texto",oq:"Ontem, hoje, impedimento. É a mesma estrutura em todo time.",ps:"Tirar a improvisação do momento em que você está mais nervoso.",cf:"Prepare em trinta segundos antes da reunião. Com a estrutura fixa, o esforço vai para o conteúdo, não para a gramática. <b>Erro comum:</b> escrever o texto todo e ler. Soa artificial e desmorona à primeira pergunta.",ex:"Yesterday I worked on the authentication endpoint and\nraised a PR for review.\nToday I'll pick up the user dashboard story.\nNo blockers.\n\n--- com impedimento ---\n...I'm blocked on the staging database — it's been down\nsince yesterday. I've pinged the infra channel.\nIf it's not back by noon, I'll switch to the refactor."},
+ {t:"Não entendi: o que dizer",x:"a habilidade mais subestimada",dg:"reuniao",oq:"Pedir repetição, pedir para desacelerar, e confirmar o que entendeu.",ps:"Impedir que um mal-entendido de trinta segundos vire duas semanas de trabalho errado.",cf:"Quem pede confirmação passa por <b>cuidadoso</b>, não por limitado — e nativos também pedem, você só não reparava. Use a variedade: repetir sempre a mesma frase é que chama atenção. <b>Erro comum:</b> acenar e seguir. O custo aparece depois, e é muito maior.",ex:"Sorry, could you repeat that?\nCould you say that again, a bit slower?\nSorry, I didn't catch the last part.\n\n--- confirmar, que é ainda melhor ---\nJust to make sure I got it right: you want the retry\nto happen before the fallback, not after?\n\nLet me repeat it back to you...\nSo the deadline is Friday, not Wednesday — correct?"},
+ {t:"Tomar a vez de falar",x:"e não ser atropelado",oq:"Em reunião com falantes nativos, a vez é tomada, não concedida. Esperar a pausa educada costuma significar não falar.",ps:"Participar de verdade, e não só assistir.",cf:"Frases de entrada resolvem: elas sinalizam que você vai falar e compram o segundo que você precisa. Em chamada remota, usar o nome de quem falou antes ajuda a ancorar. <b>Erro comum:</b> esperar o silêncio perfeito. Ele não vem.",ex:"Can I jump in here?\nCan I add something to that?\nQuick thought on that —\nBuilding on what Sarah said...\nSorry to interrupt, but I think this matters: ...\n\n--- se atropelaram voce ---\nSorry, I wasn't finished — just one more thing."},
+ {t:"Ganhar tempo para pensar",x:"em vez do silêncio constrangido",oq:"Expressões que preenchem o espaço enquanto você organiza a frase.",ps:"Evitar a pausa longa que faz o outro assumir que você não entendeu.",cf:"Todo nativo faz isso — <i>well</i>, <i>I mean</i>, <i>let me think</i>. É fala natural, não enrolação. <b>Erro comum:</b> preencher com <i>ãããã</i> em português, que quebra o ritmo e chama mais atenção que a pausa.",ex:"That's a good question — let me think for a second.\nWell, it depends on...\nI mean, the way I see it...\nSo, if I understand correctly, you're asking whether...\n\n--- se realmente nao sabe ---\nI'm not sure — let me check and get back to you today."}
+]},
+{g:"08",n:"A entrevista em inglês",s:"45 minutos sustentados sob pressão",c:"var(--red)",cs:"var(--red-soft)",items:[
+ {t:"O que realmente é avaliado",x:"comunicação, não gramática",oq:"O entrevistador quer saber se você consegue trabalhar com o time — explicar, discordar, pedir esclarecimento.",ps:"Tirar o peso do erro gramatical, que quase nunca é o que reprova.",cf:"Erro de tempo verbal não reprova ninguém. O que reprova é não conseguir explicar uma decisão, não pedir esclarecimento e responder outra coisa, ou travar e desistir. <b>Erro comum:</b> gastar a preparação com gramática em vez de com narração em voz alta."},
+ {t:"A pergunta de abertura",x:"prepare essa, improvise o resto",oq:"<i>Tell me about yourself</i> abre quase toda entrevista, e é a única que você pode ensaiar sem soar decorado.",ps:"Começar bem compra confiança para o resto.",cf:"Dois minutos, três partes: o que você faz hoje, uma coisa relevante que construiu, e por que esta vaga. <b>Erro comum:</b> narrar o currículo em ordem cronológica desde a faculdade. Ninguém pediu a linha do tempo.",ex:"I'm a backend engineer, mostly Java and Spring, with about\nX years of experience.\n\nMost recently I worked on [sistema] — the interesting part\nwas [problema concreto e o que voce decidiu].\n\nI'm looking for [o que a vaga tem] because [motivo real].\n\n2 minutos. Ensaie em voz alta, gravando. Nao decore palavra."},
+ {t:"System Design em inglês",x:"narrar enquanto pensa",oq:"A entrevista de System Design é uma prova oral: você precisa <b>narrar</b> o raciocínio, não só chegar ao desenho.",ps:"Juntar as duas dificuldades — o conteúdo e a língua — com uma estrutura que sustenta as duas.",cf:"A estrutura do nosso documento de System Design funciona como roteiro linguístico: perguntar antes de propor dá tempo, e cada etapa tem frases previsíveis. <b>Erro comum:</b> ficar em silêncio pensando. Em inglês, o silêncio é lido como não saber — e o documento de System Design já lista 'pensar sem narrar' entre os erros eliminatórios.",map:[["System Design","O método, as perguntas de carga e a escada — que aqui viram roteiro de fala."],["Oratória","Narrar sob pressão, conduzir o tempo e lidar com interrupção."]],ex:"Before I start designing, can I ask a few questions?\nWhen you say 10k requests per second — is that HTTP\nrequests or database queries?\n\nLet me think out loud here...\nMy first instinct is X, but that would mean Y, so maybe...\n\nI'm going to start simple and then add complexity.\nOne trade-off here is...\nIf I had more time, I'd also look into..."}
+]},
+{g:"09",n:"Como aprender de verdade",s:"20 minutos por dia batem 3 horas no sábado",c:"var(--amber)",cs:"var(--amber-soft)",items:[
+ {t:"O ciclo diário",x:"entrada, anotar, revisar, usar",dg:"ciclo",oq:"Vinte minutos de entrada, cinco palavras ou frases anotadas, revisão espaçada, e um uso real no mesmo dia.",ps:"Um compromisso pequeno o bastante para sobreviver à semana ruim.",cf:"O 'usar' pode ser mínimo: uma frase nova num comentário de PR, uma mensagem escrita em inglês. O que importa é fechar o ciclo entre receber e produzir no mesmo dia. <b>Erro comum:</b> plano de uma hora diária que dura onze dias — e depois seis meses sem nada."},
+ {t:"Fontes e canais",x:"o que usar de verdade",oq:"Material calibrado, em vez do que aparece na recomendação.",ps:"Não perder semanas procurando o recurso perfeito.",cf:"<b>Para escuta gradual:</b> canais de conferência técnica com legenda oficial, e material graduado de notícias. <b>Para pronúncia:</b> <i>Rachel's English</i> é a referência de mecânica articulatória. <b>Para inglês do trabalho:</b> conteúdo específico de inglês para tecnologia cobre standup, code review e reunião. <b>Em português, sobre método:</b> canais que tratam de aquisição — e não de 'aprenda inglês em 30 dias' — valem mais. <b>Regra:</b> escolha duas fontes e fique com elas por três meses. Trocar de método toda semana é a forma mais comum de não sair do lugar."},
+ {t:"Praticar: o laboratório de 30 dias",x:"o que fazer amanhã",oq:"Um plano concreto de quatro semanas que junta tudo.",ps:"Sair da leitura e entrar em execução hoje.",cf:"<b>Semana 1:</b> faça o EF SET e anote o resultado; comece 20 min diários de escuta com legenda em inglês no mesmo material técnico. <b>Semana 2:</b> acrescente cinco cartões por dia, colhidos da sua leitura de documentação. <b>Semana 3:</b> acrescente 10 min de shadowing e grave a sua voz uma vez. <b>Semana 4:</b> escreva três comentários de PR em inglês e prepare o seu standup por escrito antes de falar.",ex:"O registro que faz diferença:\n  data | minutos de entrada | 5 frases novas | um uso real\n\nNo dia 30, refaça o EF SET.\nA variação é o dado — nao o valor.",star:true}
+]}
+];
+
+/* ---------- render ---------- */
+var nav=document.getElementById("nav");
+var navMap={};
+function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
+var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
+flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
+var KEYT="ingles-tecnico-completo-CL-trilha-v1";
+var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
+var track=document.getElementById("track"),lg=document.getElementById("lg");
+navHead("A trilha · 9 marcos");
+T.forEach(function(g,gi){
+  var sec=document.createElement("section");
+  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
+  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
+  var ms=document.createElement("div");ms.className="milestone";
+  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
+  var box=document.createElement("div");box.className="cluster";
+  g.items.forEach(function(it){
+    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
+    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
+    b.addEventListener("click",function(){open(it._i);});
+    box.appendChild(b);
+  });
+  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
+  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
+  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
+  navMap["g"+g.g]=a;
+});
+var fim=document.createElement("div");fim.className="trail-end";
+fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
+track.appendChild(fim);
+var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
+function open(i){
+  cur=i;var it=flat[i];
+  panel.style.setProperty("--pc",it._g.c);
+  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
+  document.getElementById("pTitle").textContent=it.t;
+  document.getElementById("pSub").textContent=it.x;
+  var h='';
+  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
+  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
+  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
+  if(it.caso)h+='<div class="blk"><h4>No caso concreto</h4><p>'+it.caso+'</p></div>';
+  if(it.map)h+='<div class="blk"><h4>Onde a teoria mora</h4><table class="vmap"><tbody>'+it.map.map(function(r){return '<tr><td class="vp">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</tbody></table></div>';
+  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
+  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+esc(it.ex)+'</code></pre></div>';
+  document.getElementById("pBody").innerHTML=h;
+  document.getElementById("pBody").scrollTop=0;
+  syncMark();
+  panel.classList.add("on");scrim.classList.add("on");
+  document.getElementById("pX").focus();
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("pX").addEventListener("click",closeP);
+scrim.addEventListener("click",closeP);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeP();
+  if(!panel.classList.contains("on"))return;
+  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
+});
+function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
+document.getElementById("pNext").addEventListener("click",function(){go(1);});
+document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
+var mark=document.getElementById("pMark");
+function syncMark(){
+  var on=!!doneT[flat[cur]._id];
+  mark.classList.toggle("is",on);
+  mark.textContent=on?"✓ estudado":"marcar estudado";
+}
+mark.addEventListener("click",function(){
+  var id=flat[cur]._id;
+  if(doneT[id])delete doneT[id];else doneT[id]=1;
+  localStorage.setItem(KEYT,JSON.stringify(doneT));
+  syncMark();paint();
+});
+var parts=[].slice.call(document.querySelectorAll("section.part"));
+var entries=[];
+navHead("O conteúdo · 9 partes");
+parts.forEach(function(sec){
+  var num=sec.querySelector(".ph .num").textContent.trim();
+  var h2=sec.querySelector(".ph h2").textContent;
+  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
+  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
+  sec.querySelectorAll("article.topic").forEach(function(t){
+    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
+    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
+    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
+  });
+});
+var KEYM="ingles-tecnico-completo-CL-conteudo-v1";
+var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
+var botoes=[].slice.call(document.querySelectorAll(".done"));
+botoes.forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.k;
+    if(doneM[k])delete doneM[k];else doneM[k]=1;
+    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
+  });
+});
+function paint(){
+  var n=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
+    b.classList.toggle("done",on);if(on)n++;
+  });
+  var m=0;
+  botoes.forEach(function(b){
+    var k=b.dataset.k,on=!!doneM[k];
+    b.classList.toggle("is",on);
+    b.textContent=on?"✓ dominado":"marcar dominado";
+    var la=nav.querySelector('a[data-k="'+k+'"]');
+    if(la)la.classList.toggle("ok",on);
+    if(on)m++;
+  });
+  var tot=flat.length+botoes.length,fez=n+m;
+  var pct=tot?Math.round(fez/tot*100):0;
+  document.getElementById("rdone").textContent=fez+" de "+tot;
+  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+}
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
+  doneT={};doneM={};
+  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
+  paint();if(cur>=0)syncMark();
+});
+function onScroll(){
+  var y=window.scrollY+140,c=null,i;
+  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
+  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
+  var h=document.body.scrollHeight-window.innerHeight;
+  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
+  document.getElementById("up").classList.toggle("on",window.scrollY>700);
+}
+document.addEventListener("scroll",onScroll,{passive:true});
+document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+var q=document.getElementById("q");
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase(),vis=0;
+  document.querySelectorAll(".node").forEach(function(b){
+    var it=flat[+b.dataset.i];
+    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf+" "+(it.caso||"")).toLowerCase();
+    var hit=v&&txt.indexOf(v)>-1;
+    b.classList.toggle("hit",!!hit);
+    b.classList.toggle("dim",!!v&&!hit);
+    if(hit)vis++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){g.classList.remove("hide");return;}
+    g.classList.toggle("hide",!g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(t){
+    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
+    t.classList.toggle("hide",!hit);
+    var la=nav.querySelector('a[data-k="'+t.id+'"]');
+    if(la)la.classList.toggle("hide",!hit);
+    if(hit&&v)vis++;
+  });
+  parts.forEach(function(sec){
+    var algum=sec.querySelector("article.topic:not(.hide)");
+    sec.style.display=algum?"":"none";
+    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa)sa.classList.toggle("hide",!algum);
+  });
+  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
+});
+paint();onScroll();
+(function(){
+ var RK="ingles-tecnico-completo-CL-rev-v1";
+ var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
+ var test=false,revealed=false;
+ var P=document.getElementById("panel"),B=document.getElementById("pBody");
+ var mB=document.getElementById("mode"),rB=document.getElementById("review");
+ var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
+ var _open=open;
+ open=function(i){_open(i);after(flat[i]);};
+ function after(it){
+  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
+  if(test){
+   var g=document.createElement("div");g.className="gate";
+   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
+   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
+   g.querySelector(".reveal-btn").addEventListener("click",reveal);
+   B.insertBefore(g,B.firstChild);
+  }
+  grade();
+ }
+ function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
+ function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
+ function cid(){return(cur>=0)?flat[cur]._id:null;}
+ function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
+ ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
+ no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
+ mB.addEventListener("click",function(){
+  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
+  if(P.classList.contains("on")&&cur>=0)open(cur);
+ });
+ rB.addEventListener("click",function(){
+  var k=Object.keys(rev);if(!k.length)return;
+  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
+  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
+ });
+ function pr(){
+  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
+  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
+ }
+ pr();
+})();
+</script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+<script>
+(function(){
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  if(!("IntersectionObserver" in window))return;
+  document.documentElement.classList.add("dganim");
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");dispara(e.target);io.unobserve(e.target)}
+  })},{threshold:.18,rootMargin:"0px 0px -6% 0px"});
+  function pt(p,l){var o=p.getPointAtLength(l);return [o.x,o.y]}
+  function segs(f){
+    var arr=[].slice.call(f.querySelectorAll("svg path.l,svg path.lt,svg path.lb,svg path.lr,svg path.ln"));
+    return arr.map(function(p){
+      try{
+        var t=p.getTotalLength(); if(!t||t<12)return null;
+        var b=p.getBBox(); var a=pt(p,0),z=pt(p,t);
+        return {p:p,t:t,x:b.x,y:(a[1]+z[1])/2,a:a,z:z};
+      }catch(_){return null}
+    }).filter(Boolean);
+  }
+  function faixas(ss){
+    var out=[];
+    ss.slice().sort(function(a,b){return a.y-b.y}).forEach(function(s){
+      for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-s.y)<34){out[i].itens.push(s);return} }
+      out.push({y:s.y,itens:[s]});
+    });
+    return out.filter(function(g){return g.itens.length>=2})
+              .sort(function(a,b){return b.itens.length-a.itens.length}).slice(0,3);
+  }
+  function traco(itens){
+    itens.sort(function(a,b){return a.x-b.x});
+    var d="",n=0;
+    itens.forEach(function(s){
+      var N=Math.max(2,Math.min(14,Math.round(s.t/14)));
+      for(var i=0;i<=N;i++){ var q=pt(s.p,s.t*i/N); d+=(n++?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)+" "}
+    });
+    return n>1?d:null;
+  }
+  function fio(f){
+    if(f.querySelector(".pulse"))return;
+    var svg=f.querySelector("svg"); if(!svg)return;
+    var ss=segs(f); if(ss.length<2)return;
+    var ciclo=ss.some(function(s){return s.a[0]-s.z[0]>80});
+    var gs=faixas(ss); if(!gs.length)return;
+    var NS="http://www.w3.org/2000/svg";
+    gs.forEach(function(g,gi){
+      var d=traco(g.itens); if(!d)return;
+      var cor=getComputedStyle(g.itens[0].p).stroke;
+      if(!cor||cor==="none")cor="currentColor";
+      var wrap=document.createElementNS(NS,"g");
+      wrap.setAttribute("class","pulse gen");
+      wrap.style.setProperty("--pd",(1.15+gi*0.18).toFixed(2)+"s");
+      var c=document.createElementNS(NS,"circle");
+      c.setAttribute("r","4.2"); c.setAttribute("fill",cor);
+      var mo=document.createElementNS(NS,"animateMotion");
+      mo.setAttribute("path",d);
+      mo.setAttribute("calcMode","linear");
+      mo.setAttribute("begin","indefinite");
+      if(ciclo){
+        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
+      }else{
+        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
+        var fade=document.createElementNS(NS,"animate");
+        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
+        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
+        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
+        c.appendChild(fade); wrap.__fade=fade;
+      }
+      c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
+      wrap.__mo=mo;
+    });
+    f.__fios=[].slice.call(svg.querySelectorAll(".pulse.gen"));
+  }
+  function dispara(f){
+    (f.__fios||[]).forEach(function(w){
+      try{ w.__mo&&w.__mo.beginElement(); w.__fade&&w.__fade.beginElement(); w.classList.add("go") }catch(_){}
+    });
+  }
+  function px(n){try{return n.getBBox().x}catch(_){return 0}}
+  function prep(f){
+    if(f.getAttribute("data-dg"))return;
+    f.setAttribute("data-dg","1");
+    var ns=[].slice.call(f.querySelectorAll("svg *")).filter(function(n){return n.getBBox});
+    ns.forEach(function(n){
+      if(n.getTotalLength&&n.tagName!=="text"){try{n.setAttribute("pathLength",100)}catch(_){}}
+    });
+    ns.map(function(n){return [n,px(n)]})
+      .sort(function(a,b){return a[1]-b[1]})
+      .forEach(function(p,i){p[0].style.setProperty("--d",(i*0.035).toFixed(3)+"s")});
+    try{fio(f)}catch(_){}
+    io.observe(f);
+  }
+  function scan(r){[].slice.call((r||document).querySelectorAll("figure.dg")).forEach(prep)}
+  scan(document);
+  /* o painel da trilha injeta diagramas depois do carregamento */
+  new MutationObserver(function(ms){
+    for(var i=0;i<ms.length;i++){
+      var a=ms[i].addedNodes;
+      for(var j=0;j<a.length;j++){
+        var n=a[j];
+        if(n.nodeType===1){ if(n.matches&&n.matches("figure.dg")) prep(n); else scan(n); }
+      }
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+</body>
+</html>

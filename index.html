@@ -91,6 +91,7 @@ h1 em{font-style:normal;color:var(--accent)}
   background:color-mix(in srgb,var(--accent) 12%,transparent);
   transition:background .35s var(--ease)}
 .act:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+button.act{font-family:inherit;font-size:.85rem;cursor:pointer}
 .act.ghost{border-color:var(--line2);color:var(--ink);background:transparent}
 .act.ghost:hover{background:#ffffff0a}
 
@@ -138,6 +139,59 @@ h1 em{font-style:normal;color:var(--accent)}
 .day .sel{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.12em;text-transform:uppercase;
   color:var(--c);opacity:.7;border:1px solid color-mix(in srgb,var(--c) 32%,transparent);
   border-radius:999px;padding:6px 12px;white-space:nowrap}
+
+/* selo do dia de dois documentos */
+.day .sel.dois{color:var(--c);opacity:1;background:color-mix(in srgb,var(--c) 12%,transparent)}
+
+/* ---------- o modal da escolha ---------- */
+.mdl{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,#15161e 78%,transparent);backdrop-filter:blur(7px);
+  opacity:0;animation:mdlIn .32s var(--ease) forwards}
+.mdl[hidden]{display:none}
+@keyframes mdlIn{to{opacity:1}}
+.mdl .box{--c:var(--purple);position:relative;width:min(640px,100%);max-height:calc(100dvh - 40px);overflow:auto;
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);border-radius:26px;padding:30px 30px 22px;
+  background:radial-gradient(120% 130% at 0% 0%,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  box-shadow:0 30px 90px #00000099;
+  transform:translateY(14px) scale(.985);animation:boxIn .42s .04s var(--ease) forwards}
+@keyframes boxIn{to{transform:none}}
+.mdl .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--c)}
+.mdl h3{margin:11px 0 0;font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.mdl .hist{margin:14px 0 0;color:var(--muted);font-size:.86rem;line-height:1.62;max-width:56ch}
+.mdl .hist b{color:var(--ink);font-weight:500}
+.mdl .x{position:absolute;top:14px;right:17px;cursor:pointer;background:none;border:0;line-height:1;
+  color:var(--soft);font:400 1.5rem Georgia,serif}
+.mdl .x:hover{color:var(--ink)}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opt{--o:var(--c);display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  border:1px solid color-mix(in srgb,var(--o) 26%,transparent);border-radius:19px;padding:17px 18px 15px;
+  background:color-mix(in srgb,var(--o) 6%,transparent);
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.opt:hover,.opt:focus-visible{border-color:color-mix(in srgb,var(--o) 62%,transparent);
+  background:color-mix(in srgb,var(--o) 13%,transparent);transform:translateY(-2px);outline:none}
+.opt .bg{display:inline-block;margin-bottom:11px;padding:4px 9px;border-radius:999px;
+  font:700 .55rem "Cascadia Code",monospace;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid color-mix(in srgb,var(--o) 40%,transparent);color:var(--o)}
+.opt .bg.mudo{color:var(--soft);border-color:var(--line2)}
+.opt strong{display:block;font:500 1.26rem Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.opt em{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:.79rem;line-height:1.5}
+.opt .qd{display:block;margin-top:11px;font:.67rem "Cascadia Code",monospace;color:var(--soft)}
+
+.mdl .tally{margin:18px 0 0;font:.69rem "Cascadia Code",monospace;color:var(--soft);letter-spacing:.05em}
+.mdl .pe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.mdl .pe button,.mdl .pe a{cursor:pointer;font:inherit;font-size:.76rem;color:var(--muted);background:none;
+  border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.mdl .pe button:hover,.mdl .pe a:hover{color:var(--ink)}
+.mdl .pe .nb{margin-left:auto;text-decoration:none;cursor:default;color:var(--soft);font-size:.68rem;
+  font-family:"Cascadia Code",monospace}
+@media(max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .mdl .box{padding:24px 20px 18px;border-radius:22px}
+  .mdl .pe .nb{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.mdl,.mdl .box{animation:none;opacity:1;transform:none}}
 
 /* ---------- outros ---------- */
 .outros{margin:clamp(50px,8vh,84px) 0 0}
@@ -259,28 +313,6 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="oratoria.html" style="--dv:var(--gold)">
-      <span class="mk">◉</span>
-      <span class="bd">
-        <span class="kk">ser entendido</span>
-        <h3>Oratória e comunicação</h3>
-        <p>Os outros ensinam a <b>decidir certo</b>; este, a fazer a decisão acontecer. O de Arquitetura termina em "comunicar a decisão"; o de System Design lista <b>pensar sem narrar</b> entre os erros eliminatórios. Aqui isso vira método — com a evidência por trás: renomear a ansiedade como empolgação funciona melhor que tentar se acalmar.</p>
-        <span class="chips"><i>"estou empolgado"</i><i>exposição gradual</i><i>restrição → opções → preço</i><i>postmortem sem culpado</i><i>SBI</i><i>discordar e comprometer-se</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="ingles.html" style="--dv:var(--cyan)">
-      <span class="mk">EN</span>
-      <span class="bd">
-        <span class="kk">a entrada</span>
-        <h3>Inglês técnico</h3>
-        <p>Toda fonte primária que os outros documentos citam está <b>em inglês</b>. Calibrado para quem lê com esforço e trava em vídeo sem legenda — por isso começa pela <b>escuta</b>, não pela fala. Com as frases prontas do standup, do code review e da reunião em que você não entendeu.</p>
-        <span class="chips"><i>EF SET gratuito</i><i>a regra dos 95%</i><i>a escada da legenda</i><i>shadowing</i><i>code review sem soar rude</i><i>"could you repeat that?"</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
     <a class="duv" href="git.html" style="--dv:var(--pink)">
       <span class="mk">⑂</span>
       <span class="bd">
@@ -332,11 +364,18 @@ footer a{color:var(--accent)}
 
 </main>
 
+<div class="mdl" id="mdl" hidden role="dialog" aria-modal="true" aria-labelledby="mdlT">
+  <div class="box" id="mdlBox"></div>
+</div>
+
 <script>
 var SEM=[
  {sig:"seg",tema:"Java",cor:"var(--cyan)",doc:"java.html",label:"Java",ini:"19:30",fim:"22:30",
   nota:"Da plataforma ao runtime em produção: valores e referências, generics e coleções, falhas e recursos, SQL e JDBC sem ORM, concorrência e o Java Memory Model, JVM e performance."},
  {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"spring.html",doc2:"mensageria.html",label:"Spring",label2:"Mensageria",ini:"19:30",fim:"22:30",
+  slot:"ter",passado:"na terça passada",
+  n1:"O container de IoC até a produção: ciclo de vida do bean, AOP e proxies, transação, Boot e configuração.",
+  n2:"A fila que desacopla o OrderFlow: publisher confirms, ack manual, retry com DLQ e idempotência.",
   nota:"Do container de IoC à produção, e a fila que desacopla o OrderFlow: ciclo de vida do bean, AOP e proxies, publisher confirms, ack manual, retry com DLQ e idempotência."},
  {sig:"qua",tema:"Nuvem",cor:"var(--orange)",doc:"nuvem.html",label:"Nuvem",ini:"19:30",fim:"22:30",
   nota:"Conceitual e sem vendor: cada nó traz o mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage, identidade, infraestrutura como código e custo."},
@@ -344,8 +383,11 @@ var SEM=[
   nota:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Pod e Deployment, Service e Ingress, probes, rollout e HPA."},
  {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",doc:"arquitetura.html",label:"Arquitetura",ini:"19:30",fim:"21:00",
   nota:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, e como decidir, documentar e influenciar."},
- {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",livre:"60 a 90 min, quando der",
-  nota:"Sábado sai da sequência técnica: inglês e oratória. O caderno de dúvidas continua à mão se aparecer alguma."},
+ {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",doc:"ingles.html",doc2:"oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
+  slot:"sab",passado:"no sábado passado",
+  n1:"Entrada antes de saída: escuta, leitura, shadowing e a reunião ao vivo em inglês.",
+  n2:"Gravar a própria voz, estruturar antes do slide e defender uma decisão técnica.",
+  nota:"Sábado sai da sequência técnica: inglês e oratória. O inglês pede 20 min por dia; o sábado é para a parte que precisa de bloco — shadowing, gravação da própria voz e as falas do laboratório."},
  {sig:"dom",tema:"Descanso",cor:"var(--soft)",descanso:true,
   nota:"Domingo é descanso, e é de propósito. Sem pauta, sem meta, sem trilha."}
 ];
@@ -372,13 +414,18 @@ var nx=SEM[(dow+1)%7];
 q("morrow").style.setProperty("--nx",nx.cor);
 q("mtxt").innerHTML=(nx.descanso?"Amanhã é <b>descanso</b>.":"Amanhã é <b>"+nx.tema+"</b>.");
 
-/* ações */
-var acts=[];
-if(d.doc)acts.push('<a class="act" href="'+d.doc+'">abrir '+d.label.toLowerCase()+' →</a>');
-if(d.doc2)acts.push('<a class="act" href="'+d.doc2+'">abrir '+d.label2.toLowerCase()+' →</a>');
-acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
-acts.push('<a class="act ghost" href="conceitos-backend.html">caderno de dúvidas</a>');
-q("acts").innerHTML=acts.join("");
+/* ações — dia de dois documentos abre a escolha, não um dos dois no chute */
+function pintarActs(dia){
+  var acts=[];
+  if(dia.doc2)acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.label.toLowerCase()+' ou '+dia.label2.toLowerCase()+' →</button>');
+  else if(dia.doc)acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
+  acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
+  acts.push('<a class="act ghost" href="conceitos-backend.html">caderno de dúvidas</a>');
+  q("acts").innerHTML=acts.join("");
+  var bt=q("btEscolher");
+  if(bt)bt.addEventListener("click",function(){abrirModal(dia,bt)});
+}
+pintarActs(d);
 
 /* a aura segue o ponteiro, devagar */
 if(!window.matchMedia("(prefers-reduced-motion:reduce)").matches){
@@ -403,13 +450,153 @@ q("wk").innerHTML=SEM.map(function(x,i){
     +'<span class="mid"><span class="tm">'+x.tema+(i===dow?'<span class="tag">hoje</span>':'')+'</span>'
     +'<span class="sub">'+x.nota+'</span></span>';
 
-  /* dia sem documento (sábado, domingo) não é link: seria mentira clicável */
+  /* dia sem documento (domingo) não é link: seria mentira clicável */
   if(!x.doc) return '<div class="'+cls+' sem" '+estilo+'>'+miolo
     +'<span class="rt"><span class="sel">'+(x.descanso?"sem pauta":x.livre)+'</span></span></div>';
 
-  return '<a class="'+cls+'" href="'+x.doc+'" '+estilo+'>'+miolo
-    +'<span class="rt"><span class="ar">↗</span></span></a>';
+  /* dia de dois documentos (terça, sábado): o href existe para o ctrl+clique e
+     para quem está sem JS, mas o clique normal abre a escolha */
+  var rt='<span class="rt">'+(x.livre?'<span class="sel">'+x.livre+'</span>':'')
+    +(x.doc2?'<span class="sel dois">dois · escolher</span>':'')
+    +'<span class="ar">↗</span></span>';
+  return '<a class="'+cls+(x.doc2?" duplo":"")+'" href="'+x.doc+'" data-dia="'+i+'" '+estilo+'>'+miolo+rt+'</a>';
 }).join("");
+
+/* ---------- a escolha dos dias de dois documentos ---------- */
+var RK="site.index.alternancia.v1";
+function lerReg(){try{return JSON.parse(localStorage.getItem(RK))||{}}catch(e){return {}}}
+function gravar(slot,file){
+  try{
+    var r=lerReg(),a=r[slot]||[];
+    a.unshift({f:file,t:Date.now()});
+    r[slot]=a.slice(0,12);
+    localStorage.setItem(RK,JSON.stringify(r));
+  }catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* "há quanto tempo" em palavras, sem nunca chutar a data */
+function quando(ts,pass){
+  var a=new Date(ts);a.setHours(0,0,0,0);
+  var b=new Date();b.setHours(0,0,0,0);
+  var n=Math.round((b-a)/864e5);
+  var dt=new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+  if(n<=0)return "hoje mesmo";
+  if(n===1)return "ontem";
+  if(n<6)return "há "+n+" dias, em "+dt;
+  if(n<=10)return pass+", em "+dt;
+  return "há "+Math.round(n/7)+" semanas, em "+dt;
+}
+function doDoc(x,f){
+  return f===x.doc?{f:x.doc,nome:x.label,nota:x.n1}:{f:x.doc2,nome:x.label2,nota:x.n2};
+}
+function ultimaDe(h,f){for(var i=0;i<h.length;i++)if(h[i].f===f)return h[i];return null}
+
+var MD=q("mdl"),BOX=q("mdlBox"),voltarFoco=null;
+
+function abrirModal(x,el){
+  voltarFoco=el||null;
+  BOX.style.setProperty("--c",x.cor);
+  MD.hidden=false;
+  document.documentElement.style.overflow="hidden";
+  telaEscolha(x);
+}
+function fecharModal(){
+  MD.hidden=true;
+  document.documentElement.style.overflow="";
+  BOX.innerHTML="";
+  if(voltarFoco&&voltarFoco.focus)voltarFoco.focus();
+  voltarFoco=null;
+}
+function irPara(x,f){gravar(x.slot,f);location.href=f;}
+
+function cartao(x,f,h,selo,mudo){
+  var o=doDoc(x,f),u=ultimaDe(h,f);
+  return '<button class="opt" type="button" data-f="'+o.f+'">'
+    +'<span class="bg'+(mudo?" mudo":"")+'">'+esc(selo)+'</span>'
+    +'<strong>'+esc(o.nome)+'</strong>'
+    +'<em>'+esc(o.nota)+'</em>'
+    +'<span class="qd">'+(u?"última vez: "+esc(quando(u.t,x.passado)):"nunca aberto por aqui")+'</span>'
+    +'</button>';
+}
+
+function telaEscolha(x){
+  var h=lerReg()[x.slot]||[],ult=h[0]||null;
+  var sug=ult?(ult.f===x.doc?x.doc2:x.doc):x.doc;
+  var outro=sug===x.doc?x.doc2:x.doc;
+
+  var hist=ult
+    ? "Você abriu <b>"+esc(doDoc(x,ult.f).nome)+"</b> "+esc(quando(ult.t,x.passado))
+      +". Pela alternância, a vez é de <b>"+esc(doDoc(x,sug).nome)+"</b> — mas quem decide é você."
+    : "Nada registrado ainda para este dia. A partir de agora eu guardo o que você abriu, para conseguir avisar na próxima.";
+
+  var c1=0,c2=0;
+  h.forEach(function(e){e.f===x.doc?c1++:c2++});
+  var tally=h.length
+    ? esc(x.label)+" "+c1+" × "+esc(x.label2)+" "+c2+" · últimas "+h.length+" vez"+(h.length>1?"es":"")
+    : "";
+
+  BOX.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+    +'<span class="kk">'+esc(x.sig)+' · dois documentos</span>'
+    +'<h3 id="mdlT">Qual dos dois hoje?</h3>'
+    +'<p class="hist">'+hist+'</p>'
+    +'<div class="opts">'+cartao(x,sug,h,"a vez é deste")+cartao(x,outro,h,ult&&ult.f===outro?"foi o último":"também dá",true)+'</div>'
+    +(tally?'<p class="tally">'+tally+'</p>':'')
+    +'<div class="pe"><button type="button" data-fechar>fechar</button>'
+    +'<a href="acervo.html">ver os dois no acervo</a>'
+    +'<span class="nb">fica só neste navegador</span></div>';
+
+  BOX.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){
+      var f=this.dataset.f;
+      if(ult&&ult.f===f)telaRepetir(x,f,ult);
+      else irPara(x,f);
+    });
+  });
+  var pri=BOX.querySelector(".opt");if(pri)pri.focus();
+}
+
+/* escolheu o mesmo da última vez: confirma antes, sem impedir */
+function telaRepetir(x,f,ult){
+  var o=doDoc(x,f),alt=doDoc(x,f===x.doc?x.doc2:x.doc);
+  BOX.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+    +'<span class="kk">'+esc(x.sig)+' · confirmação</span>'
+    +'<h3>Repetir '+esc(o.nome)+'?</h3>'
+    +'<p class="hist">Foi exatamente isso que você abriu '+esc(quando(ult.t,x.passado))
+    +'. Repetir é legítimo quando o assunto ficou pela metade — mas se foi só o caminho mais curto, '
+    +'<b>'+esc(alt.nome)+'</b> está parado desde então.</p>'
+    +'<div class="opts">'
+    +'<button class="opt" type="button" data-f="'+alt.f+'"><span class="bg">trocar</span>'
+      +'<strong>'+esc(alt.nome)+'</strong><em>'+esc(alt.nota)+'</em>'
+      +'<span class="qd">mantém as duas trilhas andando</span></button>'
+    +'<button class="opt" type="button" data-f="'+o.f+'"><span class="bg mudo">repetir</span>'
+      +'<strong>'+esc(o.nome)+'</strong><em>'+esc(o.nota)+'</em>'
+      +'<span class="qd">sim, quero o mesmo de novo</span></button>'
+    +'</div>'
+    +'<div class="pe"><button type="button" data-voltar>voltar</button>'
+    +'<button type="button" data-fechar>fechar</button></div>';
+
+  BOX.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){irPara(x,this.dataset.f)});
+  });
+  BOX.querySelector("[data-voltar]").addEventListener("click",function(){telaEscolha(x)});
+  BOX.querySelector(".opt").focus();
+}
+
+/* o clique normal na terça e no sábado abre a escolha; ctrl/cmd+clique segue o href */
+q("wk").addEventListener("click",function(e){
+  var a=e.target.closest?e.target.closest("a.duplo"):null;
+  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+  e.preventDefault();
+  abrirModal(SEM[+a.getAttribute("data-dia")],a);
+});
+MD.addEventListener("click",function(e){
+  if(e.target===MD||(e.target.closest&&e.target.closest("[data-fechar]")))fecharModal();
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&!MD.hidden)fecharModal();
+});
 </script>
+
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inteligência Artificial completo — trilha visual + conteúdo · do token ao trabalho de todo dia</title>
-<meta name="description" content="O décimo quarto documento, unificando toda a área de IA do vault: as oito notas atômicas, os quatro pilares, a trilha de oito fases e o ofício de desenvolver com IA. Trilha visual em 9 marcos com 60 nós, mais 28 tópicos em 8 partes — modelo de IA e famílias, LLM e previsão de token, janela de contexto e alucinação, transformer e attention, engenharia de prompt, spec driven development, embedding, banco vetorial e pgvector, chunking e retrieval, pipeline de RAG, APIs generativas e saída estruturada, MCP com Obsidian, agente e tool calling, multiagente e guardrails, eval e LLMOps, custo e observabilidade, prompt injection, governança e fine-tuning contra RAG, e o ofício: produtividade com estratégia, a heurística do repetitivo, skill contra agente contra subagente, engenharia de contexto, escopo e quebra de trabalho, artefatos e GitHub Spec Kit. Tema Dracula.">
+<meta name="description" content="O décimo quarto documento, unificando toda a área de IA do vault: as oito notas atômicas, os quatro pilares, a trilha de oito fases e o ofício de desenvolver com IA. Trilha visual em 9 marcos com 61 nós, mais 29 tópicos em 8 partes — modelo de IA e famílias, LLM e previsão de token, o ciclo de vida do modelo (pré-treino, fine-tuning, RLHF e constitutional AI, inferência), janela de contexto e alucinação, transformer e attention, engenharia de prompt, spec driven development, embedding, banco vetorial e pgvector, chunking e retrieval, pipeline de RAG, APIs generativas e saída estruturada, MCP com Obsidian, agente e tool calling, multiagente e guardrails, eval e LLMOps, custo e observabilidade, prompt injection, governança e fine-tuning contra RAG, e o ofício: produtividade com estratégia, a heurística do repetitivo, skill contra agente contra subagente, engenharia de contexto, escopo e quebra de trabalho, artefatos e GitHub Spec Kit. Tema Dracula.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -291,7 +291,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
     <header class="hero">
       <span class="eyebrow">Inteligência Artificial · setembro 2026</span>
       <h1>Ele <em>prevê</em>. Ele não sabe.</h1>
-      <p class="lede">O documento que unifica <b>toda a área de IA do vault</b> num lugar só: as oito notas atômicas, a nota dos quatro pilares e a trilha de oito fases que estavam espalhadas entre <code class="i">Notas</code>, <code class="i">Dados_Brutos</code> e <code class="i">RoadMaps</code>. A tese é uma frase: o modelo <b>calcula a continuação mais provável</b> — e quase tudo o que se faz em engenharia de IA existe para contornar essa única característica. Alucinação, janela de contexto, RAG, eval, guardrail: tudo desce daí. Em cima, a <b>trilha visual</b>: 60 nós em 9 marcos, de Python para dados ao ofício de desenvolver com IA. Embaixo, o <b>conteúdo</b>: 28 tópicos em 8 partes, sempre com o <b>caso que obriga o conceito a existir</b> — o PDF que estoura a janela, o agente que apaga dado, o fine-tuning caro que um RAG resolveria.</p>
+      <p class="lede">O documento que unifica <b>toda a área de IA do vault</b> num lugar só: as oito notas atômicas, a nota dos quatro pilares e a trilha de oito fases que estavam espalhadas entre <code class="i">Notas</code>, <code class="i">Dados_Brutos</code> e <code class="i">RoadMaps</code>. A tese é uma frase: o modelo <b>calcula a continuação mais provável</b> — e quase tudo o que se faz em engenharia de IA existe para contornar essa única característica. Alucinação, janela de contexto, RAG, eval, guardrail: tudo desce daí. Em cima, a <b>trilha visual</b>: 61 nós em 9 marcos, de Python para dados ao ofício de desenvolver com IA. Embaixo, o <b>conteúdo</b>: 29 tópicos em 8 partes, sempre com o <b>caso que obriga o conceito a existir</b> — o PDF que estoura a janela, o agente que apaga dado, o fine-tuning caro que um RAG resolveria.</p>
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>nove marcos, de Python ao ofício</a>
         <a href="#p1"><b>↓ O conteúdo</b>do token ao trabalho de todo dia</a>
@@ -391,6 +391,59 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
           <div><b>prova de domínio</b>Para cada uma das cinco características, você nomeia a técnica deste documento que existe por causa dela.</div>
         </div>
         <button class="done" type="button" data-k="a3">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a5">
+        <div class="th"><h3>O ciclo de vida de um modelo: do pré-treino à sua tela</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> o assistente que você usa não saiu do treino pronto. São <b>quatro etapas</b>, e cada uma responde por um comportamento diferente. As três primeiras acontecem uma vez, antes de você existir para o modelo; a quarta acontece toda vez que você aperta enter.</p>
+
+        <div id="dg-vida" style="max-width:560px"></div>
+
+        <div class="duo o">
+          <div><h4>As três etapas de treino</h4><ul>
+            <li><b>Pré-treino</b> — prever o próximo token em uma quantidade enorme de texto. Sai daqui um modelo que <i>completa</i>, não que conversa: dê a ele uma pergunta e ele pode responder com outras cinco perguntas parecidas.</li>
+            <li><b>Fine-tuning supervisionado</b> — exemplos de "a um pedido assim, responde-se assim". É o que transforma o completador em assistente.</li>
+            <li><b>Alinhamento por preferência</b> — RLHF: mostram-se pares de respostas, escolhe-se a melhor, e o modelo é ajustado nessa direção. É o que separa "tecnicamente correto" de "útil".</li>
+          </ul></div>
+          <div><h4>E a quarta: a inferência</h4><p>É o que roda a cada mensagem. Aqui não se ajusta peso nenhum: o modelo é <b>fixo</b>, e o que muda é só a entrada — o seu prompt, o histórico da conversa, as instruções do sistema e o que as ferramentas devolveram.</p>
+            <div class="repl"><b>A consequência que quase todo mundo erra:</b> conversar com o modelo <b>não o treina</b>. O que você escreve entra na janela daquela sessão e acaba com ela. Mudar o comportamento de verdade é fine-tuning; mudar o comportamento daquela conversa é contexto. São coisas diferentes, com custos diferentes.</div>
+          </div>
+        </div>
+
+        <div class="cs"><b>Constitutional AI, o método que a Anthropic publicou.</b> Na etapa de alinhamento, em vez de depender só de rotulador humano para a parte de inofensividade, o próprio modelo <b>critica e revisa as suas respostas</b> contra um conjunto de princípios escritos — uma "constituição". O rótulo passa a vir em boa parte do modelo, e o que fica explícito e auditável é o documento de princípios. É o pedaço que explica por que dois modelos com a mesma arquitetura se comportam de forma diferente.</div>
+
+        <div class="duo o">
+          <div><h4>O que é público</h4><ul>
+            <li>A arquitetura geral — transformer decoder-only, attention, tokenização.</li>
+            <li>Os <b>métodos</b> de treino, incluindo os artigos de Constitutional AI e de interpretabilidade.</li>
+            <li>Os <b>model cards</b> e <b>system cards</b>: capacidades declaradas, avaliações, limitações e riscos por modelo.</li>
+            <li>A mecânica de uso: janela de contexto, tokens, parâmetros de geração.</li>
+          </ul></div>
+          <div><h4>O que não é</h4><ul>
+            <li>Número de parâmetros e a arquitetura exata.</li>
+            <li>A composição do conjunto de treino.</li>
+            <li>Os detalhes do pós-treino de cada versão.</li>
+          </ul>
+            <p style="margin-top:9px">Nenhum laboratório grande publica isso hoje. Então "como funciona o modelo X" para no mecanismo geral, mais o método publicado, mais o que a interpretabilidade consegue enxergar.</p></div>
+        </div>
+
+        <p>E é a interpretabilidade que dá a camada mais interessante para quem programa. A pesquisa da Anthropic construiu o equivalente a um <b>microscópio</b> para olhar os circuitos internos, e três achados mudam como você usa a ferramenta: o modelo <b>planeja à frente</b> — ao escrever um verso com rima, ele escolhe a palavra final antes de compor a linha; existe uma espécie de <b>espaço conceitual compartilhado entre idiomas</b>, o que explica por que o que ele aprende em inglês aparece em português; e, decisivo para engenharia, a explicação que ele <b>dá</b> do próprio raciocínio nem sempre corresponde ao que ele de fato computou.</p>
+
+        <div class="cs"><b>Esse último achado é o argumento técnico da parte 06.</b> Se a justificativa que o modelo escreve pode não ser o caminho que ele percorreu, então pedir a ele que explique o próprio raciocínio <b>não é verificação</b>. Verificação é eval: caso de teste, resposta esperada, número comparado entre versões.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Achar que a conversa treina o modelo.</b> Não treina. O que ficou na sessão morre com ela — é exatamente por isso que artefatos existem (parte 07).</li>
+            <li><b>Confundir contexto com fine-tuning.</b> Contexto é entrada, custa token e vale para uma chamada; fine-tuning altera pesos, custa dados e tempo, e vale para sempre.</li>
+            <li><b>Pedir ao modelo que se explique como forma de auditoria.</b> A explicação é mais texto gerado, sujeita à mesma mecânica de plausibilidade.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Leia <i>Tracing the thoughts of a large language model</i> e depois o system card do modelo que você usa no trabalho. São as duas leituras que mais mudam a forma de pedir — uma mostra o que acontece por dentro, a outra o que o fornecedor declara por fora.</div>
+          <div><b>prova de domínio</b>Você explica, sem jargão, por que ensinar algo ao modelo numa conversa não faz efeito na conversa seguinte — e qual das quatro etapas teria que mudar para isso acontecer.</div>
+        </div>
+        <button class="done" type="button" data-k="a5">marcar dominado</button>
       </article>
 
       <article class="topic" id="a4">
@@ -1223,6 +1276,7 @@ var DG={
  rag:W(176,'<text x="170" y="16" class="bt">RAG: buscar antes de gerar</text><rect x="6" y="34" width="78" height="38" rx="9" class="b3"/><text x="45" y="50" class="bs">documentos</text><text x="45" y="63" class="bs">suas notas</text><path d="M88,53 L112,53" class="l"/><path d="M112,53 L104,49 L104,57 Z" class="h"/><rect x="116" y="34" width="78" height="38" rx="9" class="b2"/><text x="155" y="50" class="bs">chunk +</text><text x="155" y="63" class="bs">embedding</text><path d="M198,53 L222,53" class="l"/><path d="M222,53 L214,49 L214,57 Z" class="h"/><rect x="226" y="34" width="108" height="38" rx="9" class="b1"/><text x="280" y="50" class="bs">banco vetorial</text><text x="280" y="63" class="bs">indice ANN</text><rect x="6" y="100" width="78" height="38" rx="9" class="b6"/><text x="45" y="116" class="bs">pergunta</text><text x="45" y="129" class="bs">do usuario</text><path d="M88,119 L112,119" class="lt"/><path d="M112,119 L104,115 L104,123 Z" class="ht"/><rect x="116" y="100" width="78" height="38" rx="9" class="b2"/><text x="155" y="116" class="bs">embedding</text><text x="155" y="129" class="bs">da pergunta</text><path d="M198,119 L222,119" class="lt"/><path d="M222,119 L214,115 L214,123 Z" class="ht"/><path d="M280,76 L280,100" class="lt d"/><path d="M280,100 L276,92 L284,92 Z" class="ht"/><rect x="226" y="100" width="108" height="38" rx="9" class="b4"/><text x="280" y="116" class="bs">top-N trechos</text><text x="280" y="129" class="bs">viram o prompt</text><text x="170" y="160" class="bt">retrieval ruim e a causa numero um de RAG que nao funciona</text>'),
  loop:W(158,'<text x="170" y="16" class="bt">o loop que separa o agente da chamada unica</text><rect x="8" y="38" width="72" height="40" rx="9" class="b3"/><text x="44" y="56" class="bs">objetivo</text><text x="44" y="69" class="bs">em linguagem</text><path d="M84,58 L108,58" class="l"/><path d="M108,58 L100,54 L100,62 Z" class="h"/><rect x="112" y="38" width="76" height="40" rx="9" class="b2"/><text x="150" y="56" class="bs">modelo decide</text><text x="150" y="69" class="bs">a proxima acao</text><path d="M192,58 L216,58" class="lt"/><path d="M216,58 L208,54 L208,62 Z" class="ht"/><rect x="220" y="38" width="76" height="40" rx="9" class="b1"/><text x="258" y="56" class="bs">executa a</text><text x="258" y="69" class="bs">ferramenta</text><path d="M258,82 L258,102 L150,102 L150,82" class="lt d"/><path d="M150,82 L146,90 L154,90 Z" class="ht"/><text x="204" y="116" class="bs">observa o resultado e decide de novo</text><rect x="256" y="94" width="78" height="34" rx="9" class="b4"/><text x="295" y="110" class="bs">objetivo cumprido</text><text x="295" y="122" class="bs">resposta final</text><text x="170" y="148" class="bt">se a tarefa cabe em uma pergunta so, nao precisa de agente</text>'),
  mcp:W(150,'<text x="170" y="16" class="bt">MCP: um encaixe unico entre modelo e ferramenta</text><rect x="10" y="40" width="86" height="44" rx="9" class="b2"/><text x="53" y="58" class="bs">cliente de IA</text><text x="53" y="72" class="bs">Claude Desktop</text><path d="M100,62 L138,62" class="lt"/><path d="M138,62 L130,58 L130,66 Z" class="ht"/><path d="M138,70 L100,70" class="lt"/><path d="M100,70 L108,66 L108,74 Z" class="ht"/><text x="119" y="50" class="bs">protocolo</text><rect x="142" y="40" width="90" height="44" rx="9" class="b1"/><text x="187" y="58" class="bs">servidor MCP</text><text x="187" y="72" class="bs">expoe acoes</text><path d="M236,62 L262,62" class="l"/><path d="M262,62 L254,58 L254,66 Z" class="h"/><rect x="266" y="40" width="68" height="44" rx="9" class="b6"/><text x="300" y="58" class="bs">o vault</text><text x="300" y="72" class="bs">seus dados</text><text x="170" y="106" class="bs">o modelo so usa as acoes que o servidor oferece e voce autorizou</text><text x="170" y="132" class="bt">dar maos ao modelo amplia o estrago possivel: permissao minima</text>'),
+ vida:W(214,'<text x="170" y="16" class="bt">as quatro etapas que produzem a resposta que voce le</text><rect x="26" y="26" width="288" height="30" rx="9" class="b2"/><text x="170" y="45" class="bs">1 · pre-treino — preve o proximo token</text><path d="M170,58 L170,66" class="lt"/><path d="M170,66 L166,58 L174,58 Z" class="ht"/><rect x="26" y="68" width="288" height="30" rx="9" class="b1"/><text x="170" y="87" class="bs">2 · fine-tuning — aprende a responder</text><path d="M170,100 L170,108" class="lt"/><path d="M170,108 L166,100 L174,100 Z" class="ht"/><rect x="26" y="110" width="288" height="30" rx="9" class="b4"/><text x="170" y="129" class="bs">3 · RLHF e constitutional AI — o que e bom</text><path d="M170,142 L170,150" class="lt"/><path d="M170,150 L166,142 L174,142 Z" class="ht"/><rect x="26" y="152" width="288" height="30" rx="9" class="b6"/><text x="170" y="171" class="bs">4 · inferencia — acontece a cada mensagem</text><text x="170" y="202" class="bt">as tres primeiras uma vez; a quarta toda vez que voce escreve</text>'),
  sub:W(190,'<text x="170" y="16" class="bt">uma janela so contra janelas separadas</text><line x1="170" y1="26" x2="170" y2="156" class="l d"/><text x="84" y="40" class="bs">um agente so</text><rect x="14" y="48" width="140" height="74" rx="9" class="b5"/><text x="84" y="68" class="bs">a tarefa</text><text x="84" y="84" class="bs">tudo que ele leu</text><text x="84" y="100" class="bs">as tentativas</text><text x="84" y="114" class="bs">que deram errado</text><text x="84" y="142" class="bs">o comeco sai da janela</text><text x="257" y="40" class="bs">com subagentes</text><rect x="188" y="48" width="138" height="30" rx="9" class="b2"/><text x="257" y="67" class="bs">agente principal</text><path d="M222,80 L222,94" class="lt"/><path d="M222,94 L218,86 L226,86 Z" class="ht"/><path d="M292,80 L292,94" class="lt"/><path d="M292,94 L288,86 L296,86 Z" class="ht"/><rect x="188" y="96" width="64" height="30" rx="9" class="b1"/><text x="220" y="115" class="bs">subagente</text><rect x="262" y="96" width="64" height="30" rx="9" class="b1"/><text x="294" y="115" class="bs">subagente</text><text x="257" y="142" class="bs">janela propria por recorte</text><text x="170" y="178" class="bt">divida quando a janela obriga, nao por gosto</text>'),
  artef:W(164,'<text x="170" y="16" class="bt">o artefato atravessa a sessao; o chat nao</text><rect x="10" y="30" width="96" height="36" rx="9" class="b3"/><text x="58" y="45" class="bs">sessao de</text><text x="58" y="58" class="bs">ontem</text><rect x="122" y="30" width="96" height="36" rx="9" class="b3"/><text x="170" y="45" class="bs">sessao de</text><text x="170" y="58" class="bs">hoje</text><rect x="234" y="30" width="96" height="36" rx="9" class="b3"/><text x="282" y="45" class="bs">sessao</text><text x="282" y="58" class="bs">seguinte</text><path d="M58,68 L58,96" class="lt"/><path d="M58,96 L54,88 L62,88 Z" class="ht"/><path d="M170,96 L170,68" class="lt"/><path d="M170,68 L166,76 L174,76 Z" class="ht"/><path d="M170,68 L170,96" class="lt d"/><path d="M282,96 L282,68" class="lt"/><path d="M282,68 L278,76 L286,76 Z" class="ht"/><rect x="10" y="98" width="320" height="34" rx="9" class="b6"/><text x="170" y="119" class="bs">artefato: spec · plano · tarefas · decisoes</text><text x="170" y="152" class="bt">voce envia o destilado, nao o percurso</text>'),
  ciclo:W(146,'<text x="170" y="16" class="bt">video da o mapa, doc da a precisao, lab fixa</text><rect x="6" y="40" width="72" height="36" rx="9" class="b3"/><text x="42" y="62" class="bs">ver video</text><path d="M82,58 L100,58" class="lt"/><path d="M100,58 L92,54 L92,62 Z" class="ht"/><rect x="104" y="40" width="72" height="36" rx="9" class="b2"/><text x="140" y="62" class="bs">doc oficial</text><path d="M180,58 L198,58" class="lt"/><path d="M198,58 L190,54 L190,62 Z" class="ht"/><rect x="202" y="40" width="72" height="36" rx="9" class="b1"/><text x="238" y="62" class="bs">notebook</text><path d="M278,58 L296,58" class="lt"/><path d="M296,58 L288,54 L288,62 Z" class="ht"/><rect x="300" y="40" width="34" height="36" rx="9" class="b4"/><text x="317" y="62" class="bs">nota</text><path d="M317,80 L317,100 L42,100 L42,80" class="l d"/><path d="M42,80 L38,88 L46,88 Z" class="h"/><text x="180" y="116" class="bs">e recomeca com a duvida que a pratica levantou</text><text x="170" y="138" class="bt">nunca pare no video</text>')
@@ -1401,6 +1455,13 @@ var T=[
   ex:"ele completa 'A capital da Franca e' com 'Paris' porque e o token mais provavel,\nnao porque sabe geografia",
   dg:"token",
   alem:"Assista a Let's build GPT e a Intro to LLMs, do Karpathy: desmistificam o mecanismo inteiro."},
+ {t:"O ciclo de vida do modelo",x:"essencial · pre-treino, fine-tuning, RLHF, inferencia",
+  oq:"As quatro etapas que produzem o assistente que você usa: pré-treino, fine-tuning supervisionado, alinhamento por preferência (RLHF e, na Anthropic, Constitutional AI) e a inferência, que roda a cada mensagem.",
+  ps:"Separar o que foi decidido no treino do que você controla em tempo de uso.",
+  pq:"Quase toda confusão sobre LLM nasce de misturar as etapas: conversar não treina o modelo, e contexto não é fine-tuning.",
+  ex:"as tres primeiras acontecem uma vez, antes de voce existir para o modelo;\na quarta acontece toda vez que voce aperta enter",
+  dg:"vida",
+  alem:"Leia sobre Constitutional AI, o método publicado pela Anthropic em que o modelo critica e revisa as próprias respostas contra princípios escritos."},
  {t:"Tokens e janela de contexto",x:"tokenização, limite de contexto, custo",
   oq:"O modelo processa texto em tokens, pedaços de palavra. A janela de contexto é o limite de tokens que ele considera de uma vez, e você paga por token.",
   ps:"Entender as restrições de tamanho e de custo antes de projetar a solução.",
@@ -1846,7 +1907,7 @@ paint();onScroll();
  pr();
 })();
 
-[["dg-pilares","pilares"],["dg-ciclo","ciclo"]].forEach(function(p){
+[["dg-pilares","pilares"],["dg-ciclo","ciclo"],["dg-vida","vida"]].forEach(function(p){
   var el=document.getElementById(p[0]);
   if(el&&DG[p[1]])el.innerHTML=DG[p[1]];
 });

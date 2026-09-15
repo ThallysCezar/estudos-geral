@@ -195,6 +195,10 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 .gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
 .cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
 .cs b{color:var(--gold)}
+.ponte{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--orange-soft);border:1px solid var(--orange);border-left:4px solid var(--orange)}
+.ponte b.titulo{color:var(--orange);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ponte p,.ponte ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.ponte a{color:var(--gold);text-decoration:underline;font-weight:600}
 .prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
 .prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
 .prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
@@ -263,6 +267,126 @@ table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
 table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
 table.vmap tr:last-child td{border-bottom:0}
 table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+
+
+/* Simulador Interativo Outbox vs Dual-Write */
+.outbox-lab{
+  margin:22px 0;
+  border:1px solid var(--line2);
+  border-radius:18px;
+  background:#1e1f29;
+  padding:22px;
+  box-shadow:0 16px 40px #00000055;
+}
+.outbox-lab .ol-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+}
+.outbox-lab .ol-head h4{
+  margin:0;
+  font:700 .68rem "Cascadia Code",monospace;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--purple);
+}
+.outbox-lab .ol-ctrls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.outbox-lab .btn-ol{
+  border:1px solid var(--line2);
+  background:#282a36;
+  color:var(--ink);
+  font:600 .74rem "Inter",sans-serif;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all .2s var(--ease);
+}
+.outbox-lab .btn-ol:hover{
+  border-color:var(--purple);
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  transform:translateY(-2px);
+}
+.outbox-lab .btn-ol:active{transform:scale(.97)}
+.outbox-lab .btn-ol.btn-dw1{border-color:color-mix(in srgb,var(--red) 50%,transparent);color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
+.outbox-lab .btn-ol.btn-dw2{border-color:color-mix(in srgb,var(--orange) 50%,transparent);color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,transparent)}
+.outbox-lab .btn-ol.btn-ob{border-color:color-mix(in srgb,var(--lime) 50%,transparent);color:var(--lime);background:color-mix(in srgb,var(--lime) 8%,transparent)}
+
+.ol-flow{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:8px;
+  margin:20px 0 16px;
+}
+.ol-node{
+  background:#282a36;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 10px;
+  font-size:.74rem;
+  transition:all .3s var(--ease);
+}
+.ol-node .on-tag{
+  font:700 .55rem "Cascadia Code",monospace;
+  color:var(--soft);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:4px;
+}
+.ol-node .on-val{
+  font-weight:600;
+  color:var(--ink);
+  display:block;
+  line-height:1.3;
+}
+.ol-node.active{
+  border-color:var(--cyan);
+  background:radial-gradient(100% 120% at 50% 0%,#8be9fd25,#282a36);
+  box-shadow:0 0 18px #8be9fd44;
+  transform:translateY(-2px);
+}
+.ol-node.ok{
+  border-color:var(--lime);
+  background:radial-gradient(100% 120% at 50% 0%,#50fa7b25,#282a36);
+}
+.ol-node.err{
+  border-color:var(--red);
+  background:radial-gradient(100% 120% at 50% 0%,#ff555525,#282a36);
+  box-shadow:0 0 14px #ff555533;
+}
+.ol-node.warn{
+  border-color:var(--orange);
+  background:radial-gradient(100% 120% at 50% 0%,#ffb86c25,#282a36);
+}
+
+.ol-hud{
+  background:#14151e;
+  border:1px solid var(--line2);
+  border-radius:12px;
+  padding:14px 18px;
+  font:500 .74rem "Cascadia Code",monospace;
+  color:var(--ink2);
+  min-height:85px;
+  max-height:140px;
+  overflow-y:auto;
+}
+.ol-hud .oh-l{margin:4px 0;line-height:1.45}
+.ol-hud .oh-ok{color:var(--lime)}
+.ol-hud .oh-err{color:var(--red)}
+.ol-hud .oh-warn{color:var(--orange)}
+.ol-hud .oh-info{color:var(--cyan)}
+
+@media(max-width:860px){
+  .ol-flow{grid-template-columns:1fr 1fr;gap:8px}
+}
 
 </style>
 </head>
@@ -943,8 +1067,55 @@ outbox.<span class="a">marcarEnviado</span>(id);  <span class="c">// ← mentira
   });
 }</code></pre></div>
         </div>
+
+        <!-- SIMULADOR INTERATIVO OUTBOX vs DUAL-WRITE -->
+        <div class="outbox-lab" id="outboxLab">
+          <div class="ol-head">
+            <h4>Simulador Interativo · Dual-Write vs Transactional Outbox</h4>
+            <span style="font-size:.72rem;color:var(--muted)">Simule cenários de falha real e veja como a atomicidade local previne perda de dados</span>
+          </div>
+          <div class="ol-ctrls">
+            <button type="button" class="btn-ol btn-dw1" id="btnOutboxDw1">⚠️ 1. Dual-Write (Crash antes do RabbitMQ)</button>
+            <button type="button" class="btn-ol btn-dw2" id="btnOutboxDw2">💥 2. Dual-Write (Publicou, Banco deu Rollback)</button>
+            <button type="button" class="btn-ol btn-ob" id="btnOutboxOk">🛡️ 3. Transactional Outbox + Relay (Atômico & Resiliente)</button>
+            <button type="button" class="btn-ol" id="btnOutboxReset">↺ Reset</button>
+          </div>
+          <div class="ol-flow">
+            <div class="ol-node" id="on1">
+              <span class="on-tag">Passo 1</span>
+              <span class="on-val">App Request</span>
+            </div>
+            <div class="ol-node" id="on2">
+              <span class="on-tag">Passo 2</span>
+              <span class="on-val">PostgreSQL Commit</span>
+            </div>
+            <div class="ol-node" id="on3">
+              <span class="on-tag">Passo 3</span>
+              <span class="on-val">Tabela Outbox</span>
+            </div>
+            <div class="ol-node" id="on4">
+              <span class="on-tag">Passo 4</span>
+              <span class="on-val">Relay / CDC</span>
+            </div>
+            <div class="ol-node" id="on5">
+              <span class="on-tag">Passo 5</span>
+              <span class="on-val">RabbitMQ Broker</span>
+            </div>
+            <div class="ol-node" id="on6">
+              <span class="on-tag">Passo 6</span>
+              <span class="on-val">Estado do Sistema</span>
+            </div>
+          </div>
+          <div class="ol-hud" id="outboxHud">
+            <div class="oh-l oh-info">[Simulador Pronto] Selecione um cenário para reproduzir a concorrência e consistência...</div>
+          </div>
+        </div>
         <div class="cs"><b>O outbox publica at-least-once, sempre.</b> Se o relay publica e cai antes de marcar como enviado, ele publica de novo na próxima rodada — e isso é intencional: melhor duplicar do que perder. Por isso <b>outbox e inbox são um par</b>: o produtor garante que o evento existe, o consumidor garante que o efeito acontece uma vez. Implementar um sem o outro deixa metade do problema aberta. Em escala maior, o relay por polling pode ser substituído por captura de log do banco (CDC, com Debezium), que elimina a consulta periódica.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Publicar dentro do <code class="ic">@Transactional</code> achando que é atômico.</b> É o erro que o padrão existe para corrigir.</li><li><b>Relay sem ordenação nem lote.</b> Publicar um a um com <code class="ic">waitForConfirms</code> síncrono derruba a vazão.</li><li><b>Outbox sem expurgo.</b> A tabela cresce indefinidamente e as consultas do relay ficam lentas.</li><li><b>Vários relays sem trava.</b> Duas instâncias lendo as mesmas linhas multiplicam a duplicidade — use <code class="ic">SELECT ... FOR UPDATE SKIP LOCKED</code>.</li></ul></div>
+        <div class="ponte"><b class="titulo">⚡ Ponte de Arquitetura: Outbox, Sagas e Consistência Eventual</b>
+          <p>O Transactional Outbox é a espinha dorsal de qualquer arquitetura orientada a eventos e de padrões como <b>Saga Coreografada ou Orquestrada</b> (ver <a href="arquitetura.html">Arquitetura Completa</a>). Em sistemas distribuídos, transações ACID de dois nós (2PC - Two-Phase Commit) são proibitivas por latência e fragilidade.</p>
+          <p style="margin-top:.5rem!important">Com o Outbox no serviço de pedidos, o commit local gera o evento de negócio (ex: <code class="ic">pedido.criado</code>). Os serviços downstream (Pagamentos, Estoque) processam de forma autônoma e assíncrona. Se o pagamento falhar, a Saga não faz "rollback" do banco de pedidos — ela emite um <b>evento compensatório</b> (<code class="ic">pagamento.recusado</code>), que aciona outro outbox para cancelar o pedido e devolver o estoque. A consistência é eventual, mas matematicamente garantida.</p>
+        </div>
         <div class="prova"><div class="lab"><b>Pratique agora</b>Implemente outbox e relay. Depois derrube o RabbitMQ, faça vários pagamentos, suba o broker de volta e confirme que todos os eventos foram publicados — nenhum se perdeu.</div><div><b>Prova de domínio</b>Você explica o dual write problem, implementa outbox com relay e sabe por que ele exige consumidor idempotente do outro lado.</div></div>
         <button class="done" type="button" data-k="g2">marcar dominado</button>
       </article>
@@ -1765,7 +1936,7 @@ figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in 
 .dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
 figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
 figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
-figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
 figure.dg.in .pulse.gen{animation:none;opacity:0}
 figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 @keyframes dgFlow{to{stroke-dashoffset:-27}}
@@ -1841,16 +2012,17 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       mo.setAttribute("path",d);
       mo.setAttribute("calcMode","linear");
       mo.setAttribute("begin","indefinite");
-      if(ciclo){
-        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
-      }else{
-        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
-        var fade=document.createElementNS(NS,"animate");
-        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
-        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
-        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
-        c.appendChild(fade); wrap.__fade=fade;
-      }
+      var dur = ciclo ? "5.2s" : (2.8 + gi * 0.35).toFixed(2) + "s";
+      mo.setAttribute("dur", dur);
+      mo.setAttribute("repeatCount", "indefinite");
+      var fade = document.createElementNS(NS, "animate");
+      fade.setAttribute("attributeName", "opacity");
+      fade.setAttribute("begin", "indefinite");
+      fade.setAttribute("dur", dur);
+      fade.setAttribute("repeatCount", "indefinite");
+      fade.setAttribute("values", "0;1;1;0");
+      fade.setAttribute("keyTimes", "0;0.12;0.88;1");
+      c.appendChild(fade); wrap.__fade = fade;
       c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
       wrap.__mo=mo;
     });
@@ -1887,6 +2059,105 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       }
     }
   }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+<script>
+// Outbox Simulator Controller
+(function(){
+  var lab=document.getElementById("outboxLab");
+  if(!lab)return;
+  var nodes=[
+    document.getElementById("on1"),
+    document.getElementById("on2"),
+    document.getElementById("on3"),
+    document.getElementById("on4"),
+    document.getElementById("on5"),
+    document.getElementById("on6")
+  ];
+  var hud=document.getElementById("outboxHud");
+  var btn1=document.getElementById("btnOutboxDw1");
+  var btn2=document.getElementById("btnOutboxDw2");
+  var btn3=document.getElementById("btnOutboxOk");
+  var btnReset=document.getElementById("btnOutboxReset");
+  var timer=null;
+
+  function clearState(){
+    if(timer)clearTimeout(timer);
+    nodes.forEach(function(n){
+      if(!n)return;
+      n.className="ol-node";
+    });
+  }
+
+  function setHud(lines){
+    if(!hud)return;
+    hud.innerHTML=lines.map(function(l){
+      return '<div class="oh-l '+(l.cls||"oh-info")+'">'+l.txt+'</div>';
+    }).join("");
+    hud.scrollTop=hud.scrollHeight;
+  }
+
+  function runScenario(steps){
+    clearState();
+    var idx=0;
+    function next(){
+      if(idx>0 && steps[idx-1]){
+        var prev=steps[idx-1];
+        if(nodes[prev.node]){
+          nodes[prev.node].classList.remove("active");
+          nodes[prev.node].classList.add(prev.status||"ok");
+        }
+      }
+      if(idx<steps.length){
+        var cur=steps[idx];
+        if(nodes[cur.node]){
+          nodes[cur.node].classList.add("active");
+        }
+        setHud(cur.logs);
+        idx++;
+        timer=setTimeout(next, cur.delay||800);
+      }
+    }
+    next();
+  }
+
+  if(btn1) btn1.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"oh-info",txt:"[Requisicao] POST /pagar: pedido #1042 pago com sucesso."}], delay:700},
+      {node:1, status:"ok", logs:[{cls:"oh-ok",txt:"[PostgreSQL] UPDATE pedidos SET status='PAGO' WHERE id=1042 -> COMMIT efetuado!"}], delay:800},
+      {node:2, status:"err", logs:[{cls:"oh-err",txt:"[Tabela Outbox] NÃO EXISTE (abordagem dual-write ingênua direta ao broker)."}], delay:600},
+      {node:3, status:"err", logs:[{cls:"oh-err",txt:"[Relay] Inexistente."}], delay:500},
+      {node:4, status:"err", logs:[{cls:"oh-err",txt:"💥 [Falha de Rede / Crash] Conexão com RabbitMQ caiu ou app sofreu crash antes de rabbitTemplate.convertAndSend()!"}], delay:900},
+      {node:5, status:"err", logs:[{cls:"oh-err",txt:"☠️ [INCONSISTÊNCIA FANTASMA] Pedido foi pago e debitado no banco, mas a expedição/faturamento NUNCA recebeu o evento. Cliente pagou e não recebe o produto!"}], delay:500}
+    ]);
+  });
+
+  if(btn2) btn2.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"oh-info",txt:"[Requisicao] POST /pagar tentando publicar no RabbitMQ antes do commit do banco..."}], delay:700},
+      {node:4, status:"ok", logs:[{cls:"oh-warn",txt:"[RabbitMQ] Mensagem 'pedido.pago' publicada no exchange e consumida pela Logística!"}], delay:800},
+      {node:1, status:"err", logs:[{cls:"oh-err",txt:"💥 [PostgreSQL Rollback] Falha de constraint ou timeout no commit do banco de dados! Transação abortada."}], delay:900},
+      {node:2, status:"err", logs:[{cls:"oh-err",txt:"[Tabela Outbox] Não utilizada."}], delay:500},
+      {node:3, status:"err", logs:[{cls:"oh-err",txt:"[Relay] Não utilizado."}], delay:500},
+      {node:5, status:"err", logs:[{cls:"oh-err",txt:"☠️ [EVENTO FANTASMA] A logística recebeu o evento e despachou mercadoria para um pedido que NUNCA foi efetivado no banco de dados! Prejuízo financeiro direto."}], delay:500}
+    ]);
+  });
+
+  if(btn3) btn3.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"oh-info",txt:"[Requisicao] POST /pagar: abrindo @Transactional atômica no PostgreSQL..."}], delay:700},
+      {node:1, status:"ok", logs:[{cls:"oh-ok",txt:"[PostgreSQL] UPDATE pedidos SET status='PAGO' WHERE id=1042."}], delay:750},
+      {node:2, status:"ok", logs:[{cls:"oh-ok",txt:"[Tabela Outbox] INSERT INTO outbox (id, event, payload, published) VALUES (...); -> COMMIT atômico: ou gravam os dois juntos, ou nenhum!"}], delay:850},
+      {node:3, status:"ok", logs:[{cls:"oh-info",txt:"[Relay Poller / Debezium CDC] Processo desacoplado lê registros com published=false na tabela outbox."}], delay:800},
+      {node:4, status:"ok", logs:[{cls:"oh-ok",txt:"[RabbitMQ] Mensagem publicada no exchange 'pedidos.v1'. Broker devolve Publisher Confirm (ACK)."}], delay:800},
+      {node:5, status:"ok", logs:[{cls:"oh-ok",txt:"🛡️ [CONSISTÊNCIA GARANTIDA] Relay marca published=true. Mesmo que a rede caia, o evento permanece seguro na outbox e é reenviado. 0 eventos perdidos!"}], delay:500}
+    ]);
+  });
+
+  if(btnReset) btnReset.addEventListener("click",function(){
+    clearState();
+    setHud([{cls:"oh-info",txt:"[Simulador Pronto] Selecione um cenário para reproduzir a concorrência e consistência..."}]);
+  });
 })();
 </script>
 </body>

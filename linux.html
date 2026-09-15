@@ -1486,7 +1486,7 @@ figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in 
 .dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
 figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
 figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
-figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
 figure.dg.in .pulse.gen{animation:none;opacity:0}
 figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 @keyframes dgFlow{to{stroke-dashoffset:-27}}
@@ -1562,16 +1562,17 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       mo.setAttribute("path",d);
       mo.setAttribute("calcMode","linear");
       mo.setAttribute("begin","indefinite");
-      if(ciclo){
-        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
-      }else{
-        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
-        var fade=document.createElementNS(NS,"animate");
-        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
-        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
-        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
-        c.appendChild(fade); wrap.__fade=fade;
-      }
+      var dur = ciclo ? "5.2s" : (2.8 + gi * 0.35).toFixed(2) + "s";
+      mo.setAttribute("dur", dur);
+      mo.setAttribute("repeatCount", "indefinite");
+      var fade = document.createElementNS(NS, "animate");
+      fade.setAttribute("attributeName", "opacity");
+      fade.setAttribute("begin", "indefinite");
+      fade.setAttribute("dur", dur);
+      fade.setAttribute("repeatCount", "indefinite");
+      fade.setAttribute("values", "0;1;1;0");
+      fade.setAttribute("keyTimes", "0;0.12;0.88;1");
+      c.appendChild(fade); wrap.__fade = fade;
       c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
       wrap.__mo=mo;
     });

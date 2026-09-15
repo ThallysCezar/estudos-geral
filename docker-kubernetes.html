@@ -191,6 +191,10 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 .gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
 .cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
 .cs b{color:var(--gold)}
+.ponte{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--orange-soft);border:1px solid var(--orange);border-left:4px solid var(--orange)}
+.ponte b.titulo{color:var(--orange);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ponte p,.ponte ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.ponte a{color:var(--gold);text-decoration:underline;font-weight:600}
 .prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
 .prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
 .prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
@@ -253,6 +257,126 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 }
 @media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
 
+
+
+/* Simulador Interativo K8s Probes */
+.probe-lab{
+  margin:24px 0;
+  border:1px solid var(--line2);
+  border-radius:18px;
+  background:#1e1f29;
+  padding:22px;
+  box-shadow:0 16px 40px #00000055;
+}
+.probe-lab .pl-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+}
+.probe-lab .pl-head h4{
+  margin:0;
+  font:700 .68rem "Cascadia Code",monospace;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--cyan);
+}
+.probe-lab .pl-ctrls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.probe-lab .btn-pl{
+  border:1px solid var(--line2);
+  background:#282a36;
+  color:var(--ink);
+  font:600 .74rem "Inter",sans-serif;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all .2s var(--ease);
+}
+.probe-lab .btn-pl:hover{
+  border-color:var(--cyan);
+  background:color-mix(in srgb,var(--cyan) 15%,transparent);
+  transform:translateY(-2px);
+}
+.probe-lab .btn-pl:active{transform:scale(.97)}
+.probe-lab .btn-pl.btn-ok{border-color:color-mix(in srgb,var(--lime) 50%,transparent);color:var(--lime);background:color-mix(in srgb,var(--lime) 8%,transparent)}
+.probe-lab .btn-pl.btn-err{border-color:color-mix(in srgb,var(--red) 50%,transparent);color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
+.probe-lab .btn-pl.btn-warn{border-color:color-mix(in srgb,var(--orange) 50%,transparent);color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,transparent)}
+
+.pl-flow{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin:20px 0 16px;
+}
+.pl-node{
+  background:#282a36;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 10px;
+  font-size:.74rem;
+  transition:all .3s var(--ease);
+}
+.pl-node .pn-tag{
+  font:700 .55rem "Cascadia Code",monospace;
+  color:var(--soft);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:4px;
+}
+.pl-node .pn-val{
+  font-weight:600;
+  color:var(--ink);
+  display:block;
+  line-height:1.3;
+}
+.pl-node.active{
+  border-color:var(--cyan);
+  background:radial-gradient(100% 120% at 50% 0%,#8be9fd25,#282a36);
+  box-shadow:0 0 18px #8be9fd44;
+  transform:translateY(-2px);
+}
+.pl-node.ok{
+  border-color:var(--lime);
+  background:radial-gradient(100% 120% at 50% 0%,#50fa7b25,#282a36);
+}
+.pl-node.err{
+  border-color:var(--red);
+  background:radial-gradient(100% 120% at 50% 0%,#ff555525,#282a36);
+  box-shadow:0 0 14px #ff555533;
+}
+.pl-node.warn{
+  border-color:var(--orange);
+  background:radial-gradient(100% 120% at 50% 0%,#ffb86c25,#282a36);
+}
+
+.pl-hud{
+  background:#14151e;
+  border:1px solid var(--line2);
+  border-radius:12px;
+  padding:14px 18px;
+  font:500 .74rem "Cascadia Code",monospace;
+  color:var(--ink2);
+  min-height:85px;
+  max-height:140px;
+  overflow-y:auto;
+}
+.pl-hud .ph-l{margin:4px 0;line-height:1.45}
+.pl-hud .ph-ok{color:var(--lime)}
+.pl-hud .ph-err{color:var(--red)}
+.pl-hud .ph-warn{color:var(--orange)}
+.pl-hud .ph-info{color:var(--cyan)}
+
+@media(max-width:860px){
+  .pl-flow{grid-template-columns:1fr 1fr;gap:8px}
+}
 
 </style>
 </head>
@@ -483,7 +607,11 @@ ENTRYPOINT ["java","-XX:MaxRAMPercentage=75","-jar","/app/app.jar"]
 # → o Spring encerra graciosamente
 # → docker stop termina em 2s, sem perder requisição</code></pre></div>
         </div>
-        <div class="cs"><b>A ponte com o Spring.</b> Aquele <code class="i">server.shutdown=graceful</code> da parte 08 do Spring completo só funciona se o SIGTERM chegar ao processo Java. Com a forma shell, ele nunca chega — e o encerramento gracioso que você configurou fica inerte, sem nenhum erro que denuncie. É um dos casos mais comuns de configuração correta anulada por detalhe de empacotamento.</div>
+        <div class="ponte"><b class="titulo">⚡ Ponte de Arquitetura: Ciclo de vida do PID 1, Sinais POSIX e Graceful Shutdown</b>
+          <p>Quando o Kubernetes encerra um Pod (durante um rollout ou scale-down), ele envia um <code class="i">SIGTERM</code> e aguarda <code class="i">terminationGracePeriodSeconds</code> (padrão: 30s) antes de desferir um impiedoso <code class="i">SIGKILL</code> (ver <a href="linux.html">Linux</a>).</p>
+          <p style="margin-top:.5rem!important">Com a forma shell (<code class="i">ENTRYPOINT java -jar ...</code>), o <code class="i">/bin/sh</code> vira PID 1 e <b>descarta</b> o sinal. O Spring Boot (<a href="spring.html">Spring Completo</a>) com <code class="i">server.shutdown=graceful</code> nunca recebe o aviso: requisições HTTP ativas são abortadas no meio do pagamento e mensagens do RabbitMQ em voo são interrompidas sem confirmação, gerando inconsistências no banco.</p>
+          <p style="margin-top:.5rem!important">Para fechar a cadeia de confiabilidade: <b>1)</b> Use sempre a forma exec JSON ou um gerenciador como <code class="i">tini</code> / <code class="i">dumb-init</code>; <b>2)</b> No Spring, configure <code class="i">spring.lifecycle.timeout-per-shutdown-phase=20s</code> (sempre menor que o grace period do K8s); <b>3)</b> Implemente probes de readiness que param de receber tráfego antes de o processo drenar.</p>
+        </div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Forma shell por hábito.</b> É a forma mais escrita e a que quebra sinais. Use sempre a lista JSON.</li><li><b>Script de entrada sem <code class="i">exec</code>.</b> Se o script precisa existir, termine com <code class="i">exec java -jar ...</code> para o Java assumir o PID 1.</li><li><b>Aplicação que ignora SIGTERM.</b> Como PID 1 ela não tem handler padrão: se o código não tratar, nada acontece.</li></ul></div>
         <div class="prova"><div class="lab"><b>Pratique agora</b>Suba o mesmo container nas duas formas, rode <code class="i">docker stop</code> e cronometre. A diferença entre 2 e 10 segundos é o sinal chegando ou não.</div><div><b>Prova de domínio</b>Você explica a diferença entre forma shell e exec pelo PID 1, e liga isso ao shutdown gracioso da aplicação.</div></div>
         <button class="done" type="button" data-k="b3">marcar dominado</button>
@@ -1158,6 +1286,46 @@ kubectl get secret pedidos-secret -o jsonpath='{.data.DB_PASSWORD}' | base64 -d<
       httpGet: { path: /actuator/health/readiness, port: 8080 }
       periodSeconds: 5
       failureThreshold: 2</code></pre>
+
+        <!-- SIMULADOR INTERATIVO K8S PROBES -->
+        <div class="probe-lab" id="probeLab">
+          <div class="pl-head">
+            <h4>Simulador Interativo · K8s Health Probes & Cascata de Falhas</h4>
+            <span style="font-size:.72rem;color:var(--muted)">Veja a diferença entre Kubelet cortar tráfego (Readiness) ou matar o Pod (Liveness)</span>
+          </div>
+          <div class="pl-ctrls">
+            <button type="button" class="btn-pl btn-ok" id="btnProbeOk">🛡️ 1. Banco Oscilou com Readiness (Corte Seguro de Tráfego)</button>
+            <button type="button" class="btn-pl btn-err" id="btnProbeErr">💥 2. Banco no Liveness (O Desastre: CrashLoopBackOff Geral)</button>
+            <button type="button" class="btn-pl btn-warn" id="btnProbeStartup">⏱️ 3. JVM Subindo sem Startup Probe (Morte Prematura)</button>
+            <button type="button" class="btn-pl" id="btnProbeReset">↺ Reset</button>
+          </div>
+          <div class="pl-flow">
+            <div class="pl-node" id="kn1">
+              <span class="pn-tag">Fase 1</span>
+              <span class="pn-val">Evento no Cluster</span>
+            </div>
+            <div class="pl-node" id="kn2">
+              <span class="pn-tag">Fase 2</span>
+              <span class="pn-val">Sondagem Kubelet</span>
+            </div>
+            <div class="pl-node" id="kn3">
+              <span class="pn-tag">Fase 3</span>
+              <span class="pn-val">Veredito da Probe</span>
+            </div>
+            <div class="pl-node" id="kn4">
+              <span class="pn-tag">Fase 4</span>
+              <span class="pn-val">Ação do Kubernetes</span>
+            </div>
+            <div class="pl-node" id="kn5">
+              <span class="pn-tag">Fase 5</span>
+              <span class="pn-val">Impacto de Produção</span>
+            </div>
+          </div>
+          <div class="pl-hud" id="probeHud">
+            <div class="ph-l ph-info">[Kubelet Observando] Escolha um cenário para testar a resiliência das probes...</div>
+          </div>
+        </div>
+
         <div class="cs"><b>A regra que evita o incidente em cascata.</b> <b>Liveness nunca olha dependência externa.</b> Se o banco cair e o liveness reprovar, o orquestrador mata e recria todos os Pods — que subirão, tentarão conectar, falharão e serão mortos de novo, num ciclo que consome o cluster e impede a recuperação. Dependência externa é assunto de readiness: o Pod sai do balanceador, continua vivo, e volta sozinho quando o banco voltar.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Sem startup probe numa JVM.</b> O liveness mata o Pod antes de a aplicação terminar de subir — e o ciclo nunca fecha.</li><li><b>Probe que executa consulta cara.</b> Com o probe rodando a cada cinco segundos em cada réplica, você criou carga constante no banco.</li><li><b>Readiness igual ao liveness.</b> Você perdeu a distinção e voltou ao comportamento binário.</li><li><b>Sem readiness no rollout.</b> O cluster manda tráfego para Pods que ainda não estão prontos.</li></ul></div>
         <div class="prova"><div class="lab"><b>Pratique agora</b>Derrube o banco com a aplicação no ar e confirme: readiness cai, liveness continua passando, o Pod sai do Service e volta sozinho quando o banco retorna.</div><div><b>Prova de domínio</b>Você define as três probes com justificativa e explica por que dependência externa nunca entra no liveness.</div></div>
@@ -1784,7 +1952,7 @@ figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in 
 .dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
 figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
 figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
-figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
 figure.dg.in .pulse.gen{animation:none;opacity:0}
 figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 @keyframes dgFlow{to{stroke-dashoffset:-27}}
@@ -1860,16 +2028,17 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       mo.setAttribute("path",d);
       mo.setAttribute("calcMode","linear");
       mo.setAttribute("begin","indefinite");
-      if(ciclo){
-        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
-      }else{
-        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
-        var fade=document.createElementNS(NS,"animate");
-        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
-        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
-        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
-        c.appendChild(fade); wrap.__fade=fade;
-      }
+      var dur = ciclo ? "5.2s" : (2.8 + gi * 0.35).toFixed(2) + "s";
+      mo.setAttribute("dur", dur);
+      mo.setAttribute("repeatCount", "indefinite");
+      var fade = document.createElementNS(NS, "animate");
+      fade.setAttribute("attributeName", "opacity");
+      fade.setAttribute("begin", "indefinite");
+      fade.setAttribute("dur", dur);
+      fade.setAttribute("repeatCount", "indefinite");
+      fade.setAttribute("values", "0;1;1;0");
+      fade.setAttribute("keyTimes", "0;0.12;0.88;1");
+      c.appendChild(fade); wrap.__fade = fade;
       c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
       wrap.__mo=mo;
     });
@@ -1906,6 +2075,101 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       }
     }
   }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+<script>
+// K8s Probe Simulator Controller
+(function(){
+  var lab=document.getElementById("probeLab");
+  if(!lab)return;
+  var nodes=[
+    document.getElementById("kn1"),
+    document.getElementById("kn2"),
+    document.getElementById("kn3"),
+    document.getElementById("kn4"),
+    document.getElementById("kn5")
+  ];
+  var hud=document.getElementById("probeHud");
+  var btn1=document.getElementById("btnProbeOk");
+  var btn2=document.getElementById("btnProbeErr");
+  var btn3=document.getElementById("btnProbeStartup");
+  var btnReset=document.getElementById("btnProbeReset");
+  var timer=null;
+
+  function clearState(){
+    if(timer)clearTimeout(timer);
+    nodes.forEach(function(n){
+      if(!n)return;
+      n.className="pl-node";
+    });
+  }
+
+  function setHud(lines){
+    if(!hud)return;
+    hud.innerHTML=lines.map(function(l){
+      return '<div class="ph-l '+(l.cls||"ph-info")+'">'+l.txt+'</div>';
+    }).join("");
+    hud.scrollTop=hud.scrollHeight;
+  }
+
+  function runScenario(steps){
+    clearState();
+    var idx=0;
+    function next(){
+      if(idx>0 && steps[idx-1]){
+        var prev=steps[idx-1];
+        if(nodes[prev.node]){
+          nodes[prev.node].classList.remove("active");
+          nodes[prev.node].classList.add(prev.status||"ok");
+        }
+      }
+      if(idx<steps.length){
+        var cur=steps[idx];
+        if(nodes[cur.node]){
+          nodes[cur.node].classList.add("active");
+        }
+        setHud(cur.logs);
+        idx++;
+        timer=setTimeout(next, cur.delay||800);
+      }
+    }
+    next();
+  }
+
+  if(btn1) btn1.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"ph-warn",txt:"[Cluster Event] PostgreSQL sofre spike de CPU ou failover de 30s."}], delay:700},
+      {node:1, status:"warn", logs:[{cls:"ph-info",txt:"[Kubelet Probe] GET /actuator/health/readiness -> status DOWN (503 Service Unavailable)."}], delay:750},
+      {node:2, status:"warn", logs:[{cls:"ph-warn",txt:"[Readiness Reprovado] failureThreshold atingido (2/2). Liveness continua PASSANDO (200 OK)."}], delay:800},
+      {node:3, status:"ok", logs:[{cls:"ph-ok",txt:"[K8s Endpoint Controller] Remove o IP do Pod dos Endpoints do Service. Tráfego de novas requisições é pausado imediatamente!"}], delay:850},
+      {node:4, status:"ok", logs:[{cls:"ph-ok",txt:"🛡️ [ZERO RESTARTS] O container continua vivo e saudável! Quando o banco volta, readiness passa e o Pod retorna ao tráfego em 2s sem reiniciar."}], delay:500}
+    ]);
+  });
+
+  if(btn2) btn2.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"ph-warn",txt:"[Cluster Event] PostgreSQL fica lento ou indisponível temporariamente por 40s."}], delay:700},
+      {node:1, status:"err", logs:[{cls:"ph-err",txt:"[ERRO DE ARQUITETURA] Desenvolvedor colocou verificação de banco dentro do LivenessProbe!"}], delay:750},
+      {node:2, status:"err", logs:[{cls:"ph-err",txt:"[Liveness Reprovado] GET /health falha porque o banco não respondeu em 1s."}], delay:800},
+      {node:3, status:"err", logs:[{cls:"ph-err",txt:"☠️ [Kubelet SIGKILL] Kubelet entende que a aplicação travou: mata o container e recria o Pod!"}], delay:900},
+      {node:4, status:"err", logs:[{cls:"ph-err",txt:"💥 [CASCATA / CRASHLOOPBACKOFF] Todos os 20 Pods morrem e tentam reconectar ao banco juntos, sobrecarregando o banco e entrando em CrashLoopBackOff infinito!"}], delay:500}
+    ]);
+  });
+
+  if(btn3) btn3.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"ph-info",txt:"[Novo Deployment] Pod da aplicação Spring Boot é agendado no node."}], delay:700},
+      {node:1, status:"warn", logs:[{cls:"ph-warn",txt:"[JVM Inicializando] Spring Boot leva 40 segundos carregando beans, Flyway e conexões."}], delay:750},
+      {node:2, status:"err", logs:[{cls:"ph-err",txt:"⚠️ [Sem StartupProbe] LivenessProbe configurada com initialDelaySeconds=10s já começa a disparar!"}], delay:850},
+      {node:3, status:"err", logs:[{cls:"ph-err",txt:"[Morte Prematura] Kubelet recebe Connection Refused no segundo 15 e mata o Pod antes dele terminar de subir."}], delay:850},
+      {node:4, status:"ok", logs:[{cls:"ph-ok",txt:"✅ [Fix com StartupProbe] Configure startupProbe com failureThreshold=30 e periodSeconds=5 (concede até 150s para subir sem morrer)."}], delay:500}
+    ]);
+  });
+
+  if(btnReset) btnReset.addEventListener("click",function(){
+    clearState();
+    setHud([{cls:"ph-info",txt:"[Kubelet Observando] Escolha um cenário para testar a resiliência das probes..."}]);
+  });
 })();
 </script>
 </body>

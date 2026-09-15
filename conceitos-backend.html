@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Conceitos de Backend completo — trilha visual + conteúdo · as dúvidas que viraram conhecimento</title>
-<meta name="description" content="O caderno de dúvidas, fora da sequência: trilha visual de 57 nós em 9 marcos, mais 25 tópicos em 9 partes — gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, cache, observabilidade, deploy e rollback. Tema Dracula.">
+<meta name="description" content="O caderno de dúvidas, fora da sequência: trilha visual de 60 nós em 10 marcos, mais 28 tópicos em 10 partes — gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, cache, observabilidade, deploy e War Room de incidentes integrados. Tema Dracula.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -195,6 +195,10 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 .gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
 .cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
 .cs b{color:var(--gold)}
+.ponte{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--orange-soft);border:1px solid var(--orange);border-left:4px solid var(--orange)}
+.ponte b.titulo{color:var(--orange);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ponte p,.ponte ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.ponte a{color:var(--gold);text-decoration:underline;font-weight:600}
 .prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
 .prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
 .prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
@@ -264,6 +268,126 @@ table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84re
 table.vmap tr:last-child td{border-bottom:0}
 table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
 
+
+/* Simulador War Room - Incidentes em Produção */
+.war-lab{
+  margin:24px 0;
+  border:1px solid var(--line2);
+  border-radius:18px;
+  background:#1e1f29;
+  padding:22px;
+  box-shadow:0 16px 40px #00000055;
+}
+.war-lab .wl-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+}
+.war-lab .wl-head h4{
+  margin:0;
+  font:700 .68rem "Cascadia Code",monospace;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.war-lab .wl-ctrls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.war-lab .btn-wl{
+  border:1px solid var(--line2);
+  background:#282a36;
+  color:var(--ink);
+  font:600 .74rem "Inter",sans-serif;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all .2s var(--ease);
+}
+.war-lab .btn-wl:hover{
+  border-color:var(--purple);
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  transform:translateY(-2px);
+}
+.war-lab .btn-wl:active{transform:scale(.97)}
+.war-lab .btn-wl.btn-inc1{border-color:color-mix(in srgb,var(--red) 50%,transparent);color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
+.war-lab .btn-wl.btn-inc2{border-color:color-mix(in srgb,var(--orange) 50%,transparent);color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,transparent)}
+.war-lab .btn-wl.btn-inc3{border-color:color-mix(in srgb,var(--purple) 50%,transparent);color:var(--purple);background:color-mix(in srgb,var(--purple) 8%,transparent)}
+
+.wl-flow{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin:20px 0 16px;
+}
+.wl-node{
+  background:#282a36;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 10px;
+  font-size:.74rem;
+  transition:all .3s var(--ease);
+}
+.wl-node .wn-tag{
+  font:700 .55rem "Cascadia Code",monospace;
+  color:var(--soft);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:4px;
+}
+.wl-node .wn-val{
+  font-weight:600;
+  color:var(--ink);
+  display:block;
+  line-height:1.3;
+}
+.wl-node.active{
+  border-color:var(--cyan);
+  background:radial-gradient(100% 120% at 50% 0%,#8be9fd25,#282a36);
+  box-shadow:0 0 18px #8be9fd44;
+  transform:translateY(-2px);
+}
+.wl-node.ok{
+  border-color:var(--lime);
+  background:radial-gradient(100% 120% at 50% 0%,#50fa7b25,#282a36);
+}
+.wl-node.err{
+  border-color:var(--red);
+  background:radial-gradient(100% 120% at 50% 0%,#ff555525,#282a36);
+  box-shadow:0 0 14px #ff555533;
+}
+.wl-node.warn{
+  border-color:var(--orange);
+  background:radial-gradient(100% 120% at 50% 0%,#ffb86c25,#282a36);
+}
+
+.wl-hud{
+  background:#14151e;
+  border:1px solid var(--line2);
+  border-radius:12px;
+  padding:14px 18px;
+  font:500 .74rem "Cascadia Code",monospace;
+  color:var(--ink2);
+  min-height:85px;
+  max-height:140px;
+  overflow-y:auto;
+}
+.wl-hud .wh-l{margin:4px 0;line-height:1.45}
+.wl-hud .wh-ok{color:var(--lime)}
+.wl-hud .wh-err{color:var(--red)}
+.wl-hud .wh-warn{color:var(--orange)}
+.wl-hud .wh-info{color:var(--cyan)}
+
+@media(max-width:860px){
+  .wl-flow{grid-template-columns:1fr 1fr;gap:8px}
+}
+
 </style>
 </head>
 <body>
@@ -290,7 +414,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
     <header class="hero">
       <span class="eyebrow">Conceitos de Backend · setembro 2026</span>
       <h1>As <em>dúvidas</em> que viraram <em>conhecimento</em>.</h1>
-      <p class="lede">O sétimo da série, e o de origem diferente: ele reúne as <b>notas avulsas</b> que você foi criando quando bateu uma dúvida — locks, race condition, índices, JOINs, JWT, upload, deploy. Em cima, a <b>trilha visual</b>: 57 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 25 tópicos em 9 partes, com a origem de cada mecanismo, <b>o que ele veio substituir</b>, os diagramas e as armadilhas. E, principalmente: <b>é aqui que a próxima dúvida deve ser anotada</b> — no formato, na parte certa, em vez de virar mais um arquivo solto.</p>
+      <p class="lede">O sétimo da série, e o de origem diferente: ele reúne as <b>notas avulsas</b> que você foi criando quando bateu uma dúvida — locks, race condition, índices, JOINs, JWT, upload, deploy e simulações de War Room sob fogo. Em cima, a <b>trilha visual</b>: 60 nós em 10 marcos. Embaixo, o <b>conteúdo</b>: 28 tópicos em 10 partes, com a origem de cada mecanismo, <b>o que ele veio substituir</b>, os diagramas e as armadilhas. E, principalmente: <b>é aqui que a próxima dúvida deve ser anotada</b> — no formato, na parte certa, em vez de virar mais um arquivo solto.</p>
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
         <a href="#p1"><b>↓ O conteúdo</b>entender a fundo, com história e código</a>
@@ -1027,6 +1151,150 @@ criarPedido(clienteId, valor);
         <button class="done" type="button" data-k="i2">marcar dominado</button>
       </article>
     </section>
+
+    <!-- ========================= PARTE 10 ========================= -->
+    <section class="part" id="p10">
+      <div class="ph"><span class="num">10</span><div><h2>War Room: incidentes integrados sob fogo</h2><p>Quando a teoria falha em produção: três diagnósticos multidisciplinares que amarram Java, Spring, Docker, Kubernetes, Banco e Mensageria.</p></div></div>
+
+      <!-- SIMULADOR INTERATIVO WAR ROOM -->
+      <div class="war-lab" id="warLab">
+        <div class="wl-head">
+          <h4>Simulador de Incidentes · War Room Multidisciplinar</h4>
+          <span style="font-size:.72rem;color:var(--muted)">Clique nos incidentes para simular a cascata de falhas e diagnosticar a causa raiz</span>
+        </div>
+        <div class="wl-ctrls">
+          <button type="button" class="btn-wl btn-inc1" id="btnWarInc1">🚨 Incidente 01: OOMKilled 137 (Off-Heap / cgroup)</button>
+          <button type="button" class="btn-wl btn-inc2" id="btnWarInc2">⚡ Incidente 02: HikariCP Starvation (I/O em @Transactional)</button>
+          <button type="button" class="btn-wl btn-inc3" id="btnWarInc3">☠️ Incidente 03: Poison Pill & RabbitMQ DLQ Loop</button>
+          <button type="button" class="btn-wl" id="btnWarReset">↺ Reset</button>
+        </div>
+        <div class="wl-flow">
+          <div class="wl-node" id="wn1">
+            <span class="wn-tag">Etapa 1</span>
+            <span class="wn-val">Trigger Inicial</span>
+          </div>
+          <div class="wl-node" id="wn2">
+            <span class="wn-tag">Etapa 2</span>
+            <span class="wn-val">Alocação de Recurso</span>
+          </div>
+          <div class="wl-node" id="wn3">
+            <span class="wn-tag">Etapa 3</span>
+            <span class="wn-val">Mecanismo de Falha</span>
+          </div>
+          <div class="wl-node" id="wn4">
+            <span class="wn-tag">Etapa 4</span>
+            <span class="wn-val">Sintoma em Produção</span>
+          </div>
+          <div class="wl-node" id="wn5">
+            <span class="wn-tag">Etapa 5</span>
+            <span class="wn-val">Diagnóstico & Correção</span>
+          </div>
+        </div>
+        <div class="wl-hud" id="warHud">
+          <div class="wh-l wh-info">[War Room Aberta] Selecione um incidente para iniciar a telemetria em tempo real...</div>
+        </div>
+      </div>
+
+
+      <article class="topic" id="j1">
+        <div class="th"><h3>Incidente 01 · O "OOMKilled" fantasma: Exit 137 sem Heap Dump</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">k8s + jvm</span></div></div>
+        <p class="direto"><b>Direto:</b> o Pod do Kubernetes morre com status <code class="i">OOMKilled</code> e código de saída 137, mas a JVM não lançou <code class="i">OutOfMemoryError</code> e o log não mostra nada. O assassino não foi a JVM: foi o <b>Linux Kernel OOM Killer</b> via cgroup, porque a memória <em>Off-Heap</em> (Metaspace, thread stacks, Netty buffers) ultrapassou o teto do container.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como alugar um caminhão pelo tamanho da caçamba.</b> Você mediu que a carga ocupa 800 kg e alugou um caminhão com teto de 1000 kg. Mas esqueceu que o peso do próprio motor, do combustível e do motorista somam 350 kg. Na balança da rodovia (o cgroup do Linux), o total deu 1150 kg — o caminhão é apreendido imediatamente pela polícia rodoviária, mesmo com espaço sobrando na caçamba.</p></div>
+        <div class="duo o">
+          <div><h4>A autópsia do incidente</h4><p>O container foi configurado com limite estrito de 1 GB no Kubernetes (<code class="i">resources.limits.memory: 1Gi</code>) e a equipe setou a JVM com <code class="i">-Xmx768m</code>, acreditando que 256 MB seriam folga suficiente. Sob carga, 200 threads ativas alocaram 1 MB de stack cada (<code class="i">-Xss1m</code> × 200 = 200 MB), mais 120 MB de Metaspace e buffers de socket do driver JDBC. A memória residente total (RSS) bateu 1030 MB. O kernel do nó enviou <code class="i">SIGKILL</code> (sinal 9). Como sinal 9 não pode ser interceptado, o processo morreu instantaneamente, com exit code 128 + 9 = 137, sem gerar heap dump.</p>
+          <p class="repl"><b>A ponte entre os mundos:</b> Kubernetes (<a href="docker-kubernetes.html">Docker e K8s</a>) limita o processo inteiro via cgroups; a JVM (<a href="java.html">Java Completo</a>) só gerencia o Heap se você não limitar explicitamente a memória nativa.</p></div>
+          <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Diagnosticar pods que entram em <code class="i">CrashLoopBackOff</code> em silêncio durante picos de tráfego.</li><li>Configurar corretamente os limites de memória da JVM em contêineres de produção.</li><li>Definir a proporção correta entre <code class="i">requests</code> e <code class="i">limits</code> no Kubernetes.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">Configuração ingênua — morre sob pico</div><pre><code># k8s limit: 1Gi
+# flag errada na JVM:
+java -Xmx800m -jar app.jar
+
+# 800m (Heap) + 200m (200 threads × 1MB)
+# + 120m (Metaspace) + 60m (Direct I/O) = 1180MB
+# Kernel OOM-Killer: SIGKILL (Exit 137)</code></pre></div>
+          <div class="depois"><div class="lab">Configuração resiliente para container</div><pre><code># k8s limit: 1Gi
+# Flags modernas para contêiner:
+java -XX:MaxRAMPercentage=70.0 \
+     -XX:+UseContainerSupport \
+     -Xss512k \
+     -jar app.jar
+# Heap teto: ~716MB. Sobram ~300MB para off-heap!</code></pre></div>
+        </div>
+        <div class="gotcha"><b>Sinais no War Room para matar a charada</b><ul><li>Rode <code class="i">kubectl describe pod &lt;nome&gt;</code>: procure por <code class="i">Last State: Terminated / Reason: OOMKilled / Exit Code: 137</code>.</li><li>Se o log da aplicação parar abruptamente sem stacktrace de erro, o processo foi executado pelo kernel (SIGKILL), não pela JVM.</li><li>Use Virtual Threads do Java 21: reduzem o custo de stack de dezenas de megabytes para míseros kilobytes sob alta concorrência.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Em um Dockerfile de teste, limite a memória do container para 200m (<code class="i">docker run -m 200m</code>), configure a JVM com <code class="i">-Xmx180m</code> e suba 100 threads com alocação rápida. Observe o container cair com exit code 137 sem log de erro.</div><div><b>Prova de domínio</b>Você sabe calcular o RSS total esperado de uma JVM (Heap + Metaspace + Threads + Direct Memory) e dimensionar limites no Kubernetes com margem de segurança.</div></div>
+        <button class="done" type="button" data-k="j1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="j2">
+        <div class="th"><h3>Incidente 02 · Connection Starvation: o pool asfixiado por I/O externo</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">spring + hikaricp</span></div></div>
+        <p class="direto"><b>Direto:</b> sob carga moderada de apenas 50 req/s, a API de Checkout colapsa com <code class="i">SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms</code>. O PostgreSQL tem CPU em 3% e zero lentidão. O vilão foi uma <b>chamada HTTP externa síncrona feita dentro de um método anotado com <code class="i">@Transactional</code></b>.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como segurar a chave do banheiro enquanto vai ao supermercado.</b> Você entra na fila do banco, pega a única chave do cofre e, com a chave no bolso, sai do prédio para tomar café na esquina. Os outros cem clientes que só precisam de um depósito rápido de dois segundos ficam parados na porta esperando você voltar.</p></div>
+        <div class="duo o">
+          <div><h4>A autópsia do incidente</h4><p>O método <code class="i">finalizarPedido()</code> anotado com <code class="i">@Transactional</code> chamava um gateway antifraude: <code class="i">antifraudeClient.avaliar(pedido)</code>. O gateway sofreu uma degradação de rede e sua latência saltou de 100 ms para 3,5 segundos. Com o HikariCP configurado com tamanho máximo padrão de 10 conexões (<code class="i">maximum-pool-size=10</code>), bastaram 10 requisições simultâneas para reter 100% das conexões do pool em espera de I/O de rede. O pool esgotou; consultas triviais de outras telas entraram na fila de espera e tomaram timeout de 30 segundos, derrubando o sistema inteiro em cascata.</p>
+          <p class="repl"><b>A ponte entre os mundos:</b> Spring (<a href="spring.html">Spring Completo</a>) amarra a conexão física do JDBC (<a href="java.html">Java Completo</a>) à thread transacional até o fim do método, mesmo se o método estiver ocioso esperando resposta de terceiros na nuvem (<a href="nuvem.html">Nuvem Completo</a>).</p></div>
+          <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Revisões de PR: identificar chamadas REST, gRPC ou SMTP dentro de blocos transacionais.</li><li>Investigar por que métricas de conexões pendentes sobem sem aumento de queries no banco.</li><li>Estruturar transações com escopo cirúrgico usando <code class="i">TransactionTemplate</code>.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">Anti-padrão — conexão JDBC refém de rede</div><pre><code>@Transactional // abre Connection JDBC AQUI
+public void checkout(Pedido p) {
+    pedidoRepo.salvar(p);
+    // PERIGO: segura conexão física por 4s!
+    var res = antifraudeClient.avaliar(p); 
+    if (res.reprovado()) throw new NegocioException();
+    pagamentoRepo.confirmar(p.getId());
+}</code></pre></div>
+          <div class="depois"><div class="lab">Padrão resiliente — I/O fora da transação</div><pre><code>// 1. I/O externo roda SEM segurar conexão:
+var res = antifraudeClient.avaliar(p);
+if (res.reprovado()) throw new NegocioException();
+
+// 2. Transação curta e estrita só para o banco:
+txTemplate.executeWithoutResult(status -&gt; {
+    pedidoRepo.salvar(p);
+    pagamentoRepo.confirmar(p.getId());
+    outboxRepo.salvar(new Evento(p)); // outbox!
+});</code></pre></div>
+        </div>
+        <div class="gotcha"><b>Sinais no War Room para matar a charada</b><ul><li>Olhe a métrica <code class="i">hikaricp_connections_pending</code> no Grafana: se estiver alta com CPU do banco baixa, as conexões estão sendo seguradas por código ocioso.</li><li>Configure <code class="i">spring.datasource.hikari.leak-detection-threshold=5000</code>: o HikariCP emitirá um aviso com o stacktrace exato de quem reteve a conexão por mais de 5 segundos.</li><li>Proteja chamadas HTTP externas com timeout agressivo (ex: 2s) e Circuit Breaker (Resilience4j).</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Crie um endpoint com <code class="i">@Transactional</code> contendo um <code class="i">Thread.sleep(3000)</code> simulando HTTP externo. Configure pool size 2. Dispare 5 requisições concorrentes com curl e veja as últimas falharem com timeout de conexão.</div><div><b>Prova de domínio</b>Você sabe isolar chamadas de rede de fronteiras transacionais e usar <code class="i">TransactionTemplate</code> para delimitar o tempo de vida exato da conexão.</div></div>
+        <button class="done" type="button" data-k="j2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="j3">
+        <div class="th"><h3>Incidente 03 · A avalanche do RabbitMQ: Poison Pill e loop de Requeue</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">mensageria</span></div></div>
+        <p class="direto"><b>Direto:</b> o cluster RabbitMQ atinge o alarme de memória (<code class="i">vm_memory_high_watermark</code>), bloqueia todas as publicações (<code class="i">connection.blocked</code>) e paralisa os pagamentos. A fila acumula milhares de mensagens em estado <em>Unacked</em> e a CPU do broker vai a 100%. A causa: uma <b>mensagem malformada (poison pill) recebendo <code class="i">basic.nack(requeue=true)</code> em loop infinito sem DLQ</b>.</p>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como devolver uma carta endereçada a lugar nenhum para a esteira dos correios.</b> O carteiro não consegue entregar a carta rasgada, recoloca na esteira imediatamente; o próximo carteiro pega, falha e devolve. Em minutos, milhares de carteiros passam o dia repassando a mesma carta rasgada de mão em mão, sem entregar nenhuma das correspondências legítimas.</p></div>
+        <div class="duo o">
+          <div><h4>A autópsia do incidente</h4><p>Um consumidor de eventos de pagamento recebeu um payload com campo nulo inesperado, gerando <code class="i">NullPointerException</code>. O ouvinte padrão rejeitou a mensagem com <code class="i">requeue = true</code>. A mensagem voltou instantaneamente para o início da fila e foi entregue de volta ao mesmo consumidor (ou a um irmão no Kubernetes), que falhou novamente. Sob taxa de 10.000 requeues por segundo, o consumidor consumiu toda a CPU e gerou milhões de I/O ops no RabbitMQ. Ao mesmo tempo, a falta de <code class="i">prefetch_count</code> fez os pods puxarem lotes gigantes de mensagens antes de processá-las, retendo dezenas de milhares de mensagens unacked em memória.</p>
+          <p class="repl"><b>A ponte entre os mundos:</b> Mensageria (<a href="mensageria.html">Mensageria e RabbitMQ</a>) exige backpressure e roteamento de erro via Dead Letter Exchange para que falhas de código na aplicação não derrubem a infraestrutura de transporte.</p></div>
+          <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Evitar que um único payload corrompido paralise o faturamento da empresa inteira.</li><li>Configurar retries com backoff exponencial e Dead Letter Queues (DLQ).</li><li>Dimensionar o <code class="i">prefetch</code> para equilibrar vazão e uso de memória.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">Configuração frágil — loop da morte</div><pre><code>// Consumidor ingênuo: requeue=true
+@RabbitListener(queues = "pedidos.faturar")
+public void consumir(Mensagem m) {
+    // se lançar RuntimeException:
+    // RabbitMQ dá basic.nack(requeue=true)
+    // Mensagem volta instantaneamente para a fila
+    // Loop infinito consome 100% de CPU e I/O!
+    processar(m); 
+}</code></pre></div>
+          <div class="depois"><div class="lab">Padrão resiliente — retry limitado + DLQ</div><pre><code># application.yml
+spring.rabbitmq.listener.simple:
+  prefetch: 20  # protege a memória do worker
+  retry:
+    enabled: true
+    max-attempts: 3
+    initial-interval: 1000ms
+    multiplier: 2.0
+  default-requeue-rejected: false # manda para DLQ!</code></pre></div>
+        </div>
+        <div class="gotcha"><b>Sinais no War Room para matar a charada</b><ul><li>Abra o painel do RabbitMQ: se a taxa de <em>requeue / deliver / redeliver</em> estiver num platô de milhares por segundo com contagem de mensagens estável, há uma poison pill em loop.</li><li>Nunca use <code class="i">requeue = true</code> manual em catch genérico. Se o erro for permanente (dados inválidos, JSON corrompido), encaminhe imediatamente para a Dead Letter Queue (DLQ).</li><li>Use Dead Letter Exchange com uma fila separada de parking lot e alertas configurados: a fila nunca deve ter mensagens sem um time de engenharia investigando.</li></ul></div>
+        <div class="prova"><div class="lab"><b>Pratique agora</b>Crie uma fila com DLX configurada. Envie um payload inválido forçando exceção. Configure 3 retries e comprove que na 3ª tentativa a mensagem foi parar na DLQ e a fila principal voltou a zero.</div><div><b>Prova de domínio</b>Você explica a diferença entre erro transitório e definitivo, configura prefetch e projeta o ciclo de vida de mensagens venenosas com DLX e parking lot.</div></div>
+        <button class="done" type="button" data-k="j3">marcar dominado</button>
+      </article>
+    </section>
+
     <footer class="foot">
       <p>Conceitos de Backend completo · setembro de 2026 · reúne num só documento as anotações avulsas de dúvida que estavam espalhadas pelo vault, em tema Dracula. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code> e <code class="i">Mensageria e RabbitMQ completo</code>. Regra de ouro: dúvida nova entra <b>aqui</b>, na parte certa e no formato — nunca como arquivo novo solto.</p>
     </footer>
@@ -1126,7 +1394,12 @@ var T=[
  {t:"Ciclo de aprendizado",x:"não pare no vídeo",oq:"Ler o nó → ver um vídeo curto → confirmar na documentação → reproduzir num projeto pequeno → escrever uma nota atômica → usar o modo teste.",ps:"Este documento nasceu de dúvidas suas viradas em HTML. O ciclo é para que a próxima dúvida vire nota estruturada em vez de arquivo solto.",cf:"Toda dúvida nova entra aqui: escolha a parte, acrescente o tópico no mesmo formato — direto, analogia, como surgiu, armadilhas, prova de domínio. O documento é o lugar canônico; nota avulsa espalha de novo.",ex:"# quando bater uma dúvida:\n# 1. resolva\n# 2. ache a parte deste documento\n# 3. acrescente o tópico no formato\n# 4. NÃO crie um HTML novo solto"},
  {t:"Canais & cursos PT-BR",x:"onde ver",oq:"Recursos reais em português para backend, dados, segurança e operação.",ps:"Construir o mapa mental no seu idioma antes de encarar a documentação oficial.",cf:"Full Cycle (Wesley Willians) para arquitetura e sistemas distribuídos; Fabrício Veronez e LINUXtips para operação e containers; Rodrigo Branas e Michelli Brito para Java e Spring; Dev Superior para fundamentos. Para banco: canais de PostgreSQL em PT-BR e a documentação oficial, que é excelente.",ex:"# arquitetura/distribuídos: Full Cycle\n# operação/containers: Veronez, LINUXtips\n# Java/Spring: Branas, Michelli Brito\n# segurança: OWASP (em inglês, vale o esforço)"},
  {t:"Como pesquisar",x:"achar a resposta",oq:"Busque pelo nome exato do mecanismo, restrito à documentação oficial. Para erro, cole a mensagem entre aspas sem os seus identificadores.",ps:"Metade da competência é saber o nome da coisa — com ele, a resposta vem em minutos.",cf:"Para banco: EXPLAIN antes de pesquisar. Para segurança: OWASP Top 10 é o índice de tudo que costuma dar errado. Para concorrência: descreva o cenário de duas execuções simultâneas, não o sintoma.",ex:"site:postgresql.org index composite order\n\"SELECT FOR UPDATE\" lock contention\nOWASP broken access control"},
- {t:"Praticar: o laboratório do estoque",x:"o exercício que junta tudo",oq:"Um projeto pequeno que exercita quase toda esta trilha: uma API que vende o último item do estoque.",ps:"Projeto real fixa mais que dez tutoriais — e cada etapa vira um tópico aqui.",cf:"(1) Faça a versão ingênua e prove a race condition com duas requisições simultâneas; (2) corrija com UPDATE condicional; (3) refaça com lock otimista e depois pessimista, comparando; (4) adicione idempotency key; (5) adicione índice e olhe o EXPLAIN; (6) proteja com rate limit e disjuntor; (7) adicione autenticação e a checagem de posse do recurso.",ex:"# prove a race condition:\nab -n 2 -c 2 -p pedido.json \\\n   http://localhost:8080/comprar\n# estoque 1 → vendeu 2? achou o bug.",star:true}
+  {t:"Praticar: o laboratório do estoque",x:"o exercício que junta tudo",oq:"Um projeto pequeno que exercita quase toda esta trilha: uma API que vende o último item do estoque.",ps:"Projeto real fixa mais que dez tutoriais — e cada etapa vira um tópico aqui.",cf:"(1) Faça a versão ingênua e prove a race condition com duas requisições simultâneas; (2) corrija com UPDATE condicional; (3) refaça com lock otimista e depois pessimista, comparando; (4) adicione idempotency key; (5) adicione índice e olhe o EXPLAIN; (6) proteja com rate limit e disjuntor; (7) adicione autenticação e a checagem de posse do recurso.",ex:"# prove a race condition:\nab -n 2 -c 2 -p pedido.json \\\n   http://localhost:8080/comprar\n# estoque 1 → vendeu 2? achou o bug.",star:true}
+]},
+{g:"10",n:"War Room & Incidentes",s:"três desastres reais e como desatar os nós sob fogo",c:"var(--rose)",cs:"var(--rose-soft)",items:[
+  {t:"OOMKilled fantasma",x:"exit 137 sem OOM no Java",oq:"Pod morre com ExitCode 137 e OOMKilled=true, mas a JVM não lançou OutOfMemoryError. O Linux cgroup matou o processo por excesso de memória Off-Heap (Metaspace, stacks, buffers).",ps:"Evitar crashloop silencioso de contêineres e dimensionar memória nativa além do -Xmx.",cf:"A memória total do container = Heap + Metaspace + (Threads × Stack) + Direct Buffers + GC overhead. Limitar só o Heap com -Xmx deixa a porta aberta para o Kernel OOM-Killer.",ex:"# Flags recomendadas:\njava -XX:MaxRAMPercentage=70.0 \\\n     -XX:+UseContainerSupport -Xss512k -jar app.jar"},
+  {t:"Asfixia do HikariCP",x:"HTTP lento dentro de @Transactional",oq:"Chamada HTTP externa dentro de @Transactional segura conexão JDBC ociosamente por segundos; sob carga modesta, o pool esgota e a aplicação inteira trava.",ps:"Evitar Connection Starvation e cascata de timeouts HTTP 500 no checkout.",cf:"Regra sagrada: zero chamadas externas de rede dentro de métodos @Transactional. Use transação estrita apenas para gravação no banco e Circuit Breakers.",ex:"// ERRADO: conexão fica presa no HTTP\n@Transactional void pagar() {\n  http.postAntifraude(); db.gravar();\n}\n// CERTO: HTTP fora da transação"},
+  {t:"Avalanche do RabbitMQ",x:"unacked messages e loop de requeue",oq:"Consumidor falha com exceção inesperada e faz basic.nack com requeue=true; a mensagem volta imediatamente para a fila, entra em loop infinito e explode a memória do broker.",ps:"Proteger o broker contra veneno de mensagens malformadas e travamento de publishers.",cf:"Sempre use prefetch_count conservador (10-50), Dead Letter Exchange (DLX) com teto de retries e parking lot. Nunca dê requeue infinito sem backoff.",ex:"# Spring AMQP:\nspring.rabbitmq.listener.simple.prefetch=20\nspring.rabbitmq.listener.simple.retry.enabled=true\nspring.rabbitmq.listener.simple.retry.max-attempts=3"}
 ]}
 ];
 
@@ -1142,7 +1415,7 @@ flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]
 var KEYT="conceitos-backend-completo-CL-trilha-v1";
 var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
 var track=document.getElementById("track"),lg=document.getElementById("lg");
-navHead("A trilha · 9 grupos");
+navHead("A trilha · 10 grupos");
 T.forEach(function(g,gi){
   var sec=document.createElement("section");
   sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
@@ -1220,7 +1493,7 @@ mark.addEventListener("click",function(){
 /* ================== CONTEÚDO (tópicos profundos) ================== */
 var parts=[].slice.call(document.querySelectorAll("section.part"));
 var entries=[];
-navHead("O conteúdo · 9 partes");
+navHead("O conteúdo · 10 partes");
 parts.forEach(function(sec){
   var num=sec.querySelector(".ph .num").textContent.trim();
   var h2=sec.querySelector(".ph h2").textContent;
@@ -1392,7 +1665,7 @@ figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in 
 .dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
 figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
 figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
-figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor)}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
 figure.dg.in .pulse.gen{animation:none;opacity:0}
 figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 @keyframes dgFlow{to{stroke-dashoffset:-27}}
@@ -1468,16 +1741,17 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       mo.setAttribute("path",d);
       mo.setAttribute("calcMode","linear");
       mo.setAttribute("begin","indefinite");
-      if(ciclo){
-        mo.setAttribute("dur","5.2s"); mo.setAttribute("repeatCount","indefinite");
-      }else{
-        mo.setAttribute("dur","2.2s"); mo.setAttribute("repeatCount","1"); mo.setAttribute("fill","freeze");
-        var fade=document.createElementNS(NS,"animate");
-        fade.setAttribute("attributeName","opacity"); fade.setAttribute("begin","indefinite");
-        fade.setAttribute("dur","2.2s"); fade.setAttribute("fill","freeze");
-        fade.setAttribute("values","1;1;0"); fade.setAttribute("keyTimes","0;0.82;1");
-        c.appendChild(fade); wrap.__fade=fade;
-      }
+      var dur = ciclo ? "5.2s" : (2.8 + gi * 0.35).toFixed(2) + "s";
+      mo.setAttribute("dur", dur);
+      mo.setAttribute("repeatCount", "indefinite");
+      var fade = document.createElementNS(NS, "animate");
+      fade.setAttribute("attributeName", "opacity");
+      fade.setAttribute("begin", "indefinite");
+      fade.setAttribute("dur", dur);
+      fade.setAttribute("repeatCount", "indefinite");
+      fade.setAttribute("values", "0;1;1;0");
+      fade.setAttribute("keyTimes", "0;0.12;0.88;1");
+      c.appendChild(fade); wrap.__fade = fade;
       c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
       wrap.__mo=mo;
     });
@@ -1514,6 +1788,101 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
       }
     }
   }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+<script>
+// War Room Interactive Simulator
+(function(){
+  var lab=document.getElementById("warLab");
+  if(!lab)return;
+  var nodes=[
+    document.getElementById("wn1"),
+    document.getElementById("wn2"),
+    document.getElementById("wn3"),
+    document.getElementById("wn4"),
+    document.getElementById("wn5")
+  ];
+  var hud=document.getElementById("warHud");
+  var btn1=document.getElementById("btnWarInc1");
+  var btn2=document.getElementById("btnWarInc2");
+  var btn3=document.getElementById("btnWarInc3");
+  var btnReset=document.getElementById("btnWarReset");
+  var timer=null;
+
+  function clearState(){
+    if(timer)clearTimeout(timer);
+    nodes.forEach(function(n){
+      if(!n)return;
+      n.className="wl-node";
+    });
+  }
+
+  function setHud(lines){
+    if(!hud)return;
+    hud.innerHTML=lines.map(function(l){
+      return '<div class="wh-l '+(l.cls||"wh-info")+'">'+l.txt+'</div>';
+    }).join("");
+    hud.scrollTop=hud.scrollHeight;
+  }
+
+  function runScenario(steps){
+    clearState();
+    var idx=0;
+    function next(){
+      if(idx>0 && steps[idx-1]){
+        var prev=steps[idx-1];
+        if(nodes[prev.node]){
+          nodes[prev.node].classList.remove("active");
+          nodes[prev.node].classList.add(prev.status||"ok");
+        }
+      }
+      if(idx<steps.length){
+        var cur=steps[idx];
+        if(nodes[cur.node]){
+          nodes[cur.node].classList.add("active");
+        }
+        setHud(cur.logs);
+        idx++;
+        timer=setTimeout(next, cur.delay||800);
+      }
+    }
+    next();
+  }
+
+  if(btn1) btn1.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"wh-info",txt:"[K8s Pod] orders-api alocado com spec.resources.limits.memory: 1Gi (1024MB)"}], delay:700},
+      {node:1, logs:[{cls:"wh-info",txt:"[JVM Launch] Flags: -Xmx768m. Heap sob controle com 420MB em uso (GC G1 normal)."}], delay:750},
+      {node:2, status:"warn", logs:[{cls:"wh-warn",txt:"[Off-Heap Leak] WebClient/Netty sob carga aloca 310MB em Direct ByteBuffers + 190MB Metaspace + 85MB Thread Stacks."}], delay:850},
+      {node:3, status:"err", logs:[{cls:"wh-err",txt:"☠️ [OOM-KILLER] Memória RSS do processo atinge 1035MB > 1024MB. Linux Kernel envia SIGKILL (9). Pod morre com Exit Code 137 sem Heap Dump!"}], delay:900},
+      {node:4, status:"ok", logs:[{cls:"wh-ok",txt:"✅ [Fix War Room] Limitar -XX:MaxDirectMemorySize=256m no Dockerfile e conceder teto de segurança no container (Limit: 1.4Gi) para suportar Off-Heap."}], delay:500}
+    ]);
+  });
+
+  if(btn2) btn2.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"wh-info",txt:"[HTTP Request] POST /checkout aciona método orquestrador anotado com @Transactional."}], delay:700},
+      {node:1, logs:[{cls:"wh-info",txt:"[HikariCP] Spring obtém conexão JDBC ativa do pool (1/10 ocupada) antes de qualquer persistência."}], delay:750},
+      {node:2, status:"warn", logs:[{cls:"wh-warn",txt:"[I/O Bloqueante] Código chama WebClient para gateway externo de pagamento dentro da transação. Gateway sofre spike e responde em 4.5s."}], delay:850},
+      {node:3, status:"err", logs:[{cls:"wh-err",txt:"💥 [Pool Starvation] 10 requisições concorrentes seguram as 10 conexões do pool em espera de rede ociosa. Novas requisições tomam ConnectionTimeoutException!"}], delay:900},
+      {node:4, status:"ok", logs:[{cls:"wh-ok",txt:"✅ [Fix War Room] Nunca faça chamadas de rede dentro de @Transactional! Chame o gateway em método sem transação; abra a transação apenas no save() do banco."}], delay:500}
+    ]);
+  });
+
+  if(btn3) btn3.addEventListener("click",function(){
+    runScenario([
+      {node:0, logs:[{cls:"wh-info",txt:"[Producer] Serviço publica mensagem na fila 'pedidos.v1' com campo numérico contendo string corrupta."}], delay:700},
+      {node:1, logs:[{cls:"wh-info",txt:"[Rabbit Consumer] @RabbitListener consome a mensagem e entrega ao MessageConverter (Jackson ObjectMapper)."}], delay:750},
+      {node:2, status:"err", logs:[{cls:"wh-err",txt:"[Deserialization Failure] Jackson lança InvalidFormatException. Falha não recuperada na borda do listener."}], delay:800},
+      {node:3, status:"err", logs:[{cls:"wh-err",txt:"⚠️ [Poison Pill Loop] Spring AMQP padrão faz reject com requeue=true. Mensagem volta ao topo da fila instantaneamente: 9.000 requeues/segundo e 100% de CPU!"}], delay:900},
+      {node:4, status:"ok", logs:[{cls:"wh-ok",txt:"✅ [Fix War Room] Configurar defaultRequeueRejected=false e plugar DeadLetterExchangeRecoverer para desviar erros fatais para 'pedidos.dlq' com alerta."}], delay:500}
+    ]);
+  });
+
+  if(btnReset) btnReset.addEventListener("click",function(){
+    clearState();
+    setHud([{cls:"wh-info",txt:"[War Room Aberta] Selecione um incidente para iniciar a telemetria em tempo real..."}]);
+  });
 })();
 </script>
 </body>

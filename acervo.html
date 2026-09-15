@@ -16,9 +16,10 @@
   --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
   --line:#44475a66;--line2:#44475a;
   --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
-  --ease:cubic-bezier(.22,1,.36,1);
+  --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
+button:active,.btn-act:active,.island a:active{transform:scale(.97)}
 html{scroll-behavior:smooth}
 body{margin:0;min-width:320px;color:var(--ink);
   background:radial-gradient(ellipse at 6% 0,#bd93f91f,transparent 36rem),radial-gradient(ellipse at 92% 4%,#8be9fd14,transparent 38rem),var(--bg);
@@ -126,16 +127,16 @@ p.sub{color:var(--muted);font-size:.84rem;margin:0 0 18px;max-width:78ch;line-he
 .st{position:relative;display:block;text-decoration:none;padding:18px 17px 20px;border-radius:20px;
   border:1px solid color-mix(in srgb,var(--c) 30%,transparent);
   background:linear-gradient(155deg,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
-  transition:transform .45s var(--ease),border-color .45s var(--ease)}
-.st:hover{transform:translateY(-5px);border-color:var(--c)}
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+.st:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 16px 36px #00000066, 0 0 24px color-mix(in srgb,var(--c) 20%,transparent)}
 .st u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
 .st b{display:block;margin:12px 0 6px;font:500 1.12rem/1.15 Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
 .st span{color:var(--muted);font-size:.78rem;line-height:1.5}
 
 .ord{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:18px}
 .ord a{display:block;text-decoration:none;padding:17px 19px;border-radius:18px;border:1px solid var(--line);
-  background:#ffffff05;transition:border-color .4s var(--ease),transform .4s var(--ease)}
-.ord a:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--c) 60%,transparent)}
+  background:#ffffff05;transition:border-color .35s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease)}
+.ord a:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--c) 60%,transparent);box-shadow:0 14px 30px #00000055, 0 0 20px color-mix(in srgb,var(--c) 16%,transparent)}
 .ord u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
 .ord b{display:block;margin:9px 0 6px;font:500 1.1rem Georgia,serif;letter-spacing:-.03em}
 .ord span{color:var(--muted);font-size:.8rem;line-height:1.5}
@@ -144,9 +145,9 @@ p.sub{color:var(--muted);font-size:.84rem;margin:0 0 18px;max-width:78ch;line-he
   position:relative;display:flex;align-items:center;gap:18px;margin-top:clamp(44px,6vh,64px);padding:22px;
   overflow:hidden;text-decoration:none;border:1px solid color-mix(in srgb,var(--ob) 30%,transparent);border-radius:24px;
   background:linear-gradient(120deg,color-mix(in srgb,var(--ob) 8%,transparent),transparent 62%),var(--panel);
-  transition:border-color .5s var(--ease),transform .5s var(--ease)}
+  transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
 .obs+.obs{margin-top:14px}
-.obs:hover{border-color:var(--ob);transform:translateY(-3px)}
+.obs:hover{border-color:var(--ob);transform:translateY(-4px);box-shadow:0 18px 40px #00000066, 0 0 26px color-mix(in srgb,var(--ob) 16%,transparent)}
 .obs:before{content:"";position:absolute;right:-40px;bottom:-52px;width:132px;height:132px;border-radius:42px;
   background:color-mix(in srgb,var(--ob) 15%,transparent);transform:rotate(22deg);transition:transform .5s var(--ease)}
 .obs:hover:before{transform:rotate(40deg) scale(1.12)}
@@ -180,15 +181,50 @@ footer a{color:var(--purple)}
   *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
   .pkt{display:none}.rise{opacity:1;transform:none}
 }
+
+/* ---------- Command Palette & Backup Modals ---------- */
+.palette-scrim{position:fixed;inset:0;z-index:100;background:#0d0e14d9;backdrop-filter:blur(8px);display:grid;place-items:start center;padding:clamp(20px,10vh,80px) 16px 20px;opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.palette-scrim.open{opacity:1;pointer-events:auto}
+.palette-box{width:min(660px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:20px;box-shadow:0 24px 60px #000000a6;overflow:hidden;transform:translateY(-10px) scale(.98);transition:transform .24s var(--ease)}
+.palette-scrim.open .palette-box{transform:none}
+.palette-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);background:#1e1f29}
+.palette-head i{font-style:normal;color:var(--purple);font-size:1.1rem}
+.palette-input{flex:1;background:transparent;border:0;outline:none;color:var(--ink);font:500 1rem "Inter",sans-serif}
+.palette-input::placeholder{color:var(--soft)}
+.palette-kbd{font:700 .65rem "Cascadia Code",monospace;color:var(--muted);background:#282a36;padding:4px 8px;border-radius:6px;border:1px solid var(--line2)}
+.palette-results{max-height:min(420px,60vh);overflow-y:auto;padding:8px 0}
+.palette-item{display:flex;align-items:center;gap:12px;padding:11px 20px;text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
+.palette-item:hover,.palette-item.active{background:#ffffff0f;border-left-color:var(--purple)}
+.palette-item .p-tag{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.palette-item .p-text{flex:1;min-width:0}
+.palette-item .p-title{font:600 .86rem "Inter",sans-serif;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-item .p-sub{font:400 .74rem Georgia,serif;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-empty{padding:28px 20px;text-align:center;color:var(--soft);font-style:italic;font-size:.88rem}
+
+/* Botões do island */
+.island button.btn-act{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 13px;font:600 .74rem "Inter",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease)}
+.island button.btn-act:hover{background:#ffffff0f;color:var(--ink);border-color:var(--purple)}
+.island button.btn-act kbd{font:700 .6rem "Cascadia Code",monospace;background:#ffffff14;padding:2px 5px;border-radius:4px;border:1px solid var(--line2)}
+
+/* Backup card/modal */
+.backup-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(500px,100%)}
+.backup-card h3{margin:0 0 8px;font:600 1.25rem Georgia,serif;color:var(--ink)}
+.backup-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);line-height:1.55}
+.backup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.backup-actions button{flex:1 1 140px;border-radius:12px;padding:12px 14px;border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.backup-actions button.primary{border-color:var(--purple);background:color-mix(in srgb,var(--purple) 18%,transparent);color:var(--purple)}
+.backup-actions button:hover{filter:brightness(1.2)}
 </style>
 </head>
 <body>
 
 <nav class="island">
   <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <button type="button" class="btn-act" id="btnPalette" title="Buscar no acervo completo (Ctrl+K)">🔍 Buscar <kbd>Ctrl+K</kbd></button>
+  <button type="button" class="btn-act" id="btnBackup" title="Fazer backup ou restaurar dados">💾 Backup</button>
   <a href="index.html">hoje</a>
   <a href="acervo.html" class="on">o acervo</a>
-  <a href="cronograma.html" class="hide">cronograma →</a>
+  <a href="projetos.html">projetos</a>
 </nav>
 
 <main class="wrap">
@@ -281,6 +317,24 @@ footer a{color:var(--purple)}
     </div>
   </a>
 
+  <a class="obs" href="ingles.html" style="--ob:var(--cyan)">
+    <div class="mark">EN</div>
+    <div class="t">
+      <span class="tag">obs · o idioma técnico</span>
+      <h3>Inglês técnico completo</h3>
+      <p>O décimo segundo faz os outros treze renderem: toda fonte primária vive em inglês. Calibrado para quem lê com esforço e tem escuta fraca, prioriza a entrada antes da saída — CEFR, EF SET, input compreensível e a regra dos 95%, a escada da legenda, vocabulário por frequência, repetição espaçada e shadowing — para então destravar o code review, a mensagem assíncrona e a reunião ao vivo sob pressão.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="oratoria.html" style="--ob:var(--gold)">
+    <div class="mark">🎙</div>
+    <div class="t">
+      <span class="tag">obs · a voz e a decisão</span>
+      <h3>Oratória e comunicação</h3>
+      <p>O décimo terceiro é a camada que faz os outros pagarem: ensina a defender uma decisão técnica na ordem certa (restrição, opções, escolha e preço). Com evidência: reavaliação de ansiedade como empolgação, exposição gradual, condução de postmortems sem culpados (<i>blameless</i>), a entrevista de System Design como prova oral e conversas difíceis com o modelo SBI.</p>
+    </div>
+  </a>
+
   <a class="obs" href="projetos.html" style="--ob:var(--lime)">
     <div class="mark">⌘</div>
     <div class="t">
@@ -323,10 +377,10 @@ var DOCS=[
   desc:"Da fila à operação confiável: o modelo AMQP, os quatro tipos de exchange, publisher confirms, ack manual e a janela commit/ack, prefetch, retry com DLQ, idempotência, outbox e saga, Spring AMQP, quorum queues e Kafka.",
   tags:["AMQP","DLQ","idempotência"],
   chaves:"mensageria mensagem rabbitmq amqp exchange direct topic fanout headers routing key fila queue binding publisher confirm ack nack manual prefetch qos retry dlq dead letter idempotência outbox saga spring amqp listener quorum queue kafka partição offset ordem entrega duplicada"},
- {n:"07",nome:"Conceitos de Backend completo",curto:"Conceitos de Backend",file:"conceitos-backend.html",cor:"var(--gold)",hex:"#f1fa8c",nos:57,top:25,
+ {n:"07",nome:"Conceitos de Backend completo",curto:"Conceitos de Backend",file:"conceitos-backend.html",cor:"var(--gold)",hex:"#f1fa8c",nos:60,top:28,
   desc:"O caderno de dúvidas, fora da sequência: gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback.",
   tags:["locks","JWT","índices"],
-  chaves:"gargalo escala vertical horizontal race condition condição de corrida lock pessimista otimista distribuído idempotência rate limit disjuntor circuit breaker índice index join sql query n+1 sessão cookie jwt token oauth2 pkce autenticação autorização upload arquivo observabilidade log métrica trace deploy rollback blue green canário cache"},
+  chaves:"gargalo escala vertical horizontal race condition condição de corrida lock pessimista otimista distribuído idempotência rate limit disjuntor circuit breaker índice index join sql query n+1 sessão cookie jwt token oauth2 pkce autenticação autorização upload arquivo observabilidade log métrica trace deploy rollback blue green canário cache war room oomkilled exit 137 connection starvation poison pill"},
  {n:"08",nome:"Biblioteca completa",curto:"Biblioteca",file:"biblioteca.html",cor:"var(--purple)",hex:"#bd93f9",nos:38,top:17,
   desc:"A estante: os cinco livros que formaram o critério, num documento só. Fundamentals of Software Architecture, The Hard Parts, Learning DDD, System Design Interview e Entendendo Algoritmos — com a síntese de cada um, a ordem de leitura e a tabela de onde os autores discordam.",
   tags:["trade-off","quantum","Big-O"],
@@ -385,6 +439,7 @@ var ORD=[
  {u:"em paralelo, desde já",b:"Git completo",s:"Ferramenta de todo dia. O marco 04 — desfazer e recuperar — é o que muda a relação com a ferramenta; faça esse primeiro.",file:"git.html",cor:"var(--pink)"},
  {u:"em paralelo, desde já",b:"Linux e terminal",s:"É o térreo: todos os outros pressupõem terminal. Não precisa terminar antes de começar o resto — mas quanto antes entrar, menos coisa fica inexplicada.",file:"linux.html",cor:"var(--orange)"},
  {u:"depois dos seis",b:"System Design completo",s:"Faz sentido quando você já tem os mecanismos na cabeça: aqui eles aparecem sendo escolhidos sob restrição e número.",file:"system-design.html",cor:"var(--lime)"},
+ {u:"domingo, projeto próprio",b:"Inteligência Artificial completo",s:"O documento de IA é para domingo: do token ao agente, RAG, eval e como construir com IA sem se perder.",file:"ia.html",cor:"var(--purple)"},
  {u:"do começo ao fim",b:"Laboratório de projetos",s:"A bancada não espera a fila terminar: cada documento lido pede o projeto correspondente na mesma semana, senão vira reconhecimento.",file:"projetos.html",cor:"var(--lime)"}
 ];
 
@@ -512,6 +567,257 @@ q("find").addEventListener("input",function(){
   q("findn").textContent=t?(n===1?"1 documento":n+" documentos"):"";
   q("none").classList.toggle("on",!!t&&n===0);
 });
+
+/* ================= BACKUP & RESTAURAÇÃO JSON ================= */
+var BKP_MODAL = q("backupModal");
+function abrirBackup(){
+  if(!BKP_MODAL) return;
+  BKP_MODAL.hidden = false;
+  BKP_MODAL.classList.add("open");
+  document.documentElement.style.overflow = "hidden";
+}
+function fecharBackup(){
+  if(!BKP_MODAL) return;
+  BKP_MODAL.classList.remove("open");
+  BKP_MODAL.hidden = true;
+  document.documentElement.style.overflow = "";
+}
+
+var btnBackup = q("btnBackup");
+if(btnBackup) btnBackup.addEventListener("click", abrirBackup);
+var btnFecharBkp = q("btnFecharBackup");
+if(btnFecharBkp) btnFecharBkp.addEventListener("click", fecharBackup);
+if(BKP_MODAL){
+  BKP_MODAL.addEventListener("click", function(e){
+    if(e.target === BKP_MODAL) fecharBackup();
+  });
+}
+
+var btnExportar = q("btnExportarJson");
+if(btnExportar){
+  btnExportar.addEventListener("click", function(){
+    var backup = {
+      versao: 1,
+      exportadoEm: new Date().toISOString(),
+      dados: {}
+    };
+    for(var i = 0; i < localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && (k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-"))){
+        backup.dados[k] = localStorage.getItem(k);
+      }
+    }
+    var blob = new Blob([JSON.stringify(backup, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    var d = new Date();
+    a.download = "estudos-backup-" + d.toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    var msg = q("backupMsg");
+    if(msg){
+      msg.textContent = "✓ Backup exportado com sucesso!";
+      msg.style.display = "block";
+      setTimeout(function(){ msg.style.display = "none"; }, 4000);
+    }
+  });
+}
+
+var btnRestaurar = q("btnRestaurarJson");
+var fileInput = q("backupFileInput");
+if(btnRestaurar && fileInput){
+  btnRestaurar.addEventListener("click", function(){ fileInput.click(); });
+  fileInput.addEventListener("change", function(){
+    if(!fileInput.files || !fileInput.files[0]) return;
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        var json = JSON.parse(e.target.result);
+        if(!json || !json.dados){
+          alert("Arquivo de backup inválido.");
+          return;
+        }
+        var count = 0;
+        for(var k in json.dados){
+          if(json.dados.hasOwnProperty(k)){
+            localStorage.setItem(k, json.dados[k]);
+            count++;
+          }
+        }
+        var msg = q("backupMsg");
+        if(msg){
+          msg.textContent = "✓ " + count + " chaves restauradas! Atualizando...";
+          msg.style.display = "block";
+        }
+        setTimeout(function(){ location.reload(); }, 1200);
+      } catch(err){
+        alert("Erro ao ler arquivo JSON: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+/* ================= UNIVERSAL COMMAND PALETTE (Ctrl+K) ================= */
+var PALETTE_DATA = [
+  {t:"Java completo",sub:"Plataforma, JMM, concorrência, JDBC sem ORM e JVM",cat:"DOC",url:"java.html",cor:"var(--cyan)"},
+  {t:"Spring completo",sub:"IoC, proxies CGLIB, @Transactional, MVC e Actuator",cat:"DOC",url:"spring.html",cor:"var(--purple)"},
+  {t:"Arquitetura completa",sub:"SOLID, Conway, DDD, Saga, consistência e ADRs",cat:"DOC",url:"arquitetura.html",cor:"var(--gold)"},
+  {t:"Docker e Kubernetes completo",sub:"Namespaces, cgroups, PID 1, probes, rollout e HPA",cat:"DOC",url:"docker-kubernetes.html",cor:"var(--lime)"},
+  {t:"Nuvem completo",sub:"Nuvem agnóstica: AWS, Azure, GCP, FinOps e redes",cat:"DOC",url:"nuvem.html",cor:"var(--orange)"},
+  {t:"Mensageria e RabbitMQ completo",sub:"AMQP, confirms, ack, prefetch, DLQ, outbox e Kafka",cat:"DOC",url:"mensageria.html",cor:"var(--pink)"},
+  {t:"Conceitos de Backend completo",sub:"Locks, race conditions, índices, JWT e War Room",cat:"DOC",url:"conceitos-backend.html",cor:"var(--gold)"},
+  {t:"Biblioteca completa",sub:"5 livros fundamentais de arquitetura e algoritmos",cat:"DOC",url:"biblioteca.html",cor:"var(--purple)"},
+  {t:"System Design completo",sub:"Little's Law, sharding, chaves, Bloom filter e SLAs",cat:"DOC",url:"system-design.html",cor:"var(--lime)"},
+  {t:"Linux e terminal completo",sub:"Processos, sinais, descritores, pipes e systemd",cat:"DOC",url:"linux.html",cor:"var(--orange)"},
+  {t:"Git completo",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"DOC",url:"git.html",cor:"var(--pink)"},
+  {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"DOC",url:"ingles.html",cor:"var(--cyan)"},
+  {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"DOC",url:"oratoria.html",cor:"var(--gold)"},
+  {t:"Inteligência Artificial completo",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
+  {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"DOC",url:"projetos.html",cor:"var(--lime)"},
+  {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"mensageria.html#g2",cor:"var(--pink)"},
+  {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"conceitos-backend.html#j2",cor:"var(--rose)"},
+  {t:"OOMKilled Fantasma (Exit 137)",sub:"Limite do container cgroup vs memória Off-Heap JVM",cat:"WAR ROOM",url:"conceitos-backend.html#j1",cor:"var(--rose)"},
+  {t:"Avalanche e Poison Pill no RabbitMQ",sub:"Requeue infinito, prefetch e Dead Letter Queue",cat:"WAR ROOM",url:"conceitos-backend.html#j3",cor:"var(--rose)"},
+  {t:"Pool de Conexões e HPA no K8s",sub:"Multiplicação perigosa de conexões sob autoescalonamento",cat:"PONTE",url:"java.html#g2",cor:"var(--orange)"},
+  {t:"PID 1, Sinais POSIX e Graceful Shutdown",sub:"Forma shell vs exec e terminação limpa no Kubernetes",cat:"PONTE",url:"docker-kubernetes.html#b3",cor:"var(--orange)"},
+  {t:"Java Memory Model & Concorrência",sub:"Volatile, happens-before, atomics e Virtual Threads",cat:"TEMA",url:"java.html#p9",cor:"var(--cyan)"},
+  {t:"Proxies Spring, CGLIB e Self-Invocation",sub:"Por que @Transactional falha quando chamado internamente",cat:"TEMA",url:"spring.html#c4",cor:"var(--purple)"},
+  {t:"Locks Pessimista, Otimista e Distribuído",sub:"SELECT FOR UPDATE, @Version e Redis Redlock",cat:"TEMA",url:"conceitos-backend.html#p3",cor:"var(--gold)"},
+  {t:"Saga e Transações Compensatórias",sub:"Orquestração vs Coreografia e consistência eventual",cat:"TEMA",url:"arquitetura.html#f3",cor:"var(--gold)"},
+  {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"ia.html#c1",cor:"var(--purple)"},
+  {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"ia.html#d1",cor:"var(--purple)"},
+  {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"ia.html#d2",cor:"var(--purple)"},
+  {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P05 · Checkout com Idempotência e Outbox",sub:"Spring Boot, PostgreSQL e RabbitMQ",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P16 · Agente RAG com Tool Calling",sub:"Spring AI / LangChain4j e banco vetorial",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"}
+];
+
+var PALETTE_MODAL = q("paletteScrim");
+var PALETTE_INP = q("paletteInput");
+var PALETTE_RES = q("paletteResults");
+var palSelectedIndex = 0;
+var palFiltered = [];
+
+function abrirPaleta(){
+  if(!PALETTE_MODAL) return;
+  PALETTE_MODAL.hidden = false;
+  PALETTE_MODAL.classList.add("open");
+  document.documentElement.style.overflow = "hidden";
+  PALETTE_INP.value = "";
+  renderPaletaResults("");
+  setTimeout(function(){ PALETTE_INP.focus(); }, 50);
+}
+function fecharPaleta(){
+  if(!PALETTE_MODAL) return;
+  PALETTE_MODAL.classList.remove("open");
+  PALETTE_MODAL.hidden = true;
+  document.documentElement.style.overflow = "";
+}
+
+function renderPaletaResults(query){
+  var qNorm = query.toLowerCase().trim();
+  palFiltered = PALETTE_DATA.filter(function(item){
+    if(!qNorm) return true;
+    return item.t.toLowerCase().includes(qNorm) || item.sub.toLowerCase().includes(qNorm) || item.cat.toLowerCase().includes(qNorm);
+  });
+  palSelectedIndex = 0;
+  if(palFiltered.length === 0){
+    PALETTE_RES.innerHTML = '<div class="palette-empty">Nenhum resultado encontrado para "' + esc(query) + '".</div>';
+    return;
+  }
+  var html = "";
+  palFiltered.forEach(function(item, idx){
+    var activeClass = idx === 0 ? " active" : "";
+    html += '<a href="' + item.url + '" class="palette-item' + activeClass + '" data-idx="' + idx + '">'
+      + '<span class="p-tag" style="background:color-mix(in srgb,' + item.cor + ' 16%,transparent);color:' + item.cor + ';border:1px solid color-mix(in srgb,' + item.cor + ' 36%,transparent)">' + item.cat + '</span>'
+      + '<div class="p-text"><span class="p-title">' + esc(item.t) + '</span><span class="p-sub">' + esc(item.sub) + '</span></div>'
+      + '<span class="palette-kbd" style="font-size:.6rem">↵</span>'
+      + '</a>';
+  });
+  PALETTE_RES.innerHTML = html;
+}
+
+if(PALETTE_INP){
+  PALETTE_INP.addEventListener("input", function(){
+    renderPaletaResults(this.value);
+  });
+  PALETTE_INP.addEventListener("keydown", function(e){
+    if(!palFiltered.length) return;
+    var items = PALETTE_RES.querySelectorAll(".palette-item");
+    if(e.key === "ArrowDown"){
+      e.preventDefault();
+      palSelectedIndex = (palSelectedIndex + 1) % palFiltered.length;
+      items.forEach(function(el, i){ el.classList.toggle("active", i === palSelectedIndex); });
+      if(items[palSelectedIndex]) items[palSelectedIndex].scrollIntoView({block:"nearest"});
+    } else if(e.key === "ArrowUp"){
+      e.preventDefault();
+      palSelectedIndex = (palSelectedIndex - 1 + palFiltered.length) % palFiltered.length;
+      items.forEach(function(el, i){ el.classList.toggle("active", i === palSelectedIndex); });
+      if(items[palSelectedIndex]) items[palSelectedIndex].scrollIntoView({block:"nearest"});
+    } else if(e.key === "Enter"){
+      e.preventDefault();
+      if(palFiltered[palSelectedIndex]){
+        location.href = palFiltered[palSelectedIndex].url;
+      }
+    }
+  });
+}
+
+var btnPal = q("btnPalette");
+if(btnPal) btnPal.addEventListener("click", abrirPaleta);
+if(PALETTE_MODAL){
+  PALETTE_MODAL.addEventListener("click", function(e){
+    if(e.target === PALETTE_MODAL) fecharPaleta();
+  });
+}
+
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+    e.preventDefault();
+    if(PALETTE_MODAL && !PALETTE_MODAL.hidden) fecharPaleta();
+    else abrirPaleta();
+  } else if(e.key === "Escape"){
+    if(PALETTE_MODAL && !PALETTE_MODAL.hidden) fecharPaleta();
+    if(BKP_MODAL && !BKP_MODAL.hidden) fecharBackup();
+  }
+});
 </script>
+
+<!-- Modal da Paleta de Comandos -->
+<div class="palette-scrim" id="paletteScrim" hidden>
+  <div class="palette-box">
+    <div class="palette-head">
+      <i>⌘</i>
+      <input type="search" id="paletteInput" class="palette-input" placeholder="Buscar tópicos, arquivos ou projetos... (ex: outbox, hikari, kafka, jwt, r03)" autocomplete="off">
+      <span class="palette-kbd"><kbd>Esc</kbd> fechar</span>
+    </div>
+    <div class="palette-results" id="paletteResults"></div>
+  </div>
+</div>
+
+<!-- Modal de Backup e Restauração -->
+<div class="palette-scrim" id="backupModal" hidden>
+  <div class="backup-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <h3 style="margin:0 0 6px">Backup de Dados Locais</h3>
+      <button type="button" id="btnFecharBackup" style="background:none;border:0;color:var(--soft);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <p>Suas anotações, escolhas e dados ficam salvos localmente no navegador (<code class="mono" style="color:var(--teal)">localStorage</code>). Exporte um arquivo JSON para segurança ao limpar o cache ou trocar de máquina.</p>
+    <div class="backup-actions">
+      <button type="button" class="primary" id="btnExportarJson">⬇ Exportar JSON</button>
+      <button type="button" id="btnRestaurarJson">⬆ Restaurar JSON</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none">
+    </div>
+    <div id="backupMsg" style="margin-top:14px;font-size:.8rem;color:var(--teal);display:none"></div>
+  </div>
+</div>
+
 </body>
 </html>

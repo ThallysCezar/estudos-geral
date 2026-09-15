@@ -388,7 +388,7 @@
       rabbit:{label:"Spring + RabbitMQ",accent:"#ff79c6",glow:"#ff79c6"}
     };
 
-    /* Os oito documentos do acervo. Cada projeto aponta para os que explicam
+    /* Os documentos do acervo. Cada projeto aponta para os que explicam
        o que ele exercita — a bancada nunca fica solta da teoria. */
     var D = {
       java :["Java completo","java.html","Java"],
@@ -398,7 +398,11 @@
       nuvem:["Nuvem completo","nuvem.html","Nuvem"],
       msg  :["Mensageria e RabbitMQ completo","mensageria.html","Mensageria"],
       back :["Conceitos de backend completo","conceitos-backend.html","Backend"],
-      bib  :["Biblioteca completa","biblioteca.html","Biblioteca"]
+      bib  :["Biblioteca completa","biblioteca.html","Biblioteca"],
+      ia   :["Inteligência Artificial completo","ia.html","IA"],
+      sys  :["System Design completo","system-design.html","System Design"],
+      linux:["Linux e terminal completo","linux.html","Linux"],
+      git  :["Git completo","git.html","Git"]
     };
     var TEORIA = {
       J01:[["java","Records, imutabilidade e o que BigDecimal resolve que double não resolve"],["arq","Por que o domínio não pode conhecer nem o arquivo nem a CLI"]],
@@ -413,12 +417,12 @@
       C01:[["arq","Ports & adapters: onde a fronteira fica e quanto ela custa"],["nuvem","A matriz de tradução entre os cinco provedores"]],
       C02:[["nuvem","Configuração, segredo e identidade sem acoplar ao SDK"],["arq","Composition root e a regra de dependência"]],
       C03:[["k8s","Probes, requests/limits, rolling update e graceful shutdown"],["nuvem","12-factor: o que muda quando o runtime é gerenciado"]],
-      I01:[["spring","ChatClient, configuração tipada e teste de integração"],["back","Latência e cache num pipeline de várias etapas"]],
-      I02:[["spring","Records, Bean Validation e contrato de saída"],["back","Contrato e fallback quando a dependência é probabilística"]],
-      I03:[["bib","Como decidir sob incerteza — e por que uma métrica só esconde risco"],["back","Medição, percentis e detecção de regressão"]],
+      I01:[["ia","APIs generativas, ChatClient e fallback para modelos locais"],["spring","Configuração tipada e testes de integração com Testcontainers"],["back","Latência e cache num pipeline de várias etapas"]],
+      I02:[["ia","Prompt engineering, spec driven development e JSON Schema para record"],["spring","Records, Bean Validation e contrato de saída imutável"],["back","Contrato e fallback quando a dependência é probabilística"]],
+      I03:[["ia","Eval, LLM-as-a-judge, métricas de qualidade e mitigação de alucinação"],["bib","Como decidir sob incerteza — e por que uma métrica só esconde risco"],["back","Medição, percentis e detecção de regressão"]],
       R01:[["msg","Exchange, binding, routing key e a mensagem que some sem rota"],["arq","Coreografia: quem publica não conhece quem consome"]],
       R02:[["msg","Ack, prefetch, retry, DLX e o ciclo de dead letter"],["k8s","Por que o pool de conexões limita o HPA"]],
-      R03:[["msg","Outbox, confirms, inbox e por que exactly-once não existe sem escopo"],["arq","OrderFlow: o mesmo sistema atravessando os seis documentos"],["k8s","Operar o capstone em cluster local"],["back","Reconciliação: a consulta que prova consistência"]]
+      R03:[["msg","Outbox, confirms, inbox e por que exactly-once não existe sem escopo"],["arq","OrderFlow: o mesmo sistema atravessando os seis documentos"],["k8s","Operar o capstone em cluster local"],["back","Reconciliação: a consulta que prova consistência"],["ia","Agente ou classificador opcional sem quebrar a transação central"]]
     };
 
     /* Aquecimentos: menores que um projeto de propósito. Cada um isola uma
@@ -850,14 +854,11 @@
       });
       return parts.join("")+"</svg>";
     }
-    /* Onde está a teoria: a ponte entre a bancada e os oito documentos. */
+    /* Onde está a teoria: a ponte entre a bancada e os documentos do acervo. */
     function teoriaHtml(id){
       var refs=TEORIA[id]||[];
-      var head=id.charAt(0)==="I"
-        ? '<p class="gapnote">A oficina de IA é a única sem documento próprio no acervo — a lacuna é consciente. Os links abaixo cobrem a parte de engenharia (contrato, integração, medição), não o modelo em si.</p>'
-        : "";
-      if(!refs.length)return head+"<p>Ainda sem documento de teoria correspondente.</p>";
-      return head+'<div class="teoria">'+refs.map(function(r){
+      if(!refs.length)return "<p>Ainda sem documento de teoria correspondente.</p>";
+      return '<div class="teoria">'+refs.map(function(r){
         var d=D[r[0]];
         return '<a class="tlink" href="'+d[1]+'"><b>'+esc(d[0])+'</b><i aria-hidden="true">↗</i><span>'+esc(r[1])+'</span></a>';
       }).join("")+'</div>';

@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Formatador e Refinador de texto técnico para desenvolvedores com Google Gemini. 100% gratuito e chaves salvas localmente.">
+<meta name="color-scheme" content="dark">
+<title>Formatador & Refinador de Texto · Google Gemini</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 6L26 16L16 26L6 16Z' fill='%23bd93f9'/><path d='M16 10L22 16L16 22L10 16Z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1e1f29;
+  --bg2:#282a36;
+  --bg3:#21222c;
+  --card:#343746;
+  --card2:#2a2c3a;
+  --ink:#f8f8f2;
+  --ink2:#d6d6e0;
+  --muted:#9598aa;
+  --line:#44475a;
+  --line2:#6272a4;
+  --purple:#bd93f9;
+  --cyan:#8be9fd;
+  --lime:#50fa7b;
+  --orange:#ffb86c;
+  --red:#ff5555;
+  --pink:#ff79c6;
+  --ease:cubic-bezier(.16, 1, .3, 1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--ink);font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;align-items:center}
+
+.app-shell{width:100%;max-width:1240px;display:flex;flex-direction:column;gap:24px}
+
+/* Top Navigation Bar */
+.top-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.25);
+}
+.brand-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--ink);
+  font-weight:700;
+  font-size:.9rem;
+  letter-spacing:.05em;
+}
+.brand-link i{
+  font-style:normal;
+  color:var(--purple);
+  font-size:1.15rem;
+}
+.nav-links{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nav-btn{
+  text-decoration:none;
+  font-size:.78rem;
+  font-weight:600;
+  color:var(--muted);
+  padding:6px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:transparent;
+  transition:all .2s var(--ease);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.nav-btn:hover{color:var(--ink);background:rgba(255,255,255,0.05);border-color:var(--line2)}
+.nav-btn.primary{
+  color:var(--purple);
+  border-color:color-mix(in srgb,var(--purple) 40%,transparent);
+  background:color-mix(in srgb,var(--purple) 12%,transparent);
+}
+.nav-btn.primary:hover{background:color-mix(in srgb,var(--purple) 22%,transparent)}
+
+/* Header Hero */
+.hero{
+  background:radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--purple) 18%, transparent) 0%, var(--bg2) 75%);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:34px 32px 28px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 12px 32px rgba(0,0,0,0.3);
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  top:-40px;
+  right:-40px;
+  width:220px;
+  height:220px;
+  background:radial-gradient(circle, color-mix(in srgb,var(--cyan) 15%,transparent), transparent 70%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.hero-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 12px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--purple) 16%, transparent);
+  border:1px solid color-mix(in srgb, var(--purple) 35%, transparent);
+  color:var(--purple);
+  font:700 .68rem "Cascadia Code",monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.hero h1{
+  font:700 clamp(1.6rem, 3vw, 2.2rem) "Inter",sans-serif;
+  letter-spacing:-.03em;
+  color:var(--ink);
+  line-height:1.2;
+  margin-bottom:8px;
+}
+.hero h1 span{
+  background:linear-gradient(135deg, var(--purple) 30%, var(--cyan) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  color:var(--ink2);
+  font-size:clamp(.86rem, 1.35vw, .95rem);
+  line-height:1.6;
+  max-width:76ch;
+}
+
+/* Setup Card (BYOK Gemini) */
+.setup-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:24px 26px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+
+.setup-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.setup-title-group{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.setup-icon{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--purple) 35%,transparent);
+  display:grid;
+  place-items:center;
+  font-size:1.15rem;
+  color:var(--purple);
+  flex-shrink:0;
+}
+.setup-heading{
+  font:700 .95rem "Inter",sans-serif;
+  color:var(--ink);
+}
+.setup-sub{
+  font:400 .76rem "Inter",sans-serif;
+  color:var(--muted);
+  margin-top:2px;
+}
+.setup-badges{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.badge{
+  font:600 .68rem "Cascadia Code",monospace;
+  padding:4px 10px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.badge.free{
+  background:rgba(80, 250, 123, 0.1);
+  border:1px solid rgba(80, 250, 123, 0.3);
+  color:var(--lime);
+}
+.badge.local{
+  background:rgba(255, 255, 255, 0.05);
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+.badge.local .dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--lime);
+}
+
+/* Uniform Form Row */
+.form-row{
+  display:grid;
+  grid-template-columns:minmax(280px, 1fr) 260px auto;
+  gap:14px;
+  align-items:start;
+}
+@media(max-width:920px){
+  .form-row{grid-template-columns:1fr;gap:16px}
+}
+
+.field-col{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.field-label{
+  font:600 .74rem "Inter",sans-serif;
+  color:var(--ink2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:18px;
+}
+.field-label a{
+  color:var(--cyan);
+  text-decoration:none;
+  font-weight:500;
+  font-size:.7rem;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  transition:opacity .2s;
+}
+.field-label a:hover{opacity:.8;text-decoration:underline}
+
+/* Input Container with button */
+.input-container{
+  position:relative;
+  display:flex;
+  align-items:center;
+  height:44px;
+}
+.text-input{
+  width:100%;
+  height:44px;
+  padding:0 42px 0 14px;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink);
+  font:500 .84rem "Cascadia Code",monospace;
+  outline:none;
+  transition:all .2s var(--ease);
+}
+.text-input:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 3px rgba(189,147,249,0.15);
+}
+.text-input::placeholder{color:var(--muted);font-style:italic}
+
+.btn-toggle-mask{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  cursor:pointer;
+  padding:6px 10px;
+  font-size:.9rem;
+  border-radius:6px;
+  transition:all .2s;
+}
+.btn-toggle-mask:hover{color:var(--ink);background:rgba(255,255,255,0.06)}
+
+/* Select Input */
+.select-input{
+  width:100%;
+  height:44px;
+  padding:0 14px;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink);
+  font:500 .82rem "Inter",sans-serif;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.select-input:focus{border-color:var(--purple)}
+
+/* Actions Group */
+.btn-group{
+  display:flex;
+  gap:8px;
+  height:44px;
+}
+.btn-action{
+  height:44px;
+  padding:0 18px;
+  font:600 .8rem "Inter",sans-serif;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all .2s var(--ease);
+  white-space:nowrap;
+}
+.btn-action:hover:not(:disabled){
+  background:var(--line);
+  border-color:var(--line2);
+  transform:translateY(-1px);
+}
+.btn-action:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.btn-action.primary{
+  border-color:color-mix(in srgb,var(--cyan) 45%,transparent);
+  background:color-mix(in srgb,var(--cyan) 14%,transparent);
+  color:var(--cyan);
+}
+.btn-action.primary:hover:not(:disabled){
+  background:color-mix(in srgb,var(--cyan) 25%,transparent);
+}
+.btn-action.danger{
+  padding:0 14px;
+  color:var(--red);
+  background:color-mix(in srgb,var(--red) 10%,transparent);
+  border-color:color-mix(in srgb,var(--red) 25%,transparent);
+}
+.btn-action.danger:hover:not(:disabled){
+  background:color-mix(in srgb,var(--red) 20%,transparent);
+}
+
+/* Dedicated Status Bar */
+.status-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:10px 14px;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-size:.76rem;
+  color:var(--muted);
+  transition:all .25s var(--ease);
+}
+.status-indicator{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--muted);
+  flex-shrink:0;
+  transition:all .2s;
+}
+.status-dot.ok{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.status-dot.warn{background:var(--orange);box-shadow:0 0 10px var(--orange)}
+.status-dot.err{background:var(--red);box-shadow:0 0 10px var(--red)}
+.status-text{font-weight:500}
+.status-bar.err{
+  background:rgba(255, 85, 85, 0.08);
+  border-color:rgba(255, 85, 85, 0.35);
+  color:var(--red);
+}
+.status-bar.ok{
+  background:rgba(80, 250, 123, 0.08);
+  border-color:rgba(80, 250, 123, 0.3);
+  color:var(--lime);
+}
+.status-hint{
+  color:var(--muted);
+  font-size:.72rem;
+}
+
+/* Main Workspace */
+.workspace{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:stretch;
+}
+@media(max-width:960px){
+  .workspace{grid-template-columns:1fr}
+}
+
+/* Panel Containers */
+.panel{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.22);
+}
+
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+  min-height:42px;
+}
+.panel-title{
+  font:700 .9rem "Inter",sans-serif;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.panel-title i{font-style:normal;color:var(--purple)}
+.panel-stats{
+  font:600 .72rem "Cascadia Code",monospace;
+  color:var(--muted);
+  display:flex;
+  gap:12px;
+}
+
+/* Presets Bar */
+.preset-section{display:flex;flex-direction:column;gap:8px}
+.preset-label{
+  font:600 .72rem "Inter",sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+.preset-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
+  gap:8px;
+}
+.preset-btn{
+  background:#1e1f29;
+  border:1px solid var(--line);
+  color:var(--ink2);
+  border-radius:10px;
+  padding:9px 12px;
+  font:500 .78rem "Inter",sans-serif;
+  cursor:pointer;
+  text-align:left;
+  transition:all .18s var(--ease);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.preset-btn i{font-style:normal;font-size:.95rem}
+.preset-btn:hover{
+  background:var(--card);
+  color:var(--ink);
+  border-color:var(--line2);
+  transform:translateY(-1px);
+}
+.preset-btn.active{
+  background:color-mix(in srgb,var(--purple) 18%,transparent);
+  border-color:var(--purple);
+  color:var(--ink);
+  font-weight:600;
+  box-shadow:0 0 12px rgba(189,147,249,0.15);
+}
+
+/* Draft Area */
+.textarea-wrap{display:flex;flex-direction:column;gap:6px;position:relative}
+.draft-textarea{
+  width:100%;
+  min-height:220px;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  color:var(--ink);
+  font:400 .88rem/1.6 "Inter",sans-serif;
+  outline:none;
+  resize:vertical;
+  transition:border-color .2s;
+}
+.draft-textarea:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 3px rgba(189,147,249,0.12);
+}
+.draft-textarea::placeholder{color:var(--muted);font-style:italic}
+
+/* Custom Instruction Field */
+.custom-inst-wrap{display:flex;flex-direction:column;gap:6px}
+.custom-inst-input{
+  width:100%;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px 12px;
+  color:var(--ink);
+  font:400 .8rem "Inter",sans-serif;
+  outline:none;
+}
+.custom-inst-input:focus{border-color:var(--cyan)}
+.custom-inst-input::placeholder{color:var(--muted);font-style:italic}
+
+/* Action Trigger */
+.action-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:4px;
+}
+.btn-refine{
+  flex:1;
+  padding:14px 24px;
+  background:linear-gradient(135deg, var(--purple) 0%, color-mix(in srgb,var(--cyan) 80%,var(--purple)) 100%);
+  color:#191a21;
+  border:none;
+  border-radius:12px;
+  font:700 .92rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 8px 20px rgba(189,147,249,0.3);
+  transition:all .2s var(--ease);
+}
+.btn-refine:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(189,147,249,0.45);
+  filter:brightness(1.06);
+}
+.btn-refine:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+.kbd-hint{
+  font:600 .68rem "Cascadia Code",monospace;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.kbd-hint kbd{
+  background:#1a1b24;
+  border:1px solid var(--line);
+  padding:2px 6px;
+  border-radius:4px;
+  color:var(--ink2);
+}
+
+/* Output Panel */
+.output-panel{
+  display:flex;
+  flex-direction:column;
+  min-height:500px;
+}
+.output-body{
+  flex:1;
+  padding:20px;
+  font:400 .9rem/1.7 "Inter",sans-serif;
+  color:var(--ink);
+  /* formatted via renderMarkdown */
+  overflow-y:auto;
+  max-height:550px;
+  background:#1a1b24;
+  border-radius:12px;
+  border:1px solid var(--line);
+  position:relative;
+}
+.output-placeholder{
+  height:100%;
+  min-height:280px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--muted);
+  gap:12px;
+  padding:40px 20px;
+}
+.output-placeholder i{
+  font-style:normal;
+  font-size:2.4rem;
+  color:var(--purple);
+  opacity:.6;
+}
+.output-placeholder p{
+  font-size:.86rem;
+  max-width:38ch;
+  line-height:1.5;
+}
+
+.output-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.out-btn{
+  background:var(--card);
+  border:1px solid var(--line);
+  color:var(--ink2);
+  border-radius:8px;
+  padding:6px 12px;
+  font:600 .74rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .18s;
+}
+.out-btn:hover{background:var(--line2);color:#fff}
+.out-btn.copied{
+  background:var(--lime);
+  color:#191a21;
+  border-color:var(--lime);
+  font-weight:700;
+}
+
+/* Diff View / Toggle */
+
+.res-h2, .res-h3{
+  font:700 .95rem "Inter",sans-serif;
+  color:var(--purple);
+  margin:14px 0 6px;
+}
+.res-h2:first-child, .res-h3:first-child{margin-top:0}
+.res-p{
+  margin:0 0 10px;
+  line-height:1.65;
+  color:var(--ink);
+}
+.res-p:last-child{margin-bottom:0}
+.res-quote{
+  border-left:3px solid var(--purple);
+  background:rgba(189,147,249,0.08);
+  padding:10px 14px;
+  border-radius:0 8px 8px 0;
+  margin:10px 0;
+  color:var(--ink2);
+}
+.res-ul{
+  margin:6px 0 12px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.res-li{
+  color:var(--ink);
+  line-height:1.55;
+}
+
+.diff-view{
+  display:none;
+  padding:16px;
+  gap:12px;
+  flex-direction:column;
+}
+.diff-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.diff-box{
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  font-size:.82rem;
+  line-height:1.6;
+  max-height:360px;
+  overflow-y:auto;
+}
+.diff-box h4{
+  font:700 .72rem "Cascadia Code",monospace;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+}
+.diff-box.before h4{color:var(--red)}
+.diff-box.after h4{color:var(--lime)}
+
+/* Loading Skeleton / Animation */
+.loading-box{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:60px 20px;
+  color:var(--purple);
+}
+.spinner{
+  width:36px;
+  height:36px;
+  border:3px solid color-mix(in srgb,var(--purple) 25%,transparent);
+  border-top-color:var(--purple);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-box span{
+  font:600 .85rem "Inter",sans-serif;
+  color:var(--ink2);
+}
+
+/* History Drawer */
+.history-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px 22px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.history-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.history-title{
+  font:600 .82rem "Inter",sans-serif;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.history-list{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+.history-item{
+  flex:0 0 auto;
+  max-width:260px;
+  background:#1a1b24;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:all .18s;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.history-item:hover{border-color:var(--purple);transform:translateY(-1px)}
+.history-item-tag{
+  font:700 .65rem "Cascadia Code",monospace;
+  color:var(--purple);
+}
+.history-item-preview{
+  font-size:.76rem;
+  color:var(--ink2);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.history-item-date{
+  font-size:.68rem;
+  color:var(--muted);
+}
+
+/* Compact Toast - Never covers the whole screen */
+.toast{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  max-width:440px;
+  width:calc(100% - 48px);
+  background:#282a36;
+  border:1px solid var(--purple);
+  box-shadow:0 16px 40px rgba(0,0,0,0.6);
+  color:var(--ink);
+  padding:12px 16px;
+  border-radius:12px;
+  font:500 .82rem/1.5 "Inter",sans-serif;
+  z-index:9999;
+  opacity:0;
+  transform:translateY(16px);
+  pointer-events:none;
+  transition:all .25s var(--ease);
+}
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.toast.err{
+  border-color:var(--red);
+  background:#291c22;
+  color:#ff9999;
+}
+.toast.ok{
+  border-color:var(--lime);
+  background:#1c2921;
+  color:#a3fbc0;
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Top Bar -->
+  <nav class="top-nav">
+    <a href="index.html" class="brand-link">
+      <i>◆</i>
+      <span>ESTUDOS / BACKEND</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">← Início</a>
+      <a href="acervo.html" class="nav-btn">Acervo</a>
+      <a href="ia.html" class="nav-btn">Caderno de IA</a>
+      <a href="refinador.html" class="nav-btn primary">✨ Formatador Gemini</a>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <header class="hero">
+    <div class="hero-tag">Google Gemini · Alta Disponibilidade &amp; Failover Automático (v2.3)</div>
+    <h1>Formatador &amp; <span>Refinador de Texto</span></h1>
+    <p>Transforme suas ideias, anotações e rascunhos em textos técnicos e corporativos impecáveis: e-mails, comentários de tasks/issues, redação formal elegante, inglês profissional, comunicados de incidentes e mensagens diretas.</p>
+  </header>
+
+  <!-- Configuration Card (BYOK Gemini) -->
+  <section class="setup-card">
+    <div class="setup-header">
+      <div class="setup-title-group">
+        <div class="setup-icon">🔑</div>
+        <div>
+          <div class="setup-heading">Configuração da API Google Gemini (Gratuito &amp; Pro)</div>
+          <div class="setup-sub">Conecte sua chave do Google AI Studio · Suporte total a contas Gratuitas e Plano Pro</div>
+        </div>
+      </div>
+      <div class="setup-badges">
+        <span class="badge free">⭐ Gratuito &amp; Plano Pro</span>
+        <span class="badge local"><span class="dot"></span>Salva apenas no seu navegador</span>
+      </div>
+    </div>
+
+    <!-- Form Row: Perfectly Aligned Grid -->
+    <div class="form-row">
+      <!-- Col 1: Key Input -->
+      <div class="field-col">
+        <label class="field-label" for="geminiKey">
+          <span>Chave da API Gemini</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Obter chave gratuita no AI Studio ↗</a>
+        </label>
+        <div class="input-container">
+          <input type="password" id="geminiKey" class="text-input" placeholder="Cole sua chave aqui (ex: AIzaSy... ou AQ...)" autocomplete="off" spellcheck="false">
+          <button type="button" id="toggleMask" class="btn-toggle-mask" title="Mostrar/Ocultar chave">👁️</button>
+        </div>
+      </div>
+
+      <!-- Col 2: Model Selector -->
+      <div class="field-col">
+        <label class="field-label" for="geminiModel">
+          <span>Modelo de IA</span>
+        </label>
+        <select id="geminiModel" class="select-input">
+          <optgroup label="⚡ Modelos de Alta Disponibilidade (Recomendado)">
+            <option value="gemini-3.5-flash" selected>gemini-3.5-flash (Alta Disponibilidade &amp; Ultra Estável)</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash (Nova Geração)</option>
+            <option value="gemini-3.7-flash">gemini-3.7-flash (Rápido)</option>
+            <option value="gemini-3.6-flash">gemini-3.6-flash (Equilibrado)</option>
+          </optgroup>
+          <optgroup label="⭐ Modelos Pro (Para Chaves com Billing Pro)">
+            <option value="gemini-pro-latest">gemini-pro-latest (Modelo Pro Atualizado)</option>
+            <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (Nova Geração Pro)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Col 3: Actions Group -->
+      <div class="field-col">
+        <label class="field-label">Ações</label>
+        <div class="btn-group">
+          <button type="button" id="btnTest" class="btn-action primary" title="Testar se a chave e o modelo estão respondendo">
+            <span>⚡ Testar Conexão</span>
+          </button>
+          <button type="button" id="btnClearKey" class="btn-action danger" title="Limpar chave do navegador">
+            <span>🗑️ Limpar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar (Horizontal, below the inputs) -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-indicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Aguardando chave da API</span>
+      </div>
+      <div class="status-hint">
+        <span>Plano gratuito: até 1.500 requisições diárias sem cartão de crédito</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Split Workspace -->
+  <main class="workspace">
+
+    <!-- Input Section -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <i>✍️</i>
+          <span>Rascunho do Desenvolvedor</span>
+        </div>
+        <div class="panel-stats">
+          <span id="charCount">0 caracteres</span>
+          <span>·</span>
+          <span id="wordCount">0 palavras</span>
+        </div>
+      </div>
+
+            <!-- Presets de Formatação -->
+      <div class="preset-section">
+        <div class="preset-label">Selecione o Formato Desejado:</div>
+        <div class="preset-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:8px;">
+          <button type="button" class="preset-btn active" data-preset="formal" data-btn-label="✨ Deixar Mais Formal &amp; Bonito">
+            <i>✨</i>
+            <span>Mais Formal &amp; Bonito</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="email" data-btn-label="📧 Formatar como E-mail">
+            <i>📧</i>
+            <span>E-mail Corporativo</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="task" data-btn-label="🐙 Formatar para Task / Issue">
+            <i>🐙</i>
+            <span>Task / Issue (Jira/Git)</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="ingles" data-btn-label="🌐 Deixar em Inglês Formal">
+            <i>🌐</i>
+            <span>Inglês Profissional</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="warroom" data-btn-label="🚨 Formatar para War Room">
+            <i>🚨</i>
+            <span>War Room / Incidente</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="direto" data-btn-label="⚡ Deixar em Zero Ruído">
+            <i>⚡</i>
+            <span>Zero Ruído / Direto</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Textarea -->
+      <div class="textarea-wrap">
+        <textarea id="draftText" class="draft-textarea" placeholder="Escreva ou cole aqui suas ideias e anotações sem filtro. Exemplos:&#10;• 'fiz o ajuste na query de relatórios que tava lenta, criei o índice composto e agora o tempo caiu de 8s pra 200ms, subi no branch e ta pronto pra mergear'&#10;• 'preciso avisar a diretoria que a integração com o parceiro vai adiantar 3 dias porque fechamos os contratos de api antes do prazo'...&#10;&#10;O Gemini vai organizar tudo no formato selecionado acima."></textarea>
+      </div>
+
+      <!-- Custom Prompt Instruction -->
+      <div class="custom-inst-wrap">
+        <input type="text" id="customInst" class="custom-inst-input" placeholder="Instrução adicional opcional (ex: 'mantenha bem curto', 'adicione tópicos')...">
+      </div>
+
+      <!-- Submit Action -->
+      <div class="action-row">
+        <button type="button" id="btnRefine" class="btn-refine">
+          <span id="btnRefineLabel">✨ Deixar Mais Formal &amp; Bonito</span>
+        </button>
+        <div class="kbd-hint">
+          <span>Disparar:</span>
+          <kbd>Ctrl + Enter</kbd>
+        </div>
+      </div>
+    </section>
+
+    <!-- Output Section -->
+    <section class="panel output-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <i>💎</i>
+          <span>Texto Formatado &amp; Polido</span>
+        </div>
+        <div class="output-actions">
+          <button type="button" id="btnToggleDiff" class="out-btn" style="display:none" title="Ver comparação Antes vs Depois">
+            🔀 Antes / Depois
+          </button>
+          <button type="button" id="btnReuse" class="out-btn" style="display:none" title="Colocar resultado no rascunho para novo refino">
+            🔄 Reutilizar
+          </button>
+          <button type="button" id="btnCopy" class="out-btn primary" style="display:none" title="Copiar texto para área de transferência">
+            📋 Copiar
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Body -->
+      <div class="output-body" id="outputBody">
+        <div class="output-placeholder" id="placeholderView">
+          <i>✦</i>
+          <b>Seu texto refinado aparecerá aqui</b>
+          <p>Cole suas ideias no campo à esquerda e clique em <b>"Deixar Mais Formal com Gemini"</b> (ou aperte <kbd style="background:#282a36;padding:2px 6px;border-radius:4px;border:1px solid #44475a">Ctrl+Enter</kbd>) para ver o texto transformado em linguagem formal e profissional.</p>
+        </div>
+
+        <div class="loading-box" id="loadingView">
+          <div class="spinner"></div>
+          <span id="loadingMsg">Consultando Google Gemini...</span>
+        </div>
+
+        <div id="resultContent" style="display:none"></div>
+      </div>
+
+      <!-- Diff Mode View -->
+      <div class="diff-view" id="diffView">
+        <div class="diff-grid">
+          <div class="diff-box before">
+            <h4>Seu Rascunho Original</h4>
+            <div id="diffOriginal"></div>
+          </div>
+          <div class="diff-box after">
+            <h4>Refinado pelo Gemini</h4>
+            <div id="diffRefined"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta footer of result -->
+      <div style="padding:0 8px 0;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--muted)">
+        <span id="resModelInfo">Google Gemini</span>
+        <span id="resTimeInfo"></span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- History Drawer -->
+  <section class="history-card">
+    <div class="history-head">
+      <div class="history-title">
+        <span>🕒 Rascunhos Recentes Salvos Localmente</span>
+      </div>
+      <button type="button" id="btnClearHist" style="background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer">Limpar Histórico</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div style="font-size:.76rem;color:var(--muted);font-style:italic">Nenhum rascunho anterior registrado nesta sessão.</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast Feedback -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "refinador_gemini_api_key";
+  var STORAGE_MODEL = "refinador_gemini_model_v8";
+  var STORAGE_HIST = "refinador_history_v3";
+
+      // Prompts de Única Versão Definitiva (Zero Metatexto, Zero Opções, Zero Explicações)
+  var PRESET_PROMPTS = {
+    formal: "Você é um redator executivo e consultor de comunicação corporativa de altíssimo nível.\n" +
+            "Sua missão é transformar as ideias, anotações ou rascunho do usuário em uma ÚNICA versão FORMAL, COESA, ELEGANTE e IMPECÁVEL.\n\n" +
+            "REGRAS CRÍTICAS DE SAÍDA (OBRIGATÓRIAS):\n" +
+            "1. UMA ÚNICA VERSÃO: Nunca forneça múltiplas opções (como 'Opção 1', 'Opção 2'). Escolha a melhor redação e entregue apenas uma versão final definitiva.\n" +
+            "2. ZERO METATEXTO OU INTRODUÇÃO: É ESTRITAMENTE PROIBIDO escrever frases como 'Aqui está o texto:', 'Opções de reescrita:', 'Sugestão:'. Comece imediatamente na primeira palavra do texto formalizado.\n" +
+            "3. ZERO COMENTÁRIOS OU EXPLICAÇÕES: É ESTRITAMENTE PROIBIDO incluir explicações gramaticais, listas de 'Principais melhorias aplicadas' ou comentários no final. Entregue apenas o texto pronto para ser enviado.\n" +
+            "4. VOCABULÁRIO CULTO E TÉCNICO: Transforme qualquer gíria ou expressão informal em linguagem técnica e corporativa apropriada (ex: 'bagulho doido' vira 'inconsistências operacionais' ou 'comportamento inesperado'). Corrija concordâncias e pontuação.\n" +
+            "5. PRESERVAÇÃO DA INTENÇÃO: Mantenha com 100% de fidelidade os fatos, nomes, decisões e contexto informados pelo usuário.",
+
+    email: "Você é um redator executivo especialista em comunicação corporativa.\n" +
+           "Sua missão é transformar as ideias do usuário em UM ÚNICO E-MAIL FORMAL pronto para envio.\n\n" +
+           "REGRAS CRÍTICAS DE SAÍDA:\n" +
+           "1. UMA ÚNICA VERSÃO: Entregue apenas uma versão definitiva.\n" +
+           "2. ZERO METATEXTO: Não escreva introduções de IA nem justificativas no final. O primeiro caractere DEVE ser 'Assunto:'.\n" +
+           "3. ESTRUTURA DO E-MAIL:\n" +
+           "Assunto: [Assunto claro e contextualizado entre colchetes]\n\n" +
+           "[Corpo do e-mail formal, elegante e objetivo em 1 ou 2 parágrafos]\n\n" +
+           "Próximos Passos:\n" +
+           "• [Ação 1]\n" +
+           "• [Ação 2 se houver]\n\n" +
+           "Atenciosamente,\n[Seu Nome / Equipe]",
+
+    task: "Você é um Tech Lead sênior especialista em documentação de engenharia de software.\n" +
+          "Transforme o rascunho do desenvolvedor em UM ÚNICO comentário formal para Task/Issue (Jira, GitHub, Linear) registrando o que foi feito e observações.\n\n" +
+          "REGRAS CRÍTICAS DE SAÍDA:\n" +
+          "1. UMA ÚNICA VERSÃO: Entregue diretamente o conteúdo pronto para colar no Jira/GitHub.\n" +
+          "2. ZERO METATEXTO: Comece diretamente no primeiro cabeçalho '### 📋 O que foi feito'. Zero introdução de IA e zero comentários no final.\n" +
+          "3. ESTRUTURA:\n" +
+          "### 📋 O que foi feito\n" +
+          "[Resumo formal e técnico do que foi implementado ou ajustado, traduzindo termos informais]\n\n" +
+          "### ⚠️ Observações & Pontos de Atenção\n" +
+          "[Comentários sobre o estado atual da entrega, impactos, limitações ou comportamentos observados que precisam de ajuste]\n\n" +
+          "### 🧪 Validação & Próximos Passos\n" +
+          "[Passos para teste ou continuidade da tarefa]",
+
+    ingles: "You are a Principal Software Engineer and executive communications expert.\n" +
+            "Rewrite the user's raw notes or Portuguese ideas into ONE SINGLE, FLUENT, POLISHED, CORPORATE TECH ENGLISH text.\n\n" +
+            "CRITICAL RULES:\n" +
+            "1. ONE SINGLE VERSION: Do not output multiple options or bulleted alternatives.\n" +
+            "2. ZERO META-TALK: Do not say 'Here is the translation:' or 'Option 1'. Start directly with the first word of the English text.\n" +
+            "3. ZERO POST-ANALYSIS: Do not add explanations of grammatical changes or notes at the end.",
+
+    warroom: "Você é o Incident Commander em um comitê de crise técnica (War Room).\n" +
+             "Transforme o rascunho em UM ÚNICO Comunicado Oficial de Incidente calmo, técnico e objetivo.\n\n" +
+             "REGRAS CRÍTICAS DE SAÍDA:\n" +
+             "1. UMA ÚNICA VERSÃO definitiva.\n" +
+             "2. ZERO METATEXTO: Comece diretamente no '🚨 Status Atual:'.\n" +
+             "3. ESTRUTURA:\n" +
+             "🚨 **Status Atual**: [Investigando / Mitigado / Resolvido]\n" +
+             "👥 **Impacto no Sistema**: [Serviços e usuários afetados]\n" +
+             "⏱️ **Contenção Imediata**: [Ações executadas para estancar]\n" +
+             "🔍 **Causa Raiz & Próximos Passos**: [Diagnóstico e plano definitivo].",
+
+    direto: "Você é um editor implacável de comunicação corporativa enxuta (Zero Ruído).\n" +
+            "Reescreva o rascunho em UMA ÚNICA mensagem formal, firme, polida e extremamente direta ao ponto.\n\n" +
+            "REGRAS CRÍTICAS DE SAÍDA:\n" +
+            "1. UMA ÚNICA VERSÃO: Curta, formal, assertiva e impecável.\n" +
+            "2. ZERO METATEXTO: Comece na primeira palavra do texto.\n" +
+            "3. ZERO RODEIOS: Elimine hesitações ('acho que', 'talvez'), desculpas e palavras vazias."
+  };
+
+  // DOM Elements
+  var inGemini = document.getElementById("geminiKey");
+  var toggleMask = document.getElementById("toggleMask");
+  var selModel = document.getElementById("geminiModel");
+  var btnTest = document.getElementById("btnTest");
+  var btnClearKey = document.getElementById("btnClearKey");
+  var statusBar = document.getElementById("statusBar");
+  var statusDot = document.getElementById("statusDot");
+  var statusText = document.getElementById("statusText");
+
+  var draft = document.getElementById("draftText");
+  var customInst = document.getElementById("customInst");
+  var charCount = document.getElementById("charCount");
+  var wordCount = document.getElementById("wordCount");
+  var btnRefine = document.getElementById("btnRefine");
+
+  var placeholderView = document.getElementById("placeholderView");
+  var loadingView = document.getElementById("loadingView");
+  var resultContent = document.getElementById("resultContent");
+  var outputBody = document.getElementById("outputBody");
+  var diffView = document.getElementById("diffView");
+  var diffOriginal = document.getElementById("diffOriginal");
+  var diffRefined = document.getElementById("diffRefined");
+  var resModelInfo = document.getElementById("resModelInfo");
+  var resTimeInfo = document.getElementById("resTimeInfo");
+
+  var btnCopy = document.getElementById("btnCopy");
+  var btnReuse = document.getElementById("btnReuse");
+  var btnToggleDiff = document.getElementById("btnToggleDiff");
+  var toast = document.getElementById("toast");
+
+  var historyList = document.getElementById("historyList");
+  var btnClearHist = document.getElementById("btnClearHist");
+
+  var currentPreset = "formal";
+  var lastRefinedText = "";
+  var lastOriginalText = "";
+  var isDiffVisible = false;
+
+  // Initialize from LocalStorage
+  var STORAGE_MODEL = "refinador_gemini_model_v7";
+  var savedKey = localStorage.getItem(STORAGE_KEY) || "";
+  if(savedKey){
+    inGemini.value = savedKey;
+    setStatus("ok", "Chave salva no navegador");
+    // Background model check
+    setTimeout(function(){ testConnection(false); }, 600);
+  }
+
+  var savedModel = localStorage.getItem(STORAGE_MODEL) || "gemini-3.5-flash";
+  selModel.value = savedModel;
+
+  // Key storage & validation
+  inGemini.addEventListener("input", function(){
+    var val = inGemini.value.trim();
+    if(val){
+      localStorage.setItem(STORAGE_KEY, val);
+      setStatus("warn", "Chave pronta para teste");
+    }else{
+      localStorage.removeItem(STORAGE_KEY);
+      setStatus("", "Aguardando chave da API");
+    }
+  });
+
+  toggleMask.addEventListener("click", function(){
+    if(inGemini.type === "password"){
+      inGemini.type = "text";
+      toggleMask.textContent = "🔒";
+    }else{
+      inGemini.type = "password";
+      toggleMask.textContent = "👁️";
+    }
+  });
+
+  selModel.addEventListener("change", function(){
+    localStorage.setItem(STORAGE_MODEL, selModel.value);
+  });
+
+  btnClearKey.addEventListener("click", function(){
+    if(confirm("Deseja remover sua chave Gemini salva no navegador?")){
+      localStorage.removeItem(STORAGE_KEY);
+      inGemini.value = "";
+      setStatus("", "Chave removida");
+      showToast("Chave removida com sucesso!", "ok");
+    }
+  });
+
+  function setStatus(type, msg){
+    statusDot.className = "status-dot" + (type ? " " + type : "");
+    statusBar.className = "status-bar" + (type ? " " + type : "");
+    statusText.textContent = msg;
+  }
+
+  var toastTimer = null;
+  function showToast(msg, type){
+    if(toastTimer) clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = "toast show" + (type ? " " + type : "");
+    toastTimer = setTimeout(function(){
+      toast.className = "toast";
+    }, 3800);
+  }
+
+  // Draft counting
+  draft.addEventListener("input", function(){
+    var text = draft.value;
+    charCount.textContent = text.length + " caracteres";
+    var words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    wordCount.textContent = words + " palavras";
+  });
+
+  // Presets selection
+  var btnRefineLabel = document.getElementById("btnRefineLabel");
+  var presetButtons = document.querySelectorAll(".preset-btn");
+  presetButtons.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      presetButtons.forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentPreset = btn.dataset.preset;
+      if(btnRefineLabel && btn.dataset.btnLabel){
+        btnRefineLabel.innerHTML = btn.dataset.btnLabel;
+      }
+    });
+  });
+
+  // Dynamically update model select with models available in user account
+  function updateModelSelect(activeList){
+    if(!activeList || !activeList.length) return;
+
+    var currentVal = selModel.value;
+    var proModels = [
+      { id: "gemini-2.5-pro", name: "gemini-2.5-pro (Mais Inteligente - Pro)" },
+      { id: "gemini-3.1-pro-preview", name: "gemini-3.1-pro-preview (Próxima Geração Pro)" }
+    ];
+    var flashModels = [
+      { id: "gemini-3.8-flash", name: "gemini-3.8-flash (Mais Inteligente da Linha Flash)" },
+      { id: "gemini-3.6-flash", name: "gemini-3.6-flash (Padrão Equilibrado)" },
+      { id: "gemini-2.5-flash", name: "gemini-2.5-flash (Ultra Rápido & Estável)" },
+      { id: "gemini-3.5-flash", name: "gemini-3.5-flash (Estável)" }
+    ];
+
+    var html = '';
+
+    // Pro models available in user account
+    var availablePro = proModels.filter(function(m){ return activeList.indexOf(m.id) !== -1; });
+    activeList.forEach(function(m){
+      if(m.indexOf("pro") !== -1 && !availablePro.some(function(p){ return p.id === m; })){
+        availablePro.push({ id: m, name: m + " (Pro)" });
+      }
+    });
+
+    if(availablePro.length > 0){
+      html += '<optgroup label="⭐ Modelos Pro (Plano Pro / Raciocínio Profundo)">';
+      availablePro.forEach(function(m){
+        html += '<option value="' + m.id + '">' + m.name + '</option>';
+      });
+      html += '</optgroup>';
+    }
+
+    // Flash models
+    var availableFlash = flashModels.filter(function(m){ return activeList.indexOf(m.id) !== -1; });
+    activeList.forEach(function(m){
+      if((m.indexOf("flash") !== -1 || m.indexOf("lite") !== -1) && !availableFlash.some(function(f){ return f.id === m; })){
+        availableFlash.push({ id: m, name: m });
+      }
+    });
+
+    if(availableFlash.length > 0){
+      html += '<optgroup label="⚡ Modelos Flash (Alta Velocidade)">';
+      availableFlash.forEach(function(m){
+        html += '<option value="' + m.id + '">' + m.name + '</option>';
+      });
+      html += '</optgroup>';
+    }
+
+    if(html){
+      selModel.innerHTML = html;
+      if(activeList.indexOf(currentVal) !== -1){
+        selModel.value = currentVal;
+      } else if(availablePro.length > 0){
+        selModel.value = availablePro[0].id;
+      } else if(availableFlash.length > 0){
+        selModel.value = availableFlash[0].id;
+      }
+      localStorage.setItem(STORAGE_MODEL, selModel.value);
+    }
+  }
+
+  // Fast Connection Test via Metadata Endpoint (Instantaneous ~200ms, Never Times Out)
+  async function testConnection(showSuccessToast){
+    var key = inGemini.value.trim();
+    if(!key){
+      setStatus("err", "Por favor, cole uma chave da API antes de testar.");
+      inGemini.focus();
+      return false;
+    }
+
+    btnTest.disabled = true;
+    btnTest.innerHTML = "<span>⏳ Testando...</span>";
+    setStatus("warn", "Autenticando chave no Google AI Studio...");
+
+    try{
+      var t0 = performance.now();
+      var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(key), {
+        signal: AbortSignal.timeout(12000)
+      });
+
+      if(!res.ok){
+        var errData = await res.json().catch(function(){ return {}; });
+        var errMsg = errData.error ? errData.error.message : ("Erro HTTP " + res.status);
+        if(errMsg.indexOf("API key not valid") !== -1 || errMsg.indexOf("invalid authentication") !== -1 || res.status === 400 || res.status === 403){
+          throw new Error("Chave da API inválida ou expirada. Gere uma nova no Google AI Studio.");
+        }
+        throw new Error(errMsg);
+      }
+
+      var data = await res.json();
+      var duration = ((performance.now() - t0) / 1000).toFixed(2);
+
+      var availableModels = [];
+      var hasPro = false;
+      if(data && data.models && Array.isArray(data.models)){
+        availableModels = data.models
+          .filter(function(m){ return m.supportedGenerationMethods && m.supportedGenerationMethods.indexOf("generateContent") !== -1; })
+          .map(function(m){ return m.name.replace("models/", ""); });
+
+        hasPro = availableModels.some(function(m){ return m.indexOf("pro") !== -1; });
+      }
+
+      updateModelSelect(availableModels);
+
+      var statusMsg = "Conexão OK (" + duration + "s)! ";
+      if(hasPro){
+        statusMsg += "⭐ Plano Pro ativo (" + availableModels.length + " modelos disponíveis, incluindo Gemini 2.5 Pro).";
+      }else{
+        statusMsg += availableModels.length + " modelos disponíveis.";
+      }
+
+      setStatus("ok", statusMsg);
+      if(showSuccessToast !== false){
+        showToast("Google Gemini conectado (" + duration + "s)! " + (hasPro ? "Modelos Pro liberados." : ""), "ok");
+      }
+      return true;
+
+    }catch(err){
+      var cleanErr = err.message || "Falha na conexão";
+      if(cleanErr.indexOf("timeout") !== -1 || cleanErr.indexOf("timed out") !== -1){
+        cleanErr = "Tempo limite esgotado ao contatar Google AI Studio. Verifique sua internet.";
+      }
+      setStatus("err", cleanErr);
+      showToast("Falha na conexão: " + cleanErr.slice(0, 75), "err");
+      return false;
+    }finally{
+      btnTest.disabled = false;
+      btnTest.innerHTML = "<span>⚡ Testar Conexão</span>";
+    }
+  }
+
+  btnTest.addEventListener("click", function(){ testConnection(true); });
+
+  // Intelligent Generation Config Builder per Model Type
+  function buildGenerationConfig(modelName){
+    var config = {
+      temperature: 0.2
+    };
+
+    // For Gemini 3.x Flash models: low thinking minimizes latency to <2s
+    if(/gemini-3.[5-8]-flash/i.test(modelName)){
+      config.thinkingConfig = { thinkingLevel: "low" };
+    } else if(/gemini-2.5-flash/i.test(modelName)){
+      config.thinkingConfig = { thinkingBudget: 0 };
+    } else if(/gemini-3.1-pro/i.test(modelName)){
+      config.thinkingConfig = { thinkingLevel: "low" };
+    }
+    // Note: for gemini-2.5-pro, we leave default reasoning so it delivers max executive quality!
+    return config;
+  }
+
+  // Robust Caller with Automatic Failover to gemini-3.5-flash on 503/429
+  async function callGeminiDirect(model, payload, key){
+    var maxRetries = 3;
+    var currentModel = model || "gemini-3.5-flash";
+
+    for(var attempt = 0; attempt <= maxRetries; attempt++){
+      var url = "https://generativelanguage.googleapis.com/v1beta/models/" + currentModel + ":generateContent?key=" + encodeURIComponent(key);
+
+      try{
+        var res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": key
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(60000)
+        });
+
+        if(!res.ok){
+          var errData = await res.json().catch(function(){ return {}; });
+          var errMsg = errData.error ? errData.error.message : ("Erro HTTP " + res.status);
+
+          // If a model rejects thinkingConfig, instantly remove it and retry
+          if(res.status === 400 && errMsg.toLowerCase().indexOf("thinking") !== -1 && payload.generationConfig && payload.generationConfig.thinkingConfig){
+            console.warn("Modelo " + currentModel + " rejeitou thinkingConfig. Reenviando sem essa opção...");
+            delete payload.generationConfig.thinkingConfig;
+            continue;
+          }
+
+          var isHighDemand = errMsg.indexOf("high demand") !== -1 ||
+                             errMsg.indexOf("spikes in demand") !== -1 ||
+                             errMsg.indexOf("503") !== -1 ||
+                             res.status === 503 ||
+                             res.status === 429;
+
+          // Failover to gemini-3.5-flash if preferred model is busy
+          if(isHighDemand && currentModel !== "gemini-3.5-flash"){
+            console.warn("Modelo " + currentModel + " em sobrecarga (" + res.status + "). Alternando automaticamente para gemini-3.5-flash...");
+            loadingMsg.textContent = "Google em alta demanda no " + currentModel + ". Conectando automaticamente ao gemini-3.5-flash...";
+            currentModel = "gemini-3.5-flash";
+            payload.generationConfig = buildGenerationConfig("gemini-3.5-flash");
+            await new Promise(function(r){ setTimeout(r, 600); });
+            continue;
+          }
+
+          if(isHighDemand && attempt < maxRetries){
+            console.warn("Pico momentâneo de demanda. Tentativa " + (attempt + 1) + "...");
+            loadingMsg.textContent = "Google em alta demanda momentânea. Tentando novamente...";
+            await new Promise(function(r){ setTimeout(r, 1200 * (attempt + 1)); });
+            continue;
+          }
+
+          throw new Error(errMsg);
+        }
+
+        var data = await res.json();
+        var candidate = data.candidates && data.candidates[0];
+        if(!candidate || !candidate.content || !candidate.content.parts){
+          throw new Error("Nenhum texto retornado pelo Gemini.");
+        }
+
+        var text = candidate.content.parts.map(function(p){ return p.text; }).join("");
+        return {
+          text: text,
+          model: currentModel
+        };
+
+      }catch(err){
+        if(err.name === "TimeoutError" || (err.message && err.message.indexOf("timeout") !== -1)){
+          // On timeout, try gemini-3.5-flash before failing
+          if(currentModel !== "gemini-3.5-flash" && attempt < maxRetries){
+            console.warn("Timeout em " + currentModel + ". Alternando para gemini-3.5-flash...");
+            currentModel = "gemini-3.5-flash";
+            payload.generationConfig = buildGenerationConfig("gemini-3.5-flash");
+            continue;
+          }
+          throw new Error("Tempo limite de 60s esgotado. Os servidores do Google demoraram para responder.");
+        }
+        if(attempt === maxRetries || err.message.indexOf("API key not valid") !== -1 || err.message.indexOf("invalid authentication") !== -1){
+          throw err;
+        }
+        await new Promise(function(r){ setTimeout(r, 1000); });
+      }
+    }
+  }
+
+    // Update Core Refinement Trigger with Pro progress states
+  async function runRefinement(){
+    var key = inGemini.value.trim();
+    if(!key){
+      showToast("Configure sua chave da API Gemini antes de refinar.", "err");
+      inGemini.focus();
+      return;
+    }
+
+    var text = draft.value.trim();
+    if(!text){
+      showToast("Digite ou cole um rascunho de texto para refinar.", "err");
+      draft.focus();
+      return;
+    }
+
+    // Prepare prompt
+    var basePrompt = PRESET_PROMPTS[currentPreset] || PRESET_PROMPTS.formal;
+    var extra = customInst.value.trim();
+    var systemInstruction = basePrompt;
+    if(extra){
+      systemInstruction += "\n\nDiretriz adicional do usuário: " + extra;
+    }
+
+    var preferredModel = selModel.value || "gemini-2.5-pro";
+    var isPro = preferredModel.indexOf("pro") !== -1;
+
+    // UI state
+    btnRefine.disabled = true;
+    placeholderView.style.display = "none";
+    resultContent.style.display = "none";
+    diffView.style.display = "none";
+    outputBody.style.display = "block";
+    loadingView.style.display = "flex";
+    loadingMsg.textContent = isPro ?
+      "Analisando contexto técnico com modelo Pro (" + preferredModel + ")..." :
+      "Formatando texto com Google Gemini (" + preferredModel + ")...";
+
+    isDiffVisible = false;
+    btnToggleDiff.textContent = "🔀 Antes / Depois";
+
+    // Progress updates so user knows model is actively reasoning
+    var stepTimer1 = setTimeout(function(){
+      if(loadingView.style.display !== "none") {
+        loadingMsg.textContent = isPro ?
+          "Aplicando raciocínio profundo e redação executiva de alto nível..." :
+          "Aplicando padrão de comunicação técnica...";
+      }
+    }, 2800);
+
+    var stepTimer2 = setTimeout(function(){
+      if(loadingView.style.display !== "none") {
+        loadingMsg.textContent = "Polindo estrutura e eliminando ruídos técnicos...";
+      }
+    }, 7000);
+
+    var t0 = performance.now();
+    var payload = {
+      systemInstruction: {
+        parts: [{ text: systemInstruction }]
+      },
+      contents: [
+        { parts: [{ text: text }] }
+      ],
+      generationConfig: buildGenerationConfig(preferredModel)
+    };
+
+    try{
+      var result = await callGeminiDirect(preferredModel, payload, key);
+
+      clearTimeout(stepTimer1);
+      clearTimeout(stepTimer2);
+
+      var duration = ((performance.now() - t0) / 1000).toFixed(2);
+      var refined = (result.text || "").trim();
+      refined = refined.replace(/^\s*```(?:markdown|text)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+      lastRefinedText = refined;
+      lastOriginalText = text;
+
+      // Render Result cleanly with markdown formatting
+      resultContent.innerHTML = renderMarkdown(refined);
+      resultContent.style.display = "block";
+      loadingView.style.display = "none";
+      outputBody.scrollTop = 0;
+
+      var proTag = result.model.indexOf("pro") !== -1 ? " ⭐ Pro" : "";
+      resModelInfo.textContent = "Google Gemini (" + result.model + ")" + proTag;
+      resTimeInfo.textContent = "⚡ " + duration + "s · " + refined.length + " caracteres · " + refined.trim().split(/\s+/).length + " palavras";
+
+      btnCopy.style.display = "inline-flex";
+      btnReuse.style.display = "inline-flex";
+      btnToggleDiff.style.display = "inline-flex";
+
+      // Add to local history
+      addHistory(text, currentPreset, refined);
+      showToast("Texto formalizado com sucesso (" + duration + "s)!", "ok");
+
+    }catch(err){
+      clearTimeout(stepTimer1);
+      clearTimeout(stepTimer2);
+      loadingView.style.display = "none";
+      var msg = err.message || "";
+      if(msg.indexOf("high demand") !== -1 || msg.indexOf("503") !== -1){
+        msg = "Os servidores do Google estão passando por um pico temporário de demanda. Aguarde alguns instantes e tente novamente.";
+      }
+      resultContent.innerHTML = '<span style="color:var(--red);font-weight:600">Erro na requisição:</span><br><br>' + msg;
+      resultContent.style.display = "block";
+      showToast("Falha ao formatar: " + msg.slice(0, 70), "err");
+    }finally{
+      btnRefine.disabled = false;
+    }
+  }
+
+  btnRefine.addEventListener("click", runRefinement);
+
+
+    // Markdown renderer for clean, top-aligned output
+  function renderMarkdown(md){
+    if(!md) return "";
+    var escaped = String(md)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    // Headers
+    escaped = escaped.replace(/^### (.*$)/gim, '<h3 class="res-h3">$1</h3>');
+    escaped = escaped.replace(/^## (.*$)/gim, '<h2 class="res-h2">$1</h2>');
+
+    // Blockquotes
+    escaped = escaped.replace(/^&gt; (.*$)/gim, '<blockquote class="res-quote">$1</blockquote>');
+
+    // Bold and Italic
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // Lists
+    escaped = escaped.replace(/^\s*[-*•]\s+(.*$)/gim, '<li class="res-li">$1</li>');
+    escaped = escaped.replace(/((?:<li class="res-li">.*<\/li>\s*)+)/g, '<ul class="res-ul">$1</ul>');
+
+    // Split paragraphs
+    var paragraphs = escaped.split(/\n\s*\n/);
+    return paragraphs.map(function(p){
+      p = p.trim();
+      if(!p) return "";
+      if(/^<(?:h[23]|ul|blockquote)/i.test(p)) return p;
+      return '<p class="res-p">' + p.replace(/\n/g, '<br>') + '</p>';
+    }).join("");
+  }
+
+  // Keyboard shortcut: Ctrl + Enter
+  document.addEventListener("keydown", function(e){
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+      e.preventDefault();
+      runRefinement();
+    }
+  });
+
+  // Copy Action
+  btnCopy.addEventListener("click", async function(){
+    if(!lastRefinedText) return;
+    try{
+      await navigator.clipboard.writeText(lastRefinedText);
+      var oldHtml = btnCopy.innerHTML;
+      btnCopy.innerHTML = "<span>✓ Copiado!</span>";
+      btnCopy.classList.add("copied");
+      showToast("Texto copiado para a área de transferência!", "ok");
+      setTimeout(function(){
+        btnCopy.innerHTML = oldHtml;
+        btnCopy.classList.remove("copied");
+      }, 2000);
+    }catch(_){
+      showToast("Não foi possível copiar automaticamente.", "err");
+    }
+  });
+
+  // Reuse text
+  btnReuse.addEventListener("click", function(){
+    if(!lastRefinedText) return;
+    draft.value = lastRefinedText;
+    draft.dispatchEvent(new Event("input"));
+    showToast("Texto refinado colocado no campo de rascunho!", "ok");
+    draft.scrollIntoView({ behavior: "smooth" });
+  });
+
+  // Toggle Diff
+  btnToggleDiff.addEventListener("click", function(){
+    if(!lastRefinedText) return;
+    isDiffVisible = !isDiffVisible;
+    if(isDiffVisible){
+      diffOriginal.textContent = lastOriginalText;
+      diffRefined.textContent = lastRefinedText;
+      outputBody.style.display = "none";
+      diffView.style.display = "flex";
+      btnToggleDiff.textContent = "📄 Ver Normal";
+    }else{
+      outputBody.style.display = "block";
+      diffView.style.display = "none";
+      btnToggleDiff.textContent = "🔀 Antes / Depois";
+    }
+  });
+
+  // History Management
+  function addHistory(original, preset, refined){
+    try{
+      var list = JSON.parse(localStorage.getItem(STORAGE_HIST) || "[]");
+      list.unshift({
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        preset: preset,
+        original: original,
+        refined: refined
+      });
+      list = list.slice(0, 6);
+      localStorage.setItem(STORAGE_HIST, JSON.stringify(list));
+      renderHistory();
+    }catch(_){}
+  }
+
+  function renderHistory(){
+    try{
+      var list = JSON.parse(localStorage.getItem(STORAGE_HIST) || "[]");
+      if(!list.length){
+        historyList.innerHTML = '<div style="font-size:.76rem;color:var(--muted);font-style:italic">Nenhum rascunho anterior registrado nesta sessão.</div>';
+        return;
+      }
+
+      historyList.innerHTML = list.map(function(item, idx){
+        var snippet = item.original.slice(0, 50) + (item.original.length > 50 ? "..." : "");
+        return '<div class="history-item" data-idx="' + idx + '">' +
+                 '<span class="history-item-tag">' + (item.preset.toUpperCase()) + '</span>' +
+                 '<span class="history-item-preview">' + escapeHtml(snippet) + '</span>' +
+                 '<span class="history-item-date">' + item.date + '</span>' +
+               '</div>';
+      }).join("");
+
+      historyList.querySelectorAll(".history-item").forEach(function(el){
+        el.addEventListener("click", function(){
+          var item = list[+el.dataset.idx];
+          if(item && item.original){
+            draft.value = item.original;
+            draft.dispatchEvent(new Event("input"));
+            if(item.preset){
+              var pBtn = document.querySelector('.preset-btn[data-preset="' + item.preset + '"]');
+              if(pBtn) pBtn.click();
+            }
+            showToast("Rascunho do histórico carregado!", "ok");
+          }
+        });
+      });
+    }catch(_){}
+  }
+
+  btnClearHist.addEventListener("click", function(){
+    if(confirm("Deseja limpar todo o histórico de rascunhos?")){
+      localStorage.removeItem(STORAGE_HIST);
+      renderHistory();
+      showToast("Histórico limpo!", "ok");
+    }
+  });
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  renderHistory();
+
+})();
+</script>
+</body>
+</html>

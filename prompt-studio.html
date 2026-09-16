@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Studio · Engenharia de Prompt &amp; Janela de Contexto para IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0f14;
+  --bg2:#161822;
+  --card:#1e202e;
+  --card-hover:#252839;
+  --line:#2e3247;
+  --line2:#414763;
+  --ink:#f8f8f2;
+  --ink2:#d4d7e6;
+  --muted:#8b92b2;
+  --purple:#bd93f9;
+  --cyan:#8be9fd;
+  --lime:#50fa7b;
+  --orange:#ffb86c;
+  --yellow:#f1fa8c;
+  --red:#ff5555;
+  --ease:cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+  min-height:100vh;
+  line-height:1.6;
+}
+
+.app-shell{
+  max-width:1380px;
+  margin:0 auto;
+  padding:20px 20px 80px;
+  display:flex;
+  flex-direction:column;
+  gap:26px;
+}
+
+/* Top Nav */
+.top-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:12px 18px;
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.brand-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--ink);
+  font:700 .86rem "Cascadia Code",monospace;
+  letter-spacing:.08em;
+}
+.brand-link i{color:var(--purple);font-style:normal;font-size:1.1rem}
+.nav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-btn{
+  color:var(--muted);
+  text-decoration:none;
+  font:500 .78rem "Inter",sans-serif;
+  padding:6px 14px;
+  border-radius:8px;
+  border:1px solid transparent;
+  transition:all .2s var(--ease);
+}
+.nav-btn:hover{color:var(--ink);background:rgba(255,255,255,0.05);border-color:var(--line)}
+.nav-btn.primary{
+  color:var(--cyan);
+  border-color:color-mix(in srgb,var(--cyan) 40%,transparent);
+  background:color-mix(in srgb,var(--cyan) 10%,transparent);
+}
+.nav-btn.accent{
+  color:var(--purple);
+  border-color:color-mix(in srgb,var(--purple) 40%,transparent);
+  background:color-mix(in srgb,var(--purple) 10%,transparent);
+}
+
+/* Hero */
+.hero{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:10px 4px 4px;
+}
+.hero-tag{
+  align-self:flex-start;
+  font:700 .7rem "Cascadia Code",monospace;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--purple);
+  background:color-mix(in srgb,var(--purple) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--purple) 30%,transparent);
+  padding:4px 12px;
+  border-radius:999px;
+}
+.hero h1{
+  font:700 clamp(1.8rem, 3.5vw, 2.5rem) "Newsreader",Georgia,serif;
+  letter-spacing:-.03em;
+  line-height:1.2;
+}
+.hero h1 span{color:var(--purple)}
+.hero p{
+  color:var(--ink2);
+  font-size:clamp(.88rem, 1.3vw, .98rem);
+  max-width:86ch;
+}
+
+/* Mode Switcher Tabs (Large & Clean) */
+.mode-tabs-container{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.mode-tab-btn{
+  flex:1;
+  min-width:240px;
+  padding:16px 20px;
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  color:var(--muted);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  transition:all .22s var(--ease);
+  text-align:left;
+}
+.mode-tab-btn:hover{
+  background:var(--card);
+  color:var(--ink);
+  border-color:var(--line2);
+  transform:translateY(-2px);
+}
+.mode-tab-btn.active{
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  border-color:var(--purple);
+  color:var(--ink);
+  box-shadow:0 0 16px rgba(189,147,249,0.22);
+}
+.mode-tab-icon{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
+  display:grid;
+  place-items:center;
+  font-size:1.3rem;
+  flex-shrink:0;
+  transition:all .2s;
+}
+.mode-tab-btn.active .mode-tab-icon{
+  background:var(--purple);
+  color:#191a21;
+  border-color:var(--purple);
+}
+.mode-tab-info{display:flex;flex-direction:column;gap:2px}
+.mode-tab-title{font:700 .94rem "Inter",sans-serif;color:var(--ink)}
+.mode-tab-desc{font-size:.76rem;color:var(--muted)}
+
+/* Configuration Card (Multi-Provider) */
+.setup-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px 22px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.setup-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.setup-title-group{display:flex;align-items:center;gap:10px}
+.setup-icon{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--purple) 35%,transparent);
+  display:grid;
+  place-items:center;
+  font-size:1rem;
+}
+.setup-heading{font:700 .88rem "Inter",sans-serif;color:var(--ink)}
+.setup-sub{font-size:.74rem;color:var(--muted)}
+
+/* Provider Tabs */
+.provider-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.provider-tab{
+  padding:6px 14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--muted);
+  font:600 .76rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .2s var(--ease);
+}
+.provider-tab:hover{background:rgba(255,255,255,0.07);color:var(--ink);border-color:var(--line2)}
+.provider-tab.active{
+  background:color-mix(in srgb,var(--purple) 18%,transparent);
+  border-color:var(--purple);
+  color:#fff;
+  box-shadow:0 0 10px rgba(189,147,249,0.2);
+}
+
+/* Form Row */
+.form-row{
+  display:grid;
+  grid-template-columns:minmax(280px, 1.2fr) 280px auto;
+  gap:12px;
+  align-items:start;
+}
+@media(max-width:960px){.form-row{grid-template-columns:1fr}}
+.field-col{display:flex;flex-direction:column;gap:6px}
+.field-label{
+  font:600 .74rem "Inter",sans-serif;
+  color:var(--ink2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:18px;
+}
+.field-label a{color:var(--cyan);text-decoration:none;font-size:.7rem}
+.field-label a:hover{text-decoration:underline}
+
+.input-container{position:relative;display:flex;align-items:center;height:42px}
+.text-input{
+  width:100%;
+  height:42px;
+  padding:0 40px 0 12px;
+  background:#14151f;
+  border:1px solid var(--line);
+  border-radius:9px;
+  color:var(--ink);
+  font:500 .82rem "Cascadia Code",monospace;
+  outline:none;
+  transition:all .2s;
+}
+.text-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(189,147,249,0.15)}
+.btn-toggle-mask{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  cursor:pointer;
+  padding:4px 8px;
+  font-size:.85rem;
+}
+.select-input{
+  width:100%;
+  height:42px;
+  padding:0 12px;
+  background:#14151f;
+  border:1px solid var(--line);
+  border-radius:9px;
+  color:var(--ink);
+  font:500 .8rem "Inter",sans-serif;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.select-input:focus{border-color:var(--purple)}
+
+.btn-group{display:flex;gap:8px;height:42px}
+.btn-action{
+  height:42px;
+  padding:0 16px;
+  font:600 .78rem "Inter",sans-serif;
+  border-radius:9px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  transition:all .2s var(--ease);
+  white-space:nowrap;
+}
+.btn-action:hover:not(:disabled){background:var(--line);border-color:var(--line2);transform:translateY(-1px)}
+.btn-action.primary{
+  border-color:color-mix(in srgb,var(--cyan) 45%,transparent);
+  background:color-mix(in srgb,var(--cyan) 14%,transparent);
+  color:var(--cyan);
+}
+.btn-action.danger{
+  color:var(--red);
+  background:color-mix(in srgb,var(--red) 10%,transparent);
+  border-color:color-mix(in srgb,var(--red) 25%,transparent);
+}
+
+.status-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:8px 12px;
+  background:#14151f;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:.74rem;
+  color:var(--muted);
+}
+.status-indicator{display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all .2s}
+.status-dot.ok{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.status-dot.warn{background:var(--orange);box-shadow:0 0 10px var(--orange)}
+.status-dot.err{background:var(--red);box-shadow:0 0 10px var(--red)}
+
+/* Main Workspace */
+.workspace{
+  display:grid;
+  grid-template-columns:1.05fr 1fr;
+  gap:22px;
+  align-items:start;
+}
+@media(max-width:1020px){.workspace{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.panel-title{
+  font:700 .9rem "Inter",sans-serif;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.panel-stats{font:600 .74rem "Cascadia Code",monospace;color:var(--muted)}
+
+/* Dropdown Filters Grid */
+.filter-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:12px;
+  background:#14151f;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+}
+.filter-item{display:flex;flex-direction:column;gap:6px}
+.filter-label{
+  font:700 .72rem "Inter",sans-serif;
+  color:var(--ink2);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.filter-select{
+  width:100%;
+  height:38px;
+  padding:0 10px;
+  background:#1a1b26;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--ink);
+  font:500 .78rem "Inter",sans-serif;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.filter-select:focus{border-color:var(--purple)}
+.filter-input{
+  width:100%;
+  height:38px;
+  padding:0 10px;
+  background:#1a1b26;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--ink);
+  font:500 .78rem "Inter",sans-serif;
+  outline:none;
+}
+.filter-input:focus{border-color:var(--purple)}
+
+/* Checkboxes Row */
+.switches-row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:4px 0;
+}
+.switch-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:#14151f;
+  border:1px solid var(--line);
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font:500 .74rem "Inter",sans-serif;
+  color:var(--ink2);
+  transition:all .18s;
+  user-select:none;
+}
+.switch-chip:hover{border-color:var(--line2);background:var(--card)}
+.switch-chip input[type="checkbox"]{
+  accent-color:var(--purple);
+  width:14px;
+  height:14px;
+  cursor:pointer;
+}
+
+/* Textarea */
+.textarea-wrap{display:flex;flex-direction:column;gap:6px;position:relative}
+.task-textarea{
+  width:100%;
+  min-height:230px;
+  background:#14151f;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  color:var(--ink);
+  font:400 .86rem/1.6 "Inter",sans-serif;
+  outline:none;
+  resize:vertical;
+  transition:border-color .2s;
+}
+.task-textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(189,147,249,0.12)}
+.task-textarea::placeholder{color:var(--muted);font-style:italic}
+
+/* Action Trigger Button */
+.btn-generate{
+  width:100%;
+  padding:14px 20px;
+  background:linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+  color:#191a21;
+  border:none;
+  border-radius:12px;
+  font:700 .94rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 6px 20px rgba(189,147,249,0.3);
+  transition:all .2s var(--ease);
+}
+.btn-generate:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(189,147,249,0.45);
+  filter:brightness(1.06);
+}
+.btn-generate:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* Output Panel */
+.output-body{
+  flex:1;
+  padding:18px;
+  font:400 .88rem/1.7 "Inter",sans-serif;
+  color:var(--ink);
+  overflow-y:auto;
+  min-height:460px;
+  max-height:640px;
+  background:#14151f;
+  border-radius:12px;
+  border:1px solid var(--line);
+  position:relative;
+}
+.output-placeholder{
+  height:100%;
+  min-height:360px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--muted);
+  gap:12px;
+  padding:30px 20px;
+}
+.output-placeholder i{font-style:normal;font-size:2.4rem;color:var(--purple);opacity:.6}
+.output-placeholder p{font-size:.84rem;max-width:40ch;line-height:1.5}
+
+.out-btn{
+  background:var(--card);
+  border:1px solid var(--line);
+  color:var(--ink2);
+  border-radius:8px;
+  padding:7px 14px;
+  font:600 .76rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .18s;
+}
+.out-btn:hover{background:var(--line2);color:#fff}
+.out-btn.primary{
+  background:color-mix(in srgb,var(--purple) 22%,transparent);
+  border-color:var(--purple);
+  color:#fff;
+}
+.out-btn.copied{
+  background:var(--lime);
+  color:#191a21;
+  border-color:var(--lime);
+  font-weight:700;
+}
+
+/* Code Blocks in Output */
+.code-box{
+  background:#0f1017;
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin:12px 0;
+  overflow:hidden;
+}
+.code-box-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(255,255,255,0.03);
+  border-bottom:1px solid var(--line);
+  padding:6px 12px;
+  font:600 .7rem "Cascadia Code",monospace;
+  color:var(--purple);
+}
+.code-copy-btn{
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:6px;
+  color:var(--muted);
+  font:500 .68rem "Inter",sans-serif;
+  padding:3px 8px;
+  cursor:pointer;
+  transition:all .18s;
+}
+.code-copy-btn:hover{background:var(--line);color:var(--ink)}
+.code-copy-btn.copied{background:var(--lime);border-color:var(--lime);color:#191a21;font-weight:700}
+.code-pre{
+  margin:0;
+  padding:14px;
+  overflow-x:auto;
+  font:400 .82rem/1.65 "Cascadia Code",monospace;
+  color:var(--ink);
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.code-pre code{font-family:inherit}
+
+/* Markdown Formatted Elements */
+.res-h2, .res-h3{font:700 .92rem "Inter",sans-serif;color:var(--purple);margin:14px 0 6px}
+.res-h2:first-child, .res-h3:first-child{margin-top:0}
+.res-p{margin:0 0 10px;line-height:1.65;color:var(--ink)}
+.res-p:last-child{margin-bottom:0}
+.res-quote{
+  border-left:3px solid var(--purple);
+  background:rgba(189,147,249,0.08);
+  padding:8px 12px;
+  border-radius:0 8px 8px 0;
+  margin:8px 0;
+  color:var(--ink2);
+}
+.res-ul{margin:6px 0 10px 18px;display:flex;flex-direction:column;gap:3px}
+.res-li{color:var(--ink);line-height:1.5}
+
+/* Spinner */
+.loading-box{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:60px 20px;
+  color:var(--purple);
+}
+.spinner{
+  width:36px;
+  height:36px;
+  border:3px solid color-mix(in srgb,var(--purple) 25%,transparent);
+  border-top-color:var(--purple);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  max-width:440px;
+  width:calc(100% - 48px);
+  background:#282a36;
+  border:1px solid var(--purple);
+  box-shadow:0 16px 40px rgba(0,0,0,0.6);
+  color:var(--ink);
+  padding:12px 16px;
+  border-radius:12px;
+  font:500 .82rem/1.5 "Inter",sans-serif;
+  z-index:9999;
+  opacity:0;
+  transform:translateY(16px);
+  pointer-events:none;
+  transition:all .25s var(--ease);
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.err{border-color:var(--red);background:#291c22;color:#ff9999}
+.toast.ok{border-color:var(--lime);background:#1c2921;color:#a3fbc0}
+/* ===== Modo comparacao multi-provedor ===== */
+.keys-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.key-field{display:flex;flex-direction:column;gap:6px}
+.kf-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;font-weight:700;color:var(--ink2)}
+.kf-label a{font-size:.68rem;font-weight:600;color:var(--cyan);text-decoration:none}
+.kf-label a:hover{text-decoration:underline}
+.kf-prov{display:flex;align-items:center;gap:6px}
+.kf-dot{width:8px;height:8px;border-radius:50%;background:var(--line2);flex:none;transition:.2s var(--ease)}
+.kf-dot.ok{background:var(--lime);box-shadow:0 0 6px var(--lime)}
+.compare-section{margin-top:22px}
+.compare-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.compare-head .ch-title{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:800;color:var(--ink)}
+.compare-head .ch-sub{font-size:.74rem;color:var(--muted)}
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.result-card{background:var(--card);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:220px;overflow:hidden}
+.result-card .rc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg2)}
+.rc-prov{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.86rem;color:var(--ink)}
+.rc-prov .rc-ic{font-size:1.05rem}
+.rc-model{font-size:.66rem;color:var(--muted);font-family:ui-monospace,monospace;text-align:right;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-body{flex:1;padding:14px;font-size:.82rem;line-height:1.55;color:var(--ink2);overflow-y:auto;max-height:520px;white-space:normal;word-break:break-word}
+.rc-body p{margin:0 0 .6em}
+.rc-body h2,.rc-body h3{color:var(--purple);margin:.5em 0 .3em;font-size:.92rem}
+.rc-body ul{margin:.3em 0 .6em;padding-left:1.2em}
+.rc-body li{margin:.15em 0}
+.rc-body code{background:var(--bg);padding:1px 5px;border-radius:5px;font-size:.78rem}
+.rc-body strong{color:var(--ink)}
+.rc-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:28px 16px;color:var(--muted);font-size:.8rem;flex:1;line-height:1.5}
+.rc-state.err{color:var(--red)}
+.rc-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:var(--bg2)}
+.rc-time{font-size:.7rem;color:var(--muted)}
+.rc-copy{border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;transition:.15s var(--ease)}
+.rc-copy:hover{border-color:var(--purple);color:var(--purple)}
+.rc-copy.copied{border-color:var(--lime);color:var(--lime)}
+.workspace.compare-layout{display:block}
+@media(max-width:820px){.keys-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Top Bar -->
+  <nav class="top-nav">
+    <a href="index.html" class="brand-link">
+      <i>◆</i>
+      <span>ESTUDOS / BACKEND</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">← Início</a>
+      <a href="acervo.html" class="nav-btn">Acervo</a>
+      <a href="ia.html" class="nav-btn">Caderno de IA</a>
+      <a href="prompt-studio.html" class="nav-btn accent">🧠 Prompt Studio</a>
+      <a href="refinador.html" class="nav-btn">✨ Formatador</a>
+      <a href="tutorial-api.html" class="nav-btn primary">🔑 Guia de APIs</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-tag">Engenharia de Prompt &amp; Otimização Semântica de Agentes</div>
+    <h1>Prompt Studio · <span>Engenharia &amp; Contexto</span></h1>
+    <p>Gere prompts de alta performance estruturados nos 5 princípios ou compacte janelas de contexto semânticas para agentes autônomos de forma rápida, independente e sem desperdício de tokens.</p>
+  </header>
+
+  <!-- Mode Selector Tabs -->
+  <section class="mode-tabs-container">
+    <button type="button" class="mode-tab-btn active" data-mode="prompt">
+      <div class="mode-tab-icon">🎯</div>
+      <div class="mode-tab-info">
+        <span class="mode-tab-title">Modo 1: Prompt de Alta Performance</span>
+        <span class="mode-tab-desc">Gera somente o prompt com os 5 princípios (Ultra rápido)</span>
+      </div>
+    </button>
+
+    <button type="button" class="mode-tab-btn" data-mode="context">
+      <div class="mode-tab-icon">📦</div>
+      <div class="mode-tab-info">
+        <span class="mode-tab-title">Modo 2: Janela de Contexto</span>
+        <span class="mode-tab-desc">Compacta fatos em XML semântico para agentes (-70% tokens)</span>
+      </div>
+    </button>
+
+    <button type="button" class="mode-tab-btn" data-mode="combo">
+      <div class="mode-tab-icon">⚡</div>
+      <div class="mode-tab-info">
+        <span class="mode-tab-title">Modo 3: Combo (Contexto + Prompt)</span>
+        <span class="mode-tab-desc">Gera ambos os artefatos juntos em uma única passada</span>
+      </div>
+    </button>
+  </section>
+
+  <!-- Multi-Provider Configuration Card -->
+  <section class="setup-card">
+    <div class="setup-header">
+      <div class="setup-title-group">
+        <div class="setup-icon">🔑</div>
+        <div>
+          <div class="setup-heading">Provedor de Inteligência Artificial (Gratuito &amp; Pro)</div>
+          <div class="setup-sub">Suas chaves são salvas apenas no seu navegador · Sincronizado com o Formatador</div>
+        </div>
+      </div>
+      <a href="tutorial-api.html" class="nav-btn primary" style="font-size:.76rem;padding:5px 12px">
+        <span>Como obter chave gratuita ↗</span>
+      </a>
+    </div>
+
+    <!-- Chaves dos 3 provedores (BYOK, compartilhadas com o Formatador) -->
+    <div class="keys-grid">
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-gemini"></span>Gemini</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
+        <div class="input-container">
+          <input type="password" id="key-gemini" class="text-input" placeholder="AIzaSy... ou AQ..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-gemini" title="Mostrar/Ocultar">👁️</button>
+        </div>
+      </div>
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-groq"></span>Groq</span>
+          <a href="https://console.groq.com/keys" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
+        <div class="input-container">
+          <input type="password" id="key-groq" class="text-input" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-groq" title="Mostrar/Ocultar">👁️</button>
+        </div>
+      </div>
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-openrouter"></span>OpenRouter</span>
+          <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
+        <div class="input-container">
+          <input type="password" id="key-openrouter" class="text-input" placeholder="sk-or-..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-openrouter" title="Mostrar/Ocultar">👁️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-indicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Preencha ao menos 1 chave. Elas ficam só no seu navegador (mesmas do Formatador).</span>
+      </div>
+      <div id="statusHint">
+        <span>Ao gerar, dispara Gemini + Groq + OpenRouter em paralelo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="workspace compare-layout">
+
+    <!-- Input Section -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <i id="panelInputIcon">🎯</i>
+          <span id="panelInputTitle">Configuração do Prompt de Alta Performance</span>
+        </div>
+        <div class="panel-stats">
+          <span id="charCount">0 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Controls for PROMPT Mode -->
+      <div id="promptControls" class="filter-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <span>1. Atue como... (Direção)</span>
+          </label>
+          <select id="selRole" class="filter-select">
+            <option value="Engenheiro de Software Sênior &amp; Tech Lead">Engenheiro Sênior &amp; Tech Lead</option>
+            <option value="Arquiteto de Software &amp; Cloud Solutions">Arquiteto de Software &amp; Cloud Solutions</option>
+            <option value="Desenvolvedor Backend Sênior Java &amp; Spring Boot">Backend Sênior Java &amp; Spring Boot</option>
+            <option value="DBA Sênior &amp; Especialista em Performance de Queries SQL">DBA Sênior &amp; Otimizador SQL</option>
+            <option value="Engenheiro de DevOps, SRE &amp; Kubernetes">DevOps, SRE &amp; Kubernetes</option>
+            <option value="Especialista em Segurança de Software &amp; DevSecOps">Segurança &amp; DevSecOps</option>
+            <option value="Especialista em Engenharia de Prompt &amp; Agentes Autônomos">Especialista em Prompt &amp; Agentes</option>
+            <option value="Revisor Crítico de Pull Requests / Clean Code">Revisor Crítico de Pull Requests</option>
+            <option value="custom">✏️ Outro (Personalizado)...</option>
+          </select>
+          <input type="text" id="customRoleInput" class="filter-input" placeholder="Digite o papel desejado..." style="display:none;margin-top:4px">
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <span>2. Formato de Saída (Contrato)</span>
+          </label>
+          <select id="selFormat" class="filter-select">
+            <option value="JSON Schema Estrito (sem comentários, pronto para parsing em APIs)">JSON Schema Estrito (sem comentários)</option>
+            <option value="Markdown Técnico Estruturado (com seções e títulos fixos)">Markdown Técnico Estruturado</option>
+            <option value="Código Fonte Limpo (apenas o bloco de código, sem explicações)">Código Fonte Limpo (sem rodeios)</option>
+            <option value="XML Semântico com tags delimitadas">XML Semântico com tags delimitadas</option>
+            <option value="Texto Liso / Plain Text (Zero formatação Markdown)">Texto Liso / Plain Text</option>
+            <option value="Relatório Técnico Executivo para Stakeholders">Relatório Técnico Executivo</option>
+            <option value="custom">✏️ Outro formato...</option>
+          </select>
+          <input type="text" id="customFormatInput" class="filter-input" placeholder="Digite o formato esperado..." style="display:none;margin-top:4px">
+        </div>
+      </div>
+
+      <!-- Switches for PROMPT Principles -->
+      <div id="promptSwitches" class="switches-row">
+        <label class="switch-chip">
+          <input type="checkbox" id="chkFewShot" checked>
+          <span>3. Incluir Exemplos (Few-Shot)</span>
+        </label>
+        <label class="switch-chip">
+          <input type="checkbox" id="chkQuality" checked>
+          <span>4. Checklist de Qualidade</span>
+        </label>
+        <label class="switch-chip">
+          <input type="checkbox" id="chkSteps" checked>
+          <span>5. Dividir em Etapas (Passo a Passo)</span>
+        </label>
+      </div>
+
+      <!-- Controls for CONTEXT Mode -->
+      <div id="contextControls" class="filter-grid" style="display:none">
+        <div class="filter-item">
+          <label class="filter-label">
+            <span>Domínio / Foco do Agente</span>
+          </label>
+          <select id="selDomain" class="filter-select">
+            <option value="Backend, APIs REST &amp; Microsserviços">Backend, APIs REST &amp; Microsserviços</option>
+            <option value="Cloud, Infraestrutura, VPCs &amp; Redes">Cloud, Infraestrutura, VPCs &amp; Redes</option>
+            <option value="Banco de Dados Relacional, NoSQL &amp; Cache Redis">Banco de Dados, SQL &amp; Cache</option>
+            <option value="Autenticação, JWT, RBAC &amp; Segurança">Autenticação, JWT &amp; Segurança</option>
+            <option value="Regras de Negócio, Finanças &amp; Operações">Regras de Negócio &amp; Processos</option>
+            <option value="custom">✏️ Domínio Personalizado...</option>
+          </select>
+          <input type="text" id="customDomainInput" class="filter-input" placeholder="Digite o domínio..." style="display:none;margin-top:4px">
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <span>Estrutura da Janela</span>
+          </label>
+          <select id="selContextFormat" class="filter-select">
+            <option value="XML Semântico (<contexto_agente> com tags delimitadas)">XML Semântico (<contexto_agente>)</option>
+            <option value="Markdown Estruturado com Bullets Fatuais">Markdown Estruturado Factual</option>
+            <option value="YAML de Configuração para Agentes">YAML de Configuração para Agentes</option>
+            <option value="JSON Schema de Memória de Agente">JSON Schema de Memória</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <span>Compressão de Tokens</span>
+          </label>
+          <select id="selCompression" class="filter-select">
+            <option value="Ultra-Compacto (-70% tokens, máxima densidade factual)">⚡ Ultra-Compacto (-70% tokens)</option>
+            <option value="Equilibrado (Factual, claro e sem rodeios)">⚖️ Equilibrado (Claro e factual)</option>
+            <option value="Extensivo com Edge-Cases e Exceções Mapeadas">🔍 Detalhado com Edge-Cases</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Textarea Input -->
+      <div class="textarea-wrap">
+        <textarea id="taskInput" class="task-textarea" placeholder="Descreva aqui o objetivo ou cole suas anotações técnicas. Exemplos:&#10;• 'preciso de um endpoint de busca de vpcs na oracle com dropdown filtrado por redes ativas, se der erro retorna 401 ou 403, usar spring boot e redis'&#10;• 'analisar código java com foco em vazamento de conexões hikari e transações com deadlock'..."></textarea>
+      </div>
+
+      <!-- Action Button -->
+      <button type="button" id="btnRun" class="btn-generate">
+        <span id="btnRunLabel">🎯 Gerar Prompt de Alta Performance</span>
+      </button>
+    </section>
+
+    <!-- Output Section -->
+    <!-- Comparacao: 3 provedores lado a lado -->
+    <section class="compare-section" id="compareSection">
+      <div class="compare-head">
+        <div class="ch-title"><span>🆚</span><span id="panelOutputTitle">Respostas dos 3 provedores</span></div>
+        <div class="ch-sub">Compare e copie a que ficou melhor. Cards sem chave são pulados.</div>
+      </div>
+      <div class="compare-grid">
+        <div class="result-card" id="card-gemini"></div>
+        <div class="result-card" id="card-groq"></div>
+        <div class="result-card" id="card-openrouter"></div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Toast Feedback -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  function $(id){ return document.getElementById(id); }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+
+  function renderMarkdown(md){
+    if(!md) return "";
+    var e = escapeHtml(md);
+    e = e.replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/^## (.*$)/gim, "<h2>$1</h2>");
+    e = e.replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>");
+    e = e.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\*(.*?)\*/g, "<em>$1</em>");
+    e = e.replace(/^\s*[-*•]\s+(.*$)/gim, "<li>$1</li>");
+    e = e.replace(/((?:<li>.*<\/li>\s*)+)/g, "<ul>$1</ul>");
+    return e.split(/\n\s*\n/).map(function(p){
+      p = p.trim();
+      if(!p) return "";
+      if(/^<(?:h[23]|ul|blockquote)/i.test(p)) return p;
+      return "<p>" + p.replace(/\n/g, "<br>") + "</p>";
+    }).join("");
+  }
+
+  var toast = $("toast"), toastTimer = null;
+  function showToast(msg, type){
+    if(!toast) return;
+    if(toastTimer) clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = "toast show" + (type ? " " + type : "");
+    toastTimer = setTimeout(function(){ toast.className = "toast"; }, 3200);
+  }
+
+  // ===== Provedores (mesmas chaves do refinador; modelos gratuitos com fallback) =====
+  var PROVIDERS = [
+    { id: "gemini", name: "Google Gemini", icon: "⚡", storage: "refinador_gemini_api_key",
+      label: "gemini-3.6-flash", models: ["gemini-3.6-flash"] },
+    { id: "groq", name: "Groq Cloud", icon: "🚀", storage: "refinador_groq_api_key",
+      label: "openai/gpt-oss-20b", models: ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.6-27b"] },
+    { id: "openrouter", name: "OpenRouter", icon: "🌐", storage: "refinador_openrouter_api_key",
+      label: "auto · :free", models: [] }
+  ];
+  var OR_FALLBACK = ["deepseek/deepseek-r1:free", "nvidia/nemotron-3.5-lightning:free", "qwen/qwen3.6-27b:free"];
+  var orModelsCache = null;
+
+  // ===== Chaves =====
+  function keyEl(p){ return $("key-" + p.id); }
+  function dotEl(p){ return $("dot-" + p.id); }
+  function getKey(p){ var el = keyEl(p); return el ? el.value.trim() : ""; }
+  function refreshDot(p){ var d = dotEl(p); if(d) d.classList.toggle("ok", !!getKey(p)); }
+  function loadKeys(){
+    PROVIDERS.forEach(function(p){
+      var el = keyEl(p);
+      if(!el) return;
+      var saved = "";
+      try { saved = localStorage.getItem(p.storage) || ""; } catch(e){}
+      el.value = saved;
+      refreshDot(p);
+      el.addEventListener("input", function(){
+        var v = el.value.trim();
+        try { if(v) localStorage.setItem(p.storage, v); else localStorage.removeItem(p.storage); } catch(e){}
+        refreshDot(p);
+      });
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".btn-toggle-mask"), function(btn){
+    btn.addEventListener("click", function(){
+      var t = $(btn.dataset.mask);
+      if(!t) return;
+      if(t.type === "password"){ t.type = "text"; btn.textContent = "🔒"; }
+      else { t.type = "password"; btn.textContent = "👁️"; }
+    });
+  });
+
+  // ===== Controles do Studio (modo + papel/formato/dominio) =====
+  var modeTabs = document.querySelectorAll(".mode-tab-btn");
+  var promptControls = $("promptControls");
+  var promptSwitches = $("promptSwitches");
+  var contextControls = $("contextControls");
+  var panelInputIcon = $("panelInputIcon");
+  var panelInputTitle = $("panelInputTitle");
+  var panelOutputTitle = $("panelOutputTitle");
+  var btnRunLabel = $("btnRunLabel");
+  var selRole = $("selRole");
+  var customRoleInput = $("customRoleInput");
+  var selFormat = $("selFormat");
+  var customFormatInput = $("customFormatInput");
+  var chkFewShot = $("chkFewShot");
+  var chkQuality = $("chkQuality");
+  var chkSteps = $("chkSteps");
+  var selDomain = $("selDomain");
+  var customDomainInput = $("customDomainInput");
+  var selContextFormat = $("selContextFormat");
+  var selCompression = $("selCompression");
+  var taskInput = $("taskInput");
+  var charCount = $("charCount");
+  var btnRun = $("btnRun");
+  var currentMode = "prompt";
+
+  function switchMode(mode){
+    currentMode = mode;
+    modeTabs.forEach(function(tab){ tab.classList.toggle("active", tab.dataset.mode === mode); });
+    if(mode === "prompt"){
+      if(panelInputIcon) panelInputIcon.textContent = "🎯";
+      if(panelInputTitle) panelInputTitle.textContent = "Configuração do Prompt de Alta Performance";
+      if(panelOutputTitle) panelOutputTitle.textContent = "Prompt Otimizado (5 Princípios)";
+      if(btnRunLabel) btnRunLabel.textContent = "🎯 Gerar Prompt de Alta Performance";
+      if(promptControls) promptControls.style.display = "grid";
+      if(promptSwitches) promptSwitches.style.display = "flex";
+      if(contextControls) contextControls.style.display = "none";
+      if(taskInput) taskInput.placeholder = "Descreva a tarefa ou objetivo que o modelo deve cumprir. Exemplo:\n'Criar um endpoint REST em Spring Boot com cache Redis e tratamento de erro 401/403 para listar redes VPC'...";
+    } else if(mode === "context"){
+      if(panelInputIcon) panelInputIcon.textContent = "📦";
+      if(panelInputTitle) panelInputTitle.textContent = "Configuração da Janela de Contexto para Agentes";
+      if(panelOutputTitle) panelOutputTitle.textContent = "Janela de Contexto Estruturada";
+      if(btnRunLabel) btnRunLabel.textContent = "📦 Gerar Janela de Contexto para Agente";
+      if(promptControls) promptControls.style.display = "none";
+      if(promptSwitches) promptSwitches.style.display = "none";
+      if(contextControls) contextControls.style.display = "grid";
+      if(taskInput) taskInput.placeholder = "Cole aqui suas anotações, conversa com a equipe ou regras técnicas gerais. Exemplo:\n'Falamos com o time e decidimos que o dropdown de redes só pode listar VPCs da conta Oracle autenticada, o token expira em 15min e refresh token no Redis, se der erro retornar 401/403'...";
+    } else {
+      if(panelInputIcon) panelInputIcon.textContent = "⚡";
+      if(panelInputTitle) panelInputTitle.textContent = "Configuração Completa: Contexto + Prompt";
+      if(panelOutputTitle) panelOutputTitle.textContent = "Artefato Completo (Contexto & Prompt)";
+      if(btnRunLabel) btnRunLabel.textContent = "⚡ Gerar Contexto & Prompt (Combo)";
+      if(promptControls) promptControls.style.display = "grid";
+      if(promptSwitches) promptSwitches.style.display = "flex";
+      if(contextControls) contextControls.style.display = "grid";
+      if(taskInput) taskInput.placeholder = "Cole suas regras de negócio ou anotações brutas. O sistema vai extrair a janela de contexto E gerar o prompt com os 5 princípios em uma execução.";
+    }
+  }
+  modeTabs.forEach(function(tab){ tab.addEventListener("click", function(){ switchMode(tab.dataset.mode); }); });
+
+  if(selRole) selRole.addEventListener("change", function(){ customRoleInput.style.display = selRole.value === "custom" ? "block" : "none"; if(selRole.value === "custom") customRoleInput.focus(); });
+  if(selFormat) selFormat.addEventListener("change", function(){ customFormatInput.style.display = selFormat.value === "custom" ? "block" : "none"; if(selFormat.value === "custom") customFormatInput.focus(); });
+  if(selDomain) selDomain.addEventListener("change", function(){ customDomainInput.style.display = selDomain.value === "custom" ? "block" : "none"; if(selDomain.value === "custom") customDomainInput.focus(); });
+
+  if(taskInput) taskInput.addEventListener("input", function(){ if(charCount) charCount.textContent = taskInput.value.length + " caracteres"; });
+
+  function buildSystemInstruction(){
+    var role = (selRole.value === "custom" && customRoleInput.value.trim()) ? customRoleInput.value.trim() : selRole.value;
+    var format = (selFormat.value === "custom" && customFormatInput.value.trim()) ? customFormatInput.value.trim() : selFormat.value;
+    var domain = (selDomain.value === "custom" && customDomainInput.value.trim()) ? customDomainInput.value.trim() : selDomain.value;
+    var contextFormat = selContextFormat.value;
+    var compression = selCompression.value;
+
+    if(currentMode === "prompt"){
+      var promptInst = "Você é um Engenheiro Principal de IA e Especialista em Engenharia de Prompt de Alto Nível.\n" +
+        "Sua missão é construir UM ÚNICO PROMPT DEFINITIVO, EXTREMAMENTE ROBUSTO, SEM AMBIGUIDADES, PRONTO PARA USO EM PRODUÇÃO.\n\n" +
+        "PARÂMETROS MANDATÓRIOS SELECIONADOS PELO USUÁRIO:\n" +
+        "- PAPEL / PERSONA: " + role + "\n" +
+        "- CONTRATO / FORMATO DE SAÍDA: " + format + "\n\n" +
+        "ESTRUTURA OBRIGATÓRIA (OS 5 PRINCÍPIOS):\n" +
+        "Emita EXATAMENTE o bloco de código Markdown a seguir preenchido para o caso de uso fornecido:\n" +
+        "```markdown\n" +
+        "# [1. DIREÇÃO]\n" +
+        "Você é " + role + ".\n" +
+        "Sua missão é [Defina com clareza cristalina e métricas o objetivo central].\n" +
+        "Resultado Esperado: [Critério de sucesso].\n\n" +
+        "# [2. ESPECIFICAR O FORMATO]\n" +
+        "Sua resposta DEVE seguir estritamente o seguinte formato de saída, sem nenhum texto introdutório ou conclusivo:\n" +
+        format + "\n";
+      if(chkFewShot.checked){
+        promptInst += "\n# [3. DÊ EXEMPLOS (FEW-SHOT)]\n## Exemplo de Entrada:\n[Cenário realista de entrada]\n\n## Exemplo de Saída Esperada:\n[Saída perfeitamente formatada e determinística]\n";
+      }
+      if(chkQuality.checked){
+        promptInst += "\n# [4. AVALIE A QUALIDADE (CRITÉRIOS DE ACEITE)]\nAntes de emitir o resultado, autoavalie a resposta contra este checklist:\n- [ ] [Critério 1: Fidelidade aos requisitos e ausência de alucinações]\n- [ ] [Critério 2: Conformidade 100% com o formato exigido]\n- [ ] [Critério 3: Completude técnica sem enrolação]\n";
+      }
+      if(chkSteps.checked){
+        promptInst += "\n# [5. DIVIDA O TRABALHO (PASSO A PASSO / CHAIN-OF-THOUGHT)]\nExecute o processamento nas seguintes etapas lógicas:\n1. Etapa 1 - [Análise/Interpretação]\n2. Etapa 2 - [Execução/Transformação]\n3. Etapa 3 - [Validação e Entrega Final]\n";
+      }
+      promptInst += "```\n\nREGRAS DE SAÍDA:\n1. ZERO METATEXTO: Comece direto no '# [1. DIREÇÃO]'. Nada de saudações ou comentários no final.\n2. Emita o bloco de código ```markdown exatamente delimitado para permitir cópia limpa.";
+      return promptInst;
+    } else if(currentMode === "context"){
+      return "Você é um Especialista em Otimização de Janela de Contexto e Arquitetura de Memória para Agentes Autônomos de IA.\n" +
+        "Sua missão é analisar o rascunho ou anotações técnicas do usuário e transformá-los em UMA JANELA DE CONTEXTO DESAMBIGUADA, FACTUAL E ULTRA-EFICIENTE.\n\n" +
+        "PARÂMETROS SELECIONADOS:\n- DOMÍNIO: " + domain + "\n- FORMATO: " + contextFormat + "\n- NÍVEL DE COMPRESSÃO: " + compression + "\n\n" +
+        "DIRETRIZES TÉCNICAS:\n1. Elimine toda hesitação, redundância e pronomes vagos ('acho que', 'talvez', 'foi falado').\n2. Preserve 100% dos fatos, entidades, siglas, limites numéricos, regras de negócio e restrições mandatórias.\n3. Emita a estrutura delimitada abaixo exatamente dentro de um bloco de código:\n\n" +
+        "```xml\n<contexto_agente dominio=\"" + escapeHtml(domain) + "\">\n  <dominio_e_objetivo>\n    [Escopo exato, propósito central do sistema e metas de negócio]\n  </dominio_e_objetivo>\n  <regras_e_diretrizes>\n    - [Regra mandatória 1]\n    - [Regra mandatória 2]\n  </regras_e_diretrizes>\n  <entidades_e_terminologias>\n    - [Termo/Componente/Sigla]: [Significado e papel na arquitetura]\n  </entidades_e_terminologias>\n  <restricoes_e_invariantes>\n    - [O que o agente NUNCA deve fazer ou assumir]\n  </restricoes_e_invariantes>\n</contexto_agente>\n```\n\n" +
+        "SAÍDA: Apenas o bloco de código XML estruturado. ZERO preâmbulo, zero comentários pós-geração.";
+    } else {
+      return "Você é um Especialista Principal em Arquitetura de IA e Engenharia de Prompt.\n" +
+        "Gere DOIS ARTEFATOS COMPLETOS E DESACOPLADOS para o cenário do usuário:\n\n" +
+        "### 📦 1. JANELA DE CONTEXTO OTIMIZADA PARA O AGENTE\nEmita o bloco ```xml com as tags <contexto_agente>, <dominio_e_objetivo>, <regras_e_diretrizes>, <entidades_e_terminologias> e <restricoes_e_invariantes> compactadas e factuais.\n\n" +
+        "### 🎯 2. PROMPT DE ALTA PERFORMANCE (OS 5 PRINCÍPIOS)\nEmita o bloco ```markdown com [1. DIREÇÃO] (" + role + "), [2. ESPECIFICAR O FORMATO] (" + format + "), [3. DÊ EXEMPLOS], [4. AVALIE A QUALIDADE] e [5. DIVIDA O TRABALHO].\n\n" +
+        "SAÍDA: Apenas os dois blocos em Markdown, sem saudações e sem comentários no final.";
+    }
+  }
+
+  // ===== Descoberta de modelo :free do OpenRouter =====
+  function familyRank(id, pref){ for(var i = 0; i < pref.length; i++){ if(id.indexOf(pref[i]) !== -1) return i; } return pref.length; }
+  async function openrouterFreeModels(){
+    if(orModelsCache) return orModelsCache;
+    try{
+      var res = await fetch("https://openrouter.ai/api/v1/models", { signal: AbortSignal.timeout(12000) });
+      if(!res.ok) throw new Error("models " + res.status);
+      var data = await res.json();
+      var pref = ["gpt-oss", "llama", "qwen", "deepseek", "mistral", "gemma", "nemotron", "gemini"];
+      var BAD = /content-safety|guard|moderation|embed|rerank|tts|stt|whisper|omni|(^|[\/-])vl(:|$)|vision|reasoning/i;
+      var BIG = /ultra|-?(?:70b|72b|120b|123b|180b|235b|405b|480b|550b|671b)/i;
+      var free = (data.data || []).filter(function(m){
+        var pr = m.pricing || {};
+        var zero = (pr.prompt === "0" || pr.prompt === 0) && (pr.completion === "0" || pr.completion === 0);
+        return /:free$/.test(m.id || "") && zero && !BAD.test(m.id);
+      }).map(function(m){ return m.id; });
+      free.sort(function(a, b){ return (familyRank(a, pref) + (BIG.test(a) ? 4 : 0)) - (familyRank(b, pref) + (BIG.test(b) ? 4 : 0)); });
+      orModelsCache = free.length ? free : OR_FALLBACK.slice();
+    }catch(e){ orModelsCache = OR_FALLBACK.slice(); }
+    return orModelsCache;
+  }
+
+  // ===== Chamadas =====
+  async function geminiCall(key, model, sys, userText, gcfg){
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(key);
+    var res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ parts: [{ text: userText }] }], generationConfig: gcfg }),
+      signal: AbortSignal.timeout(35000)
+    });
+    if(!res.ok){
+      var ed = await res.json().catch(function(){ return {}; });
+      var msg = ed.error ? ed.error.message : ("Erro HTTP " + res.status);
+      if(res.status === 400 && /thinking/i.test(msg) && gcfg.thinkingConfig){ return geminiCall(key, model, sys, userText, { temperature: 0.2 }); }
+      var ge = new Error(msg); ge.status = res.status; throw ge;
+    }
+    var data = await res.json();
+    var c = data.candidates && data.candidates[0];
+    if(!c || !c.content || !c.content.parts) throw new Error("Resposta vazia do modelo.");
+    return c.content.parts.map(function(x){ return x.text || ""; }).join("");
+  }
+  async function openaiCall(p, key, model, sys, userText){
+    var endpoint = p.id === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://openrouter.ai/api/v1/chat/completions";
+    var headers = { "Content-Type": "application/json", "Authorization": "Bearer " + key };
+    if(p.id === "openrouter"){ headers["HTTP-Referer"] = "https://thallyscezar.github.io"; headers["X-Title"] = "Prompt Studio"; }
+    var r = await fetch(endpoint, {
+      method: "POST", headers: headers,
+      body: JSON.stringify({ model: model, temperature: 0.2, messages: [{ role: "system", content: sys }, { role: "user", content: userText }] }),
+      signal: AbortSignal.timeout(p.id === "openrouter" ? 20000 : 35000)
+    });
+    if(!r.ok){
+      var eo = await r.json().catch(function(){ return {}; });
+      var em = eo.error ? (eo.error.message || JSON.stringify(eo.error)) : ("Erro HTTP " + r.status);
+      var ex = new Error(em); ex.status = r.status; throw ex;
+    }
+    var d2 = await r.json();
+    var ch = d2.choices && d2.choices[0];
+    if(!ch || !ch.message || !ch.message.content) throw new Error("Resposta vazia do modelo.");
+    return { text: ch.message.content, model: d2.model || model };
+  }
+  function isModelError(msg){ return /not found|does not exist|no longer available|unavailable for free|do not have access|not available to|is not a valid|decommission|invalid model|not supported/i.test(msg || ""); }
+  function isOverloaded(err){
+    var m = (err && err.message) || ""; var st = err && err.status;
+    return st === 429 || st === 503 || st === 502 || st === 500 ||
+      /\b(429|503|502|500)\b|too many|rate.?limit|provider returned error|overloaded|temporar|high demand|spikes? in demand|service unavailable|try again later|capacity|no instances|no endpoints/i.test(m);
+  }
+  function isRetryable(err){
+    if(isOverloaded(err)) return true;
+    var n = (err && err.name) || ""; var m = (err && err.message) || "";
+    return n === "TimeoutError" || n === "AbortError" || /aborted|timed out|timeout|failed to fetch|networkerror|load failed|resposta vazia/i.test(m);
+  }
+  async function callOne(p, model, sys, userText){
+    var key = getKey(p);
+    if(p.id === "gemini"){
+      var gcfg = { temperature: 0.2 };
+      if(/gemini-3/.test(model)) gcfg.thinkingConfig = { thinkingLevel: "low" };
+      else if(/gemini-2/.test(model)) gcfg.thinkingConfig = { thinkingBudget: 0 };
+      var gtext = await geminiCall(key, model, sys, userText, gcfg);
+      return { text: gtext, model: model };
+    }
+    return openaiCall(p, key, model, sys, userText);
+  }
+  async function tryModels(p, models, sys, userText, attempts){
+    attempts = attempts || 3;
+    var lastErr = null;
+    var maxModels = Math.min(models.length, 5);
+    for(var i = 0; i < maxModels; i++){
+      for(var a = 0; a < attempts; a++){
+        try{ return await callOne(p, models[i], sys, userText); }
+        catch(err){
+          lastErr = err;
+          if(isModelError(err && err.message)) break;
+          if(isRetryable(err)){ if(a < attempts - 1){ await new Promise(function(r){ setTimeout(r, 700 * (a + 1)); }); continue; } break; }
+          throw err;
+        }
+      }
+    }
+    throw lastErr || new Error("Nenhum modelo disponível.");
+  }
+  async function callProvider(p, sys, userText){
+    if(p.id === "openrouter"){
+      var freeList = await openrouterFreeModels();
+      try{ return await tryModels(p, freeList.slice(0, 4), sys, userText, 1); }
+      catch(err){
+        if(isRetryable(err)) throw new Error("Os modelos :free do OpenRouter estão lotados agora (compartilhados). Tente de novo em alguns segundos.");
+        throw err;
+      }
+    }
+    try{ return await tryModels(p, p.models, sys, userText, 3); }
+    catch(err){
+      if(isRetryable(err)) throw new Error(p.name + " está com alta demanda agora. Tente de novo em alguns segundos.");
+      throw err;
+    }
+  }
+
+  // ===== Cards =====
+  var lastText = {};
+  function card(p){ return $("card-" + p.id); }
+  function headHtml(p, model){
+    return '<div class="rc-head"><span class="rc-prov"><span class="rc-ic">' + p.icon + '</span>' + p.name +
+           '</span><span class="rc-model">' + escapeHtml(model || p.label) + '</span></div>';
+  }
+  function setCardIdle(p){ var el = card(p); if(!el) return; el.className = "result-card"; el.innerHTML = headHtml(p) + '<div class="rc-state">Aguardando. Preencha a chave e clique em gerar.</div>'; }
+  function setCardNoKey(p){ var el = card(p); if(!el) return; el.className = "result-card"; el.innerHTML = headHtml(p) + '<div class="rc-state err">Sem chave. Cole a chave do ' + p.name + ' acima para incluir na comparação.</div>'; }
+  function setCardLoading(p){ var el = card(p); if(!el) return; el.className = "result-card"; el.innerHTML = headHtml(p) + '<div class="rc-state"><div class="spinner"></div>Gerando...</div>'; }
+  function setCardError(p, msg){ var el = card(p); if(!el) return; el.className = "result-card"; el.innerHTML = headHtml(p) + '<div class="rc-state err">' + escapeHtml(msg) + '</div>'; }
+  function setCardResult(p, text, model, secs){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    lastText[p.id] = text;
+    var body = '<div class="rc-body">' + renderMarkdown(text) + '</div>';
+    var foot = '<div class="rc-foot"><span class="rc-time">⚡ ' + secs + 's · ' + text.length + ' car.</span>' +
+               '<button type="button" class="rc-copy" data-copy="' + p.id + '">📋 Copiar</button></div>';
+    el.innerHTML = headHtml(p, model) + body + foot;
+  }
+  document.addEventListener("click", function(e){
+    var b = e.target && e.target.closest ? e.target.closest(".rc-copy") : null;
+    if(!b) return;
+    var id = b.dataset.copy, txt = lastText[id] || "";
+    if(!txt) return;
+    navigator.clipboard.writeText(txt).then(function(){
+      var old = b.textContent; b.textContent = "✓ Copiado"; b.classList.add("copied");
+      setTimeout(function(){ b.textContent = old; b.classList.remove("copied"); }, 1600);
+      showToast("Resultado copiado!", "ok");
+    }).catch(function(){ showToast("Não consegui copiar.", "err"); });
+  });
+
+  // ===== Disparo paralelo =====
+  var running = false;
+  function runAll(){
+    if(running) return;
+    var text = taskInput ? taskInput.value.trim() : "";
+    if(!text){ showToast("Descreva a tarefa ou cole as anotações.", "err"); if(taskInput) taskInput.focus(); return; }
+    var anyKey = PROVIDERS.some(function(p){ return getKey(p); });
+    if(!anyKey){ showToast("Preencha ao menos 1 chave de API.", "err"); return; }
+    running = true;
+    if(btnRun) btnRun.disabled = true;
+    var sys = buildSystemInstruction();
+    var pending = [];
+    PROVIDERS.forEach(function(p){
+      if(!getKey(p)){ setCardNoKey(p); return; }
+      setCardLoading(p);
+      var t0 = performance.now();
+      var pr = callProvider(p, sys, text).then(function(r){
+        setCardResult(p, (r.text || "").trim(), r.model, ((performance.now() - t0) / 1000).toFixed(2));
+      }).catch(function(err){
+        var m = (err && err.message) ? err.message : "Falha na requisição";
+        if(err && (err.name === "TimeoutError" || err.name === "AbortError")) m = p.name + ": tempo esgotado, tente de novo.";
+        setCardError(p, m);
+      });
+      pending.push(pr);
+    });
+    Promise.allSettled(pending).then(function(){ running = false; if(btnRun) btnRun.disabled = false; });
+  }
+  if(btnRun) btnRun.addEventListener("click", runAll);
+  document.addEventListener("keydown", function(e){ if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); runAll(); } });
+
+  // ===== Init =====
+  loadKeys();
+  switchMode("prompt");
+  PROVIDERS.forEach(setCardIdle);
+
+})();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de APIs de IA Gratuitas · Google Gemini, Groq &amp; OpenRouter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0f14;
+  --bg2:#161822;
+  --card:#1e202e;
+  --card-hover:#252839;
+  --line:#2e3247;
+  --line2:#414763;
+  --ink:#f8f8f2;
+  --ink2:#d4d7e6;
+  --muted:#8b92b2;
+  --purple:#bd93f9;
+  --cyan:#8be9fd;
+  --lime:#50fa7b;
+  --orange:#ffb86c;
+  --yellow:#f1fa8c;
+  --red:#ff5555;
+  --ease:cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+  min-height:100vh;
+  line-height:1.6;
+}
+
+.app-shell{
+  max-width:1160px;
+  margin:0 auto;
+  padding:24px 20px 80px;
+  display:flex;
+  flex-direction:column;
+  gap:32px;
+}
+
+/* Nav */
+.top-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:12px 18px;
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.brand-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--ink);
+  font:700 .86rem "Cascadia Code",monospace;
+  letter-spacing:.08em;
+}
+.brand-link i{color:var(--purple);font-style:normal;font-size:1.1rem}
+.nav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-btn{
+  color:var(--muted);
+  text-decoration:none;
+  font:500 .78rem "Inter",sans-serif;
+  padding:6px 14px;
+  border-radius:8px;
+  border:1px solid transparent;
+  transition:all .2s var(--ease);
+}
+.nav-btn:hover{color:var(--ink);background:rgba(255,255,255,0.05);border-color:var(--line)}
+.nav-btn.primary{
+  color:var(--cyan);
+  border-color:color-mix(in srgb,var(--cyan) 40%,transparent);
+  background:color-mix(in srgb,var(--cyan) 10%,transparent);
+}
+.nav-btn.accent{
+  color:var(--purple);
+  border-color:color-mix(in srgb,var(--purple) 40%,transparent);
+  background:color-mix(in srgb,var(--purple) 10%,transparent);
+}
+
+/* Hero */
+.hero{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:20px 4px 10px;
+}
+.hero-tag{
+  align-self:flex-start;
+  font:700 .7rem "Cascadia Code",monospace;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--lime);
+  background:color-mix(in srgb,var(--lime) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--lime) 30%,transparent);
+  padding:4px 12px;
+  border-radius:999px;
+}
+.hero h1{
+  font:700 clamp(2rem, 4vw, 2.7rem) "Newsreader",Georgia,serif;
+  letter-spacing:-.03em;
+  line-height:1.2;
+}
+.hero h1 span{color:var(--purple)}
+.hero p{
+  color:var(--ink2);
+  font-size:clamp(.92rem, 1.4vw, 1.02rem);
+  max-width:80ch;
+}
+
+/* Quick Nav Cards */
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px;
+}
+.quick-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:20px;
+  text-decoration:none;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  transition:all .22s var(--ease);
+}
+.quick-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--purple);
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+}
+.quick-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.quick-card-icon{font-size:1.6rem}
+.quick-badge{
+  font:600 .68rem "Cascadia Code",monospace;
+  padding:3px 8px;
+  border-radius:6px;
+}
+.quick-badge.free{background:rgba(80,250,123,0.12);color:var(--lime);border:1px solid rgba(80,250,123,0.3)}
+.quick-badge.speed{background:rgba(139,233,253,0.12);color:var(--cyan);border:1px solid rgba(139,233,253,0.3)}
+.quick-badge.open{background:rgba(189,147,249,0.12);color:var(--purple);border:1px solid rgba(189,147,249,0.3)}
+.quick-card h3{font:700 1.05rem "Inter",sans-serif;color:var(--ink)}
+.quick-card p{font-size:.82rem;color:var(--muted);line-height:1.5}
+
+/* Step Section Card */
+.guide-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);
+}
+.guide-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding-bottom:18px;
+  flex-wrap:wrap;
+}
+.guide-title-box{display:flex;gap:14px;align-items:center}
+.guide-icon{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  background:color-mix(in srgb,var(--purple) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--purple) 35%,transparent);
+  display:grid;
+  place-items:center;
+  font-size:1.5rem;
+  flex-shrink:0;
+}
+.guide-title-box h2{font:700 1.3rem "Inter",sans-serif;color:var(--ink)}
+.guide-title-box span{font-size:.82rem;color:var(--muted)}
+.btn-external{
+  background:linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+  color:#191a21;
+  text-decoration:none;
+  font:700 .82rem "Inter",sans-serif;
+  padding:10px 18px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:all .2s var(--ease);
+  box-shadow:0 4px 14px rgba(189,147,249,0.25);
+}
+.btn-external:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.08);
+  box-shadow:0 6px 18px rgba(189,147,249,0.4);
+}
+
+/* Steps List */
+.steps-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.step-item{
+  display:flex;
+  gap:16px;
+  background:#14151f;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:16px 18px;
+  align-items:flex-start;
+}
+.step-num{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:color-mix(in srgb,var(--cyan) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--cyan) 35%,transparent);
+  color:var(--cyan);
+  font:700 .85rem "Cascadia Code",monospace;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+.step-content{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  flex:1;
+}
+.step-content h4{
+  font:700 .9rem "Inter",sans-serif;
+  color:var(--ink);
+}
+.step-content p{
+  font-size:.84rem;
+  color:var(--ink2);
+  line-height:1.55;
+}
+.step-content code{
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--line);
+  padding:2px 6px;
+  border-radius:4px;
+  font:600 .76rem "Cascadia Code",monospace;
+  color:var(--purple);
+}
+
+/* Spec Highlight Box */
+.spec-box{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:14px;
+}
+.spec-col{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.spec-label{
+  font:600 .7rem "Cascadia Code",monospace;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+}
+.spec-val{
+  font:700 .88rem "Inter",sans-serif;
+  color:var(--lime);
+}
+
+/* Visual Mockup Box */
+.mockup-box{
+  background:#101118;
+  border:1px dashed var(--line2);
+  border-radius:10px;
+  padding:14px 18px;
+  font:500 .8rem/1.6 "Cascadia Code",monospace;
+  color:var(--ink2);
+}
+
+/* Security Alert */
+.alert-box{
+  background:rgba(255,184,108,0.08);
+  border:1px solid rgba(255,184,108,0.3);
+  border-radius:12px;
+  padding:16px 20px;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.alert-box i{font-style:normal;font-size:1.4rem}
+.alert-text h4{font:700 .9rem "Inter",sans-serif;color:var(--orange);margin-bottom:4px}
+.alert-text p{font-size:.82rem;color:var(--ink2);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Top Bar -->
+  <nav class="top-nav">
+    <a href="index.html" class="brand-link">
+      <i>◆</i>
+      <span>ESTUDOS / BACKEND</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">← Início</a>
+      <a href="acervo.html" class="nav-btn">Acervo</a>
+      <a href="ia.html" class="nav-btn">Caderno de IA</a>
+      <a href="prompt-studio.html" class="nav-btn accent">🧠 Prompt Studio</a>
+      <a href="refinador.html" class="nav-btn">✨ Formatador</a>
+      <a href="tutorial-api.html" class="nav-btn primary">🔑 Guia de APIs</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-tag">Guia Oficial · Camadas Gratuitas &amp; Sem Cartão de Crédito</div>
+    <h1>Como Obter Suas <span>Chaves de API Gratuitas</span></h1>
+    <p>Para usar o <strong>Prompt Studio</strong> e o <strong>Formatador de Texto</strong> sem pagar nada, você pode gerar chaves gratuitas diretamente nos três maiores provedores com suporte aberto para desenvolvedores. Suas chaves ficam salvas <strong>100% no seu navegador</strong> (armazenamento local) e nunca são enviadas a terceiros.</p>
+  </header>
+
+  <!-- Quick Grid -->
+  <div class="quick-grid">
+    <a href="#gemini" class="quick-card">
+      <div class="quick-card-head">
+        <span class="quick-card-icon">⚡</span>
+        <span class="quick-badge free">1.500 req/dia Free</span>
+      </div>
+      <h3>Google AI Studio (Gemini)</h3>
+      <p>Modelos Gemini 2.5 Flash, 2.5 Pro e 3.5 Flash. Ideal para raciocínio profundo, multimodalidade e análise de código.</p>
+    </a>
+
+    <a href="#groq" class="quick-card">
+      <div class="quick-card-head">
+        <span class="quick-card-icon">🚀</span>
+        <span class="quick-badge speed">800 tokens/s (LPU)</span>
+      </div>
+      <h3>Groq Cloud (Free LPU)</h3>
+      <p>Execução instantânea de modelos de ponta como <strong>Llama 3.3 70B</strong> e <strong>DeepSeek R1</strong> com latência quase nula.</p>
+    </a>
+
+    <a href="#openrouter" class="quick-card">
+      <div class="quick-card-head">
+        <span class="quick-card-icon">🌐</span>
+        <span class="quick-badge open">Modelos :free</span>
+      </div>
+      <h3>OpenRouter Free Hub</h3>
+      <p>Acesso via rota gratuita a múltiplos modelos open-source (Llama 3.3 70B, DeepSeek R1, Qwen 2.5 Coder).</p>
+    </a>
+  </div>
+
+  <!-- Section 1: Google Gemini -->
+  <section class="guide-card" id="gemini">
+    <div class="guide-header">
+      <div class="guide-title-box">
+        <div class="guide-icon">⚡</div>
+        <div>
+          <h2>1. Google AI Studio (Google Gemini)</h2>
+          <span>Modelos: gemini-2.5-flash · gemini-2.5-pro · gemini-3.5-flash</span>
+        </div>
+      </div>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-external">
+        <span>Abrir Google AI Studio ↗</span>
+      </a>
+    </div>
+
+    <div class="spec-box">
+      <div class="spec-col">
+        <span class="spec-label">Custo</span>
+        <span class="spec-val">100% Gratuito (Sem Cartão)</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Limite Diário Gratuito</span>
+        <span class="spec-val">1.500 requisições por dia</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Limite por Minuto</span>
+        <span class="spec-val">15 requisições / min</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Formato da Chave</span>
+        <span class="spec-val" style="color:var(--purple)">AIzaSy... (39 caracteres)</span>
+      </div>
+    </div>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>Acesse o Google AI Studio</h4>
+          <p>Entre no link oficial: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--cyan)">aistudio.google.com/app/apikey</a> e faça login com qualquer conta Google (Gmail pessoal ou corporativa).</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Crie sua Chave de API</h4>
+          <p>Clique no botão azul superior <strong>"Create API key"</strong> (ou "Get API key"). Em seguida, selecione <strong>"Create API key in new project"</strong> para criar um projeto GCP isolado e gratuito automaticamente.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Copie a Chave Gerada</h4>
+          <p>Uma janela modal exibirá uma chave começando com <code>AIzaSy...</code>. Clique no ícone de cópia 📋 e cole no campo de Chave da API no <strong>Prompt Studio</strong> ou no <strong>Formatador</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mockup-box">
+      <div>💡 <strong>Dica Pro:</strong> Se você tiver faturamento ativado (Google Cloud Billing), sua chave também terá acesso aos modelos <code>gemini-2.5-pro</code> sem limites restritos de requisições por minuto.</div>
+    </div>
+  </section>
+
+  <!-- Section 2: Groq Cloud -->
+  <section class="guide-card" id="groq">
+    <div class="guide-header">
+      <div class="guide-title-box">
+        <div class="guide-icon" style="background:color-mix(in srgb,var(--cyan) 15%,transparent);border-color:color-mix(in srgb,var(--cyan) 35%,transparent);color:var(--cyan)">🚀</div>
+        <div>
+          <h2>2. Groq Cloud (Free LPU)</h2>
+          <span>Modelos: llama-3.3-70b-versatile · deepseek-r1-distill-llama-70b · llama-3.1-8b-instant</span>
+        </div>
+      </div>
+      <a href="https://console.groq.com/keys" target="_blank" rel="noopener" class="btn-external" style="background:linear-gradient(135deg, var(--cyan) 0%, var(--lime) 100%)">
+        <span>Abrir Groq Console ↗</span>
+      </a>
+    </div>
+
+    <div class="spec-box">
+      <div class="spec-col">
+        <span class="spec-label">Custo</span>
+        <span class="spec-val">100% Gratuito (Sem Cartão)</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Velocidade de Geração</span>
+        <span class="spec-val">~500 a 800 tokens / segundo</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Modelo Recomendado</span>
+        <span class="spec-val" style="color:var(--cyan)">llama-3.3-70b-versatile</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Formato da Chave</span>
+        <span class="spec-val" style="color:var(--purple)">gsk_... (56 caracteres)</span>
+      </div>
+    </div>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>Acesse o Console da Groq</h4>
+          <p>Acesse <a href="https://console.groq.com/keys" target="_blank" rel="noopener" style="color:var(--cyan)">console.groq.com/keys</a> e faça login rápido com sua conta GitHub ou Google.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Gere uma API Key</h4>
+          <p>No menu lateral esquerdo, clique em <strong>"API Keys"</strong> e em seguida no botão <strong>"Create API Key"</strong>. Dê um nome qualquer para sua chave (ex: <code>PromptStudio</code>) e confirme.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Copie a Chave Imediatamente</h4>
+          <p>A Groq exibe a chave completa iniciando com <code>gsk_...</code> apenas uma vez por motivos de segurança. Copie e cole na aba <strong>"🚀 Groq Cloud"</strong> da nossa ferramenta.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mockup-box">
+      <div>⚡ <strong>Por que a Groq é tão rápida?</strong> A Groq não usa GPUs tradicionais da Nvidia. Ela utiliza <strong>LPUs (Language Processing Units)</strong> desenhadas especificamente para processamento de linguagem, entregando respostas quase instantâneas.</div>
+    </div>
+  </section>
+
+  <!-- Section 3: OpenRouter -->
+  <section class="guide-card" id="openrouter">
+    <div class="guide-header">
+      <div class="guide-title-box">
+        <div class="guide-icon" style="background:color-mix(in srgb,var(--lime) 15%,transparent);border-color:color-mix(in srgb,var(--lime) 35%,transparent);color:var(--lime)">🌐</div>
+        <div>
+          <h2>3. OpenRouter (Modelos Gratuitos :free)</h2>
+          <span>Modelos: meta-llama/llama-3.3-70b-instruct:free · deepseek/deepseek-r1:free</span>
+        </div>
+      </div>
+      <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" class="btn-external" style="background:linear-gradient(135deg, var(--lime) 0%, var(--purple) 100%)">
+        <span>Abrir OpenRouter Keys ↗</span>
+      </a>
+    </div>
+
+    <div class="spec-box">
+      <div class="spec-col">
+        <span class="spec-label">Custo</span>
+        <span class="spec-val">Rota ':free' 100% Gratuita</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Modelos Disponíveis</span>
+        <span class="spec-val">Llama 3.3, DeepSeek R1, Qwen</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Cartão Exigido</span>
+        <span class="spec-val">Não (Saldo $0 permitido)</span>
+      </div>
+      <div class="spec-col">
+        <span class="spec-label">Formato da Chave</span>
+        <span class="spec-val" style="color:var(--purple)">sk-or-v1-... (73 caracteres)</span>
+      </div>
+    </div>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>Acesse o OpenRouter</h4>
+          <p>Visite <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--cyan)">openrouter.ai/keys</a> e conecte com sua conta Google, GitHub ou Discord.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Crie sua Chave de Acesso</h4>
+          <p>Clique em <strong>"Create Key"</strong>. Dê um nome identificador e deixe o limite de crédito em branco ou padrão ($0).</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Cole na Ferramenta</h4>
+          <p>Copie a chave gerada <code>sk-or-v1-...</code> e cole na aba <strong>"🌐 OpenRouter"</strong>. Ao usar os modelos marcados com <code>:free</code>, você não gasta nenhum centavo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Alert -->
+  <div class="alert-box">
+    <i>🛡️</i>
+    <div class="alert-text">
+      <h4>Segurança &amp; Privacidade: Como suas chaves são tratadas?</h4>
+      <p>Todas as ferramentas deste portal utilizam a arquitetura <strong>BYOK (Bring Your Own Key)</strong> diretamente no navegador. Suas chaves são salvas estritamente no seu <code>localStorage</code> e as chamadas vão do seu computador diretamente para a API oficial do provedor (Google, Groq ou OpenRouter). Nenhuma chave é gravada em servidores intermediários ou em arquivos comitados no repositório.</p>
+    </div>
+  </div>
+
+  <!-- Bottom Action -->
+  <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;padding:20px 0">
+    <a href="prompt-studio.html" class="btn-external" style="font-size:.92rem;padding:12px 24px">
+      <span>Ir para o Prompt Studio 🧠</span>
+    </a>
+    <a href="refinador.html" class="btn-external" style="background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:.92rem;padding:12px 24px">
+      <span>Ir para o Formatador de Texto ✨</span>
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>

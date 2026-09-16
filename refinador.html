@@ -221,6 +221,39 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
   background:var(--lime);
 }
 
+/* Provider Tabs */
+.provider-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.provider-tab{
+  padding:7px 14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--muted);
+  font:600 .78rem "Inter",sans-serif;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .2s var(--ease);
+}
+.provider-tab:hover{
+  background:rgba(255,255,255,0.07);
+  color:var(--ink);
+  border-color:var(--line2);
+}
+.provider-tab.active{
+  background:color-mix(in srgb,var(--purple) 18%,transparent);
+  border-color:var(--purple);
+  color:#fff;
+  box-shadow:0 0 12px rgba(189,147,249,0.2);
+}
+
 /* Uniform Form Row */
 .form-row{
   display:grid;
@@ -499,6 +532,14 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
   font-weight:600;
   box-shadow:0 0 12px rgba(189,147,249,0.15);
 }
+.preset-btn.featured{
+  border-color:color-mix(in srgb,var(--purple) 50%,transparent);
+  background:linear-gradient(135deg,rgba(189,147,249,0.15) 0%,rgba(139,233,253,0.08) 100%);
+}
+.preset-btn.featured:hover{
+  border-color:var(--purple);
+  box-shadow:0 0 14px rgba(189,147,249,0.28);
+}
 
 /* Draft Area */
 .textarea-wrap{display:flex;flex-direction:column;gap:6px;position:relative}
@@ -689,6 +730,75 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
   line-height:1.55;
 }
 
+/* Code Blocks with Copy Feature */
+.code-box{
+  background:#14151d;
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin:14px 0;
+  overflow:hidden;
+}
+.code-box-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(255,255,255,0.03);
+  border-bottom:1px solid var(--line);
+  padding:6px 12px;
+  font:600 .72rem "Cascadia Code",monospace;
+  color:var(--purple);
+}
+.code-box-head .code-copy-btn{
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:6px;
+  color:var(--muted);
+  font:500 .7rem "Inter",sans-serif;
+  padding:3px 8px;
+  cursor:pointer;
+  transition:all .18s;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.code-box-head .code-copy-btn:hover{
+  background:var(--line);
+  color:var(--ink);
+}
+.code-box-head .code-copy-btn.copied{
+  background:var(--lime);
+  border-color:var(--lime);
+  color:#191a21;
+  font-weight:700;
+}
+.code-pre{
+  margin:0;
+  padding:14px;
+  overflow-x:auto;
+  font:400 .82rem/1.6 "Cascadia Code",monospace;
+  color:var(--ink);
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.code-pre code{font-family:inherit}
+
+.out-btn.accent-context{
+  border-color:color-mix(in srgb,var(--cyan) 40%,transparent);
+  background:color-mix(in srgb,var(--cyan) 10%,transparent);
+  color:var(--cyan);
+}
+.out-btn.accent-context:hover{
+  background:color-mix(in srgb,var(--cyan) 20%,transparent);
+}
+.out-btn.accent-prompt{
+  border-color:color-mix(in srgb,var(--purple) 40%,transparent);
+  background:color-mix(in srgb,var(--purple) 10%,transparent);
+  color:var(--purple);
+}
+.out-btn.accent-prompt:hover{
+  background:color-mix(in srgb,var(--purple) 20%,transparent);
+}
+
 .diff-view{
   display:none;
   padding:16px;
@@ -838,6 +948,47 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
   background:#1c2921;
   color:#a3fbc0;
 }
+/* ===== Modo comparacao multi-provedor ===== */
+.keys-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.key-field{display:flex;flex-direction:column;gap:6px}
+.kf-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;font-weight:700;color:var(--ink2)}
+.kf-label a{font-size:.68rem;font-weight:600;color:var(--cyan);text-decoration:none}
+.kf-label a:hover{text-decoration:underline}
+.kf-prov{display:flex;align-items:center;gap:6px}
+.kf-dot{width:8px;height:8px;border-radius:50%;background:var(--line2);flex:none;transition:.2s var(--ease)}
+.kf-dot.ok{background:var(--lime);box-shadow:0 0 6px var(--lime)}
+.compare-section{margin-top:22px}
+.compare-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.compare-head .ch-title{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:800;color:var(--ink)}
+.compare-head .ch-sub{font-size:.74rem;color:var(--muted)}
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.result-card{background:var(--card2);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:220px;overflow:hidden}
+.result-card .rc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg3)}
+.rc-prov{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.86rem;color:var(--ink)}
+.rc-prov .rc-ic{font-size:1.05rem}
+.rc-model{font-size:.66rem;color:var(--muted);font-family:ui-monospace,monospace;text-align:right;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-body{flex:1;padding:14px;font-size:.82rem;line-height:1.55;color:var(--ink2);overflow-y:auto;max-height:480px;white-space:normal;word-break:break-word}
+.rc-body p{margin:0 0 .6em}
+.rc-body h2,.rc-body h3{color:var(--purple);margin:.5em 0 .3em;font-size:.92rem}
+.rc-body ul{margin:.3em 0 .6em;padding-left:1.2em}
+.rc-body li{margin:.15em 0}
+.rc-body code{background:var(--bg);padding:1px 5px;border-radius:5px;font-size:.78rem}
+.rc-body strong{color:var(--ink)}
+.rc-body blockquote{border-left:3px solid var(--line2);margin:.4em 0;padding-left:10px;color:var(--muted)}
+.rc-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:28px 16px;color:var(--muted);font-size:.8rem;flex:1;line-height:1.5}
+.rc-state.err{color:var(--red)}
+.rc-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:var(--bg3)}
+.rc-time{font-size:.7rem;color:var(--muted)}
+.rc-copy{border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;transition:.15s var(--ease)}
+.rc-copy:hover{border-color:var(--purple);color:var(--purple)}
+.rc-copy.copied{border-color:var(--lime);color:var(--lime)}
+.rc-actions{display:flex;gap:6px;align-items:center}
+.rc-diffbtn{border-color:var(--line2)}
+.rc-diffwrap{padding:14px;font-size:.82rem;line-height:1.65;color:var(--ink2);overflow-y:auto;max-height:480px;white-space:normal;word-break:break-word}
+.rc-diffwrap ins{background:rgba(80,250,123,.20);color:var(--lime);text-decoration:none;border-radius:3px;padding:0 2px}
+.rc-diffwrap del{background:rgba(255,85,85,.16);color:var(--red);border-radius:3px;padding:0 2px}
+.workspace.compare-layout{display:block}
+@media(max-width:820px){.keys-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -854,94 +1005,83 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       <a href="index.html" class="nav-btn">← Início</a>
       <a href="acervo.html" class="nav-btn">Acervo</a>
       <a href="ia.html" class="nav-btn">Caderno de IA</a>
-      <a href="refinador.html" class="nav-btn primary">✨ Formatador Gemini</a>
+      <a href="prompt-studio.html" class="nav-btn accent">🧠 Prompt Studio</a>
+      <a href="refinador.html" class="nav-btn primary">✨ Formatador</a>
+      <a href="tutorial-api.html" class="nav-btn">🔑 Guia de APIs</a>
     </div>
   </nav>
 
   <!-- Hero Banner -->
   <header class="hero">
-    <div class="hero-tag">Google Gemini · Alta Disponibilidade &amp; Failover Automático (v2.3)</div>
+    <div class="hero-tag">Multi-Provedor · Google Gemini · Groq Cloud (Free LPU) · OpenRouter (:free)</div>
     <h1>Formatador &amp; <span>Refinador de Texto</span></h1>
-    <p>Transforme suas ideias, anotações e rascunhos em textos técnicos e corporativos impecáveis: e-mails, comentários de tasks/issues, redação formal elegante, inglês profissional, comunicados de incidentes e mensagens diretas.</p>
+    <p>Transforme suas anotações, ideias e mensagens em redações técnicas, e-mails executivos, tasks/issues para Jira e comunicados profissionais de alto padrão.</p>
   </header>
 
-  <!-- Configuration Card (BYOK Gemini) -->
+  <!-- Configuration Card (Multi-Provider BYOK) -->
   <section class="setup-card">
     <div class="setup-header">
       <div class="setup-title-group">
         <div class="setup-icon">🔑</div>
         <div>
-          <div class="setup-heading">Configuração da API Google Gemini (Gratuito &amp; Pro)</div>
-          <div class="setup-sub">Conecte sua chave do Google AI Studio · Suporte total a contas Gratuitas e Plano Pro</div>
+          <div class="setup-heading" id="setupHeading">Configuração de IA Multi-Provedor (Gratuito &amp; Pro)</div>
+          <div class="setup-sub" id="setupSub">Conecte sua chave Google AI Studio, Groq Cloud ou OpenRouter · 100% no seu navegador</div>
         </div>
       </div>
       <div class="setup-badges">
-        <span class="badge free">⭐ Gratuito &amp; Plano Pro</span>
+        <span class="badge free" id="setupBadgeFree">⭐ Gratuito &amp; Pro</span>
         <span class="badge local"><span class="dot"></span>Salva apenas no seu navegador</span>
       </div>
     </div>
 
-    <!-- Form Row: Perfectly Aligned Grid -->
-    <div class="form-row">
-      <!-- Col 1: Key Input -->
-      <div class="field-col">
-        <label class="field-label" for="geminiKey">
-          <span>Chave da API Gemini</span>
-          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Obter chave gratuita no AI Studio ↗</a>
-        </label>
+    <!-- Chaves dos 3 provedores (BYOK) -->
+    <div class="keys-grid">
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-gemini"></span>Gemini</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
         <div class="input-container">
-          <input type="password" id="geminiKey" class="text-input" placeholder="Cole sua chave aqui (ex: AIzaSy... ou AQ...)" autocomplete="off" spellcheck="false">
-          <button type="button" id="toggleMask" class="btn-toggle-mask" title="Mostrar/Ocultar chave">👁️</button>
+          <input type="password" id="key-gemini" class="text-input" placeholder="AIzaSy... ou AQ..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-gemini" title="Mostrar/Ocultar">👁️</button>
         </div>
       </div>
-
-      <!-- Col 2: Model Selector -->
-      <div class="field-col">
-        <label class="field-label" for="geminiModel">
-          <span>Modelo de IA</span>
-        </label>
-        <select id="geminiModel" class="select-input">
-          <optgroup label="⚡ Modelos de Alta Disponibilidade (Recomendado)">
-            <option value="gemini-3.5-flash" selected>gemini-3.5-flash (Alta Disponibilidade &amp; Ultra Estável)</option>
-            <option value="gemini-3.8-flash">gemini-3.8-flash (Nova Geração)</option>
-            <option value="gemini-3.7-flash">gemini-3.7-flash (Rápido)</option>
-            <option value="gemini-3.6-flash">gemini-3.6-flash (Equilibrado)</option>
-          </optgroup>
-          <optgroup label="⭐ Modelos Pro (Para Chaves com Billing Pro)">
-            <option value="gemini-pro-latest">gemini-pro-latest (Modelo Pro Atualizado)</option>
-            <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (Nova Geração Pro)</option>
-          </optgroup>
-        </select>
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-groq"></span>Groq</span>
+          <a href="https://console.groq.com/keys" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
+        <div class="input-container">
+          <input type="password" id="key-groq" class="text-input" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-groq" title="Mostrar/Ocultar">👁️</button>
+        </div>
       </div>
-
-      <!-- Col 3: Actions Group -->
-      <div class="field-col">
-        <label class="field-label">Ações</label>
-        <div class="btn-group">
-          <button type="button" id="btnTest" class="btn-action primary" title="Testar se a chave e o modelo estão respondendo">
-            <span>⚡ Testar Conexão</span>
-          </button>
-          <button type="button" id="btnClearKey" class="btn-action danger" title="Limpar chave do navegador">
-            <span>🗑️ Limpar</span>
-          </button>
+      <div class="key-field">
+        <div class="kf-label">
+          <span class="kf-prov"><span class="kf-dot" id="dot-openrouter"></span>OpenRouter</span>
+          <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">chave grátis ↗</a>
+        </div>
+        <div class="input-container">
+          <input type="password" id="key-openrouter" class="text-input" placeholder="sk-or-..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-mask" data-mask="key-openrouter" title="Mostrar/Ocultar">👁️</button>
         </div>
       </div>
     </div>
 
-    <!-- Status Bar (Horizontal, below the inputs) -->
+    <!-- Status Bar -->
     <div class="status-bar" id="statusBar">
       <div class="status-indicator">
         <span class="status-dot" id="statusDot"></span>
-        <span class="status-text" id="statusText">Aguardando chave da API</span>
+        <span class="status-text" id="statusText">Preencha ao menos 1 chave. Elas ficam salvas só no seu navegador.</span>
       </div>
-      <div class="status-hint">
-        <span>Plano gratuito: até 1.500 requisições diárias sem cartão de crédito</span>
+      <div class="status-hint" id="statusHint">
+        <span>Ao gerar, dispara Gemini + Groq + OpenRouter em paralelo</span>
       </div>
     </div>
   </section>
 
   <!-- Main Split Workspace -->
-  <main class="workspace">
+  <main class="workspace compare-layout">
 
     <!-- Input Section -->
     <section class="panel">
@@ -957,7 +1097,19 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
         </div>
       </div>
 
-            <!-- Presets de Formatação -->
+      <!-- Callout to Prompt Studio -->
+      <div style="background:rgba(189,147,249,0.08);border:1px solid rgba(189,147,249,0.25);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.3rem">🧠</span>
+          <div style="font-size:.82rem">
+            <strong style="color:var(--purple)">Precisa de Engenharia de Prompt ou Janela de Contexto?</strong>
+            <div style="color:var(--muted);font-size:.76rem">Acesse o Studio com controles de Persona, Contrato de Saída (JSON/Markdown) e compressão de tokens.</div>
+          </div>
+        </div>
+        <a href="prompt-studio.html" class="nav-btn accent" style="font-weight:700;padding:6px 16px">Abrir Prompt Studio ↗</a>
+      </div>
+
+      <!-- Presets de Formatação -->
       <div class="preset-section">
         <div class="preset-label">Selecione o Formato Desejado:</div>
         <div class="preset-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:8px;">
@@ -994,7 +1146,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
 
       <!-- Textarea -->
       <div class="textarea-wrap">
-        <textarea id="draftText" class="draft-textarea" placeholder="Escreva ou cole aqui suas ideias e anotações sem filtro. Exemplos:&#10;• 'fiz o ajuste na query de relatórios que tava lenta, criei o índice composto e agora o tempo caiu de 8s pra 200ms, subi no branch e ta pronto pra mergear'&#10;• 'preciso avisar a diretoria que a integração com o parceiro vai adiantar 3 dias porque fechamos os contratos de api antes do prazo'...&#10;&#10;O Gemini vai organizar tudo no formato selecionado acima."></textarea>
+        <textarea id="draftText" class="draft-textarea" placeholder="Escreva ou cole aqui suas ideias e anotações sem filtro. Exemplos:&#10;• 'fiz o ajuste na query de relatórios que tava lenta, criei o índice composto e agora o tempo caiu de 8s pra 200ms, subi no branch e ta pronto pra mergear'&#10;• 'preciso avisar a diretoria que a integração com o parceiro vai adiantar 3 dias porque fechamos os contratos de api antes do prazo'...&#10;&#10;O modelo selecionado vai organizar tudo no formato escolhido acima."></textarea>
       </div>
 
       <!-- Custom Prompt Instruction -->
@@ -1005,7 +1157,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       <!-- Submit Action -->
       <div class="action-row">
         <button type="button" id="btnRefine" class="btn-refine">
-          <span id="btnRefineLabel">✨ Deixar Mais Formal &amp; Bonito</span>
+          <span id="btnRefineLabel">✍️ Corrigir &amp; Formatar (Fiel)</span>
         </button>
         <div class="kbd-hint">
           <span>Disparar:</span>
@@ -1014,77 +1166,21 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       </div>
     </section>
 
-    <!-- Output Section -->
-    <section class="panel output-panel">
-      <div class="panel-head">
-        <div class="panel-title">
-          <i>💎</i>
-          <span>Texto Formatado &amp; Polido</span>
-        </div>
-        <div class="output-actions">
-          <button type="button" id="btnToggleDiff" class="out-btn" style="display:none" title="Ver comparação Antes vs Depois">
-            🔀 Antes / Depois
-          </button>
-          <button type="button" id="btnReuse" class="out-btn" style="display:none" title="Colocar resultado no rascunho para novo refino">
-            🔄 Reutilizar
-          </button>
-          <button type="button" id="btnCopy" class="out-btn primary" style="display:none" title="Copiar texto para área de transferência">
-            📋 Copiar
-          </button>
-        </div>
+    <!-- Comparacao: 3 provedores lado a lado -->
+    <section class="compare-section" id="compareSection">
+      <div class="compare-head">
+        <div class="ch-title"><span>🆚</span><span>Respostas dos 3 provedores</span></div>
+        <div class="ch-sub">Compare e copie a que ficou melhor. Cards sem chave são pulados.</div>
       </div>
-
-      <!-- Results Body -->
-      <div class="output-body" id="outputBody">
-        <div class="output-placeholder" id="placeholderView">
-          <i>✦</i>
-          <b>Seu texto refinado aparecerá aqui</b>
-          <p>Cole suas ideias no campo à esquerda e clique em <b>"Deixar Mais Formal com Gemini"</b> (ou aperte <kbd style="background:#282a36;padding:2px 6px;border-radius:4px;border:1px solid #44475a">Ctrl+Enter</kbd>) para ver o texto transformado em linguagem formal e profissional.</p>
-        </div>
-
-        <div class="loading-box" id="loadingView">
-          <div class="spinner"></div>
-          <span id="loadingMsg">Consultando Google Gemini...</span>
-        </div>
-
-        <div id="resultContent" style="display:none"></div>
-      </div>
-
-      <!-- Diff Mode View -->
-      <div class="diff-view" id="diffView">
-        <div class="diff-grid">
-          <div class="diff-box before">
-            <h4>Seu Rascunho Original</h4>
-            <div id="diffOriginal"></div>
-          </div>
-          <div class="diff-box after">
-            <h4>Refinado pelo Gemini</h4>
-            <div id="diffRefined"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Meta footer of result -->
-      <div style="padding:0 8px 0;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--muted)">
-        <span id="resModelInfo">Google Gemini</span>
-        <span id="resTimeInfo"></span>
+      <div class="compare-grid">
+        <div class="result-card" id="card-gemini"></div>
+        <div class="result-card" id="card-groq"></div>
+        <div class="result-card" id="card-openrouter"></div>
       </div>
     </section>
 
   </main>
 
-  <!-- History Drawer -->
-  <section class="history-card">
-    <div class="history-head">
-      <div class="history-title">
-        <span>🕒 Rascunhos Recentes Salvos Localmente</span>
-      </div>
-      <button type="button" id="btnClearHist" style="background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer">Limpar Histórico</button>
-    </div>
-    <div class="history-list" id="historyList">
-      <div style="font-size:.76rem;color:var(--muted);font-style:italic">Nenhum rascunho anterior registrado nesta sessão.</div>
-    </div>
-  </section>
 
 </div>
 
@@ -1095,719 +1191,520 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
 (function(){
   "use strict";
 
-  var STORAGE_KEY = "refinador_gemini_api_key";
-  var STORAGE_MODEL = "refinador_gemini_model_v8";
-  var STORAGE_HIST = "refinador_history_v3";
-
-      // Prompts de Única Versão Definitiva (Zero Metatexto, Zero Opções, Zero Explicações)
+  // ===== Prompts por formato =====
   var PRESET_PROMPTS = {
-    fiel: "Você é um revisor de texto técnico. Corrija e dê fluidez ao rascunho, mantendo o texto o MAIS FIEL POSSÍVEL ao que a pessoa escreveu.\n\n" +
-          "FAÇA:\n" +
-          "- Corrigir gramática, concordância, ortografia e pontuação.\n" +
-          "- Deixar as frases claras e naturais, com leitura profissional.\n" +
-          "- Quebrar em parágrafos quando ajudar a leitura.\n\n" +
-          "NÃO FAÇA (crítico):\n" +
-          "- NÃO invente seções, títulos, cabeçalhos, bullets ou listas que não existam no rascunho. Sem tópicos na entrada = sem tópicos na saída.\n" +
-          "- NÃO adicione emoji.\n" +
-          "- NÃO troque palavras simples por sinônimos rebuscados. Mantenha o vocabulário da pessoa; corrija só o que está errado ou ambíguo.\n" +
-          "- NÃO adicione informação, opinião ou elogio; NÃO remova fatos, nomes, siglas ou números.\n" +
-          "- NÃO transforme em relatório corporativo. Deve continuar soando como quem escreveu, só que correto e fluido.\n\n" +
-          "PRESERVE EXATAMENTE:\n" +
-          "- Linhas de imagem markdown, ex: ![image](/uploads/.../image.png).\n" +
-          "- Listas que já existirem no rascunho (ex: '- Imagem 1: ...').\n" +
-          "- Termos e siglas técnicas (VDC, Oracle, account provider, etc.).\n\n" +
-          "SAÍDA: apenas o texto final corrigido. Zero metatexto, zero 'Aqui está:', zero comentário no fim.",
+    fiel: `Você é um revisor de texto técnico. Corrija e dê fluidez ao rascunho, mantendo o texto o MAIS FIEL POSSÍVEL ao que a pessoa escreveu.
 
-    formal: "Você é um revisor que deixa o rascunho mais formal, claro e coeso, SEM exagerar.\n" +
-            "Entregue UMA ÚNICA versão final, pronta para enviar.\n\n" +
-            "REGRAS:\n" +
-            "1. UMA ÚNICA VERSÃO, sem 'Opção 1/Opção 2'.\n" +
-            "2. ZERO METATEXTO: comece direto na primeira palavra do texto. Nada de 'Aqui está:' nem comentários no fim.\n" +
-            "3. FORMALIDADE COM MODERAÇÃO: corrija gramática, concordância e pontuação e eleve o tom para profissional. NÃO troque palavras simples por termos rebuscados só para soar sofisticado; mantenha o texto natural.\n" +
-            "4. NÃO invente seções, cabeçalhos, bullets nem emoji que não existam no rascunho.\n" +
-            "5. PRESERVE 100% dos fatos, nomes, números, siglas, decisões e a intenção. Preserve linhas de imagem markdown e listas já existentes.",
+FAÇA:
+- Corrigir gramática, concordância, ortografia e pontuação.
+- Deixar as frases claras e naturais, com leitura profissional.
+- Quebrar em parágrafos quando ajudar a leitura.
 
-    email: "Você é um redator executivo especialista em comunicação corporativa.\n" +
-           "Sua missão é transformar as ideias do usuário em UM ÚNICO E-MAIL FORMAL pronto para envio.\n\n" +
-           "REGRAS CRÍTICAS DE SAÍDA:\n" +
-           "1. UMA ÚNICA VERSÃO: Entregue apenas uma versão definitiva.\n" +
-           "2. ZERO METATEXTO: Não escreva introduções de IA nem justificativas no final. O primeiro caractere DEVE ser 'Assunto:'.\n" +
-           "3. ESTRUTURA DO E-MAIL:\n" +
-           "Assunto: [Assunto claro e contextualizado entre colchetes]\n\n" +
-           "[Corpo do e-mail formal, elegante e objetivo em 1 ou 2 parágrafos]\n\n" +
-           "Próximos Passos:\n" +
-           "• [Ação 1]\n" +
-           "• [Ação 2 se houver]\n\n" +
-           "Atenciosamente,\n[Seu Nome / Equipe]",
+NÃO FAÇA (crítico):
+- NÃO invente seções, títulos, cabeçalhos, bullets ou listas que não existam no rascunho. Sem tópicos na entrada = sem tópicos na saída.
+- NÃO adicione emoji.
+- NÃO troque palavras simples por sinônimos rebuscados. Mantenha o vocabulário da pessoa; corrija só o que está errado ou ambíguo.
+- NÃO adicione informação, opinião ou elogio; NÃO remova fatos, nomes, siglas ou números.
+- NÃO transforme em relatório corporativo. Deve continuar soando como quem escreveu, só que correto e fluido.
 
-    task: "Você é um desenvolvedor sênior documentando o que fez em um comentário de Task/Issue (Jira, GitHub, Linear).\n" +
-          "Reescreva o rascunho de forma clara, correta e objetiva, mantendo a intenção e o jeito de quem escreveu.\n\n" +
-          "REGRAS:\n" +
-          "1. UMA ÚNICA VERSÃO pronta para colar. ZERO METATEXTO e zero comentário no fim.\n" +
-          "2. Corrija gramática, concordância e pontuação; deixe fluido e profissional, sem inflar o vocabulário.\n" +
-          "3. NÃO force cabeçalhos, seções fixas nem emoji. Só use tópicos ou subtítulos se o próprio rascunho tiver vários assuntos que fiquem mais claros separados; caso contrário, mantenha em parágrafos.\n" +
-          "4. PRESERVE fatos, nomes, números, siglas, listas já existentes e linhas de imagem markdown.",
+PRESERVE EXATAMENTE:
+- Linhas de imagem markdown, ex: ![image](/uploads/.../image.png).
+- Listas que já existirem no rascunho (ex: '- Imagem 1: ...').
+- Termos e siglas técnicas (VDC, Oracle, account provider, etc.).
 
-    ingles: "You are a Principal Software Engineer and executive communications expert.\n" +
-            "Rewrite the user's raw notes or Portuguese ideas into ONE SINGLE, FLUENT, POLISHED, CORPORATE TECH ENGLISH text.\n\n" +
-            "CRITICAL RULES:\n" +
-            "1. ONE SINGLE VERSION: Do not output multiple options or bulleted alternatives.\n" +
-            "2. ZERO META-TALK: Do not say 'Here is the translation:' or 'Option 1'. Start directly with the first word of the English text.\n" +
-            "3. ZERO POST-ANALYSIS: Do not add explanations of grammatical changes or notes at the end.",
+SAÍDA: apenas o texto final corrigido. Zero metatexto, zero 'Aqui está:', zero comentário no fim.`,
 
-    warroom: "Você é o Incident Commander em um comitê de crise técnica (War Room).\n" +
-             "Transforme o rascunho em UM ÚNICO Comunicado Oficial de Incidente calmo, técnico e objetivo.\n\n" +
-             "REGRAS CRÍTICAS DE SAÍDA:\n" +
-             "1. UMA ÚNICA VERSÃO definitiva.\n" +
-             "2. ZERO METATEXTO: Comece diretamente no '🚨 Status Atual:'.\n" +
-             "3. ESTRUTURA:\n" +
-             "🚨 **Status Atual**: [Investigando / Mitigado / Resolvido]\n" +
-             "👥 **Impacto no Sistema**: [Serviços e usuários afetados]\n" +
-             "⏱️ **Contenção Imediata**: [Ações executadas para estancar]\n" +
-             "🔍 **Causa Raiz & Próximos Passos**: [Diagnóstico e plano definitivo].",
+    formal: `Você é um revisor que deixa o rascunho mais formal, claro e coeso, SEM exagerar.
+Entregue UMA ÚNICA versão final, pronta para enviar.
 
-    direto: "Você é um editor implacável de comunicação corporativa enxuta (Zero Ruído).\n" +
-            "Reescreva o rascunho em UMA ÚNICA mensagem formal, firme, polida e extremamente direta ao ponto.\n\n" +
-            "REGRAS CRÍTICAS DE SAÍDA:\n" +
-            "1. UMA ÚNICA VERSÃO: Curta, formal, assertiva e impecável.\n" +
-            "2. ZERO METATEXTO: Comece na primeira palavra do texto.\n" +
-            "3. ZERO RODEIOS: Elimine hesitações ('acho que', 'talvez'), desculpas e palavras vazias."
+REGRAS:
+1. UMA ÚNICA VERSÃO, sem 'Opção 1/Opção 2'.
+2. ZERO METATEXTO: comece direto na primeira palavra do texto. Nada de 'Aqui está:' nem comentários no fim.
+3. FORMALIDADE COM MODERAÇÃO: corrija gramática, concordância e pontuação e eleve o tom para profissional. NÃO troque palavras simples por termos rebuscados só para soar sofisticado; mantenha o texto natural.
+4. NÃO invente seções, cabeçalhos, bullets nem emoji que não existam no rascunho.
+5. PRESERVE 100% dos fatos, nomes, números, siglas, decisões e a intenção. Preserve linhas de imagem markdown e listas já existentes.`,
+
+    email: `Você é um redator executivo especialista em comunicação corporativa.
+Sua missão é transformar as ideias do usuário em UM ÚNICO E-MAIL FORMAL pronto para envio.
+
+REGRAS CRÍTICAS DE SAÍDA:
+1. UMA ÚNICA VERSÃO: Entregue apenas uma versão definitiva.
+2. ZERO METATEXTO: Não escreva introduções de IA nem justificativas no final. O primeiro caractere DEVE ser 'Assunto:'.
+3. ESTRUTURA DO E-MAIL:
+Assunto: [Assunto claro e contextualizado entre colchetes]
+
+[Corpo do e-mail formal, elegante e objetivo em 1 ou 2 parágrafos]
+
+Próximos Passos:
+• [Ação 1]
+• [Ação 2 se houver]
+
+Atenciosamente,
+[Seu Nome / Equipe]`,
+
+    task: `Você é um desenvolvedor sênior documentando o que fez em um comentário de Task/Issue (Jira, GitHub, Linear).
+Reescreva o rascunho de forma clara, correta e objetiva, mantendo a intenção e o jeito de quem escreveu.
+
+REGRAS:
+1. UMA ÚNICA VERSÃO pronta para colar. ZERO METATEXTO e zero comentário no fim.
+2. Corrija gramática, concordância e pontuação; deixe fluido e profissional, sem inflar o vocabulário.
+3. NÃO force cabeçalhos, seções fixas nem emoji. Só use tópicos ou subtítulos se o próprio rascunho tiver vários assuntos que fiquem mais claros separados; caso contrário, mantenha em parágrafos.
+4. PRESERVE fatos, nomes, números, siglas, listas já existentes e linhas de imagem markdown.`,
+
+    ingles: `You are a Principal Software Engineer and executive communications expert.
+Rewrite the user's raw notes or Portuguese ideas into ONE SINGLE, FLUENT, POLISHED, CORPORATE TECH ENGLISH text.
+
+CRITICAL RULES:
+1. ONE SINGLE VERSION: Do not output multiple options or bulleted alternatives.
+2. ZERO META-TALK: Do not say 'Here is the translation:' or 'Option 1'. Start directly with the first word of the English text.
+3. ZERO POST-ANALYSIS: Do not add explanations of grammatical changes or notes at the end.`,
+
+    warroom: `Você é o Incident Commander em um comitê de crise técnica (War Room).
+Transforme o rascunho em UM ÚNICO Comunicado Oficial de Incidente calmo, técnico e objetivo.
+
+REGRAS CRÍTICAS DE SAÍDA:
+1. UMA ÚNICA VERSÃO definitiva.
+2. ZERO METATEXTO: Comece diretamente no '🚨 Status Atual:'.
+3. ESTRUTURA:
+🚨 **Status Atual**: [Investigando / Mitigado / Resolvido]
+👥 **Impacto no Sistema**: [Serviços e usuários afetados]
+⏱️ **Contenção Imediata**: [Ações executadas para estancar]
+🔍 **Causa Raiz & Próximos Passos**: [Diagnóstico e plano definitivo].`,
+
+    direto: `Você é um editor implacável de comunicação corporativa enxuta (Zero Ruído).
+Reescreva o rascunho em UMA ÚNICA mensagem formal, firme, polida e extremamente direta ao ponto.
+
+REGRAS CRÍTICAS DE SAÍDA:
+1. UMA ÚNICA VERSÃO: Curta, formal, assertiva e impecável.
+2. ZERO METATEXTO: Comece na primeira palavra do texto.
+3. ZERO RODEIOS: Elimine hesitações ('acho que', 'talvez'), desculpas e palavras vazias.`
   };
 
-  // DOM Elements
-  var inGemini = document.getElementById("geminiKey");
-  var toggleMask = document.getElementById("toggleMask");
-  var selModel = document.getElementById("geminiModel");
-  var btnTest = document.getElementById("btnTest");
-  var btnClearKey = document.getElementById("btnClearKey");
-  var statusBar = document.getElementById("statusBar");
-  var statusDot = document.getElementById("statusDot");
-  var statusText = document.getElementById("statusText");
-
-  var draft = document.getElementById("draftText");
-  var customInst = document.getElementById("customInst");
-  var charCount = document.getElementById("charCount");
-  var wordCount = document.getElementById("wordCount");
-  var btnRefine = document.getElementById("btnRefine");
-
-  var placeholderView = document.getElementById("placeholderView");
-  var loadingView = document.getElementById("loadingView");
-  var resultContent = document.getElementById("resultContent");
-  var outputBody = document.getElementById("outputBody");
-  var diffView = document.getElementById("diffView");
-  var diffOriginal = document.getElementById("diffOriginal");
-  var diffRefined = document.getElementById("diffRefined");
-  var resModelInfo = document.getElementById("resModelInfo");
-  var resTimeInfo = document.getElementById("resTimeInfo");
-
-  var btnCopy = document.getElementById("btnCopy");
-  var btnReuse = document.getElementById("btnReuse");
-  var btnToggleDiff = document.getElementById("btnToggleDiff");
-  var toast = document.getElementById("toast");
-
-  var historyList = document.getElementById("historyList");
-  var btnClearHist = document.getElementById("btnClearHist");
-
-  var currentPreset = "fiel";
-  var lastRefinedText = "";
-  var lastOriginalText = "";
-  var isDiffVisible = false;
-
-  // Initialize from LocalStorage
-  var savedKey = localStorage.getItem(STORAGE_KEY) || "";
-  if(savedKey){
-    inGemini.value = savedKey;
-    setStatus("ok", "Chave salva no navegador");
-    // Background model check
-    setTimeout(function(){ testConnection(false); }, 600);
-  }
-
-  var savedModel = localStorage.getItem(STORAGE_MODEL) || "gemini-3.5-flash";
-  selModel.value = savedModel;
-
-  // Key storage & validation
-  inGemini.addEventListener("input", function(){
-    var val = inGemini.value.trim();
-    if(val){
-      localStorage.setItem(STORAGE_KEY, val);
-      setStatus("warn", "Chave pronta para teste");
-    }else{
-      localStorage.removeItem(STORAGE_KEY);
-      setStatus("", "Aguardando chave da API");
-    }
-  });
-
-  toggleMask.addEventListener("click", function(){
-    if(inGemini.type === "password"){
-      inGemini.type = "text";
-      toggleMask.textContent = "🔒";
-    }else{
-      inGemini.type = "password";
-      toggleMask.textContent = "👁️";
-    }
-  });
-
-  selModel.addEventListener("change", function(){
-    localStorage.setItem(STORAGE_MODEL, selModel.value);
-  });
-
-  btnClearKey.addEventListener("click", function(){
-    if(confirm("Deseja remover sua chave Gemini salva no navegador?")){
-      localStorage.removeItem(STORAGE_KEY);
-      inGemini.value = "";
-      setStatus("", "Chave removida");
-      showToast("Chave removida com sucesso!", "ok");
-    }
-  });
-
-  function setStatus(type, msg){
-    statusDot.className = "status-dot" + (type ? " " + type : "");
-    statusBar.className = "status-bar" + (type ? " " + type : "");
-    statusText.textContent = msg;
-  }
-
-  var toastTimer = null;
-  function showToast(msg, type){
-    if(toastTimer) clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.className = "toast show" + (type ? " " + type : "");
-    toastTimer = setTimeout(function(){
-      toast.className = "toast";
-    }, 3800);
-  }
-
-  // Draft counting
-  draft.addEventListener("input", function(){
-    var text = draft.value;
-    charCount.textContent = text.length + " caracteres";
-    var words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    wordCount.textContent = words + " palavras";
-  });
-
-  // Presets selection
-  var btnRefineLabel = document.getElementById("btnRefineLabel");
-  var presetButtons = document.querySelectorAll(".preset-btn");
-  presetButtons.forEach(function(btn){
-    btn.addEventListener("click", function(){
-      presetButtons.forEach(function(b){ b.classList.remove("active"); });
-      btn.classList.add("active");
-      currentPreset = btn.dataset.preset;
-      if(btnRefineLabel && btn.dataset.btnLabel){
-        btnRefineLabel.innerHTML = btn.dataset.btnLabel;
-      }
-    });
-  });
-
-  // Dynamically update model select with models available in user account
-  function updateModelSelect(activeList){
-    if(!activeList || !activeList.length) return;
-
-    var currentVal = selModel.value;
-    var proModels = [
-      { id: "gemini-2.5-pro", name: "gemini-2.5-pro (Mais Inteligente - Pro)" },
-      { id: "gemini-3.1-pro-preview", name: "gemini-3.1-pro-preview (Próxima Geração Pro)" }
-    ];
-    var flashModels = [
-      { id: "gemini-3.8-flash", name: "gemini-3.8-flash (Mais Inteligente da Linha Flash)" },
-      { id: "gemini-3.6-flash", name: "gemini-3.6-flash (Padrão Equilibrado)" },
-      { id: "gemini-2.5-flash", name: "gemini-2.5-flash (Ultra Rápido & Estável)" },
-      { id: "gemini-3.5-flash", name: "gemini-3.5-flash (Estável)" }
-    ];
-
-    var html = '';
-
-    // Pro models available in user account
-    var availablePro = proModels.filter(function(m){ return activeList.indexOf(m.id) !== -1; });
-    activeList.forEach(function(m){
-      if(m.indexOf("pro") !== -1 && !availablePro.some(function(p){ return p.id === m; })){
-        availablePro.push({ id: m, name: m + " (Pro)" });
-      }
-    });
-
-    if(availablePro.length > 0){
-      html += '<optgroup label="⭐ Modelos Pro (Plano Pro / Raciocínio Profundo)">';
-      availablePro.forEach(function(m){
-        html += '<option value="' + m.id + '">' + m.name + '</option>';
-      });
-      html += '</optgroup>';
-    }
-
-    // Flash models
-    var availableFlash = flashModels.filter(function(m){ return activeList.indexOf(m.id) !== -1; });
-    activeList.forEach(function(m){
-      if((m.indexOf("flash") !== -1 || m.indexOf("lite") !== -1) && !availableFlash.some(function(f){ return f.id === m; })){
-        availableFlash.push({ id: m, name: m });
-      }
-    });
-
-    if(availableFlash.length > 0){
-      html += '<optgroup label="⚡ Modelos Flash (Alta Velocidade)">';
-      availableFlash.forEach(function(m){
-        html += '<option value="' + m.id + '">' + m.name + '</option>';
-      });
-      html += '</optgroup>';
-    }
-
-    if(html){
-      selModel.innerHTML = html;
-      if(activeList.indexOf(currentVal) !== -1){
-        selModel.value = currentVal;
-      } else if(availablePro.length > 0){
-        selModel.value = availablePro[0].id;
-      } else if(availableFlash.length > 0){
-        selModel.value = availableFlash[0].id;
-      }
-      localStorage.setItem(STORAGE_MODEL, selModel.value);
-    }
-  }
-
-  // Fast Connection Test via Metadata Endpoint (Instantaneous ~200ms, Never Times Out)
-  async function testConnection(showSuccessToast){
-    var key = inGemini.value.trim();
-    if(!key){
-      setStatus("err", "Por favor, cole uma chave da API antes de testar.");
-      inGemini.focus();
-      return false;
-    }
-
-    btnTest.disabled = true;
-    btnTest.innerHTML = "<span>⏳ Testando...</span>";
-    setStatus("warn", "Autenticando chave no Google AI Studio...");
-
-    try{
-      var t0 = performance.now();
-      var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(key), {
-        signal: AbortSignal.timeout(12000)
-      });
-
-      if(!res.ok){
-        var errData = await res.json().catch(function(){ return {}; });
-        var errMsg = errData.error ? errData.error.message : ("Erro HTTP " + res.status);
-        if(errMsg.indexOf("API key not valid") !== -1 || errMsg.indexOf("invalid authentication") !== -1 || res.status === 400 || res.status === 403){
-          throw new Error("Chave da API inválida ou expirada. Gere uma nova no Google AI Studio.");
-        }
-        throw new Error(errMsg);
-      }
-
-      var data = await res.json();
-      var duration = ((performance.now() - t0) / 1000).toFixed(2);
-
-      var availableModels = [];
-      var hasPro = false;
-      if(data && data.models && Array.isArray(data.models)){
-        availableModels = data.models
-          .filter(function(m){ return m.supportedGenerationMethods && m.supportedGenerationMethods.indexOf("generateContent") !== -1; })
-          .map(function(m){ return m.name.replace("models/", ""); });
-
-        hasPro = availableModels.some(function(m){ return m.indexOf("pro") !== -1; });
-      }
-
-      updateModelSelect(availableModels);
-
-      var statusMsg = "Conexão OK (" + duration + "s)! ";
-      if(hasPro){
-        statusMsg += "⭐ Plano Pro ativo (" + availableModels.length + " modelos disponíveis, incluindo Gemini 2.5 Pro).";
-      }else{
-        statusMsg += availableModels.length + " modelos disponíveis.";
-      }
-
-      setStatus("ok", statusMsg);
-      if(showSuccessToast !== false){
-        showToast("Google Gemini conectado (" + duration + "s)! " + (hasPro ? "Modelos Pro liberados." : ""), "ok");
-      }
-      return true;
-
-    }catch(err){
-      var cleanErr = err.message || "Falha na conexão";
-      if(cleanErr.indexOf("timeout") !== -1 || cleanErr.indexOf("timed out") !== -1){
-        cleanErr = "Tempo limite esgotado ao contatar Google AI Studio. Verifique sua internet.";
-      }
-      setStatus("err", cleanErr);
-      showToast("Falha na conexão: " + cleanErr.slice(0, 75), "err");
-      return false;
-    }finally{
-      btnTest.disabled = false;
-      btnTest.innerHTML = "<span>⚡ Testar Conexão</span>";
-    }
-  }
-
-  btnTest.addEventListener("click", function(){ testConnection(true); });
-
-  // Intelligent Generation Config Builder per Model Type
-  function buildGenerationConfig(modelName){
-    var config = {
-      temperature: 0.2
-    };
-
-    // Formatar/corrigir texto nao e tarefa de raciocinio: minimizar o "thinking"
-    // reduz drasticamente a latencia. Aplica-se a todos os modelos, inclusive Pro.
-    if(/gemini-3/i.test(modelName)){
-      config.thinkingConfig = { thinkingLevel: "low" };
-    } else if(/gemini-2.5-flash/i.test(modelName)){
-      config.thinkingConfig = { thinkingBudget: 0 };
-    } else if(/gemini-2.5-pro/i.test(modelName)){
-      // 2.5 Pro nao aceita 0; 128 e o minimo permitido.
-      config.thinkingConfig = { thinkingBudget: 128 };
-    }
-    // Se o modelo rejeitar thinkingConfig, o callGeminiDirect remove e reenvia (400 "thinking").
-    return config;
-  }
-
-  // Robust Caller with Automatic Failover to gemini-3.5-flash on 503/429
-  async function callGeminiDirect(model, payload, key){
-    var maxRetries = 3;
-    var currentModel = model || "gemini-3.5-flash";
-
-    for(var attempt = 0; attempt <= maxRetries; attempt++){
-      var url = "https://generativelanguage.googleapis.com/v1beta/models/" + currentModel + ":generateContent?key=" + encodeURIComponent(key);
-
-      try{
-        var res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": key
-          },
-          body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(30000)
-        });
-
-        if(!res.ok){
-          var errData = await res.json().catch(function(){ return {}; });
-          var errMsg = errData.error ? errData.error.message : ("Erro HTTP " + res.status);
-
-          // If a model rejects thinkingConfig, instantly remove it and retry
-          if(res.status === 400 && errMsg.toLowerCase().indexOf("thinking") !== -1 && payload.generationConfig && payload.generationConfig.thinkingConfig){
-            console.warn("Modelo " + currentModel + " rejeitou thinkingConfig. Reenviando sem essa opção...");
-            delete payload.generationConfig.thinkingConfig;
-            continue;
-          }
-
-          var isHighDemand = errMsg.indexOf("high demand") !== -1 ||
-                             errMsg.indexOf("spikes in demand") !== -1 ||
-                             errMsg.indexOf("503") !== -1 ||
-                             res.status === 503 ||
-                             res.status === 429;
-
-          // Failover to gemini-3.5-flash if preferred model is busy
-          if(isHighDemand && currentModel !== "gemini-3.5-flash"){
-            console.warn("Modelo " + currentModel + " em sobrecarga (" + res.status + "). Alternando automaticamente para gemini-3.5-flash...");
-            loadingMsg.textContent = "Google em alta demanda no " + currentModel + ". Conectando automaticamente ao gemini-3.5-flash...";
-            currentModel = "gemini-3.5-flash";
-            payload.generationConfig = buildGenerationConfig("gemini-3.5-flash");
-            await new Promise(function(r){ setTimeout(r, 600); });
-            continue;
-          }
-
-          if(isHighDemand && attempt < maxRetries){
-            console.warn("Pico momentâneo de demanda. Tentativa " + (attempt + 1) + "...");
-            loadingMsg.textContent = "Google em alta demanda momentânea. Tentando novamente...";
-            await new Promise(function(r){ setTimeout(r, 1200 * (attempt + 1)); });
-            continue;
-          }
-
-          throw new Error(errMsg);
-        }
-
-        var data = await res.json();
-        var candidate = data.candidates && data.candidates[0];
-        if(!candidate || !candidate.content || !candidate.content.parts){
-          throw new Error("Nenhum texto retornado pelo Gemini.");
-        }
-
-        var text = candidate.content.parts.map(function(p){ return p.text; }).join("");
-        return {
-          text: text,
-          model: currentModel
-        };
-
-      }catch(err){
-        if(err.name === "TimeoutError" || (err.message && err.message.indexOf("timeout") !== -1)){
-          // On timeout, try gemini-3.5-flash before failing
-          if(currentModel !== "gemini-3.5-flash" && attempt < maxRetries){
-            console.warn("Timeout em " + currentModel + ". Alternando para gemini-3.5-flash...");
-            currentModel = "gemini-3.5-flash";
-            payload.generationConfig = buildGenerationConfig("gemini-3.5-flash");
-            continue;
-          }
-          throw new Error("Tempo limite de 30s esgotado. Os servidores do Google demoraram para responder.");
-        }
-        if(attempt === maxRetries || err.message.indexOf("API key not valid") !== -1 || err.message.indexOf("invalid authentication") !== -1){
-          throw err;
-        }
-        await new Promise(function(r){ setTimeout(r, 1000); });
-      }
-    }
-  }
-
-    // Update Core Refinement Trigger with Pro progress states
-  async function runRefinement(){
-    var key = inGemini.value.trim();
-    if(!key){
-      showToast("Configure sua chave da API Gemini antes de refinar.", "err");
-      inGemini.focus();
-      return;
-    }
-
-    var text = draft.value.trim();
-    if(!text){
-      showToast("Digite ou cole um rascunho de texto para refinar.", "err");
-      draft.focus();
-      return;
-    }
-
-    // Prepare prompt
-    var basePrompt = PRESET_PROMPTS[currentPreset] || PRESET_PROMPTS.fiel;
-    var extra = customInst.value.trim();
-    var systemInstruction = basePrompt;
-    if(extra){
-      systemInstruction += "\n\nDiretriz adicional do usuário: " + extra;
-    }
-
-    var preferredModel = selModel.value || "gemini-2.5-pro";
-    var isPro = preferredModel.indexOf("pro") !== -1;
-
-    // UI state
-    btnRefine.disabled = true;
-    placeholderView.style.display = "none";
-    resultContent.style.display = "none";
-    diffView.style.display = "none";
-    outputBody.style.display = "block";
-    loadingView.style.display = "flex";
-    loadingMsg.textContent = isPro ?
-      "Analisando contexto técnico com modelo Pro (" + preferredModel + ")..." :
-      "Formatando texto com Google Gemini (" + preferredModel + ")...";
-
-    isDiffVisible = false;
-    btnToggleDiff.textContent = "🔀 Antes / Depois";
-
-    // Progress updates so user knows model is actively reasoning
-    var stepTimer1 = setTimeout(function(){
-      if(loadingView.style.display !== "none") {
-        loadingMsg.textContent = isPro ?
-          "Aplicando raciocínio profundo e redação executiva de alto nível..." :
-          "Aplicando padrão de comunicação técnica...";
-      }
-    }, 2800);
-
-    var stepTimer2 = setTimeout(function(){
-      if(loadingView.style.display !== "none") {
-        loadingMsg.textContent = "Polindo estrutura e eliminando ruídos técnicos...";
-      }
-    }, 7000);
-
-    var t0 = performance.now();
-    var payload = {
-      systemInstruction: {
-        parts: [{ text: systemInstruction }]
-      },
-      contents: [
-        { parts: [{ text: text }] }
-      ],
-      generationConfig: buildGenerationConfig(preferredModel)
-    };
-
-    try{
-      var result = await callGeminiDirect(preferredModel, payload, key);
-
-      clearTimeout(stepTimer1);
-      clearTimeout(stepTimer2);
-
-      var duration = ((performance.now() - t0) / 1000).toFixed(2);
-      var refined = (result.text || "").trim();
-      refined = refined.replace(/^\s*```(?:markdown|text)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
-      lastRefinedText = refined;
-      lastOriginalText = text;
-
-      // Render Result cleanly with markdown formatting
-      resultContent.innerHTML = renderMarkdown(refined);
-      resultContent.style.display = "block";
-      loadingView.style.display = "none";
-      outputBody.scrollTop = 0;
-
-      var proTag = result.model.indexOf("pro") !== -1 ? " ⭐ Pro" : "";
-      resModelInfo.textContent = "Google Gemini (" + result.model + ")" + proTag;
-      resTimeInfo.textContent = "⚡ " + duration + "s · " + refined.length + " caracteres · " + refined.trim().split(/\s+/).length + " palavras";
-
-      btnCopy.style.display = "inline-flex";
-      btnReuse.style.display = "inline-flex";
-      btnToggleDiff.style.display = "inline-flex";
-
-      // Add to local history
-      addHistory(text, currentPreset, refined);
-      showToast("Texto formalizado com sucesso (" + duration + "s)!", "ok");
-
-    }catch(err){
-      clearTimeout(stepTimer1);
-      clearTimeout(stepTimer2);
-      loadingView.style.display = "none";
-      var msg = err.message || "";
-      if(msg.indexOf("high demand") !== -1 || msg.indexOf("503") !== -1){
-        msg = "Os servidores do Google estão passando por um pico temporário de demanda. Aguarde alguns instantes e tente novamente.";
-      }
-      resultContent.innerHTML = '<span style="color:var(--red);font-weight:600">Erro na requisição:</span><br><br>' + escapeHtml(msg);
-      resultContent.style.display = "block";
-      showToast("Falha ao formatar: " + msg.slice(0, 70), "err");
-    }finally{
-      btnRefine.disabled = false;
-    }
-  }
-
-  btnRefine.addEventListener("click", runRefinement);
-
-
-    // Markdown renderer for clean, top-aligned output
-  function renderMarkdown(md){
-    if(!md) return "";
-    var escaped = String(md)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-
-    // Headers
-    escaped = escaped.replace(/^### (.*$)/gim, '<h3 class="res-h3">$1</h3>');
-    escaped = escaped.replace(/^## (.*$)/gim, '<h2 class="res-h2">$1</h2>');
-
-    // Blockquotes
-    escaped = escaped.replace(/^&gt; (.*$)/gim, '<blockquote class="res-quote">$1</blockquote>');
-
-    // Bold and Italic
-    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-    // Lists
-    escaped = escaped.replace(/^\s*[-*•]\s+(.*$)/gim, '<li class="res-li">$1</li>');
-    escaped = escaped.replace(/((?:<li class="res-li">.*<\/li>\s*)+)/g, '<ul class="res-ul">$1</ul>');
-
-    // Split paragraphs
-    var paragraphs = escaped.split(/\n\s*\n/);
-    return paragraphs.map(function(p){
-      p = p.trim();
-      if(!p) return "";
-      if(/^<(?:h[23]|ul|blockquote)/i.test(p)) return p;
-      return '<p class="res-p">' + p.replace(/\n/g, '<br>') + '</p>';
-    }).join("");
-  }
-
-  // Keyboard shortcut: Ctrl + Enter
-  document.addEventListener("keydown", function(e){
-    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
-      e.preventDefault();
-      runRefinement();
-    }
-  });
-
-  // Copy Action
-  btnCopy.addEventListener("click", async function(){
-    if(!lastRefinedText) return;
-    try{
-      await navigator.clipboard.writeText(lastRefinedText);
-      var oldHtml = btnCopy.innerHTML;
-      btnCopy.innerHTML = "<span>✓ Copiado!</span>";
-      btnCopy.classList.add("copied");
-      showToast("Texto copiado para a área de transferência!", "ok");
-      setTimeout(function(){
-        btnCopy.innerHTML = oldHtml;
-        btnCopy.classList.remove("copied");
-      }, 2000);
-    }catch(_){
-      showToast("Não foi possível copiar automaticamente.", "err");
-    }
-  });
-
-  // Reuse text
-  btnReuse.addEventListener("click", function(){
-    if(!lastRefinedText) return;
-    draft.value = lastRefinedText;
-    draft.dispatchEvent(new Event("input"));
-    showToast("Texto refinado colocado no campo de rascunho!", "ok");
-    draft.scrollIntoView({ behavior: "smooth" });
-  });
-
-  // Toggle Diff
-  btnToggleDiff.addEventListener("click", function(){
-    if(!lastRefinedText) return;
-    isDiffVisible = !isDiffVisible;
-    if(isDiffVisible){
-      diffOriginal.textContent = lastOriginalText;
-      diffRefined.textContent = lastRefinedText;
-      outputBody.style.display = "none";
-      diffView.style.display = "flex";
-      btnToggleDiff.textContent = "📄 Ver Normal";
-    }else{
-      outputBody.style.display = "block";
-      diffView.style.display = "none";
-      btnToggleDiff.textContent = "🔀 Antes / Depois";
-    }
-  });
-
-  // History Management
-  function addHistory(original, preset, refined){
-    try{
-      var list = JSON.parse(localStorage.getItem(STORAGE_HIST) || "[]");
-      list.unshift({
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-        preset: preset,
-        original: original,
-        refined: refined
-      });
-      list = list.slice(0, 6);
-      localStorage.setItem(STORAGE_HIST, JSON.stringify(list));
-      renderHistory();
-    }catch(_){}
-  }
-
-  function renderHistory(){
-    try{
-      var list = JSON.parse(localStorage.getItem(STORAGE_HIST) || "[]");
-      if(!list.length){
-        historyList.innerHTML = '<div style="font-size:.76rem;color:var(--muted);font-style:italic">Nenhum rascunho anterior registrado nesta sessão.</div>';
-        return;
-      }
-
-      historyList.innerHTML = list.map(function(item, idx){
-        var snippet = item.original.slice(0, 50) + (item.original.length > 50 ? "..." : "");
-        return '<div class="history-item" data-idx="' + idx + '">' +
-                 '<span class="history-item-tag">' + (item.preset.toUpperCase()) + '</span>' +
-                 '<span class="history-item-preview">' + escapeHtml(snippet) + '</span>' +
-                 '<span class="history-item-date">' + item.date + '</span>' +
-               '</div>';
-      }).join("");
-
-      historyList.querySelectorAll(".history-item").forEach(function(el){
-        el.addEventListener("click", function(){
-          var item = list[+el.dataset.idx];
-          if(item && item.original){
-            draft.value = item.original;
-            draft.dispatchEvent(new Event("input"));
-            if(item.preset){
-              var pBtn = document.querySelector('.preset-btn[data-preset="' + item.preset + '"]');
-              if(pBtn) pBtn.click();
-            }
-            showToast("Rascunho do histórico carregado!", "ok");
-          }
-        });
-      });
-    }catch(_){}
-  }
-
-  btnClearHist.addEventListener("click", function(){
-    if(confirm("Deseja limpar todo o histórico de rascunhos?")){
-      localStorage.removeItem(STORAGE_HIST);
-      renderHistory();
-      showToast("Histórico limpo!", "ok");
-    }
-  });
+  // ===== Provedores: lista de modelos gratuitos (tenta em ordem; se um sair, cai no proximo) =====
+  var PROVIDERS = [
+    { id: "gemini", name: "Google Gemini", icon: "⚡", storage: "refinador_gemini_api_key",
+      label: "gemini-3.6-flash", models: ["gemini-3.6-flash"] },
+    { id: "groq", name: "Groq Cloud", icon: "🚀", storage: "refinador_groq_api_key",
+      label: "openai/gpt-oss-20b", models: ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.6-27b"] },
+    { id: "openrouter", name: "OpenRouter", icon: "🌐", storage: "refinador_openrouter_api_key",
+      label: "auto · :free", models: [] } // resolvido dinamicamente
+  ];
+
+  // Fallback caso a descoberta do OpenRouter falhe
+  var OR_FALLBACK = ["deepseek/deepseek-r1:free", "nvidia/nemotron-3.5-lightning:free", "qwen/qwen3.6-27b:free", "meta-llama/llama-3.3-70b-instruct:free"];
+  var orModelsCache = null;
+
+  function $(id){ return document.getElementById(id); }
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, function(c){
-      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
     });
   }
 
-  renderHistory();
+  function renderMarkdown(md){
+    if(!md) return "";
+    var e = escapeHtml(md);
+    e = e.replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/^## (.*$)/gim, "<h2>$1</h2>");
+    e = e.replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>");
+    e = e.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\*(.*?)\*/g, "<em>$1</em>");
+    e = e.replace(/^\s*[-*•]\s+(.*$)/gim, "<li>$1</li>");
+    e = e.replace(/((?:<li>.*<\/li>\s*)+)/g, "<ul>$1</ul>");
+    return e.split(/\n\s*\n/).map(function(p){
+      p = p.trim();
+      if(!p) return "";
+      if(/^<(?:h[23]|ul|blockquote)/i.test(p)) return p;
+      return "<p>" + p.replace(/\n/g, "<br>") + "</p>";
+    }).join("");
+  }
+
+  // ===== Toast =====
+  var toast = $("toast"), toastTimer = null;
+  function showToast(msg, type){
+    if(!toast) return;
+    if(toastTimer) clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = "toast show" + (type ? " " + type : "");
+    toastTimer = setTimeout(function(){ toast.className = "toast"; }, 3200);
+  }
+
+  // ===== Chaves =====
+  function keyEl(p){ return $("key-" + p.id); }
+  function dotEl(p){ return $("dot-" + p.id); }
+  function getKey(p){ var el = keyEl(p); return el ? el.value.trim() : ""; }
+  function refreshDot(p){ var d = dotEl(p); if(d) d.classList.toggle("ok", !!getKey(p)); }
+
+  function loadKeys(){
+    PROVIDERS.forEach(function(p){
+      var el = keyEl(p);
+      if(!el) return;
+      var saved = "";
+      try { saved = localStorage.getItem(p.storage) || ""; } catch(e){}
+      el.value = saved;
+      refreshDot(p);
+      el.addEventListener("input", function(){
+        var v = el.value.trim();
+        try { if(v) localStorage.setItem(p.storage, v); else localStorage.removeItem(p.storage); } catch(e){}
+        refreshDot(p);
+      });
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".btn-toggle-mask"), function(btn){
+    btn.addEventListener("click", function(){
+      var t = $(btn.dataset.mask);
+      if(!t) return;
+      if(t.type === "password"){ t.type = "text"; btn.textContent = "🔒"; }
+      else { t.type = "password"; btn.textContent = "👁️"; }
+    });
+  });
+
+  // ===== Presets =====
+  var currentPreset = "fiel";
+  var draft = $("draftText");
+  var customInst = $("customInst");
+  var btnRefineLabel = $("btnRefineLabel");
+
+  Array.prototype.forEach.call(document.querySelectorAll(".preset-btn"), function(btn){
+    btn.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".preset-btn"), function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentPreset = btn.dataset.preset;
+      if(btnRefineLabel && btn.dataset.btnLabel) btnRefineLabel.innerHTML = btn.dataset.btnLabel;
+    });
+  });
+
+  var charCount = $("charCount"), wordCount = $("wordCount");
+  if(draft){
+    draft.addEventListener("input", function(){
+      var t = draft.value;
+      if(charCount) charCount.textContent = t.length + " caracteres";
+      if(wordCount) wordCount.textContent = (t.trim() ? t.trim().split(/\s+/).length : 0) + " palavras";
+    });
+  }
+
+  function buildSystemInstruction(){
+    var base = PRESET_PROMPTS[currentPreset] || PRESET_PROMPTS.fiel;
+    var extra = customInst ? customInst.value.trim() : "";
+    return extra ? base + "\n\nDiretriz adicional do usuário: " + extra : base;
+  }
+
+  // ===== Descoberta de modelo :free do OpenRouter =====
+  function familyRank(id, pref){
+    for(var i = 0; i < pref.length; i++){ if(id.indexOf(pref[i]) !== -1) return i; }
+    return pref.length;
+  }
+  async function openrouterFreeModels(){
+    if(orModelsCache) return orModelsCache;
+    try{
+      var res = await fetch("https://openrouter.ai/api/v1/models", { signal: AbortSignal.timeout(12000) });
+      if(!res.ok) throw new Error("models " + res.status);
+      var data = await res.json();
+      var pref = ["gpt-oss", "llama", "qwen", "deepseek", "mistral", "gemma", "nemotron", "gemini"];
+      // Evita modelos especializados (moderacao, visao, audio, embeddings) para tarefa de texto
+      var BAD = /content-safety|guard|moderation|embed|rerank|tts|stt|whisper|omni|(^|[\/-])vl(:|$)|vision|reasoning/i;
+      var free = (data.data || []).filter(function(m){
+        var pr = m.pricing || {};
+        var zero = (pr.prompt === "0" || pr.prompt === 0) && (pr.completion === "0" || pr.completion === 0);
+        return /:free$/.test(m.id || "") && zero && !BAD.test(m.id);
+      }).map(function(m){ return m.id; });
+      var BIG = /ultra|-?(?:70b|72b|120b|123b|180b|235b|405b|480b|550b|671b)/i;
+      free.sort(function(a, b){
+        return (familyRank(a, pref) + (BIG.test(a) ? 4 : 0)) - (familyRank(b, pref) + (BIG.test(b) ? 4 : 0));
+      });
+      orModelsCache = free.length ? free : OR_FALLBACK.slice();
+    }catch(e){
+      orModelsCache = OR_FALLBACK.slice();
+    }
+    return orModelsCache;
+  }
+
+  // ===== Chamada a UM modelo especifico =====
+  async function geminiCall(key, model, sys, userText, gcfg){
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(key);
+    var res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: sys }] },
+        contents: [{ parts: [{ text: userText }] }],
+        generationConfig: gcfg
+      }),
+      signal: AbortSignal.timeout(35000)
+    });
+    if(!res.ok){
+      var ed = await res.json().catch(function(){ return {}; });
+      var msg = ed.error ? ed.error.message : ("Erro HTTP " + res.status);
+      // Se o modelo rejeitar thinkingConfig, reenvia so com temperatura
+      if(res.status === 400 && /thinking/i.test(msg) && gcfg.thinkingConfig){
+        return geminiCall(key, model, sys, userText, { temperature: 0.2 });
+      }
+      var ge = new Error(msg); ge.status = res.status; throw ge;
+    }
+    var data = await res.json();
+    var c = data.candidates && data.candidates[0];
+    if(!c || !c.content || !c.content.parts) throw new Error("Resposta vazia do modelo.");
+    return c.content.parts.map(function(x){ return x.text || ""; }).join("");
+  }
+
+  async function openaiCall(p, key, model, sys, userText){
+    var endpoint = p.id === "groq"
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://openrouter.ai/api/v1/chat/completions";
+    var headers = { "Content-Type": "application/json", "Authorization": "Bearer " + key };
+    if(p.id === "openrouter"){
+      headers["HTTP-Referer"] = "https://thallyscezar.github.io";
+      headers["X-Title"] = "Refinador de Texto";
+    }
+    var body = { temperature: 0.2, messages: [ { role: "system", content: sys }, { role: "user", content: userText } ] };
+    if(Array.isArray(model)) body.models = model; else body.model = model; // OpenRouter aceita 'models' e roteia p/ um :free disponivel
+    var r = await fetch(endpoint, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(p.id === "openrouter" ? 20000 : 35000)
+    });
+    if(!r.ok){
+      var eo = await r.json().catch(function(){ return {}; });
+      var em = eo.error ? (eo.error.message || JSON.stringify(eo.error)) : ("Erro HTTP " + r.status);
+      var ex = new Error(em); ex.status = r.status; throw ex;
+    }
+    var d2 = await r.json();
+    var ch = d2.choices && d2.choices[0];
+    if(!ch || !ch.message || !ch.message.content) throw new Error("Resposta vazia do modelo.");
+    return { text: ch.message.content, model: d2.model || (Array.isArray(model) ? model[0] : model) };
+  }
+
+  function isModelError(msg){
+    return /not found|does not exist|no longer available|unavailable for free|do not have access|not available to|is not a valid|decommission|invalid model|not supported/i.test(msg || "");
+  }
+
+  async function callOne(p, model, sys, userText){
+    var key = getKey(p);
+    if(p.id === "gemini"){
+      var gcfg = { temperature: 0.2 };
+      if(/gemini-3/.test(model)) gcfg.thinkingConfig = { thinkingLevel: "low" };
+      else if(/gemini-2/.test(model)) gcfg.thinkingConfig = { thinkingBudget: 0 };
+      var gtext = await geminiCall(key, model, sys, userText, gcfg);
+      return { text: gtext, model: model };
+    }
+    return openaiCall(p, key, model, sys, userText); // ja devolve { text, model }
+  }
+
+  // Sobrecarga/limite (comum nos :free do OpenRouter, que sao compartilhados entre todos)
+  function isOverloaded(err){
+    var m = (err && err.message) || "";
+    var st = err && err.status;
+    return st === 429 || st === 503 || st === 502 || st === 500 ||
+      /\b(429|503|502|500)\b|too many|rate.?limit|provider returned error|overloaded|temporar|high demand|spikes? in demand|service unavailable|try again later|capacity|no instances|no endpoints/i.test(m);
+  }
+
+  // Erro transitorio (sobrecarga 429/503, timeout, abort, rede) -> vale tentar de novo
+  function isRetryable(err){
+    if(isOverloaded(err)) return true;
+    var n = (err && err.name) || "";
+    var m = (err && err.message) || "";
+    return n === "TimeoutError" || n === "AbortError" || /aborted|timed out|timeout|failed to fetch|networkerror|load failed|resposta vazia/i.test(m);
+  }
+
+  // Tenta cada modelo; em erro transitorio re-tenta o MESMO modelo ate 'attempts' vezes antes do proximo. Devolve { text, model }
+  async function tryModels(p, models, sys, userText, attempts){
+    attempts = attempts || 3;
+    var lastErr = null;
+    var maxModels = Math.min(models.length, 5);
+    for(var i = 0; i < maxModels; i++){
+      for(var a = 0; a < attempts; a++){
+        try{
+          return await callOne(p, models[i], sys, userText);
+        }catch(err){
+          lastErr = err;
+          if(isModelError(err && err.message)) break;          // modelo invalido: vai pro proximo modelo
+          if(isRetryable(err)){
+            if(a < attempts - 1){ await new Promise(function(r){ setTimeout(r, 700 * (a + 1)); }); continue; } // pico momentaneo: re-tenta o mesmo
+            break;                                              // esgotou tentativas deste modelo: proximo
+          }
+          throw err;                                           // erro permanente (chave/rede): para aqui
+        }
+      }
+    }
+    throw lastErr || new Error("Nenhum modelo disponível.");
+  }
+
+  async function callProvider(p, sys, userText){
+    if(p.id === "openrouter"){
+      // pool :free e compartilhado e vive lotado: tenta poucos modelos rapidos, 1 vez cada, e desiste limpo
+      var freeList = await openrouterFreeModels();
+      try{
+        return await tryModels(p, freeList.slice(0, 4), sys, userText, 1);
+      }catch(err){
+        if(isRetryable(err)) throw new Error("Os modelos :free do OpenRouter estão lotados agora (compartilhados com todo mundo). Tente de novo em alguns segundos.");
+        throw err;
+      }
+    }
+    try{
+      return await tryModels(p, p.models, sys, userText, 3);
+    }catch(err){
+      if(isRetryable(err)) throw new Error(p.name + " está com alta demanda agora. Tente de novo em alguns segundos.");
+      throw err;
+    }
+  }
+
+  // ===== Cards =====
+  var lastText = {};
+  var lastOrig = "";
+
+  // Diff por palavras (LCS) para destacar o que o modelo mudou
+  function dwords(s){ return (s || "").trim().split(/\s+/).filter(Boolean); }
+  function lcsWords(A, B){
+    var n = A.length, m = B.length;
+    if(n * m > 500000) return null; // texto muito grande: pula o diff
+    var dp = [];
+    for(var i = 0; i <= n; i++){ dp[i] = new Array(m + 1).fill(0); }
+    for(var i = n - 1; i >= 0; i--){ for(var j = m - 1; j >= 0; j--){
+      dp[i][j] = A[i] === B[j] ? dp[i+1][j+1] + 1 : Math.max(dp[i+1][j], dp[i][j+1]);
+    } }
+    var i2 = 0, j2 = 0, ops = [];
+    while(i2 < n && j2 < m){
+      if(A[i2] === B[j2]){ ops.push(["s", B[j2]]); i2++; j2++; }
+      else if(dp[i2+1][j2] >= dp[i2][j2+1]){ ops.push(["d", A[i2]]); i2++; }
+      else { ops.push(["a", B[j2]]); j2++; }
+    }
+    while(i2 < n){ ops.push(["d", A[i2]]); i2++; }
+    while(j2 < m){ ops.push(["a", B[j2]]); j2++; }
+    return ops;
+  }
+  function buildDiff(orig, out){
+    var ops = lcsWords(dwords(orig), dwords(out));
+    if(!ops) return { html: null, changes: -1 };
+    var html = ops.map(function(o){
+      var v = escapeHtml(o[1]);
+      if(o[0] === "s") return v;
+      if(o[0] === "a") return "<ins>" + v + "</ins>";
+      return "<del>" + v + "</del>";
+    }).join(" ");
+    var changes = 0, prev = "s";
+    ops.forEach(function(o){ var cur = o[0] === "s" ? "s" : "c"; if(cur === "c" && prev === "s") changes++; prev = cur; });
+    return { html: '<div class="rc-diffwrap">' + html + "</div>", changes: changes };
+  }
+
+  function card(p){ return $("card-" + p.id); }
+  function headHtml(p, model){
+    return '<div class="rc-head"><span class="rc-prov"><span class="rc-ic">' + p.icon + '</span>' + p.name +
+           '</span><span class="rc-model">' + escapeHtml(model || p.label) + '</span></div>';
+  }
+  function setCardIdle(p){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    el.innerHTML = headHtml(p) + '<div class="rc-state">Aguardando. Preencha a chave e clique em gerar.</div>';
+  }
+  function setCardNoKey(p){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    el.innerHTML = headHtml(p) + '<div class="rc-state err">Sem chave. Cole a chave do ' + p.name + ' acima para incluir na comparação.</div>';
+  }
+  function setCardLoading(p){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    el.innerHTML = headHtml(p) + '<div class="rc-state"><div class="spinner"></div>Gerando...</div>';
+  }
+  function setCardError(p, msg){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    el.innerHTML = headHtml(p) + '<div class="rc-state err">' + escapeHtml(msg) + '</div>';
+  }
+  function setCardResult(p, text, model, secs){
+    var el = card(p); if(!el) return;
+    el.className = "result-card";
+    lastText[p.id] = text;
+    var d = buildDiff(lastOrig, text);
+    var badge = d.changes < 0 ? (" · " + text.length + " car.")
+      : (d.changes === 0 ? " · sem alterações" : " · " + d.changes + (d.changes > 1 ? " trechos mudados" : " trecho mudado"));
+    var normal = '<div class="rc-body rc-view" data-view="normal-' + p.id + '">' + renderMarkdown(text) + '</div>';
+    var diff = d.html ? '<div class="rc-view" data-view="diff-' + p.id + '" hidden>' + d.html + '</div>' : "";
+    var diffBtn = d.html ? '<button type="button" class="rc-copy rc-diffbtn" data-diff="' + p.id + '">🔍 Mudanças</button>' : "";
+    var foot = '<div class="rc-foot"><span class="rc-time">⚡ ' + secs + 's' + badge + '</span>' +
+               '<span class="rc-actions">' + diffBtn +
+               '<button type="button" class="rc-copy" data-copy="' + p.id + '">📋 Copiar</button></span></div>';
+    el.innerHTML = headHtml(p, model) + normal + diff + foot;
+  }
+
+  document.addEventListener("click", function(e){
+    var t = e.target;
+    var dbtn = t && t.closest ? t.closest(".rc-diffbtn") : null;
+    if(dbtn){
+      var pid = dbtn.dataset.diff, host = $("card-" + pid);
+      var nv = host.querySelector('[data-view="normal-' + pid + '"]');
+      var dv = host.querySelector('[data-view="diff-' + pid + '"]');
+      if(nv && dv){
+        var toDiff = dv.hidden;
+        dv.hidden = !toDiff; nv.hidden = toDiff;
+        dbtn.textContent = toDiff ? "📄 Ver normal" : "🔍 Mudanças";
+      }
+      return;
+    }
+    var b = t && t.closest ? t.closest(".rc-copy") : null;
+    if(!b || b.classList.contains("rc-diffbtn")) return;
+    var id = b.dataset.copy;
+    var txt = lastText[id] || "";
+    if(!txt) return;
+    navigator.clipboard.writeText(txt).then(function(){
+      var old = b.textContent;
+      b.textContent = "✓ Copiado";
+      b.classList.add("copied");
+      setTimeout(function(){ b.textContent = old; b.classList.remove("copied"); }, 1600);
+      showToast("Resposta copiada!", "ok");
+    }).catch(function(){ showToast("Não consegui copiar.", "err"); });
+  });
+
+  // ===== Disparo paralelo =====
+  var btnRefine = $("btnRefine");
+  var running = false;
+
+  function runAll(){
+    if(running) return;
+    var text = draft ? draft.value.trim() : "";
+    if(!text){ showToast("Digite ou cole um rascunho.", "err"); if(draft) draft.focus(); return; }
+    var anyKey = PROVIDERS.some(function(p){ return getKey(p); });
+    if(!anyKey){ showToast("Preencha ao menos 1 chave de API.", "err"); return; }
+
+    lastOrig = text;
+    running = true;
+    if(btnRefine) btnRefine.disabled = true;
+    var sys = buildSystemInstruction();
+    var pending = [];
+
+    PROVIDERS.forEach(function(p){
+      if(!getKey(p)){ setCardNoKey(p); return; }
+      setCardLoading(p);
+      var t0 = performance.now();
+      var pr = callProvider(p, sys, text).then(function(r){
+        var clean = (r.text || "").replace(/^\s*```(?:markdown|text)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+        setCardResult(p, clean, r.model, ((performance.now() - t0) / 1000).toFixed(2));
+      }).catch(function(err){
+        var m = (err && err.message) ? err.message : "Falha na requisição";
+        if(err && err.name === "TimeoutError") m = "Tempo limite de 35s esgotado.";
+        setCardError(p, m);
+      });
+      pending.push(pr);
+    });
+
+    Promise.allSettled(pending).then(function(){
+      running = false;
+      if(btnRefine) btnRefine.disabled = false;
+    });
+  }
+
+  if(btnRefine) btnRefine.addEventListener("click", runAll);
+  document.addEventListener("keydown", function(e){
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); runAll(); }
+  });
+
+  // ===== Init =====
+  loadKeys();
+  PROVIDERS.forEach(setCardIdle);
 
 })();
+
 </script>
 </body>
 </html>

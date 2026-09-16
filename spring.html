@@ -378,6 +378,14 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
   .pl-flow{grid-template-columns:1fr 1fr;gap:8px}
 }
 
+
+/* Imagens e Infográficos Arquiteturais */
+.topic-img{margin:22px 0;padding:0;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#1e1f29;box-shadow:0 14px 36px rgba(0,0,0,0.5)}
+.topic-img img{width:100%;height:auto;display:block;transition:transform .3s ease}
+.topic-img:hover img{transform:scale(1.008)}
+.topic-img figcaption{padding:10px 16px;font:600 .8rem "Inter",sans-serif;color:var(--muted);background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.topic-img figcaption span{color:var(--cyan);font-family:"Cascadia Code",monospace;font-size:.74rem}
+
 </style>
 </head>
 <body>
@@ -431,6 +439,13 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a1">
         <div class="th"><h3>IoC e ApplicationContext: quem constrói os seus objetos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação</span></div></div>
         <p class="direto"><b>Direto:</b> inversão de controle tira de você a decisão de <em>quem constrói e conecta</em> os objetos. O <code class="i">ApplicationContext</code> é o container que registra as receitas, resolve as dependências, cria as instâncias e administra o ciclo de vida delas — os beans.</p>
+        <figure class="topic-img">
+          <img src="img/spring/spring_bean_lifecycle.jpg" alt="Ciclo de Vida do Bean no IoC: BeanDefinition → DI → Aware → BPP Before → @PostConstruct → BPP After (Proxies) → Pronto" loading="lazy">
+          <figcaption>
+            <span>Fig S-1 · Core Container</span>
+            <em>Ciclo de Vida do Bean no IoC: BeanDefinition → DI → Aware → BPP Before → @PostConstruct → BPP After (Proxies) → Pronto</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como o almoxarifado de uma fábrica.</b> O operador não sai da linha de montagem para comprar parafuso no meio do turno: ele declara o que precisa e o almoxarifado entrega na bancada. Quem organizou o estoque fez isso uma vez, antes de o turno começar. Uma classe que dá <code class="i">new</code> na própria dependência é o operador largando a peça para ir à loja.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>No começo dos anos 2000, uma aplicação Java corporativa dependia de um servidor de aplicação (Java EE) para praticamente tudo: transação, segurança, lookup de componentes. O efeito colateral era brutal — testar uma regra de negócio exigia subir o servidor inteiro. Rod Johnson publicou <em>J2EE Development without EJB</em> (2002) defendendo a tese oposta: um container leve, que só monta objetos Java comuns e injeta as dependências, resolve o mesmo problema sem o peso. O código de apoio daquele livro virou o Spring Framework.</p><p class="repl"><b>Veio substituir:</b> os EJBs de container pesado e o padrão Service Locator, em que cada classe ia buscar suas dependências num registro global — o que escondia o acoplamento em vez de mostrá-lo.</p></div>
@@ -770,6 +785,13 @@ class FraudAutoConfiguration {
       <article class="topic" id="c1">
         <div class="th"><h3>Proxy JDK e CGLIB: o objeto que não é o seu</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">explica o Spring</span></div></div>
         <p class="direto"><b>Direto:</b> para aplicar transação, cache ou segurança sem sujar a sua classe, o Spring não entrega <em>o seu</em> objeto aos outros beans: entrega um embrulho que intercepta cada chamada, executa o antes e o depois, e só então delega ao objeto real.</p>
+        <figure class="topic-img">
+          <img src="img/spring/spring_aop_transactional.jpg" alt="Proxies JDK vs CGLIB, Interceptação @Transactional e a Armadilha Clássica do Self-Invocation" loading="lazy">
+          <figcaption>
+            <span>Fig S-3 · AOP & Transações</span>
+            <em>Proxies JDK vs CGLIB, Interceptação @Transactional e a Armadilha Clássica do Self-Invocation</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um assistente que filtra a sua mesa.</b> Toda pasta que chega passa por ele: ele registra a hora, confere a permissão, abre a transação e só então põe na sua mesa. Quem manda a pasta acha que falou com você. Mas se você pegar uma pasta da <em>sua própria gaveta</em> e trabalhar nela, o assistente nem fica sabendo — e é exatamente esse o bug do próximo tópico.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O problema é antigo: como aplicar uma preocupação transversal — transação, log, métrica — em cem métodos sem escrever a mesma coisa cem vezes e sem misturar infraestrutura com regra de negócio? A resposta do Spring foi o proxy dinâmico. O <b>proxy JDK</b> existe desde o Java 1.3 e só funciona sobre interfaces; o <b>CGLIB</b> gera uma subclasse em bytecode e por isso funciona também em classes concretas — que é o padrão do Boot hoje.</p><p class="repl"><b>Veio substituir:</b> o código de infraestrutura repetido no começo e no fim de cada método (<code class="i">beginTransaction</code> / <code class="i">commit</code> / <code class="i">rollback</code> escritos à mão), e os decoradores manuais feitos classe por classe.</p></div>
@@ -971,6 +993,13 @@ class CorrelationFilter extends OncePerRequestFilter {
       <article class="topic" id="d2">
         <div class="th"><h3>DispatcherServlet: o pipeline de uma requisição</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mapa do MVC</span></div></div>
         <p class="direto"><b>Direto:</b> o <code class="i">DispatcherServlet</code> é o <em>front controller</em>: uma única servlet que recebe tudo e coordena as etapas — escolhe o handler, resolve os argumentos, invoca o seu método, serializa o retorno e trata as exceções.</p>
+        <figure class="topic-img">
+          <img src="img/spring/spring_dispatcherservlet_pipeline.jpg" alt="Pipeline do DispatcherServlet: FilterChain → HandlerMapping → HandlerInterceptor → @RestController → Jackson DTO" loading="lazy">
+          <figcaption>
+            <span>Fig S-2 · Web MVC Request Flow</span>
+            <em>Pipeline do DispatcherServlet: FilterChain → HandlerMapping → HandlerInterceptor → @RestController → Jackson DTO</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a triagem de um hospital.</b> Todo mundo entra pela mesma porta e é a triagem que decide para qual especialista mandar, prepara a ficha e depois organiza a saída. Achar que o seu <code class="i">@RestController</code> recebe HTTP diretamente é achar que o paciente entra direto no consultório.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O padrão <em>front controller</em> resolve um problema conhecido: com uma servlet por tela, cada uma repetia parsing, validação, tratamento de erro e escolha de view. Centralizar isso num único ponto extensível permitiu que tudo — resolução de argumento, conversão de corpo, tratamento de exceção — virasse uma estratégia substituível, em vez de código copiado.</p><p class="repl"><b>Veio substituir:</b> dezenas de servlets artesanais, cada uma com o seu próprio jeito de ler parâmetro e escrever resposta.</p></div>
@@ -1260,6 +1289,13 @@ List&lt;Pedido&gt; buscarComItens(Status s);   // 1 query</code></pre></div>
       <article class="topic" id="f1">
         <div class="th"><h3>SecurityFilterChain: onde a proteção realmente mora</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <p class="direto"><b>Direto:</b> o Spring Security não é uma anotação — é uma cadeia de filtros que roda <em>antes</em> do <code class="i">DispatcherServlet</code>. Ela extrai credenciais, autentica, guarda o resultado no contexto e autoriza. Seu controller só executa se tudo isso passou.</p>
+        <figure class="topic-img">
+          <img src="img/spring/spring_security_filterchain.svg" alt="Spring Security 6: FilterChain, Bearer Token Extraction, JwtDecoder com JWKS e @PreAuthorize" loading="lazy">
+          <figcaption>
+            <span>Fig S-4 · Segurança & Identidade</span>
+            <em>Spring Security 6: FilterChain, Bearer Token Extraction, JwtDecoder com JWKS e @PreAuthorize</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a segurança de um aeroporto.</b> Documento, raio-x, portão — tudo antes da sala de embarque. Ninguém confere passagem dentro do avião. Se a sua verificação está no controller, você está conferindo dentro do avião.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O projeto nasceu como Acegi Security em 2003, para resolver algo que o Java EE fazia mal: autorização baseada em regras da aplicação, não só em roles do servidor. A escolha de implementar tudo como <em>Filter</em> foi deliberada — é o único ponto que enxerga toda requisição, inclusive as que nunca chegam a um controller.</p><p class="repl"><b>Veio substituir:</b> a checagem de sessão escrita à mão no começo de cada endpoint, e o <code class="i">web.xml</code> com <code class="i">security-constraint</code> por URL.</p></div>
@@ -1419,6 +1455,13 @@ var preco = precos.get().uri("/precos/{id}", id)
       <article class="topic" id="g2">
         <div class="th"><h3>Timeout, retry e circuit breaker: falhar sem derrubar todo mundo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <p class="direto"><b>Direto:</b> timeout limita quanto você espera. Retry tenta de novo — com espera crescente e só se a operação for idempotente. Circuit breaker para de tentar quando ficou claro que a dependência caiu.</p>
+        <figure class="topic-img">
+          <img src="img/spring/spring_resilience_outbox.svg" alt="Resiliência e Transactional Outbox: Eliminação de Dual-Write com RabbitMQ e Dead Letter Exchange" loading="lazy">
+          <figcaption>
+            <span>Fig S-5 · Mensageria & Resiliência</span>
+            <em>Resiliência e Transactional Outbox: Eliminação de Dual-Write com RabbitMQ e Dead Letter Exchange</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como ligar para alguém que não atende.</b> Você não deixa o telefone tocando a tarde toda (timeout) e não liga cinquenta vezes seguidas (backoff). E se ninguém atende há uma hora, você para de tentar e resolve de outro jeito (circuit breaker) em vez de gastar a manhã inteira discando.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O padrão foi popularizado pelo Hystrix, da Netflix, depois de incidentes em que um serviço lento derrubava a plataforma inteira: as threads de todos os serviços acima ficavam presas esperando, e a falha subia em cascata. O Resilience4j substituiu o Hystrix com uma implementação mais leve, e hoje é o padrão no ecossistema Spring.</p><p class="repl"><b>Veio substituir:</b> os laços de <code class="i">for (int i = 0; i &lt; 3; i++)</code> com <code class="i">Thread.sleep(1000)</code> escritos à mão — que retentavam sem backoff e amplificavam a carga exatamente quando o outro lado já estava sofrendo.</p></div>

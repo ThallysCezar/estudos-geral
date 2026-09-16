@@ -376,6 +376,14 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
   .cl-flow{grid-template-columns:1fr 1fr;gap:8px}
 }
 
+
+/* Imagens e Infográficos Arquiteturais */
+.topic-img{margin:22px 0;padding:0;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#1e1f29;box-shadow:0 14px 36px rgba(0,0,0,0.5)}
+.topic-img img{width:100%;height:auto;display:block;transition:transform .3s ease}
+.topic-img:hover img{transform:scale(1.008)}
+.topic-img figcaption{padding:10px 16px;font:600 .8rem "Inter",sans-serif;color:var(--muted);background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.topic-img figcaption span{color:var(--cyan);font-family:"Cascadia Code",monospace;font-size:.74rem}
+
 </style>
 </head>
 <body>
@@ -854,6 +862,13 @@ var copia = List.copyOf(origem);                         // snapshot defensivo</
       <article class="topic" id="d3">
         <div class="th"><h3>HashMap por dentro: hash, colisão, árvore e resize</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">entrevista</span></div></div>
         <p class="direto"><b>Direto:</b> o HashMap acha a chave em tempo constante porque o hash aponta direto para um "balde". Colisões viram lista e, se crescerem demais, árvore. Passar de ~75% da capacidade dispara um resize caro.</p>
+        <figure class="topic-img">
+          <img src="img/java/java_hashmap_internals.jpg" alt="HashMap por Dentro: Cálculo de Bucket (n-1)&hash, Encadeamento e Treeificação em Árvore Rubro-Negra" loading="lazy">
+          <figcaption>
+            <span>Fig J-4 · Estrutura de Dados</span>
+            <em>HashMap por Dentro: Cálculo de Bucket (n-1)&hash, Encadeamento e Treeificação em Árvore Rubro-Negra</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um armário de guarda-volumes.</b> Em vez de procurar sua bolsa em todos os compartimentos, a etiqueta diz o número — você vai direto. Se duas bolsas dividem o mesmo compartimento (colisão), você confere as duas. Se um compartimento vira um monte com quinze bolsas, o atendente organiza aquele monte para não ter que revirar tudo. E quando o armário enche, trocam por um maior e reorganizam todas as etiquetas.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>A estrutura hash é clássica da computação, mas o Java 8 fez um acréscimo importante: baldes com muitas colisões passaram a virar árvores balanceadas. O motivo foi segurança — existiam ataques que forjavam milhares de chaves colidindo de propósito, degradando o mapa para uma lista e derrubando servidores web.</p><p class="repl"><b>Veio substituir:</b> a <code class="i">Hashtable</code> sincronizada e as buscas lineares em listas de pares.</p></div>
@@ -1217,6 +1232,13 @@ WHERE status = 'PAGO';
       <article class="topic" id="g2">
         <div class="th"><h3>JDBC: DataSource, driver, Connection e pool</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação de tudo</span></div></div>
         <p class="direto"><b>Direto:</b> JDBC é a API padrão do Java para bancos relacionais. A cadeia inteira é <code class="i">DataSource</code> → pool → <code class="i">Connection</code> → <code class="i">PreparedStatement</code> → driver → banco → <code class="i">ResultSet</code>. A Connection é sessão <em>e</em> fronteira de transação — e é emprestada, não sua.</p>
+        <figure class="topic-img">
+          <img src="img/java/java_jdbc_pool_acid.jpg" alt="Pool HikariCP & Fronteira Transacional ACID: Empréstimo, PreparedStatement Cache e Commit/Rollback" loading="lazy">
+          <figcaption>
+            <span>Fig J-5 · Persistência & Transações</span>
+            <em>Pool HikariCP & Fronteira Transacional ACID: Empréstimo, PreparedStatement Cache e Commit/Rollback</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como as linhas telefônicas de um call center.</b> Ninguém instala uma linha nova a cada ligação: existe um feixe de linhas já abertas que os atendentes pegam e devolvem. "Desligar" devolve a linha ao feixe — não arranca o cabo da parede. Se um atendente esquece o telefone fora do gancho, aquela linha some do feixe; com poucos esquecimentos, o call center inteiro para.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O JDBC (1997) copiou a ideia do ODBC da Microsoft: uma API única no lado da aplicação, e cada banco fornece um <em>driver</em> que traduz para o seu protocolo de rede. É por isso que trocar PostgreSQL por MySQL não muda seu código — muda o driver e a URL. O pool veio depois, quando ficou evidente que abrir conexão por requisição não escala.</p><p class="repl"><b>Veio substituir:</b> APIs proprietárias por banco (cada fabricante com sua biblioteca C) e a conexão aberta a cada operação.</p></div>
@@ -1599,6 +1621,13 @@ while (!Thread.currentThread().isInterrupted()) {
       <article class="topic" id="i2">
         <div class="th"><h3>Java Memory Model: visibilidade e happens-before</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">o bug mais traiçoeiro</span></div></div>
         <p class="direto"><b>Direto:</b> o bug mais difícil da concorrência não é corromper dado — é uma thread <b>nunca ver</b> o que a outra escreveu. O JMM define quando uma escrita se torna visível: apenas através de relações <em>happens-before</em>.</p>
+        <figure class="topic-img">
+          <img src="img/java/java_jmm_concurrency.jpg" alt="Java Memory Model (JMM): Caches de CPU L1/L2/L3, Barreira Happens-Before e Instrução Atômica CAS" loading="lazy">
+          <figcaption>
+            <span>Fig J-2 · Concorrência & Hardware</span>
+            <em>Java Memory Model (JMM): Caches de CPU L1/L2/L3, Barreira Happens-Before e Instrução Atômica CAS</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como dois escritórios com quadros de avisos próprios.</b> O escritório A atualiza o quadro dele; o escritório B continua lendo o quadro antigo, para sempre, porque ninguém combinou quando sincronizar. O <code class="i">volatile</code> é a regra que diz "toda escrita vai ao mural central e toda leitura busca lá" — sem isso, cada thread vive na sua própria fotografia.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>O modelo original de 1995 era ambíguo e permitia comportamentos que ninguém conseguia justificar. Foi reescrito na JSR-133 (Java 5) por especialistas em concorrência, criando a semântica formal de <em>happens-before</em> — o contrato que diz exatamente quando uma escrita de uma thread é garantidamente visível para outra.</p><p class="repl"><b>Veio substituir:</b> o modelo de memória vago do Java 1, onde <code class="i">volatile</code> e a inicialização segura de objetos tinham garantias mal definidas.</p></div>
@@ -1726,6 +1755,13 @@ Oferta oferta = precoF
       <article class="topic" id="i6">
         <div class="th"><h3>Virtual threads: escalar a espera, não os recursos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 21 · a virada</span></div></div>
         <p class="direto"><b>Direto:</b> a virtual thread é gerenciada pela <b>JVM</b>, não pelo sistema operacional — custa quase nada e você pode ter milhões. Ao bloquear em I/O ela se desmonta e libera a thread real para outra tarefa.</p>
+        <figure class="topic-img">
+          <img src="img/java/java_virtual_threads.jpg" alt="Virtual Threads (Project Loom) M:N vs Platform Threads 1:1: Desmonte e Remonte sobre Carrier Threads" loading="lazy">
+          <figcaption>
+            <span>Fig J-3 · Concorrência Moderna</span>
+            <em>Virtual Threads (Project Loom) M:N vs Platform Threads 1:1: Desmonte e Remonte sobre Carrier Threads</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um garçom que não fica parado.</b> No modelo antigo, cada mesa exigia um garçom dedicado, que ficava de pé esperando o cliente decidir — e o restaurante só atendia tantas mesas quanto tivesse garçons. Agora, quando o cliente pega o cardápio, o garçom vai atender outra mesa e volta quando chamado. A espera deixou de consumir recurso; só o atendimento consome.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>Um problema de vinte anos: servidores atendem N requisições simultâneas, mas threads de plataforma custam cerca de 1 MB cada. As saídas eram limitar N (fila na porta) ou abandonar o modelo simples e mergulhar em programação reativa — que resolve a escala ao custo de complexidade para o time inteiro. O Project Loom atacou a raiz: em vez de abandonar a thread, barateá-la.</p><p class="repl"><b>Veio substituir:</b> boa parte da necessidade de programação reativa e de cadeias de <code class="i">CompletableFuture</code> só para não bloquear.</p></div>
@@ -1765,6 +1801,13 @@ for (var t : dezMilTarefas)
       <article class="topic" id="j1">
         <div class="th"><h3>Memória do processo: heap, stacks, metaspace e nativa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">container</span></div></div>
         <p class="direto"><b>Direto:</b> o processo Java usa bem mais memória que o heap — cada thread tem stack, o metaspace guarda classes, e JIT, GC e buffers consomem memória nativa. Em container, o limite corta o <b>total</b>, não só o heap.</p>
+        <figure class="topic-img">
+          <img src="img/java/java_jvm_memory_gc.jpg" alt="Anatomia da Memória JVM: Heap (Eden, S0/S1, Old Gen), Metaspace, Stacks e Off-Heap" loading="lazy">
+          <figcaption>
+            <span>Fig J-1 · Runtime Data Areas & GC</span>
+            <em>Anatomia da Memória JVM: Heap (Eden, S0/S1, Old Gen), Metaspace, Stacks e Off-Heap</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a bagagem de um voo.</b> O limite de peso é da mala inteira, não só das roupas. Se você calcular só as roupas e esquecer o notebook, os sapatos e o necessaire, vai ser barrado no check-in. Definir <code class="i">-Xmx</code> igual ao limite do container é exatamente isso — e o "barrado" se chama <code class="i">OOMKilled</code>.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu o problema</h4><p>Por anos a JVM olhava a memória da <em>máquina</em>, não do container: rodando num servidor de 64 GB com limite de 512 MB no cgroup, ela dimensionava o heap para o valor errado e era morta pelo kernel sem nenhum aviso. As JVMs modernas leem os limites do container (<code class="i">UseContainerSupport</code>), mas o dimensionamento correto continua sendo sua responsabilidade.</p><p class="repl"><b>Veio substituir:</b> o <code class="i">-Xmx</code> fixo copiado de tutoriais, que ignora a memória fora do heap.</p></div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inteligência Artificial completo — trilha visual + conteúdo · do token ao trabalho de todo dia</title>
-<meta name="description" content="O décimo quarto documento, unificando toda a área de IA do vault: as oito notas atômicas, os quatro pilares, a trilha de oito fases e o ofício de desenvolver com IA. Trilha visual em 9 marcos com 61 nós, mais 29 tópicos em 8 partes — modelo de IA e famílias, LLM e previsão de token, o ciclo de vida do modelo (pré-treino, fine-tuning, RLHF e constitutional AI, inferência), janela de contexto e alucinação, transformer e attention, engenharia de prompt, spec driven development, embedding, banco vetorial e pgvector, chunking e retrieval, pipeline de RAG, APIs generativas e saída estruturada, MCP com Obsidian, agente e tool calling, multiagente e guardrails, eval e LLMOps, custo e observabilidade, prompt injection, governança e fine-tuning contra RAG, e o ofício: produtividade com estratégia, a heurística do repetitivo, skill contra agente contra subagente, engenharia de contexto, escopo e quebra de trabalho, artefatos e GitHub Spec Kit. Tema Dracula.">
+<meta name="description" content="O décimo quarto documento, unificando toda a área de IA do vault: as oito notas atômicas, os quatro pilares, a trilha de oito fases e o ofício de desenvolver com IA. Trilha visual em 9 marcos com 61 nós, mais 33 tópicos em 8 partes (incluindo Janela de Contexto, Subagentes, Test Harness, Fine-Tuning LoRA e Arquitetura em 7 Camadas) — modelo de IA e famílias, LLM e previsão de token, o ciclo de vida do modelo (pré-treino, fine-tuning, RLHF e constitutional AI, inferência), janela de contexto e alucinação, transformer e attention, engenharia de prompt, spec driven development, embedding, banco vetorial e pgvector, chunking e retrieval, pipeline de RAG, APIs generativas e saída estruturada, MCP com Obsidian, agente e tool calling, multiagente e guardrails, eval e LLMOps, custo e observabilidade, prompt injection, governança e fine-tuning contra RAG, e o ofício: produtividade com estratégia, a heurística do repetitivo, skill contra agente contra subagente, engenharia de contexto, escopo e quebra de trabalho, artefatos e GitHub Spec Kit. Tema Dracula.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -266,6 +266,14 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 }
 @media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
 
+
+/* Imagens e Infográficos Arquiteturais */
+.topic-img{margin:22px 0;padding:0;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#1e1f29;box-shadow:0 14px 36px rgba(0,0,0,0.5)}
+.topic-img img{width:100%;height:auto;display:block;transition:transform .3s ease}
+.topic-img:hover img{transform:scale(1.008)}
+.topic-img figcaption{padding:10px 16px;font:600 .8rem "Inter",sans-serif;color:var(--muted);background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.topic-img figcaption span{color:var(--cyan);font-family:"Cascadia Code",monospace;font-size:.74rem}
+
 /* RAG Lab Simulator */
 .rag-lab{
   margin:20px 0;
@@ -471,6 +479,13 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a2">
         <div class="th"><h3>LLM: ele prevê o próximo token, e só</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <p class="direto"><b>Direto:</b> o LLM recebe um texto e gera a continuação mais provável, <b>um token de cada vez</b>. Ele não consulta um banco de respostas: calcula, a partir do que aprendeu, qual sequência de palavras melhor completa a entrada.</p>
+        <figure class="topic-img">
+          <img src="img/ia/llm_token_pipeline.jpg" alt="Pipeline de Inferência: BPE Tokenization → Embeddings → Attention QKV → Logits → Softmax & Sampling" loading="lazy">
+          <figcaption>
+            <span>Fig 1.1 · Mecânica de Previsão</span>
+            <em>Pipeline de Inferência: BPE Tokenization → Embeddings → Attention QKV → Logits → Softmax & Sampling</em>
+          </figcaption>
+        </figure>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o corretor do teclado do celular levado ao extremo — treinado em praticamente todo o texto público que existe, e capaz de manter a coerência por páginas. A capacidade é simples; o que emerge dela é que surpreende: tradução, resumo, código, raciocínio e conversa.</p></div>
 
@@ -478,9 +493,42 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
         <div class="cs"><b>Repare no que isso significa para o seu código.</b> O modelo é um componente <b>não determinístico</b> no meio de um sistema determinístico. Tudo o que você já sabe sobre entrada não confiável — validar, limitar, ter fallback, registrar — vale aqui, e é exatamente o que a maior parte das integrações de IA esquece.</div>
 
+        <!-- Aprofundamento Mecânico: Tokenização, Embeddings, Logits e Amostragem -->
+        <div class="duo o">
+          <div><h4>A mecânica de previsão passo a passo</h4>
+            <p>Por trás de "prever o próximo token" existe um pipeline matemático rigoroso:</p>
+            <ul>
+              <li><b>1. Tokenização (BPE - Byte Pair Encoding)</b>: O texto é quebrado em pedaços subpalavras (tokens) mapeados para IDs inteiros num vocabulário fixo (ex: 128k tokens no LLaMA 3, 256k no Gemini). Em português, palavras acentuadas frequentemente se fragmentam em 2 ou 3 tokens.</li>
+              <li><b>2. Projeção de Embedding</b>: Cada token ID é convertido em um vetor denso no espaço latente ($mathbb{R}^{d_{model}}$, onde $d_{model}$ varia de 4.096 a 8.192 dimensões). Palavras com sentido próximo habitam coordenadas próximas.</li>
+              <li><b>3. Passagem pelas Camadas Transformer</b>: Dezenas de blocos de atenção e redes neurais processam as relações entre todos os tokens.</li>
+              <li><b>4. Logits no Vocabulário</b>: Na saída final, o modelo produz um vetor de pontuações brutas (chamadas <b>logits</b>), com uma pontuação para cada palavra de todo o vocabulário.</li>
+              <li><b>5. Softmax &amp; Probabilidade</b>: Os logits passam pela função Softmax, transformando-se em probabilidades percentuais que somam 100%.</li>
+            </ul>
+          </div>
+          <div><h4>Parâmetros de amostragem que você controla</h4>
+            <ul>
+              <li><b>Temperature ($T$)</b>: Controla a entropia da curva Softmax. Com $T 	o 0$, a curva fica pontiaguda (o modelo escolhe deterministicamente o token mais provável - <i>greedy decoding</i>). Com $T = 0.8$, a curva se achata, permitindo variedade de vocabulário.</li>
+              <li><b>Top-p (Nucleus Sampling)</b>: O modelo ordena os tokens por probabilidade e corta a lista assim que a soma cumulativa atinge $p$ (ex: 0.9 = os 90% mais prováveis). Elimina a cauda de palavras absurdas sem congelar a criatividade.</li>
+              <li><b>Top-k</b>: Limita a amostragem rigidamente aos $k$ tokens mais prováveis (ex: $k = 40$), descartando todo o resto.</li>
+            </ul>
+            <div class="repl"><b>Exemplo numérico real:</b> Diante de <i>"O deploy falhou devido a"</i>, os logits podem gerar: <code>"erro" (52%)</code>, <code>"falha" (28%)</code>, <code>"inconsistência" (12%)</code>, <code>"abacate" (0.0001%)</code>. Com temperatura baixa e top-p 0.9, o modelo escolhe entre as três primeiras; nunca escolherá a quarta.</div>
+          </div>
+        </div>
+
+        <pre><code>// Como o modelo vê seu código em tokens e logits:
+// Entrada: "const port = 3000;"
+// Tokens BPE: ["const", " port", " =", " ", "3000", ";"]
+// IDs inteiros: [1842, 6214, 284, 220, 19482, 26]
+//
+// Próximo token previsto na saída:
+// Logit(" 
+")  -> 8.42  -> Softmax: 68.4%
+// Logit(" //")  -> 7.15  -> Softmax: 19.1%
+// Logit(" app") -> 6.02  -> Softmax:  6.3%</code></pre>
+
         <div class="prova">
-          <div class="lab"><b>pratique agora</b>Chame a API de um LLM por código e <i>logue o prompt exato</i> que foi enviado. Ver a string crua que o modelo recebeu derruba metade das suposições erradas.</div>
-          <div><b>prova de domínio</b>Você explica por que o modelo inventou uma resposta sem usar a palavra "erro" — e aponta em qual característica do mecanismo isso nasce.</div>
+          <div class="lab"><b>pratique agora</b>Abra o visualizador de tokens (Tiktokenizer) e cole uma frase em português e a mesma em inglês. Observe a quantidade de tokens gerada e note como acentuações e caracteres especiais fragmentam palavras.</div>
+          <div><b>prova de domínio</b>Você explica a diferença entre logits, probabilidades softmax e o papel da temperatura na amostragem sem usar metáforas humanas.</div>
         </div>
         <button class="done" type="button" data-k="a2">marcar dominado</button>
       </article>
@@ -513,6 +561,48 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
           <div><b>prova de domínio</b>Para cada uma das cinco características, você nomeia a técnica deste documento que existe por causa dela.</div>
         </div>
         <button class="done" type="button" data-k="a3">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a4">
+        <div class="th"><h3>Transformer e attention: o motor por baixo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> o transformer é a arquitetura de rede neural por trás dos LLMs. O truque central é a <b>atenção</b>: para cada palavra, o modelo pesa quais outras palavras do texto importam para entendê-la.</p>
+
+        <p>Isso permite processar a sequência inteira em paralelo e capturar contexto de longo alcance — o que as redes recorrentes anteriores faziam mal, porque precisavam atravessar o texto palavra a palavra e perdiam o começo pelo caminho. Foi a virada que tornou os LLMs possíveis em escala.</p>
+
+        <div class="duo o">
+          <div><h4>O que você faz com isso</h4><p>Praticamente nunca implementar um do zero. O valor é outro: entender "atenção" explica <b>por que o tamanho da janela de contexto importa tanto</b> e por que ele custa caro — o custo cresce com o quadrado do número de tokens que se olham entre si.</p></div>
+          <div><h4>Como você consome</h4><p>Transformers prontos, via Hugging Face ou via API de um provedor. A decisão que sobra para você é de arquiteto: qual modelo, qual janela, qual custo por mil tokens.</p></div>
+        </div>
+
+        <div class="cs"><b>O caminho curto para a intuição.</b> Em "o animal não atravessou a rua porque ele estava cansado", a attention é o que liga "ele" a "animal" e não a "rua". Uma frase, um mecanismo, e a ficha cai.</div>
+
+        <!-- Aprofundamento Matemático de Self-Attention -->
+        <div class="duo o">
+          <div><h4>A matemática de Q, K e V explicada</h4>
+            <p>Para cada token, a rede projeta três vetores através de matrizes de pesos aprendidas:</p>
+            <ul>
+              <li><b>Query ($Q$)</b> — <i>"O que este token está procurando?"</i> (Ex: o pronome "ele" busca seu sujeito anterior).</li>
+              <li><b>Key ($K$)</b> — <i>"Que informação ou contexto este token oferece?"</i> (Ex: a palavra "servidor" anuncia que é um substantivo masculino).</li>
+              <li><b>Value ($V$)</b> — <i>"Qual é o conteúdo semântico real a ser transmitido adiante?"</i></li>
+            </ul>
+            <p style="margin-top:9px">O cálculo da <b>Scaled Dot-Product Attention</b>:</p>
+            <pre><code>Attention(Q, K, V) = softmax( (Q * K^T) / sqrt(d_k) ) * V</code></pre>
+          </div>
+          <div><h4>Por que a fórmula foi revolucionária</h4>
+            <ul>
+              <li><b>O produto escalar $Q cdot K^T$</b> calcula a pontuação de afinidade entre cada palavra e todas as outras palavras do texto ao mesmo tempo.</li>
+              <li><b>A divisão por $sqrt{d_k}$</b> evita que os números fiquem gigantescos em altas dimensões, impedindo que o Softmax sature e mate o gradiente no treino.</li>
+              <li><b>Multi-Head Attention</b>: Em vez de uma única atenção, o modelo roda 32, 64 ou 128 cabeças em paralelo. Uma cabeça se especializa em sintaxe, outra em resolver pronomes ("ele" -> "servidor"), outra em relações de causa e efeito.</li>
+            </ul>
+            <div class="repl"><b>A virada sobre as RNNs/LSTMs:</b> As redes antigas liam palavra por palavra em loop sequencial (não paralelizado). O Transformer processa todos os tokens em matrizes simultâneas na GPU.</div>
+          </div>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Em um papel ou editor, desenhe uma matriz 4x4 para a frase "o banco bloqueou a conta". Trace as ligações de atenção mais fortes e veja como "bloqueou" conecta "banco" a "conta".</div>
+          <div><b>prova de domínio</b>Você explica o que representam Query, Key e Value e por que a multiplicação $Q cdot K^T$ é o cerne do raciocínio contextual.</div>
+        </div>
+        <button class="done" type="button" data-k="a4">marcar dominado</button>
       </article>
 
       <article class="topic" id="a5">
@@ -568,24 +658,64 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
         <button class="done" type="button" data-k="a5">marcar dominado</button>
       </article>
 
-      <article class="topic" id="a4">
-        <div class="th"><h3>Transformer e attention: o motor por baixo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
-        <p class="direto"><b>Direto:</b> o transformer é a arquitetura de rede neural por trás dos LLMs. O truque central é a <b>atenção</b>: para cada palavra, o modelo pesa quais outras palavras do texto importam para entendê-la.</p>
+      <article class="topic" id="a6">
+        <div class="th"><h3>Janela de contexto em profundidade: KV-Cache, FlashAttention, Lost in the Middle e Context Caching</h3><div class="badges"><span class="badge b-crit">crítico</span><span class="badge b-prof">arquitetura</span></div></div>
+        <p class="direto"><b>Direto:</b> a janela de contexto é a memória de trabalho imediata do modelo. Aumentá-la não é só uma questão de permitir prompts maiores: envolve a <b>complexidade quadrática $O(N^2)$</b>, o consumo massivo de VRAM pelo <b>KV-Cache</b>, e fenômenos cognitivos onde o modelo perde informações no meio do texto.</p>
+        <figure class="topic-img">
+          <img src="img/ia/context_kv_cache.jpg" alt="Curva U de Lost in the Middle, Tiling do FlashAttention e Caching de KV na GPU" loading="lazy">
+          <figcaption>
+            <span>Fig 1.2 · Dinâmica de Contexto</span>
+            <em>Curva U de Lost in the Middle, Tiling do FlashAttention e Caching de KV na GPU</em>
+          </figcaption>
+        </figure>
 
-        <p>Isso permite processar a sequência inteira em paralelo e capturar contexto de longo alcance — o que as redes recorrentes anteriores faziam mal, porque precisavam atravessar o texto palavra a palavra e perdiam o começo pelo caminho. Foi a virada que tornou os LLMs possíveis em escala.</p>
+        <div class="caso"><b>o caso real</b>
+          <p>Um time decide passar todo o histórico de conversas do cliente (60.000 tokens) para um LLM analisar se houve quebra de contrato. O modelo responde que "não encontrou menção à cláusula 14", embora ela estivesse explicitamente no meio da conversa. Além disso, a fatura de tokens quintuplicou e a latência subiu de 800ms para 14 segundos.</p>
+          <p>O que aconteceu? O fenômeno <b>Lost in the Middle</b> fez o modelo ignorar o miolo do prompt, enquanto a fase de prefill sem cache explodiu a conta e o tempo de GPU.</p>
+        </div>
 
         <div class="duo o">
-          <div><h4>O que você faz com isso</h4><p>Praticamente nunca implementar um do zero. O valor é outro: entender "atenção" explica <b>por que o tamanho da janela de contexto importa tanto</b> e por que ele custa caro — o custo cresce com o quadrado do número de tokens que se olham entre si.</p></div>
-          <div><h4>Como você consome</h4><p>Transformers prontos, via Hugging Face ou via API de um provedor. A decisão que sobra para você é de arquiteto: qual modelo, qual janela, qual custo por mil tokens.</p></div>
+          <div><h4>A complexidade $O(N^2)$ e o gargalo do KV-Cache</h4>
+            <ul>
+              <li><b>Complexidade $O(N^2)$</b>: Como cada token precisa calcular atenção com todos os outros tokens, dobrar a entrada de 10k para 20k tokens quadruplica as operações matemáticas ($4\times$) e a memória intermediária.</li>
+              <li><b>O que é o KV-Cache</b>: Na geração token a token, seria proibitivo recalcular toda a atenção dos tokens passados a cada novo passo. O modelo salva as matrizes $K$ e $V$ de todos os tokens anteriores na VRAM da GPU.</li>
+              <li><b>Cálculo de VRAM do KV-Cache</b>:
+                <pre><code>Memória = 2 * camadas * cabeças * dim_cabeça * tokens * bytes</code></pre>
+                Em modelos de 70B parâmetros com contexto de 128k, o KV-Cache sozinho pode consumir <b>mais de 20 GB de VRAM</b> — mais do que o peso de muitos modelos quantizados!</li>
+              <li><b>GQA (Grouped-Query Attention)</b>: Compartilha matrizes de Key e Value entre múltiplas cabeças de Query, reduzindo o tamanho do KV-Cache em até 8x sem perder precisão.</li>
+            </ul>
+          </div>
+          <div><h4>FlashAttention e Context Caching (Prompt Caching)</h4>
+            <ul>
+              <li><b>FlashAttention (v1, v2, v3)</b>: O gargalo real das GPUs modernas não é o poder computacional (FLOPS), mas a velocidade de transferir dados entre a memória lenta (HBM) e a memória ultrarrápida do chip (SRAM). O FlashAttention faz a atenção em blocos (*tiling*), evitando gravar a gigantesca matriz $N x N$ na HBM. Foi o que viabilizou janelas de 128k a 2M tokens.</li>
+              <li><b>Context Caching (Prompt Caching)</b>: Provedores modernos (Claude Prompt Caching, Gemini Context Caching) congelam o KV-Cache de prefixos estáticos (system prompts longos, documentações ou bases de código) na memória da GPU.</li>
+              <li><b>Economia brutal</b>: Reutilizar um contexto em cache reduz o custo de leitura em <b>75% a 90%</b> e derruba o <i>Time to First Token (TTFT)</i> de 10s para menos de 400ms!</li>
+            </ul>
+          </div>
         </div>
 
-        <div class="cs"><b>O caminho curto para a intuição.</b> Em "o animal não atravessou a rua porque ele estava cansado", a attention é o que liga "ele" a "animal" e não a "rua". Uma frase, um mecanismo, e a ficha cai.</div>
+        <table class="cmd">
+          <thead><tr><th>Conceito de Contexto</th><th>Como Funciona na Prática</th><th>Impacto em Produção</th></tr></thead>
+          <tbody>
+            <tr><td><b>Lost in the Middle</b></td><td>A curva de atenção tem formato em <b>U</b>: altíssima retenção nos primeiros 10% e nos últimos 10% do prompt; degradação severa no miolo (40% a 60%).</td><td>Regras críticas, schemas JSON e instruções de tarefa devem ficar sempre no <b>topo (system)</b> ou no <b>final absoluto</b> do prompt, nunca no meio de logs.</td></tr>
+            <tr><td><b>Needle In A Haystack (NIAH)</b></td><td>Teste padronizado que esconde uma frase específica ("a agulha") em profundidades variáveis de um texto gigante ("o palheiro") para medir taxa de recuperação.</td><td>Mede a capacidade real do modelo de recuperar dados dispersos antes de você confiar nele para documentos longos.</td></tr>
+            <tr><td><b>Prefill vs Decode Phase</b></td><td><b>Prefill</b>: processa todo o prompt de entrada em paralelo (alto uso de computação). <b>Decode</b>: gera um token por vez em streaming (gargalo de largura de banda de memória).</td><td>Explica por que prompts gigantescos demoram para começar a responder, enquanto a geração subsequente flui rápido.</td></tr>
+            <tr><td><b>Context Compaction</b></td><td>Resumir ou podar turnos antigos de conversa quando o histórico atinge 70% da janela útil.</td><td>Evita alucinação, previne erros de estouro de contexto e barateia chamadas subsequentes em agentes autônomos.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Achar que janela de 1 milhão de tokens dispensa RAG.</b> Mandar 500k tokens a cada requisição custa dezenas de centavos por chamada, demora 15 segundos e sofre de atenção diluída. RAG focado com 3 chunks relevantes é 100x mais barato, mais rápido e mais preciso.</li>
+            <li><b>Colocar o contrato de saída no meio de um arquivo gigante.</b> O modelo atende às primeiras linhas e se esquece do formato exigido quando chega ao final. Instruções de formatação devem encerrar o prompt.</li>
+          </ul>
+        </div>
 
         <div class="prova">
-          <div class="lab"><b>pratique agora</b>Assista a uma explicação visual do transformer e, logo depois, conte tokens de um texto seu. Ver a frase virar tokens fecha o circuito entre a arquitetura e a fatura.</div>
-          <div><b>prova de domínio</b>Você explica por que dobrar a janela de contexto não dobra o custo — mais que dobra.</div>
+          <div class="lab"><b>pratique agora</b>Pegue um documento de 40 páginas e faça duas perguntas ao modelo: uma sobre um dado que está na página 20 (miolo) e outra com esse mesmo dado copiado para a última linha do prompt. Compare a velocidade e a precisão da resposta.</div>
+          <div><b>prova de domínio</b>Você explica o que é o KV-Cache, calcula a memória necessária para um contexto longo e justifica por que Prompt Caching é o maior redutor de custos em arquiteturas de IA.</div>
         </div>
-        <button class="done" type="button" data-k="a4">marcar dominado</button>
+        <button class="done" type="button" data-k="a6">marcar dominado</button>
       </article>
     </section>
 
@@ -1062,6 +1192,108 @@ List&lt;AvaliacaoRisco&gt; riscos = chatClient.prompt()
         </div>
         <button class="done" type="button" data-k="e3">marcar dominado</button>
       </article>
+
+      <article class="topic" id="e4">
+        <div class="th"><h3>Subagentes e arquitetura multi-agente: orquestração, isolamento e mensageria</h3><div class="badges"><span class="badge b-crit">crítico</span><span class="badge b-prof">arquitetura</span></div></div>
+        <p class="direto"><b>Direto:</b> agentes únicos entram em colapso em tarefas complexas por <b>saturação de contexto e colisão de ferramentas</b>. Subagentes resolvem isso dividindo o trabalho em unidades especializadas, onde cada subagente opera em uma <b>janela de contexto limpa e isolada</b>, reportando ao orquestrador apenas o resultado final.</p>
+        <figure class="topic-img">
+          <img src="img/ia/multiagent_orchestrator.jpg" alt="Padrão Orchestrator-Workers: isolamento estrito de contexto vs agente monolítico poluído" loading="lazy">
+          <figcaption>
+            <span>Fig 5.1 · Arquitetura Multi-Agente</span>
+            <em>Padrão Orchestrator-Workers: isolamento estrito de contexto vs agente monolítico poluído</em>
+          </figcaption>
+        </figure>
+
+        <div class="caso"><b>o caso real</b>
+          <p>Um agente autônomo recebe a tarefa: <i>"Analise o repositório, identifique falhas de segurança no módulo de autenticação, escreva um teste de reprodução e corrija o bug."</i></p>
+          <p>Com um agente único: ele lê 20 arquivos (estoura 45.000 tokens), chama ferramentas de terminal, recebe logs de erro de 3.000 linhas, perde a instrução original e começa a tentar corrigir arquivos que não tinham relação com o bug. O contexto poluiu e o agente entrou em loop infinito.</p>
+          <p>Com <b>Subagentes</b>: o Orquestrador invoca o subagente <b>Explorador</b> (com ferramentas apenas de leitura). Ele varre o código e devolve apenas 3 linhas com os arquivos vulneráveis. O Orquestrador então despacha o subagente <b>Testador</b> numa janela limpa. O histórico sujo de varredura nunca poluiu a janela principal.</p>
+        </div>
+
+        <div class="duo o">
+          <div><h4>Padrões de colaboração entre agentes</h4>
+            <ul>
+              <li><b>1. Orchestrator-Workers (Supervisor / Operários)</b>: O padrão dominante. O agente pai planeja, quebra a meta e delega cada pedaço a subagentes especializados (<code>researcher</code>, <code>coder</code>, <code>tester</code>). O pai sintetiza a entrega.</li>
+              <li><b>2. Router / Dispatcher</b>: Uma etapa inicial de classificação direciona o pedido 100% para um agente especialista exclusivo (ex: Jurídico vs Suporte Técnico).</li>
+              <li><b>3. Evaluator-Optimizer (Gerador &amp; Crítico)</b>: Um subagente produz a solução (código, SQL) e outro subagente executa testes unitários ou análise de segurança, rejeitando com feedback até passar.</li>
+              <li><b>4. Choreography (Event-Driven)</b>: Agentes desacoplados consumindo e publicando em tópicos de mensageria (Kafka/RabbitMQ).</li>
+            </ul>
+          </div>
+          <div><h4>O segredo do sucesso: Isolamento de Contexto</h4>
+            <p>O maior erro de implementações ingênuas é passar a transcrição inteira da conversa do pai para o filho. <b>Isso destrói o propósito do subagente.</b></p>
+            <ul>
+              <li><b>Prompt enxuto e focado</b>: O subagente recebe apenas a descrição exata da sua missão e os artefatos mínimos necessários.</li>
+              <li><b>Ferramentas restritas</b>: O subagente de pesquisa não tem ferramenta de escrita em disco; o subagente de deploy não tem acesso ao banco de produção.</li>
+              <li><b>Retorno sintetizado</b>: Ao concluir, o subagente devolve um resumo factual ou o arquivo gerado. Os 20 passos intermediários morrem com ele.</li>
+            </ul>
+            <div class="repl"><b>Despertar Reativo (Reactive Wakeup):</b> Em sistemas modernos, o agente pai não fica em loop síncrono bloqueando thread. Ele despacha o subagente em background e é reativado por callback/evento assíncrono quando o resultado fica pronto.</div>
+          </div>
+        </div>
+
+        <div class="codelab">implementação em python: orquestrador e subagentes com contexto isolado</div>
+        <pre><code class="language-python"># Arquitetura de Subagentes com Isolamento de Contexto em Python
+from typing import List, Dict, Any
+
+class Subagent:
+    """Subagente especializado com system prompt e ferramentas isoladas."""
+    def __init__(self, name: str, system_prompt: str, tools: List[str]):
+        self.name = name
+        self.system_prompt = system_prompt
+        self.tools = tools
+
+    def execute_task(self, task_instruction: str, context_artifacts: str) -> str:
+        # Janela de contexto LIMPA: apenas o system prompt específico e a tarefa
+        messages = [
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": f"Contexto:\n{context_artifacts}\n\nTarefa:\n{task_instruction}"}
+        ]
+        print(f"[{self.name}] Executando em janela limpa com ferramentas: {self.tools}...")
+        # Simulação do loop de tool calling do subagente...
+        resultado_sintetizado = f"Relatório de {self.name}: análise concluída com 100% de sucesso."
+        return resultado_sintetizado
+
+class MasterOrchestrator:
+    """Orquestrador que gerencia o ciclo de vida e agrega resultados."""
+    def __init__(self):
+        self.researcher = Subagent(
+            name="CodeResearcher",
+            system_prompt="Você é um especialista em mapeamento de código. Retorne apenas arquivos e funções críticas.",
+            tools=["read_file", "grep_search", "find_by_name"]
+        )
+        self.security_auditor = Subagent(
+            name="SecurityAuditor",
+            system_prompt="Você é um auditor de AppSec. Identifique riscos OWASP e proponha mitigações.",
+            tools=["static_analysis", "run_linter"]
+        )
+
+    def run_workflow(self, user_goal: str):
+        print(f"\n[Orquestrador] Meta recebida: {user_goal}")
+        
+        # Passo 1: Despacha subagente de pesquisa
+        mapa_codigo = self.researcher.execute_task(
+            task_instruction="Mapeie os endpoints de autenticação e controllers de login.",
+            context_artifacts="Repositório: /src/auth"
+        )
+        
+        # Passo 2: O Orquestrador alimenta o auditor APENAS com o destilado da pesquisa
+        auditoria = self.security_auditor.execute_task(
+            task_instruction="Audite os fluxos mapeados contra vulnerabilidades de JWT e timing attack.",
+            context_artifacts=mapa_codigo  # Passa o resumo, não o histórico sujo!
+        )
+        
+        # Passo 3: Síntese executiva final
+        print(f"\n[Orquestrador] Entrega final sintetizada:\n{auditoria}")
+
+# Execução
+orchestrator = MasterOrchestrator()
+orchestrator.run_workflow("Revisar segurança da autenticação")</code></pre>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Projete a divisão de uma tarefa grande (ex: "escrever um gerador de relatórios PDF com dados do banco") em dois subagentes. Liste o system prompt e as ferramentas que você daria a cada um, garantindo que nenhum tenha privilégios excessivos.</div>
+          <div><b>prova de domínio</b>Você explica por que uma arquitetura de subagentes reduz o consumo de tokens e a taxa de alucinação em relação a um agente monolítico.</div>
+        </div>
+        <button class="done" type="button" data-k="e4">marcar dominado</button>
+      </article>
     </section>
 
     <!-- ===================== PARTE 06 ===================== -->
@@ -1069,6 +1301,103 @@ List&lt;AvaliacaoRisco&gt; riscos = chatClient.prompt()
       <div class="ph"><span class="num">06</span><div><h2>Produção: avaliar, medir, proteger e governar</h2><p>O que separa demo de produto. Aqui a engenharia de IA vira engenharia de software — e é onde o seu histórico de backend vale mais.</p></div></div>
 
       <article class="topic" id="f1">
+        <div class="th"><h3>Avaliação e Test Harness: como testar IA como engenharia de verdade</h3><div class="badges"><span class="badge b-crit">crítico</span><span class="badge b-prof">arquitetura</span></div></div>
+        <p class="direto"><b>Direto:</b> em sistemas não determinísticos, <b>"vibe check" (olhar duas saídas e achar que ficou bom) é a maior causa de fracasso em produção</b>. Avaliação profissional exige um <b>Test Harness</b>: uma suíte automatizada que executa casos de teste versionados, mede métricas objetivas e bloqueia o deploy no CI/CD se a acurácia regredir.</p>
+
+        <div class="caso"><b>o caso real</b>
+          <p>Um desenvolvedor altera o prompt do sistema para torná-lo "mais amigável e conciso". Ele testa manualmente três perguntas no terminal, gosta do resultado e faz o merge na branch principal.</p>
+          <p>Três dias depois, o módulo de extração financeira quebra: o modelo passou a omitir o campo de centavos em valores monetários porque interpretou "conciso" como arredondamento. O erro custou horas de conciliação bancária.</p>
+          <p>Se houvesse um <b>Eval Harness</b> no GitHub Actions com 50 casos de teste automatizados, o PR teria recebido sinal vermelho antes do merge.</p>
+        </div>
+
+        <div class="duo o">
+          <div><h4>Benchmarks Globais da Indústria</h4>
+            <ul>
+              <li><b>SWE-bench</b> — O benchmark mais respeitado para agentes de engenharia: avalia se o modelo consegue resolver <i>issues reais</i> do GitHub (bugs, features) em repositórios complexos (Django, SymPy) passando na suíte de testes original do projeto.</li>
+              <li><b>HumanEval &amp; MBPP</b> — Avaliam geração de código com testes unitários determinísticos (métricas de <i>pass@1</i> e <i>pass@k</i>).</li>
+              <li><b>MMLU &amp; GPQA</b> — Medem raciocínio factual multidisciplinar e perguntas científicas de nível de pós-graduação.</li>
+              <li><b>AgentBench &amp; GAIA</b> — Medem autonomia multi-passo: navegar em APIs, usar ferramentas e tomar decisões operacionais.</li>
+            </ul>
+          </div>
+          <div><h4>A Pirâmide de Testes de IA</h4>
+            <ul>
+              <li><b>Camada 1: Asserções Determinísticas (Hard Asserts)</b>: Executadas em milissegundos. Validação estrita de JSON Schema (Pydantic/Zod), verificação de chaves obrigatórias, status codes HTTP e limites de tokens/latência.</li>
+              <li><b>Camada 2: Similaridade Semântica &amp; Grounding</b>: Compara o embedding da resposta contra uma resposta de referência (*Golden Dataset*) usando distância cosseno (&gt; 0.88), além de Exact Match para entidades críticas.</li>
+              <li><b>Camada 3: LLM-as-a-Judge com Rubricas Formais</b>: Um modelo frontier atua como juiz imparcial avaliando <i>Fidelidade ao Contexto (Groundedness)</i>, <i>Atendimento à Pergunta (Relevance)</i> e <i>Segurança (Toxicity)</i>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="codelab">código prático: um test harness executável em python para ci/cd</div>
+        <pre><code class="language-python"># Test Harness Automatizado para Aplicações de IA
+import json
+import time
+from typing import List, Dict
+
+TEST_DATASET = [
+    {
+        "id": "tc-01",
+        "input": "Qual o limite de conexões do pool PostgreSQL no arquivo de config?",
+        "expected_field": "max_connections",
+        "expected_value": 50
+    },
+    {
+        "id": "tc-02",
+        "input": "Gere o JSON de cancelamento para o usuário 1092.",
+        "expected_field": "status",
+        "expected_value": "CANCELADO"
+    }
+]
+
+def mock_llm_agent(prompt: str) -> Dict:
+    """Simula a execução do agente em teste."""
+    if "PostgreSQL" in prompt:
+        return {"max_connections": 50, "timeout": 30}
+    return {"status": "CANCELADO", "user_id": 1092}
+
+def run_eval_harness(dataset: List[Dict], threshold: float = 1.0) -> bool:
+    print("=== INICIANDO EXECUÇÃO DO EVAL HARNESS NO CI/CD ===")
+    passed = 0
+    total = len(dataset)
+    
+    for case in dataset:
+        t0 = time.time()
+        output = mock_llm_agent(case["input"])
+        latency = time.time() - t0
+        
+        # Hard Assert 1: Saída deve ser um dicionário estruturado
+        assert isinstance(output, dict), f"[{case['id']}] Saída não é JSON válido!"
+        
+        # Hard Assert 2: Campo obrigatório presente e com valor esperado
+        actual_val = output.get(case["expected_field"])
+        is_ok = actual_val == case["expected_value"]
+        
+        if is_ok:
+            passed += 1
+            print(f"✅ [{case['id']}] PASSOU ({latency:.3f}s) - {case['expected_field']}={actual_val}")
+        else:
+            print(f"❌ [{case['id']}] FALHOU - Esperado: {case['expected_value']}, Obtido: {actual_val}")
+            
+    pass_rate = passed / total
+    print(f"\nTaxa de aprovação: {pass_rate * 100:.1f}% (Threshold mínimo: {threshold * 100:.1f}%)")
+    
+    if pass_rate < threshold:
+        raise SystemExit(f"REGRESSÃO DETECTADA: Pass rate ({pass_rate}) abaixo do limite mínimo aceitável!")
+    
+    print("🎉 SUÍTE DE IA APROVADA: Seguro para deploy!")
+    return True
+
+if __name__ == "__main__":
+    run_eval_harness(TEST_DATASET)</code></pre>
+
+        <div class="cs"><b>A Rubrica Formal do LLM-as-a-Judge.</b> O erro mais comum é pedir ao juiz: <i>"Avalie se a resposta foi boa"</i>. O correto é fornecer uma escala ordinal (1 a 5) com critérios negativos e positivos inegociáveis: <b>Nota 5</b>: 100% respaldada pelos fatos fornecidos, sem inferências externas; <b>Nota 1</b>: contradiz diretamente o texto ou alucina entidades.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie um arquivo <code>eval_dataset.jsonl</code> com 5 perguntas e respostas esperadas do seu projeto atual. Escreva um script que execute essas perguntas e calcule a taxa de acurácia.</div>
+          <div><b>prova de domínio</b>Você descreve as três camadas da pirâmide de testes de IA e sabe explicar como estruturar um Quality Gate no GitHub Actions para barrar regressões probabilísticas.</div>
+        </div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
         <div class="th"><h3>Avaliação: sem eval, você acha que melhorou</h3><div class="badges"><span class="badge b-crit">crítico</span></div></div>
         <p class="direto"><b>Direto:</b> eval é medir a qualidade da saída de forma sistemática e contínua, usando um dataset de casos representativos e métricas automatizadas. Sem isso, toda mudança de prompt é aposta no escuro.</p>
 
@@ -1181,6 +1510,124 @@ List&lt;AvaliacaoRisco&gt; riscos = chatClient.prompt()
           <div><b>prova de domínio</b>Diante de "vamos treinar nosso próprio modelo", você conduz a conversa para a pergunta certa: conhecimento ou comportamento?</div>
         </div>
         <button class="done" type="button" data-k="f4">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="f5">
+        <div class="th"><h3>Fine-Tuning do zero: PEFT, LoRA, QLoRA, SFT e DPO</h3><div class="badges"><span class="badge b-crit">crítico</span><span class="badge b-prof">arquitetura</span></div></div>
+        <p class="direto"><b>Direto:</b> fine-tuning é o processo de <b>ajustar os pesos internos de um modelo pré-treinado</b> para especializá-lo em uma tarefa, formato rígido ou dialeto corporativo. Com técnicas modernas como <b>LoRA</b> e <b>QLoRA</b>, você não precisa mais de supercomputadores milionários: é possível treinar adaptadores leves em uma única GPU gastando poucos reais.</p>
+        <figure class="topic-img">
+          <img src="img/ia/lora_finetuning.jpg" alt="Matemática do LoRA: Decomposição Matricial W0 + (α/r)*BA e Quantização NF4 do QLoRA" loading="lazy">
+          <figcaption>
+            <span>Fig 6.1 · Adaptadores PEFT</span>
+            <em>Matemática do LoRA: Decomposição Matricial W0 + (α/r)*BA e Quantização NF4 do QLoRA</em>
+          </figcaption>
+        </figure>
+
+        <div class="duo o">
+          <div><h4>Full Fine-Tuning vs PEFT</h4>
+            <ul>
+              <li><b>Full Fine-Tuning</b>: Atualiza 100% de todos os bilhões de parâmetros da rede. Exige dezenas de GPUs A100/H100, consome centenas de gigabytes de VRAM para guardar pesos, gradientes e estados do otimizador (AdamW), e sofre de <b>Catastrophic Forgetting</b> (o modelo esquece habilidades gerais de raciocínio).</li>
+              <li><b>PEFT (Parameter-Efficient Fine-Tuning)</b>: Congela 99% do modelo base intacto e adiciona uma fração minúscula de pesos treináveis (&lt; 1%). Reduz o consumo de memória em mais de 80%, mantém as capacidades gerais intactas e permite trocar de especialidade trocando apenas um arquivo leve de adaptador.</li>
+            </ul>
+          </div>
+          <div><h4>A matemática elegante do LoRA (Low-Rank Adaptation)</h4>
+            <p>Os pesquisadores da Microsoft descobriram que a matriz de alteração de pesos ($Delta W$) possui um <i>posto intrínseco (rank)</i> muito baixo. Em vez de calcular uma matriz densa $W_0 in mathbb{R}^{d 	imes k}$:</p>
+            <pre><code>W = W0 + (alpha / r) * (B * A)</code></pre>
+            <ul>
+              <li>Decompõe-se $Delta W$ no produto de duas matrizes muito finas: $B in mathbb{R}^{d 	imes r}$ e $A in mathbb{R}^{r 	imes k}$, onde o rank $r$ é pequeno (ex: 8, 16 ou 32).</li>
+              <li>A matriz $A$ é inicializada com distribuição gaussiana e $B$ com zeros ($Delta W = 0$ no início).</li>
+              <li>O resultado é um arquivo <b>LoRA Adapter</b> de apenas <b>30 MB a 150 MB</b>, plugável em tempo de execução sobre o modelo base!</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="duo o">
+          <div><h4>QLoRA: Treinando modelos gigantes na sua máquina</h4>
+            <p>O QLoRA (Dettmers et al.) combinou três inovações para permitir fine-tuning de modelos de 70B parâmetros em GPUs de consumo de 24GB:</p>
+            <ul>
+              <li><b>1. Quantização 4-bit NormalFloat (NF4)</b>: Uma representação numérica que preserva a distribuição normal dos pesos neurais melhor que inteiros comuns.</li>
+              <li><b>2. Double Quantization (DQ)</b>: Quantiza as próprias constantes de quantização, economizando ~0.37 bits por parâmetro (~3 GB em um modelo de 65B).</li>
+              <li><b>3. Paged Optimizers</b>: Utiliza a memória RAM do computador para fazer paginação automática de memória de GPU, prevenindo travamentos por falta de VRAM (OOM).</li>
+            </ul>
+          </div>
+          <div><h4>Alinhamento Moderno: DPO vs RLHF</h4>
+            <ul>
+              <li><b>RLHF (PPO)</b>: O método antigo. Treina-se um modelo de recompensa (*Reward Model*) a partir de preferências humanas e depois usa-se o algoritmo PPO para empurrar o LLM. É instável, extremamente sensível a hiperparâmetros e exige 3 modelos em memória simultaneamente.</li>
+              <li><b>DPO (Direct Preference Optimization)</b>: O padrão moderno. Demonstrou matematicamente que o modelo de linguagem pode ser otimizado <i>diretamente</i> com pares de respostas (<code>chosen</code> vs <code>rejected</code>), eliminando completamente o Reward Model. Mais rápido, estável e reprodutível.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="codelab">código prático: treinando um adaptador lora com huggingface peft e trl</div>
+        <pre><code class="language-python"># Fine-Tuning com LoRA usando HuggingFace PEFT e TRL
+import torch
+from datasets import load_dataset
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from trl import SFTTrainer
+
+MODEL_ID = "meta-llama/Llama-3.2-3B-Instruct"
+
+# 1. Carregando Tokenizer e Modelo Base
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+tokenizer.pad_token = tokenizer.eos_token
+
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_ID,
+    torch_dtype=torch.bfloat16,
+    device_map="auto"
+)
+
+# 2. Configuração do LoRA (apenas 0.5% dos pesos serão treinados!)
+peft_config = LoraConfig(
+    r=16,                         # Rank da decomposição matricial
+    lora_alpha=32,                # Fator de escala da atualização
+    target_modules=["q_proj", "v_proj", "k_proj", "o_proj"], # Camadas de atenção
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM"
+)
+
+model = get_peft_model(model, peft_config)
+model.print_trainable_parameters()
+# Saída esperada: "trainable params: 14,155,776 || all params: 3,212,749,824 || trainable%: 0.44%"
+
+# 3. Hiperparâmetros de Treinamento
+training_args = TrainingArguments(
+    output_dir="./lora-finance-adapter",
+    per_device_train_batch_size=4,
+    gradient_accumulation_steps=4,
+    learning_rate=2e-4,
+    logging_steps=10,
+    max_steps=100,
+    fp16=True,
+    save_strategy="no"
+)
+
+# 4. Início do Treinamento Supervisionado (SFT)
+# dataset.jsonl no formato: [{"messages": [{"role": "user", ...}, {"role": "assistant", ...}]}]
+# trainer = SFTTrainer(model=model, train_dataset=dataset, args=training_args, peft_config=peft_config)
+# trainer.train()
+
+# 5. Salva apenas o adaptador leve (alguns megabytes!)
+# model.save_pretrained("./meu-adaptador-final")
+print("Configuração LoRA validada com sucesso!")</code></pre>
+
+        <table class="cmd">
+          <thead><tr><th>Estratégia</th><th>O que altera</th><th>Custo &amp; Esforço</th><th>Quando é a escolha certa</th></tr></thead>
+          <tbody>
+            <tr><td><b>Prompt Engineering</b></td><td>Apenas o contexto da chamada</td><td>Quase zero infraestrutura</td><td>Geração geral, regras de negócio em texto, experimentação rápida.</td></tr>
+            <tr><td><b>RAG</b></td><td>Recupera documentos dinâmicos</td><td>Baixo a médio (Vector DB)</td><td>Conhecimento factual que muda todo dia (políticas, manuais, dados privados).</td></tr>
+            <tr><td><b>LoRA Fine-Tuning</b></td><td>Pesos de adaptadores (&lt; 1%)</td><td>Médio (GPU para treino, dataset curado)</td><td>Forçar formato JSON ultracomplexo, sintaxe de linguagem proprietária, estilo ou reduzir prompt em chamadas de alto volume.</td></tr>
+            <tr><td><b>RAG + LoRA</b></td><td>Pesos estilizados + fatos atuais</td><td>Completo</td><td>O padrão de sistemas corporativos de ponta: modelo afinado na linguagem do domínio consultando dados em tempo real no RAG.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Monte um dataset com 20 pares no formato JSONL no padrão ChatML: <code>{"messages": [{"role": "user", "content": "consulta"}, {"role": "assistant", "content": "formato_estrito"}]}</code>. Valide se todas as linhas são JSONs válidos.</div>
+          <div><b>prova de domínio</b>Você explica a equação fundamental do LoRA $W_0 + rac{alpha}{r}BA$ e sabe justificar a um tech lead por que um adaptador LoRA de 50MB é preferível a um full fine-tuning de 140GB.</div>
+        </div>
+        <button class="done" type="button" data-k="f5">marcar dominado</button>
       </article>
     </section>
 
@@ -1375,6 +1822,74 @@ List&lt;AvaliacaoRisco&gt; riscos = chatClient.prompt()
           <div><b>prova de domínio</b>Você mostra o arquivo que preserva o contexto do seu projeto e diz o que aconteceria na próxima sessão se ele não existisse.</div>
         </div>
         <button class="done" type="button" data-k="h6">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="h7">
+        <div class="th"><h3>O Guia do Arquiteto: como montar um sistema de IA de ponta a ponta</h3><div class="badges"><span class="badge b-crit">crítico</span><span class="badge b-prof">arquitetura</span></div></div>
+        <p class="direto"><b>Direto:</b> saber fazer IA não é colar um prompt num wrapper de biblioteca. É dominar a <b>Arquitetura de Referência em 7 Camadas</b>, seguir uma <b>árvore de decisão rigorosa</b> que evita desperdício e aplicar o checklist de engenharia que separa sistemas de produção de brinquedos de demonstração.</p>
+        <figure class="topic-img">
+          <img src="img/ia/seven_layer_ai.jpg" alt="A Arquitetura de Referência em 7 Camadas: do Streaming à Observabilidade e Quality Gates" loading="lazy">
+          <figcaption>
+            <span>Fig 7.1 · Blueprint de Engenharia</span>
+            <em>A Arquitetura de Referência em 7 Camadas: do Streaming à Observabilidade e Quality Gates</em>
+          </figcaption>
+        </figure>
+
+        <div class="caso"><b>a arquitetura em 7 camadas de um sistema de ia robusto</b>
+          <p>Todo sistema de IA profissional segue uma pilha arquitetural desacoplada:</p>
+          <ol style="margin-left:1.2rem;line-height:1.75">
+            <li><b>Camada 1: Apresentação &amp; Streaming</b> — Gateway HTTP/WebSocket com suporte nativo a SSE (Server-Sent Events), streaming progressivo de tokens para diminuir latência percebida e cancelamento gracioso via <code>AbortController</code>.</li>
+            <li><b>Camada 2: Orquestração &amp; Agentes</b> — Máquina de estados finita (State Graph) que gerencia o ciclo ReAct, circuit breakers de loop infinito, limite de passos e despacho de subagentes isolados.</li>
+            <li><b>Camada 3: Contexto, Caching &amp; Memória</b> — Gestor de janela de contexto com Prompt Caching (prefixos congelados na GPU), memória de curto prazo compactada e persistência relacional/vetorial de longo prazo.</li>
+            <li><b>Camada 4: Recuperação Híbrida (RAG)</b> — Chunking semântico com overlap, busca híbrida (BM25 para precisão lexical + pgvector HNSW para semântica) e re-ranking com Cross-Encoder.</li>
+            <li><b>Camada 5: Ferramentas &amp; Integração (MCP)</b> — Schemas JSON estritos com Pydantic, servidores Model Context Protocol (MCP) padronizados e chaves de idempotência em qualquer mutação no banco.</li>
+            <li><b>Camada 6: Segurança &amp; Guardrails</b> — Sanitização de entrada, demarcação de dados com tags XML rígidas, aprovação humana em ações destrutivas (Human-in-the-Loop) e defesas contra OWASP LLM Top 10.</li>
+            <li><b>Camada 7: Observabilidade &amp; Eval Harness</b> — Tracing distribuído de spans (OpenTelemetry/Langfuse), telemetria de custo/tokens em tempo real e suíte automatizada de testes com Quality Gate no CI/CD.</li>
+          </ol>
+        </div>
+
+        <div class="duo o">
+          <div><h4>A Árvore de Decisão do Engenheiro</h4>
+            <ul>
+              <li><b>1. A tarefa é determinística?</b> (Mesma entrada sempre dá a mesma saída) $	o$ <b>Use código clássico</b> (scripts, regex, linters, APIs). Nunca gaste LLM aqui.</li>
+              <li><b>2. Exige apenas linguagem natural sem dados externos?</b> $	o$ <b>Prompt Engineering versionado</b> com Few-Shot e saída estruturada.</li>
+              <li><b>3. O modelo precisa de dados privados que mudam constantemente?</b> $	o$ <b>Pipeline de RAG</b> com busca híbrida e re-ranking.</li>
+              <li><b>4. O modelo precisa realizar ações e tomar decisões em múltiplos passos?</b> $	o$ <b>Agente com Tool Calling</b> e ReAct loop.</li>
+              <li><b>5. A tarefa tem etapas distintas que poluem o contexto?</b> $	o$ <b>Subagentes Especializados</b> com contexto isolado.</li>
+              <li><b>6. O modelo erra o formato ou precisa de um tom e dialeto hiperespecífico com economia máxima de tokens?</b> $	o$ <b>LoRA Fine-Tuning</b>.</li>
+            </ul>
+          </div>
+          <div><h4>A Stack Tecnológica Recomendada para 2026</h4>
+            <ul>
+              <li><b>Modelos</b>: Gemini 3.5/2.5 Pro (raciocínio avançado e grande janela), Claude 3.7/3.5 Sonnet (código e instruções complexas), LLaMA 3.3 / DeepSeek V3 (open-weights on-premise).</li>
+              <li><b>Bancos de Dados &amp; Vetores</b>: PostgreSQL com extensão <code>pgvector</code> (índices HNSW) para unificar dados relacionais e vetoriais sem infraestrutura separada; Qdrant para dezenas de milhões de vetores.</li>
+              <li><b>Orquestração &amp; Tooling</b>: Model Context Protocol (MCP) para padronização de ferramentas; LangGraph ou loops nativos em Python/TypeScript.</li>
+              <li><b>Avaliação &amp; Telemetria</b>: DeepEval / Ragas para testes de qualidade; Langfuse / OpenTelemetry para observabilidade de tokens e latência.</li>
+            </ul>
+          </div>
+        </div>
+
+        <table class="cmd">
+          <thead><tr><th>#</th><th>O Checklist de Produção (10 Mandamentos do Arquiteto)</th><th>Verificação Obrigatória</th></tr></thead>
+          <tbody>
+            <tr><td>01</td><td><b>Idempotência Total em Ferramentas</b></td><td>Toda chamada externa de gravação ou pagamento exige chave UUID única gerada pelo backend.</td></tr>
+            <tr><td>02</td><td><b>Teto Rígido de Loop e Tokens</b></td><td><code>max_iterations = 10</code> e <code>max_tokens</code> configurados em todas as chamadas.</td></tr>
+            <tr><td>03</td><td><b>Timeout e Circuit Breaker</b></td><td>AbortSignal com timeout e parada imediata após 2 falhas consecutivas da mesma ferramenta.</td></tr>
+            <tr><td>04</td><td><b>Blindagem contra Prompt Injection</b></td><td>Dados externos envolvidos em tags XML delimitadas; o modelo nunca recebe dado externo sem rótulo.</td></tr>
+            <tr><td>05</td><td><b>Human-in-the-Loop para Ações Críticas</b></td><td>Deleções, mutações massivas ou transferências bancárias exigem confirmação explícita do usuário.</td></tr>
+            <tr><td>06</td><td><b>Quality Gate no CI/CD</b></td><td>Pull requests bloqueados se o Test Harness apontar acurácia inferior a 95% ou regressão factual.</td></tr>
+            <tr><td>07</td><td><b>Prompt Caching Ativo</b></td><td>System prompts e esquemas estáticos posicionados no prefixo para ativar cache de GPU.</td></tr>
+            <tr><td>08</td><td><b>Log de Entrada, Saída e Custo</b></td><td>Cada requisição grava prompt original, resposta gerada, tokens de input, output e milissegundos.</td></tr>
+            <tr><td>09</td><td><b>Failover de Modelos</b></td><td>Se o modelo principal retornar 503 (sobrecarga) ou 429 (quota), comute automaticamente para o modelo secundário estável.</td></tr>
+            <tr><td>10</td><td><b>Saída Estruturada Validada</b></td><td>Nunca confie cegamente no JSON gerado; valide com Pydantic / Zod antes de propagar aos sistemas internos.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o projeto de IA que você deseja construir e aplique os 10 itens deste checklist. Identifique quais itens já estão cobertos e quais seriam vulnerabilidades em produção hoje.</div>
+          <div><b>prova de domínio</b>Você desenha a arquitetura em 7 camadas do seu sistema em uma lousa e defende cada escolha tecnológica com base na árvore de decisão.</div>
+        </div>
+        <button class="done" type="button" data-k="h7">marcar dominado</button>
       </article>
     </section>
 
@@ -1642,12 +2157,12 @@ var T=[
   ex:"as tres primeiras acontecem uma vez, antes de voce existir para o modelo;\na quarta acontece toda vez que voce aperta enter",
   dg:"vida",
   alem:"Leia sobre Constitutional AI, o método publicado pela Anthropic em que o modelo critica e revisa as próprias respostas contra princípios escritos."},
- {t:"Tokens e janela de contexto",x:"tokenização, limite de contexto, custo",
-  oq:"O modelo processa texto em tokens, pedaços de palavra. A janela de contexto é o limite de tokens que ele considera de uma vez, e você paga por token.",
-  ps:"Entender as restrições de tamanho e de custo antes de projetar a solução.",
-  pq:"É a restrição de engenharia central desta trilha: RAG e chunking existem por causa dela.",
-  ex:"mandar um PDF de 500 paginas inteiro estoura a janela;\npor isso se recupera so os trechos relevantes",
-  alem:"Use uma biblioteca de contagem de tokens para estimar custo antes de chamar a API."},
+ {t:"Janela de contexto e KV-Cache",x:"crítico · O(N²), FlashAttention e Prompt Caching",
+  oq:"O modelo processa texto em tokens BPE. A janela tem complexidade O(N²) e consome memória massiva na GPU pelo KV-Cache, além de sofrer com atenção em forma de U (Lost in the Middle).",
+  ps:"Projetar prompts longos sem explodir custos nem perder a precisão factual no miolo do texto.",
+  pq:"É a restrição de engenharia central desta trilha. Prompt Caching congela o KV-cache na GPU, reduzindo custos em até 90%.",
+  ex:"Prompt Caching reutiliza prefixos longos; regras e schemas JSON devem ficar no topo ou no final do prompt.",
+  alem:"Estude a equação de VRAM do KV-Cache, a técnica de tiling do FlashAttention e benchmarks NIAH (Needle In A Haystack)."},
  {t:"Prompt engineering",x:"crítico · zero-shot, few-shot, chain-of-thought, papel",
   oq:"A prática de instruir o modelo para obter a saída desejada: dar exemplos, pedir raciocínio passo a passo, definir papel e formato.",
   ps:"Controlar qualidade e formato da resposta sem treinar nada.",
@@ -1771,12 +2286,18 @@ var T=[
   pq:"É a engenharia séria de LLM. Sem eval você acha que melhorou, não sabe.",
   ex:"rodar 50 perguntas de teste a cada mudanca e medir a taxa de respostas corretas",
   alem:"Estude eval específico de RAG e monte um dataset representativo do seu caso real."},
- {t:"Testar IA",x:"regressão, eval no CI, detectar piora",
-  oq:"Automatizar a avaliação no pipeline: rodar o eval a cada mudança para pegar regressão antes de ir para produção.",
-  ps:"Ter confiança para iterar sem quebrar o que já funcionava.",
-  pq:"É a sua vantagem como dev: você já sabe testar. Aplicar isso a LLM é o que falta no mercado.",
-  ex:"o CI roda o eval e barra o merge se a qualidade cair abaixo do limite",
-  alem:"Use uma ferramenta de versionamento de prompt com eval automatizado no pipeline."},
+ {t:"Testar IA e SWE-bench",x:"crítico · Eval Harness, benchmarks e Quality Gates",
+  oq:"Suítes automatizadas de testes (Eval Harness) com asserções determinísticas, semânticas e LLM-as-a-Judge com rubricas formais.",
+  ps:"Impedir regressões e deploys cegos em sistemas probabilísticos.",
+  pq:"Sem Test Harness no CI/CD, qualquer ajuste de prompt pode quebrar silenciosamente casos de teste críticos.",
+  ex:"SWE-bench mede capacidade de resolver issues reais do GitHub passando na suíte de testes original.",
+  alem:"Implemente um script de Quality Gate no GitHub Actions que falha o build se o pass rate for inferior a 95%."},
+ {t:"LoRA, QLoRA e Fine-Tuning",x:"arquitetura · PEFT, adaptadores leves e DPO",
+  oq:"Ajustar pesos neurais via decomposição matricial W = W0 + (alpha/r)*BA, quantização 4-bit NF4 e alinhamento DPO.",
+  ps:"Especializar o modelo em sintaxes rígidas e dialetos corporativos gastando pouca GPU.",
+  pq:"Evita o custo estratosférico de Full Fine-Tuning gerando arquivos de adaptadores de apenas 50MB.",
+  ex:"QLoRA permite treinar modelos de 70B parâmetros em uma única GPU de consumidor com 24GB de VRAM.",
+  alem:"Estude Direct Preference Optimization (DPO) sobre pares chosen vs rejected sem precisar de Reward Model."},
  {t:"Custo e latência",x:"essencial · caching, modelo certo, streaming, batch",
   oq:"As alavancas que tornam IA viável em produção: cache de respostas, modelo do tamanho certo, streaming e batching.",
   ps:"Reduzir o custo por requisição e a latência percebida.",
@@ -1827,13 +2348,13 @@ var T=[
   pq:"É o degrau entre o prompt versionado e o agente — e cobre boa parte do que as pessoas tentam resolver com agente.",
   ex:"a skill do vault: o padrao da nota, o template e as regras, carregados quando voce pede uma nota",
   alem:"Antes de construir um agente, pergunte se o que falta é só um procedimento escrito que o assistente carregue na hora certa."},
- {t:"Subagentes",x:"avancado · uma janela de contexto propria por recorte",
-  oq:"Um agente que outro agente aciona para uma parte delimitada do trabalho, com janela de contexto própria e limpa.",
-  ps:"Dar foco isolado a uma etapa e evitar que o rastro inteiro do trabalho ocupe a janela principal.",
-  pq:"A janela é finita e compartilhada: tarefa longa se degrada sozinha porque o começo sai da janela ou o ruído acumulado atrapalha.",
-  ex:"o principal fica com o resultado, nao com o rastro de como ele foi obtido",
+ {t:"Subagentes e Orquestração",x:"crítico · contexto isolado e padrão Orchestrator-Workers",
+  oq:"Arquitetura onde um agente supervisor delega subtarefas a subagentes especializados com janelas de contexto limpas e ferramentas restritas.",
+  ps:"Evitar o colapso do agente único: saturação de contexto, colisão de ferramentas e alucinação.",
+  pq:"É o padrão arquitetural obrigatório para tarefas autônomas longas em engenharia de software.",
+  ex:"Orquestrador dispara CodeResearcher em janela limpa; recebe apenas o resumo e aciona SecurityAuditor.",
   dg:"sub",
-  alem:"Veio substituir o agente único com prompt gigante, que estourava a janela e reenviava todo o histórico a cada passo."},
+  alem:"Domine protocolos de mensageria assíncrona com despertar reativo (reactive wakeup) e descarte de logs intermediários."},
  {t:"Engenharia de contexto",x:"critico · sem contexto, e um estagiario no primeiro dia",
   oq:"A prática de escolher, a cada tarefa, o que o agente precisa ter na frente: objetivo, arquivos que importam, convenções, restrições e um exemplo aceito.",
   ps:"Elevar a qualidade do que é gerado sem trocar de modelo.",
@@ -1852,7 +2373,13 @@ var T=[
   pq:"Um artefato de trinta linhas vale por milhares de tokens de histórico: você envia o destilado, não o percurso.",
   ex:"o GitHub Spec Kit implementa o fluxo /specify -> /plan -> /tasks;\nmas a spec em markdown puro ja muda o resultado",
   dg:"artef",
-  alem:"Artefato desatualizado é pior que nenhum: continua entrando no contexto com autoridade de documento. Atualizá-lo faz parte de terminar a tarefa."}
+  alem:"Artefato desatualizado é pior que nenhum: continua entrando no contexto com autoridade de documento. Atualizá-lo faz parte de terminar a tarefa."},
+ {t:"Arquitetura em 7 Camadas",x:"crítico · O Guia Definitivo de Construção de IA",
+  oq:"Blueprint de referência cobrindo Streaming, Orquestração, Contexto, RAG Híbrido, MCP, Guardrails e Observabilidade.",
+  ps:"Saber exatamente como montar e produzir sistemas de IA profissionais sem amadorismo.",
+  pq:"Reúne a árvore de decisão do arquiteto, a stack recomendada para 2026 e os 10 mandamentos de produção.",
+  ex:"Árvore de decisão: se for determinístico use código clássico; se os dados mudam use RAG; se a tarefa é longa use subagentes.",
+  alem:"Aplique o Checklist de Produção antes de promover qualquer agente para ambiente corporativo real."}
 ]}
 ];
 

@@ -402,7 +402,7 @@ footer a{color:var(--accent)}
       <span class="bd">
         <span class="kk">a bancada</span>
         <h3>Laboratório de projetos</h3>
-        <p>Os treze documentos explicam; aqui você constrói. <b>18 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
+        <p>Os catorze documentos explicam; aqui você constrói. <b>18 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
         <span class="chips"><i>18 projetos</i><i>18 aquecimentos</i><i>tudo local primeiro</i><i>R$ 0 obrigatório</i><i>OrderFlow como capstone</i></span>
       </span>
       <span class="go">↗</span>
@@ -694,11 +694,17 @@ if(btnExportar){
       exportadoEm: new Date().toISOString(),
       dados: {}
     };
-    for(var i = 0; i < localStorage.length; i++){
-      var k = localStorage.key(i);
-      if(k && (k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-"))){
-        backup.dados[k] = localStorage.getItem(k);
+    try {
+      for(var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        if(k && (k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-"))){
+          backup.dados[k] = localStorage.getItem(k);
+        }
       }
+    } catch(err){
+      var em = q("backupMsg");
+      if(em){ em.textContent = "Não foi possível acessar o armazenamento local (navegação privativa?)."; em.style.display = "block"; }
+      return;
     }
     var blob = new Blob([JSON.stringify(backup, null, 2)], {type:"application/json"});
     var url = URL.createObjectURL(blob);

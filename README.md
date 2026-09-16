@@ -1,6 +1,6 @@
 # Estudos · backend em profundidade
 
-Catorze documentos de estudo e uma bancada prática que escrevo e uso. Cada documento tem duas metades: uma **trilha visual** no estilo roadmap.sh, com modo teste e fila de revisão, e o **conteúdo em profundidade**, em que cada tópico traz a origem do mecanismo, o que ele veio substituir, diagramas vetoriais animados, as armadilhas reais de produção e uma prova de domínio.
+Quinze documentos — catorze de estudo e uma bancada prática — que escrevo e uso. Cada documento tem duas metades: uma **trilha visual** no estilo roadmap.sh, com modo teste e fila de revisão, e o **conteúdo em profundidade**, em que cada tópico traz a origem do mecanismo, o que ele veio substituir, diagramas vetoriais animados, as armadilhas reais de produção e uma prova de domínio.
 
 **→ [thallyscezar.github.io/estudos](https://thallyscezar.github.io/estudos)**
 

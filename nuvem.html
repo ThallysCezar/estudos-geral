@@ -264,6 +264,14 @@ table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84re
 table.vmap tr:last-child td{border-bottom:0}
 table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
 
+
+/* Imagens e Infográficos Arquiteturais */
+.topic-img{margin:22px 0;padding:0;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#1e1f29;box-shadow:0 14px 36px rgba(0,0,0,0.5)}
+.topic-img img{width:100%;height:auto;display:block;transition:transform .3s ease}
+.topic-img:hover img{transform:scale(1.008)}
+.topic-img figcaption{padding:10px 16px;font:600 .8rem "Inter",sans-serif;color:var(--muted);background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.topic-img figcaption span{color:var(--cyan);font-family:"Cascadia Code",monospace;font-size:.74rem}
+
 </style>
 </head>
 <body>
@@ -421,6 +429,13 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="b1">
         <div class="th"><h3>A régua do compute: da VM ao serverless</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
         <p class="direto"><b>Direto:</b> as opções formam uma régua de <em>quanto você opera</em> versus <em>quanto controle você tem</em>. VM no extremo do controle, função serverless no extremo da delegação. Entre elas, containers gerenciados, Kubernetes gerenciado e plataformas de aplicação.</p>
+        <figure class="topic-img">
+          <img src="img/nuvem/cloud_compute_spectrum.svg" alt="A Régua do Compute: Do Bare Metal ao Serverless sob a Ótica da Responsabilidade Compartilhada" loading="lazy">
+          <figcaption>
+            <span>Fig C-2 · Computação & Escala</span>
+            <em>A Régua do Compute: Do Bare Metal ao Serverless sob a Ótica da Responsabilidade Compartilhada</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como formas de morar.</b> Casa própria com terreno (VM): controle total, e o telhado é seu problema. Apartamento em condomínio (containers gerenciados): a manutenção da estrutura é do prédio. Hotel (serverless): você chega e usa, paga por noite, e não escolhe a marca do chuveiro.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>A nuvem começou só com VMs, porque era a abstração que já existia. Cada camada nova apareceu removendo um trabalho repetitivo: gerenciar sistema operacional, depois gerenciar container, depois gerenciar capacidade. O serverless levou ao extremo — você entrega a função e não pensa em servidor nenhum, pagando por invocação.</p><p class="repl"><b>Veio substituir:</b> cada degrau substituiu o anterior <em>para uma classe de problema</em> — nenhum tornou o outro obsoleto, e é por isso que os cinco convivem.</p></div>
@@ -521,6 +536,13 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="c1">
         <div class="th"><h3>A rede virtual: seu pedaço privado da nuvem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação da rede</span></div></div>
         <p class="direto"><b>Direto:</b> uma rede virtual é um espaço de endereçamento IP privado que só existe para você, dentro do datacenter do provedor. Nada entra e nada sai dela sem que você tenha configurado uma porta. Todo o resto da rede — sub-rede, rota, firewall, gateway — vive dentro dela.</p>
+        <figure class="topic-img">
+          <img src="img/nuvem/cloud_vpc_network_architecture.svg" alt="Arquitetura de Rede VPC: Sub-redes Públicas vs Privadas, NAT Gateway, Route Tables e Security Groups" loading="lazy">
+          <figcaption>
+            <span>Fig C-1 · Redes & Conectividade</span>
+            <em>Arquitetura de Rede VPC: Sub-redes Públicas vs Privadas, NAT Gateway, Route Tables e Security Groups</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um andar alugado num prédio comercial.</b> O prédio é do provedor e tem outros inquilinos, mas o seu andar tem a sua planta, as suas salas e a sua porta. Ninguém entra sem passar por uma porta que você abriu — e se você deixar a porta escancarada, a culpa não é do prédio.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>Nos primeiros anos da nuvem, todas as máquinas nasciam com IP público numa rede compartilhada — o que era simples e assustador. A rede virtual privada trouxe para a nuvem o isolamento que já existia no datacenter, e virou a unidade fundamental: hoje quase todo recurso nasce dentro de uma, e "está na internet?" passou a ser uma decisão explícita em vez de um padrão.</p><p class="repl"><b>Veio substituir:</b> a VLAN configurada em switch físico, que exigia acesso ao equipamento e um chamado para o time de redes.</p></div>
@@ -658,6 +680,13 @@ origem:  sg-balanceador
       <article class="topic" id="d1">
         <div class="th"><h3>Objeto, bloco e arquivo: escolher errado dói por anos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
         <p class="direto"><b>Direto:</b> <b>bloco</b> é o disco de uma máquina — você formata e monta, e ele pertence a uma instância por vez. <b>Arquivo</b> é o compartilhamento de rede, montado por várias máquinas ao mesmo tempo. <b>Objeto</b> não é sistema de arquivos: você grava e lê o item inteiro por HTTP, com capacidade praticamente ilimitada e o menor preço.</p>
+        <figure class="topic-img">
+          <img src="img/nuvem/cloud_storage_tiers.svg" alt="Matriz de Armazenamento na Nuvem: Objeto (S3), Bloco (EBS) e Arquivo (EFS) com Ciclo de Vida Automático" loading="lazy">
+          <figcaption>
+            <span>Fig C-3 · Armazenamento & Dados</span>
+            <em>Matriz de Armazenamento na Nuvem: Objeto (S3), Bloco (EBS) e Arquivo (EFS) com Ciclo de Vida Automático</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como três formas de guardar papel.</b> Bloco é a gaveta da sua mesa: rápida, sua, e só você usa. Arquivo é o armário compartilhado da sala: mais lento, mas todo mundo alcança. Objeto é o depósito da empresa: barato, cabe tudo, você pede o documento pelo código e ele chega inteiro — mas você não folheia uma página no meio.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>Bloco e arquivo vieram do datacenter — são a SAN e a NAS de sempre. O <b>objeto</b> é a invenção da nuvem: abriu mão de operações de sistema de arquivos, como escrever no meio de um arquivo e renomear diretório, para ganhar durabilidade, escala e preço. Foi exatamente essa renúncia que permitiu guardar petabytes a um custo que nenhuma SAN alcança.</p><p class="repl"><b>Veio substituir:</b> o storage de objeto substituiu o array de discos usado como depósito de arquivos grandes — backup, mídia, log — que era caríssimo por terabyte.</p></div>
@@ -816,6 +845,13 @@ teto de réplicas:    <span class="n">15</span>
       <article class="topic" id="f1">
         <div class="th"><h3>Identidade é o novo perímetro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais importante</span></div></div>
         <p class="direto"><b>Direto:</b> no datacenter, a segurança era o perímetro: quem estava dentro da rede era confiável. Na nuvem isso não existe — os recursos são alcançáveis por API de qualquer lugar do mundo. O que decide o que acontece é <em>a identidade que fez a chamada</em> e a permissão dela.</p>
+        <figure class="topic-img">
+          <img src="img/nuvem/cloud_iam_least_privilege.svg" alt="IAM e Identidade: Eliminação de Chaves Estáticas, IAM Roles Efêmeras e Anatomia de Policy JSON" loading="lazy">
+          <figcaption>
+            <span>Fig C-4 · Segurança & IAM</span>
+            <em>IAM e Identidade: Eliminação de Chaves Estáticas, IAM Roles Efêmeras e Anatomia de Policy JSON</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um prédio sem portaria, só com fechadura eletrônica em cada porta.</b> Não importa como você chegou ao corredor; o que importa é se o seu crachá abre aquela porta específica. Um crachá de faxina que abre a sala do servidor é o problema — não o corredor.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>A mudança foi forçada pela realidade: nuvem, trabalho remoto, celular e SaaS destruíram a ideia de "dentro da rede". O modelo de confiança zero — verificar sempre, nunca presumir por localização — foi a resposta conceitual, e o serviço de identidade e permissão de cada provedor é o mecanismo. É por isso que a permissão mal configurada é a causa dominante dos incidentes.</p><p class="repl"><b>Veio substituir:</b> a VPN corporativa como fronteira de confiança e a regra "se está na rede interna, pode".</p></div>
@@ -1019,6 +1055,13 @@ cloud.secret-key=<span class="s">wJalr...</span>
       <article class="topic" id="h1">
         <div class="th"><h3>Log, métrica e rastreamento: três perguntas diferentes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <p class="direto"><b>Direto:</b> <b>métrica</b> responde "está ruim?" — número agregado ao longo do tempo, barato de guardar. <b>Log</b> responde "o que aconteceu naquela requisição?" — evento detalhado, caro em volume. <b>Rastreamento</b> responde "por onde passou e onde demorou?" — o caminho da requisição entre serviços.</p>
+        <figure class="topic-img">
+          <img src="img/nuvem/cloud_observability_finops.svg" alt="Observabilidade em Nuvem (Métricas, Logs, Traces) e os 4 Eixos de Custos de Infraestrutura (FinOps)" loading="lazy">
+          <figcaption>
+            <span>Fig C-5 · Operação & FinOps</span>
+            <em>Observabilidade em Nuvem (Métricas, Logs, Traces) e os 4 Eixos de Custos de Infraestrutura (FinOps)</em>
+          </figcaption>
+        </figure>
         <div class="analogia"><i class="ic">≈</i><p><b>Como investigar um atraso numa viagem de avião.</b> A métrica é o painel de partidas: 30% dos voos atrasados hoje. O log é o registro do seu voo específico: decolou às 14h37. O rastreamento é o caminho da mala: saiu da esteira, foi ao raio-X, ficou 40 minutos parada no carrinho. Cada um responde uma pergunta que os outros não respondem.</p></div>
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>Monitorar era observar máquinas: CPU, memória, disco. Com sistemas distribuídos, isso deixou de bastar — a máquina pode estar ótima e a requisição do usuário demorando oito segundos por causa de um serviço três saltos adiante. Observabilidade é a mudança de foco: em vez de perguntar "a máquina está bem?", perguntar "consigo entender o que está acontecendo lá dentro sem fazer um novo deploy?".</p><p class="repl"><b>Veio substituir:</b> o painel de CPU e memória como única fonte de verdade, e o <code class="ic">System.out.println</code> adicionado em produção para descobrir o que estava acontecendo.</p></div>

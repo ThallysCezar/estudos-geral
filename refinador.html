@@ -961,7 +961,11 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       <div class="preset-section">
         <div class="preset-label">Selecione o Formato Desejado:</div>
         <div class="preset-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:8px;">
-          <button type="button" class="preset-btn active" data-preset="formal" data-btn-label="✨ Deixar Mais Formal &amp; Bonito">
+          <button type="button" class="preset-btn active" data-preset="fiel" data-btn-label="✍️ Corrigir &amp; Formatar (Fiel)">
+            <i>✍️</i>
+            <span>Corrigir &amp; Formatar</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="formal" data-btn-label="✨ Deixar Mais Formal &amp; Bonito">
             <i>✨</i>
             <span>Mais Formal &amp; Bonito</span>
           </button>
@@ -1097,14 +1101,31 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
 
       // Prompts de Única Versão Definitiva (Zero Metatexto, Zero Opções, Zero Explicações)
   var PRESET_PROMPTS = {
-    formal: "Você é um redator executivo e consultor de comunicação corporativa de altíssimo nível.\n" +
-            "Sua missão é transformar as ideias, anotações ou rascunho do usuário em uma ÚNICA versão FORMAL, COESA, ELEGANTE e IMPECÁVEL.\n\n" +
-            "REGRAS CRÍTICAS DE SAÍDA (OBRIGATÓRIAS):\n" +
-            "1. UMA ÚNICA VERSÃO: Nunca forneça múltiplas opções (como 'Opção 1', 'Opção 2'). Escolha a melhor redação e entregue apenas uma versão final definitiva.\n" +
-            "2. ZERO METATEXTO OU INTRODUÇÃO: É ESTRITAMENTE PROIBIDO escrever frases como 'Aqui está o texto:', 'Opções de reescrita:', 'Sugestão:'. Comece imediatamente na primeira palavra do texto formalizado.\n" +
-            "3. ZERO COMENTÁRIOS OU EXPLICAÇÕES: É ESTRITAMENTE PROIBIDO incluir explicações gramaticais, listas de 'Principais melhorias aplicadas' ou comentários no final. Entregue apenas o texto pronto para ser enviado.\n" +
-            "4. VOCABULÁRIO CULTO E TÉCNICO: Transforme qualquer gíria ou expressão informal em linguagem técnica e corporativa apropriada (ex: 'bagulho doido' vira 'inconsistências operacionais' ou 'comportamento inesperado'). Corrija concordâncias e pontuação.\n" +
-            "5. PRESERVAÇÃO DA INTENÇÃO: Mantenha com 100% de fidelidade os fatos, nomes, decisões e contexto informados pelo usuário.",
+    fiel: "Você é um revisor de texto técnico. Corrija e dê fluidez ao rascunho, mantendo o texto o MAIS FIEL POSSÍVEL ao que a pessoa escreveu.\n\n" +
+          "FAÇA:\n" +
+          "- Corrigir gramática, concordância, ortografia e pontuação.\n" +
+          "- Deixar as frases claras e naturais, com leitura profissional.\n" +
+          "- Quebrar em parágrafos quando ajudar a leitura.\n\n" +
+          "NÃO FAÇA (crítico):\n" +
+          "- NÃO invente seções, títulos, cabeçalhos, bullets ou listas que não existam no rascunho. Sem tópicos na entrada = sem tópicos na saída.\n" +
+          "- NÃO adicione emoji.\n" +
+          "- NÃO troque palavras simples por sinônimos rebuscados. Mantenha o vocabulário da pessoa; corrija só o que está errado ou ambíguo.\n" +
+          "- NÃO adicione informação, opinião ou elogio; NÃO remova fatos, nomes, siglas ou números.\n" +
+          "- NÃO transforme em relatório corporativo. Deve continuar soando como quem escreveu, só que correto e fluido.\n\n" +
+          "PRESERVE EXATAMENTE:\n" +
+          "- Linhas de imagem markdown, ex: ![image](/uploads/.../image.png).\n" +
+          "- Listas que já existirem no rascunho (ex: '- Imagem 1: ...').\n" +
+          "- Termos e siglas técnicas (VDC, Oracle, account provider, etc.).\n\n" +
+          "SAÍDA: apenas o texto final corrigido. Zero metatexto, zero 'Aqui está:', zero comentário no fim.",
+
+    formal: "Você é um revisor que deixa o rascunho mais formal, claro e coeso, SEM exagerar.\n" +
+            "Entregue UMA ÚNICA versão final, pronta para enviar.\n\n" +
+            "REGRAS:\n" +
+            "1. UMA ÚNICA VERSÃO, sem 'Opção 1/Opção 2'.\n" +
+            "2. ZERO METATEXTO: comece direto na primeira palavra do texto. Nada de 'Aqui está:' nem comentários no fim.\n" +
+            "3. FORMALIDADE COM MODERAÇÃO: corrija gramática, concordância e pontuação e eleve o tom para profissional. NÃO troque palavras simples por termos rebuscados só para soar sofisticado; mantenha o texto natural.\n" +
+            "4. NÃO invente seções, cabeçalhos, bullets nem emoji que não existam no rascunho.\n" +
+            "5. PRESERVE 100% dos fatos, nomes, números, siglas, decisões e a intenção. Preserve linhas de imagem markdown e listas já existentes.",
 
     email: "Você é um redator executivo especialista em comunicação corporativa.\n" +
            "Sua missão é transformar as ideias do usuário em UM ÚNICO E-MAIL FORMAL pronto para envio.\n\n" +
@@ -1119,18 +1140,13 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
            "• [Ação 2 se houver]\n\n" +
            "Atenciosamente,\n[Seu Nome / Equipe]",
 
-    task: "Você é um Tech Lead sênior especialista em documentação de engenharia de software.\n" +
-          "Transforme o rascunho do desenvolvedor em UM ÚNICO comentário formal para Task/Issue (Jira, GitHub, Linear) registrando o que foi feito e observações.\n\n" +
-          "REGRAS CRÍTICAS DE SAÍDA:\n" +
-          "1. UMA ÚNICA VERSÃO: Entregue diretamente o conteúdo pronto para colar no Jira/GitHub.\n" +
-          "2. ZERO METATEXTO: Comece diretamente no primeiro cabeçalho '### 📋 O que foi feito'. Zero introdução de IA e zero comentários no final.\n" +
-          "3. ESTRUTURA:\n" +
-          "### 📋 O que foi feito\n" +
-          "[Resumo formal e técnico do que foi implementado ou ajustado, traduzindo termos informais]\n\n" +
-          "### ⚠️ Observações & Pontos de Atenção\n" +
-          "[Comentários sobre o estado atual da entrega, impactos, limitações ou comportamentos observados que precisam de ajuste]\n\n" +
-          "### 🧪 Validação & Próximos Passos\n" +
-          "[Passos para teste ou continuidade da tarefa]",
+    task: "Você é um desenvolvedor sênior documentando o que fez em um comentário de Task/Issue (Jira, GitHub, Linear).\n" +
+          "Reescreva o rascunho de forma clara, correta e objetiva, mantendo a intenção e o jeito de quem escreveu.\n\n" +
+          "REGRAS:\n" +
+          "1. UMA ÚNICA VERSÃO pronta para colar. ZERO METATEXTO e zero comentário no fim.\n" +
+          "2. Corrija gramática, concordância e pontuação; deixe fluido e profissional, sem inflar o vocabulário.\n" +
+          "3. NÃO force cabeçalhos, seções fixas nem emoji. Só use tópicos ou subtítulos se o próprio rascunho tiver vários assuntos que fiquem mais claros separados; caso contrário, mantenha em parágrafos.\n" +
+          "4. PRESERVE fatos, nomes, números, siglas, listas já existentes e linhas de imagem markdown.",
 
     ingles: "You are a Principal Software Engineer and executive communications expert.\n" +
             "Rewrite the user's raw notes or Portuguese ideas into ONE SINGLE, FLUENT, POLISHED, CORPORATE TECH ENGLISH text.\n\n" +
@@ -1192,13 +1208,12 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
   var historyList = document.getElementById("historyList");
   var btnClearHist = document.getElementById("btnClearHist");
 
-  var currentPreset = "formal";
+  var currentPreset = "fiel";
   var lastRefinedText = "";
   var lastOriginalText = "";
   var isDiffVisible = false;
 
   // Initialize from LocalStorage
-  var STORAGE_MODEL = "refinador_gemini_model_v7";
   var savedKey = localStorage.getItem(STORAGE_KEY) || "";
   if(savedKey){
     inGemini.value = savedKey;
@@ -1424,15 +1439,17 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       temperature: 0.2
     };
 
-    // For Gemini 3.x Flash models: low thinking minimizes latency to <2s
-    if(/gemini-3.[5-8]-flash/i.test(modelName)){
+    // Formatar/corrigir texto nao e tarefa de raciocinio: minimizar o "thinking"
+    // reduz drasticamente a latencia. Aplica-se a todos os modelos, inclusive Pro.
+    if(/gemini-3/i.test(modelName)){
       config.thinkingConfig = { thinkingLevel: "low" };
     } else if(/gemini-2.5-flash/i.test(modelName)){
       config.thinkingConfig = { thinkingBudget: 0 };
-    } else if(/gemini-3.1-pro/i.test(modelName)){
-      config.thinkingConfig = { thinkingLevel: "low" };
+    } else if(/gemini-2.5-pro/i.test(modelName)){
+      // 2.5 Pro nao aceita 0; 128 e o minimo permitido.
+      config.thinkingConfig = { thinkingBudget: 128 };
     }
-    // Note: for gemini-2.5-pro, we leave default reasoning so it delivers max executive quality!
+    // Se o modelo rejeitar thinkingConfig, o callGeminiDirect remove e reenvia (400 "thinking").
     return config;
   }
 
@@ -1452,7 +1469,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
             "x-goog-api-key": key
           },
           body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(60000)
+          signal: AbortSignal.timeout(30000)
         });
 
         if(!res.ok){
@@ -1513,7 +1530,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
             payload.generationConfig = buildGenerationConfig("gemini-3.5-flash");
             continue;
           }
-          throw new Error("Tempo limite de 60s esgotado. Os servidores do Google demoraram para responder.");
+          throw new Error("Tempo limite de 30s esgotado. Os servidores do Google demoraram para responder.");
         }
         if(attempt === maxRetries || err.message.indexOf("API key not valid") !== -1 || err.message.indexOf("invalid authentication") !== -1){
           throw err;
@@ -1540,7 +1557,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
     }
 
     // Prepare prompt
-    var basePrompt = PRESET_PROMPTS[currentPreset] || PRESET_PROMPTS.formal;
+    var basePrompt = PRESET_PROMPTS[currentPreset] || PRESET_PROMPTS.fiel;
     var extra = customInst.value.trim();
     var systemInstruction = basePrompt;
     if(extra){
@@ -1628,7 +1645,7 @@ body{min-height:100vh;padding:24px 20px 80px;display:flex;flex-direction:column;
       if(msg.indexOf("high demand") !== -1 || msg.indexOf("503") !== -1){
         msg = "Os servidores do Google estão passando por um pico temporário de demanda. Aguarde alguns instantes e tente novamente.";
       }
-      resultContent.innerHTML = '<span style="color:var(--red);font-weight:600">Erro na requisição:</span><br><br>' + msg;
+      resultContent.innerHTML = '<span style="color:var(--red);font-weight:600">Erro na requisição:</span><br><br>' + escapeHtml(msg);
       resultContent.style.display = "block";
       showToast("Falha ao formatar: " + msg.slice(0, 70), "err");
     }finally{

@@ -387,13 +387,13 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="ia.html" style="--dv:var(--purple)">
+    <a class="duv" href="ia.html" style="--dv:var(--purple)" id="cardIA">
       <span class="mk">◈</span>
       <span class="bd">
-        <span class="kk">o que prevê</span>
+        <span class="kk">o que prevê · dois caminhos</span>
         <h3>Inteligência Artificial</h3>
-        <p>Toda a área de IA do vault num documento só: as oito notas atômicas, os quatro pilares e a trilha de oito fases que estavam espalhadas. A tese cabe numa frase — o modelo <b>calcula a continuação mais provável</b>, e alucinação, janela de contexto, RAG, eval e guardrail existem todos para contornar isso. Fecha no ofício: o que vale automatizar, engenharia de contexto, escopo, subagentes e artefatos.</p>
-        <span class="chips"><i>ciclo de vida do modelo</i><i>token e janela</i><i>prompt e spec</i><i>embedding</i><i>pgvector</i><i>RAG</i><i>MCP</i><i>tool calling</i><i>subagentes</i><i>guardrails</i><i>eval e LLMOps</i><i>engenharia de contexto</i><i>artefatos</i></span>
+        <p>Toda a área de IA do vault e a engenharia moderna: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir no modal.</p>
+        <span class="chips"><i>dois · escolher</i><i>V1 (Vault &amp; Fundações)</i><i>V2/V3 (6 Grandes Níveis)</i><i>tokens</i><i>RAG</i><i>pgvector</i><i>agentes</i><i>Test Harness</i></span>
       </span>
       <span class="go">↗</span>
     </a>
@@ -405,17 +405,6 @@ footer a{color:var(--accent)}
         <h3>Laboratório de projetos</h3>
         <p>Os catorze documentos explicam; aqui você constrói. <b>18 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
         <span class="chips"><i>18 projetos</i><i>18 aquecimentos</i><i>tudo local primeiro</i><i>R$ 0 obrigatório</i><i>OrderFlow como capstone</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-  
-    <a class="duv" href="refinador.html" style="--dv:var(--purple);border-color:color-mix(in srgb,var(--purple) 36%,transparent);background:linear-gradient(135deg, color-mix(in srgb,var(--purple) 8%,transparent), transparent 60%)">
-      <span class="mk">✨</span>
-      <span class="bd">
-        <span class="kk">ferramenta prática · 100% gratuita</span>
-        <h3>Deixar Texto Mais Formal (Gemini)</h3>
-        <p>Polidor automático de rascunhos para comunicação técnica de alto nível: <b>e-mails executivos</b>, <b>descrições de PR &amp; issues no GitHub</b>, <b>alinhamento com clientes</b>, <b>comunicação de incidentes / war room</b> e <b>inglês corporativo fluente</b>. 100% gratuito com Google AI Studio e chaves seguras no navegador.</p>
-        <span class="chips"><i>e-mail executivo</i><i>PR &amp; issue no GitHub</i><i>comunicação com cliente</i><i>war room &amp; incidente</i><i>zero ruído</i><i>inglês corporativo</i><i>Google Gemini</i></span>
       </span>
       <span class="go">↗</span>
     </a>
@@ -451,8 +440,11 @@ var SEM=[
   n1:"Entrada antes de saída: escuta, leitura, shadowing e a reunião ao vivo em inglês.",
   n2:"Gravar a própria voz, estruturar antes do slide e defender uma decisão técnica.",
   nota:"Sábado sai da sequência técnica: inglês e oratória. O inglês pede 20 min por dia; o sábado é para a parte que precisa de bloco — shadowing, gravação da própria voz e as falas do laboratório."},
- {sig:"dom",tema:"Descanso",cor:"var(--soft)",descanso:true,
-  nota:"Domingo é descanso, e é de propósito. Sem pauta, sem meta, sem trilha."}
+ {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"ia.html",doc2:"ia_v2.html",label:"IA (V1 - Vault)",label2:"AI Eng (V2/V3)",livre:"projeto próprio e IA",
+  slot:"dom",passado:"no domingo passado",
+  n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector, MCP e guardrails.",
+  n2:"AI Engineering em 6 Níveis com fórmula de 5 pontos: Fundamentos, Tokens, SDD, Spring AI, Agentes e Test Harness.",
+  nota:"Domingo é para IA e projeto próprio: escolha entre a versão V1 (Fundações & Vault) ou a versão V2/V3 (6 Grandes Níveis de Engenharia)."}
 ];
 
 function q(id){return document.getElementById(id)}
@@ -484,7 +476,6 @@ function pintarActs(dia){
   else if(dia.doc)acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
   acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
   acts.push('<a class="act ghost" href="conceitos-backend.html">caderno de dúvidas</a>');
-  acts.push('<a class="act" href="refinador.html" style="border-color:color-mix(in srgb,var(--purple) 55%,transparent);color:var(--purple);background:color-mix(in srgb,var(--purple) 15%,transparent);display:inline-flex;align-items:center;gap:7px;font-weight:600"><span>✨</span><b>Deixar Texto Mais Formal (IA)</b> →</a>');
   q("acts").innerHTML=acts.join("");
   var bt=q("btEscolher");
   if(bt)bt.addEventListener("click",function(){abrirModal(dia,bt)});
@@ -648,13 +639,22 @@ function telaRepetir(x,f,ult){
   BOX.querySelector(".opt").focus();
 }
 
-/* o clique normal na terça e no sábado abre a escolha; ctrl/cmd+clique segue o href */
+/* o clique normal na terça, sábado ou domingo abre a escolha; ctrl/cmd+clique segue o href */
 q("wk").addEventListener("click",function(e){
   var a=e.target.closest?e.target.closest("a.duplo"):null;
   if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
   e.preventDefault();
   abrirModal(SEM[+a.getAttribute("data-dia")],a);
 });
+
+var cIA=q("cardIA");
+if(cIA){
+  cIA.addEventListener("click",function(e){
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    e.preventDefault();
+    abrirModal(SEM[6],cIA);
+  });
+}
 MD.addEventListener("click",function(e){
   if(e.target===MD||(e.target.closest&&e.target.closest("[data-fechar]")))fecharModal();
 });
@@ -778,7 +778,8 @@ var PALETTE_DATA = [
   {t:"Git completo",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"DOC",url:"git.html",cor:"var(--pink)"},
   {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"DOC",url:"ingles.html",cor:"var(--cyan)"},
   {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"DOC",url:"oratoria.html",cor:"var(--gold)"},
-  {t:"Inteligência Artificial completo",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
+  {t:"Inteligência Artificial completo (V1)",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals (Vault)",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
+  {t:"AI Engineering completo (V2/V3)",sub:"Os 6 Grandes Níveis: tokens, SDD, pgvector, agentes e Test Harness",cat:"DOC",url:"ia_v2.html",cor:"var(--teal)"},
   {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"DOC",url:"projetos.html",cor:"var(--lime)"},
   {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"mensageria.html#g2",cor:"var(--pink)"},
   {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"conceitos-backend.html#j2",cor:"var(--rose)"},
@@ -793,6 +794,9 @@ var PALETTE_DATA = [
   {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"ia.html#c1",cor:"var(--purple)"},
   {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"ia.html#d1",cor:"var(--purple)"},
   {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"ia.html#d2",cor:"var(--purple)"},
+  {t:"Test Harness & Evals para Agentes (V3)",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA V2",url:"ia_v2.html#n6",cor:"var(--teal)"},
+  {t:"SDD (Spec-Driven Development) & Prompts (V3)",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA V2",url:"ia_v2.html#n3",cor:"var(--teal)"},
+  {t:"Agentes Autônomos & Loop ReAct (V3)",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA V2",url:"ia_v2.html#n5",cor:"var(--teal)"},
   {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
   {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
   {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},

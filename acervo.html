@@ -214,6 +214,56 @@ footer a{color:var(--purple)}
 .backup-actions button{flex:1 1 140px;border-radius:12px;padding:12px 14px;border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
 .backup-actions button.primary{border-color:var(--purple);background:color-mix(in srgb,var(--purple) 18%,transparent);color:var(--purple)}
 .backup-actions button:hover{filter:brightness(1.2)}
+
+/* ---------- o modal da escolha de IA ---------- */
+.mdl{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,#15161e 78%,transparent);backdrop-filter:blur(7px);
+  opacity:0;animation:mdlIn .32s var(--ease) forwards}
+.mdl[hidden]{display:none}
+@keyframes mdlIn{to{opacity:1}}
+.mdl .box{--c:var(--purple);position:relative;width:min(640px,100%);max-height:calc(100dvh - 40px);overflow:auto;
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);border-radius:26px;padding:30px 30px 22px;
+  background:radial-gradient(120% 130% at 0% 0%,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  box-shadow:0 30px 90px #00000099;
+  transform:translateY(14px) scale(.985);animation:boxIn .42s .04s var(--ease) forwards}
+@keyframes boxIn{to{transform:none}}
+.mdl .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--c)}
+.mdl h3{margin:11px 0 0;font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.mdl .hist{margin:14px 0 0;color:var(--muted);font-size:.86rem;line-height:1.62;max-width:56ch}
+.mdl .hist b{color:var(--ink);font-weight:500}
+.mdl .x{position:absolute;top:14px;right:17px;cursor:pointer;background:none;border:0;line-height:1;
+  color:var(--soft);font:400 1.5rem Georgia,serif}
+.mdl .x:hover{color:var(--ink)}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opt{--o:var(--c);display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  border:1px solid color-mix(in srgb,var(--o) 26%,transparent);border-radius:19px;padding:17px 18px 15px;
+  background:color-mix(in srgb,var(--o) 6%,transparent);
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.opt:hover,.opt:focus-visible{border-color:color-mix(in srgb,var(--o) 62%,transparent);
+  background:color-mix(in srgb,var(--o) 13%,transparent);transform:translateY(-2px);outline:none}
+.opt .bg{display:inline-block;margin-bottom:11px;padding:4px 9px;border-radius:999px;
+  font:700 .55rem "Cascadia Code",monospace;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid color-mix(in srgb,var(--o) 40%,transparent);color:var(--o)}
+.opt .bg.mudo{color:var(--soft);border-color:var(--line2)}
+.opt strong{display:block;font:500 1.26rem Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.opt em{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:.79rem;line-height:1.5}
+.opt .qd{display:block;margin-top:11px;font:.67rem "Cascadia Code",monospace;color:var(--soft)}
+
+.mdl .tally{margin:18px 0 0;font:.69rem "Cascadia Code",monospace;color:var(--soft);letter-spacing:.05em}
+.mdl .pe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.mdl .pe button,.mdl .pe a{cursor:pointer;font:inherit;font-size:.76rem;color:var(--muted);background:none;
+  border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.mdl .pe button:hover,.mdl .pe a:hover{color:var(--ink)}
+.mdl .pe .nb{margin-left:auto;text-decoration:none;cursor:default;color:var(--soft);font-size:.68rem;
+  font-family:"Cascadia Code",monospace}
+@media(max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .mdl .box{padding:24px 20px 18px;border-radius:22px}
+  .mdl .pe .nb{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.mdl,.mdl .box{animation:none;opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -309,12 +359,12 @@ footer a{color:var(--purple)}
     </div>
   </a>
 
-  <a class="obs" href="ia.html" style="--ob:var(--purple)">
+  <a class="obs" href="ia.html" style="--ob:var(--purple)" id="cardIAAcervo">
     <div class="mark">◈</div>
     <div class="t">
-      <span class="tag">obs · o que prevê</span>
-      <h3>Inteligência Artificial completo</h3>
-      <p>Também fora da semana, e o único que unifica uma área inteira do vault: as oito notas atômicas de IA, a nota dos quatro pilares e a trilha de oito fases que viviam em pastas diferentes. A tese é uma frase — o modelo <b>calcula a continuação mais provável</b>, e quase tudo o que se faz em engenharia de IA existe para contornar essa única característica: RAG existe por causa da janela de contexto, eval existe por causa da alucinação, guardrail existe porque o agente age. Fecha onde a sua engenharia de backend encontra a IA: expor o agente como endpoint, com rate limit, fallback, custo medido e <code>prompt injection</code> barrada — e na parte que ninguém escreve: o que vale automatizar, como montar o contexto de uma tarefa, quando dividir em subagentes e por que o artefato escrito vale mais que o histórico da conversa.</p>
+      <span class="tag">obs · dois caminhos · escolher</span>
+      <h3>Inteligência Artificial</h3>
+      <p>Toda a área de IA do vault e os 6 Grandes Níveis de AI Engineering: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir.</p>
     </div>
   </a>
 
@@ -351,6 +401,10 @@ footer a{color:var(--purple)}
   </footer>
 
 </main>
+
+<div class="mdl" id="mdlIA" hidden role="dialog" aria-modal="true" aria-labelledby="mdlIAT">
+  <div class="box" id="mdlIABox"></div>
+</div>
 
 <script>
 var DOCS=[
@@ -406,15 +460,15 @@ var DOCS=[
   desc:"A camada que faz os outros doze pagarem: eles ensinam a decidir certo, este a fazer a decisão acontecer. Com evidência — renomear a ansiedade como empolgação bate tentar se acalmar, e a exposição gradual reduz o medo de forma mensurável em poucas sessões. Cobre os quatro contextos: defender uma decisão técnica na ordem restrição/opções/escolha/preço, conduzir postmortem sem culpado, a entrevista de System Design como prova oral, palco e conteúdo público, e a conversa difícil com o modelo SBI.",
   tags:["reavaliação","SBI","narrar"],
   chaves:"oratoria comunicacao falar em publico ansiedade nervosismo reavaliacao reappraisal estou empolgado alison wood brooks exposicao gradual evitacao gravacao respiracao estrutura frase unica tese tres apoios slide por ultimo tempo cronometro decisao tecnica adr restricao opcoes escolha preco trade-off nao tecnico risco custo prazo postmortem sem culpado blameless timeline entrevista prova oral narrar em voz alta pensar sem narrar perguntar antes pergunta hostil nao sei conduzir o tempo palco palestra meetup abertura problema uma ideia video comecar pequeno conversa dificil sbi situacao comportamento impacto intencao feedback discordar de quem decide discordar e comprometer-se receber critica reuniao tomar a vez conduzir recapitular decisao dono prazo escrita rfc proposta leitura em diagonal toastmasters pathways clube"},
- {n:"14",nome:"Inteligência Artificial completo",curto:"IA",file:"ia.html",cor:"var(--purple)",hex:"#bd93f9",nos:61,top:29,
-  desc:"Toda a área de IA do vault num documento só: as oito notas atômicas, os quatro pilares e a trilha de oito fases. A tese é uma frase — o modelo calcula a continuação mais provável, e alucinação, janela de contexto, RAG, eval e guardrail existem para contornar isso. Do token à attention, prompt e spec como fonte de verdade, embedding e banco vetorial, chunking e retrieval, MCP sobre o próprio vault, agente com tool calling e guardrails, e a produção: eval, custo, observabilidade, prompt injection e a decisão entre RAG e fine-tuning. Fecha no ofício de desenvolver com IA: produtividade com estratégia em vez de ferramenta instalada, a heurística do repetitivo, skill contra agente contra subagente, engenharia de contexto, escopo e quebra do trabalho, e artefatos que preservam contexto e economizam token.",
-  tags:["RAG","tool calling","eval"],
-  chaves:"ia inteligencia artificial modelo llm token previsao proximo token janela de contexto alucinacao nao determinismo corte de conhecimento transformer attention self-attention embedding word2vec bert vetor banco vetorial pgvector qdrant chroma pinecone faiss hnsw ann busca semantica chunking overlap retrieval top-k busca hibrida re-ranking rag pipeline ingestao geracao prompt engineering few-shot chain of thought zero-shot temperature top-p saida estruturada json schema function calling tool calling spec driven development sdd spec plan tasks implement agente loop react planning reflection multiagente crewai langchain langgraph memoria guardrail mcp model context protocol obsidian claude desktop servidor mcp spring ai ollama llama mistral hugging face pytorch scikit-learn pandas numpy jupyter colab machine learning supervisionado overfitting bias variance metricas precision recall f1 eval llm-as-judge ragas llmops observabilidade tracing custo token cache semantico latencia prompt injection owasp pii governanca lgpd fine-tuning lora ciclo de vida pre-treino pretraining fine-tuning supervisionado rlhf constitutional ai alinhamento inferencia interpretabilidade circuitos model card system card produtividade estrategia novo perfil desenvolvedor arquitetura engenharia repetitivo automacao code review skill subagente janela propria engenharia de contexto estagiario escopo ambiguidade quebrar tarefa menor passo pequeno preservar contexto artefato spec plan tasks github spec kit specify documentar token destilado"},
- {n:"15",nome:"Laboratório de projetos",curto:"Bancada",file:"projetos.html",cor:"var(--lime)",hex:"#50fa7b",nos:18,top:18,
-  meta:"18 projetos em 6 oficinas · 18 aquecimentos de 20 a 40 min",radar:false,
-  desc:"A bancada: a única peça que não se lê, se constrói. Seis oficinas — Java puro, Spring, Cloud agnóstica, AWS, RabbitMQ e IA — com problema real, arquitetura, etapas, critérios de aceite, falhas para injetar de propósito e evidências no repositório. Cada projeto liga de volta ao documento que explica a teoria dele.",
-  tags:["18 projetos","aquecimentos","OrderFlow"],
-  chaves:"projeto projetos prática práticas laboratório lab bancada workshop missão missões exercício exercícios aquecimento capstone orderflow outbox inbox relay cofre cli bigdecimal ledger jdbc importador extrato virtual threads api orçamento keyset transferência corrida idempotência sala de incidente actuator toxiproxy presigned s3 localstack eventbridge sqs terraform opentofu efêmera teardown budget storage porta adapter minio ports and adapters runtime portátil segredo secret 12-factor kind kubernetes probes rag ollama pgvector embeddings citação classificador saída estruturada json schema evals guardrails prompt injection topologia exchange binding prefetch ack dlq quorum queue testcontainers game day runbook adr"}
+  {n:"14",nome:"Inteligência Artificial",curto:"IA",file:"ia.html",doc2:"ia_v2.html",cor:"var(--purple)",hex:"#bd93f9",nos:61,top:29,
+   desc:"Toda a área de IA do vault e a engenharia moderna: escolha entre a Versão V1 (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a Versão V2/V3 (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Ao clicar, abre o modal de escolha.",
+   tags:["dois · escolher","V1 Vault","V2/V3 6 Níveis"],
+   chaves:"ia v1 v2 v3 inteligencia artificial ai engineering modelo llm token previsao proximo token janela de contexto alucinacao transformer attention embedding pgvector qdrant hnsw ann busca semantica rag prompt engineering saida estruturada json schema function calling tool calling sdd spec driven development agentes subagentes react loop mcp test harness quality gate eval caching semantico redis"},
+  {n:"15",nome:"Laboratório de projetos",curto:"Bancada",file:"projetos.html",cor:"var(--lime)",hex:"#50fa7b",nos:18,top:18,
+   meta:"18 projetos em 6 oficinas · 18 aquecimentos de 20 a 40 min",radar:false,
+   desc:"A bancada: a única peça que não se lê, se constrói. Seis oficinas — Java puro, Spring, Cloud agnóstica, AWS, RabbitMQ e IA — com problema real, arquitetura, etapas, critérios de aceite, falhas para injetar de propósito e evidências no repositório. Cada projeto liga de volta ao documento que explica a teoria dele.",
+   tags:["18 projetos","aquecimentos","OrderFlow"],
+   chaves:"projeto projetos prática práticas laboratório lab bancada workshop missão missões exercício exercícios aquecimento capstone orderflow outbox inbox relay cofre cli bigdecimal ledger jdbc importador extrato virtual threads api orçamento keyset transferência corrida idempotência sala de incidente actuator toxiproxy presigned s3 localstack eventbridge sqs terraform opentofu efêmera teardown budget storage porta adapter minio ports and adapters runtime portátil segredo secret 12-factor kind kubernetes probes rag ollama pgvector embeddings citação classificador saída estruturada json schema evals guardrails prompt injection topologia exchange binding prefetch ack dlq quorum queue testcontainers game day runbook adr"}
 ];
 
 var FIO=[
@@ -440,7 +494,7 @@ var ORD=[
  {u:"em paralelo, desde já",b:"Git completo",s:"Ferramenta de todo dia. O marco 04 — desfazer e recuperar — é o que muda a relação com a ferramenta; faça esse primeiro.",file:"git.html",cor:"var(--pink)"},
  {u:"em paralelo, desde já",b:"Linux e terminal",s:"É o térreo: todos os outros pressupõem terminal. Não precisa terminar antes de começar o resto — mas quanto antes entrar, menos coisa fica inexplicada.",file:"linux.html",cor:"var(--orange)"},
  {u:"depois dos seis",b:"System Design completo",s:"Faz sentido quando você já tem os mecanismos na cabeça: aqui eles aparecem sendo escolhidos sob restrição e número.",file:"system-design.html",cor:"var(--lime)"},
- {u:"domingo, projeto próprio",b:"Inteligência Artificial completo",s:"O documento de IA é para domingo: do token ao agente, RAG, eval e como construir com IA sem se perder.",file:"ia.html",cor:"var(--purple)"},
+ {u:"domingo, projeto próprio",b:"Inteligência Artificial",s:"O documento de IA é para domingo: escolha no modal entre a Versão V1 (Fundações & Vault) ou a Versão V2/V3 (6 Grandes Níveis de Engenharia).",file:"ia.html",doc2:"ia_v2.html",cor:"var(--purple)"},
  {u:"do começo ao fim",b:"Laboratório de projetos",s:"A bancada não espera a fila terminar: cada documento lido pede o projeto correspondente na mesma semana, senão vira reconhecimento.",file:"projetos.html",cor:"var(--lime)"}
 ];
 
@@ -684,7 +738,8 @@ var PALETTE_DATA = [
   {t:"Git completo",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"DOC",url:"git.html",cor:"var(--pink)"},
   {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"DOC",url:"ingles.html",cor:"var(--cyan)"},
   {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"DOC",url:"oratoria.html",cor:"var(--gold)"},
-  {t:"Inteligência Artificial completo",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
+  {t:"Inteligência Artificial completo (V1)",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals (Vault)",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
+  {t:"AI Engineering completo (V2/V3)",sub:"Os 6 Grandes Níveis: tokens, SDD, pgvector, agentes e Test Harness",cat:"DOC",url:"ia_v2.html",cor:"var(--teal)"},
   {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"DOC",url:"projetos.html",cor:"var(--lime)"},
   {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"mensageria.html#g2",cor:"var(--pink)"},
   {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"conceitos-backend.html#j2",cor:"var(--rose)"},
@@ -699,6 +754,9 @@ var PALETTE_DATA = [
   {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"ia.html#c1",cor:"var(--purple)"},
   {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"ia.html#d1",cor:"var(--purple)"},
   {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"ia.html#d2",cor:"var(--purple)"},
+  {t:"Test Harness & Evals para Agentes (V3)",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA V2",url:"ia_v2.html#n6",cor:"var(--teal)"},
+  {t:"SDD (Spec-Driven Development) & Prompts (V3)",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA V2",url:"ia_v2.html#n3",cor:"var(--teal)"},
+  {t:"Agentes Autônomos & Loop ReAct (V3)",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA V2",url:"ia_v2.html#n5",cor:"var(--teal)"},
   {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
   {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
   {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
@@ -793,6 +851,140 @@ document.addEventListener("keydown", function(e){
   } else if(e.key === "Escape"){
     if(PALETTE_MODAL && !PALETTE_MODAL.hidden) fecharPaleta();
     if(BKP_MODAL && !BKP_MODAL.hidden) fecharBackup();
+    if(MD_IA && !MD_IA.hidden) fecharModalIA();
+  }
+});
+
+/* ---------- Modal de Escolha de IA (V1 vs V2/V3) no Acervo ---------- */
+var RK = "site.index.alternancia.v1";
+function lerRegIA(){try{return JSON.parse(localStorage.getItem(RK))||{}}catch(e){return {}}}
+function gravarIA(slot,file){
+  try{
+    var r=lerRegIA(),a=r[slot]||[];
+    a.unshift({f:file,t:Date.now()});
+    r[slot]=a.slice(0,12);
+    localStorage.setItem(RK,JSON.stringify(r));
+  }catch(e){}
+}
+function quandoIA(ts,pass){
+  var a=new Date(ts);a.setHours(0,0,0,0);
+  var b=new Date();b.setHours(0,0,0,0);
+  var n=Math.round((b-a)/864e5);
+  var dt=new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+  if(n<=0)return "hoje mesmo";
+  if(n===1)return "ontem";
+  if(n<6)return "há "+n+" dias, em "+dt;
+  if(n<=10)return pass+", em "+dt;
+  return "há "+Math.round(n/7)+" semanas, em "+dt;
+}
+
+var CFG_IA = {
+  sig:"ia",
+  slot:"dom",
+  cor:"var(--purple)",
+  doc:"ia.html",
+  doc2:"ia_v2.html",
+  label:"IA (V1 - Vault)",
+  label2:"AI Engineering (V2/V3)",
+  passado:"no domingo passado",
+  n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector, MCP e guardrails.",
+  n2:"AI Engineering em 6 Níveis com didática de 5 pontos: Fundamentos, Tokens, SDD, Spring AI, Agentes e Test Harness."
+};
+
+function doDocIA(f){
+  return f===CFG_IA.doc?{f:CFG_IA.doc,nome:CFG_IA.label,nota:CFG_IA.n1}:{f:CFG_IA.doc2,nome:CFG_IA.label2,nota:CFG_IA.n2};
+}
+function ultimaDeIA(h,f){for(var i=0;i<h.length;i++)if(h[i].f===f)return h[i];return null}
+
+var MD_IA=q("mdlIA"),BOX_IA=q("mdlIABox"),voltarFocoIA=null;
+
+function getMDIA(){
+  if(!MD_IA) MD_IA = q("mdlIA");
+  if(!BOX_IA) BOX_IA = q("mdlIABox");
+  return MD_IA;
+}
+
+function abrirModalIA(el){
+  voltarFocoIA=el||null;
+  var md=getMDIA(), box=BOX_IA;
+  if(!md||!box)return;
+  box.style.setProperty("--c",CFG_IA.cor);
+  md.hidden=false;
+  document.documentElement.style.overflow="hidden";
+  telaEscolhaIA();
+}
+function fecharModalIA(){
+  var md=getMDIA(), box=BOX_IA;
+  if(!md)return;
+  md.hidden=true;
+  document.documentElement.style.overflow="";
+  if(box) box.innerHTML="";
+  if(voltarFocoIA&&voltarFocoIA.focus)voltarFocoIA.focus();
+  voltarFocoIA=null;
+}
+function irParaIA(f){gravarIA(CFG_IA.slot,f);location.href=f;}
+
+function cartaoIA(f,h,selo,mudo){
+  var o=doDocIA(f),u=ultimaDeIA(h,f);
+  return '<button class="opt" type="button" data-f="'+o.f+'">'
+    +'<span class="bg'+(mudo?" mudo":"")+'">'+esc(selo)+'</span>'
+    +'<strong>'+esc(o.nome)+'</strong>'
+    +'<em>'+esc(o.nota)+'</em>'
+    +'<span class="qd">'+(u?"última vez: "+esc(quandoIA(u.t,CFG_IA.passado)):"nunca aberto por aqui")+'</span>'
+    +'</button>';
+}
+
+function telaEscolhaIA(){
+  var box=BOX_IA;
+  if(!box)return;
+  var h=lerRegIA()[CFG_IA.slot]||[],ult=h[0]||null;
+  var sug=ult?(ult.f===CFG_IA.doc?CFG_IA.doc2:CFG_IA.doc):CFG_IA.doc;
+  var outro=sug===CFG_IA.doc?CFG_IA.doc2:CFG_IA.doc;
+
+  var hist=ult
+    ? "Você abriu <b>"+esc(doDocIA(ult.f).nome)+"</b> "+esc(quandoIA(ult.t,CFG_IA.passado))
+      +". Pela alternância, a vez é de <b>"+esc(doDocIA(sug).nome)+"</b> — mas quem decide é você."
+    : "Nada registrado ainda para IA. Escolha qual versão deseja estudar agora:";
+
+  var c1=0,c2=0;
+  h.forEach(function(e){e.f===CFG_IA.doc?c1++:c2++});
+  var tally=h.length
+    ? esc(CFG_IA.label)+" "+c1+" × "+esc(CFG_IA.label2)+" "+c2+" · últimas "+h.length+" vez"+(h.length>1?"es":"")
+    : "";
+
+  box.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+    +'<span class="kk">inteligência artificial · dois caminhos</span>'
+    +'<h3 id="mdlIAT">Qual versão você quer estudar?</h3>'
+    +'<p class="hist">'+hist+'</p>'
+    +'<div class="opts">'+cartaoIA(sug,h,"a vez é deste")+cartaoIA(outro,h,ult&&ult.f===outro?"foi o último":"também dá",true)+'</div>'
+    +(tally?'<p class="tally">'+tally+'</p>':'')
+    +'<div class="pe"><button type="button" data-fechar>fechar</button>'
+    +'<span class="nb">sincronizado com o cronograma do início</span></div>';
+
+  box.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){
+      var f=this.dataset.f;
+      irParaIA(f);
+    });
+  });
+  var pri=box.querySelector(".opt");if(pri)pri.focus();
+}
+
+/* Interceptar cliques em links de IA no acervo para abrir o modal */
+document.addEventListener("click",function(e){
+  var md=getMDIA();
+  if(md && !md.hidden){
+    if(e.target===md || (e.target.closest && e.target.closest("[data-fechar]"))){
+      fecharModalIA();
+      return;
+    }
+  }
+  var a=e.target.closest?e.target.closest("a"):null;
+  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+  var h=a.getAttribute("href");
+  if(h==="ia.html"||h==="ia_v2.html"||a.getAttribute("data-doc2")==="ia_v2.html"){
+    e.preventDefault();
+    abrirModalIA(a);
   }
 });
 </script>

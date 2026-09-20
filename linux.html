@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/img-modal.css">
 <style>
 
 /* ===================== DRACULA — tema único ===================== */
@@ -274,6 +275,49 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 @media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
 
 </style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -299,7 +343,17 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
     <header class="hero">
       <span class="eyebrow">Linux e terminal · setembro 2026</span>
       <h1>O <em>térreo</em> de tudo que você já estudou.</h1>
-      <p class="lede">O décimo documento, e o que estava faltando embaixo dos outros. Todo laboratório do acervo roda num container; o Docker e Kubernetes fala em <b>PID 1 e SIGTERM</b>; o System Design manda rodar <code class="i">EXPLAIN ANALYZE</code> pelo <code class="i">psql</code>; a Nuvem exige <b>teardown por comando</b>. Os nove documentos pressupõem o terminal — e nenhum explica. Em cima, a <b>trilha visual</b>: 35 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 16 tópicos em 9 partes. E a mesma regra do nono: <b>nenhum conceito sem o caso concreto</b> — o container que ignora o <code class="i">Ctrl+C</code>, o disco que encheu sem nenhum arquivo grande, a porta que não responde, o log que sumiu porque foi para o lugar errado.</p>
+      <p class="lede">O décimo documento, e o que estava faltando embaixo dos outros. Todo laboratório do acervo roda num container; o Docker e Kubernetes fala em <b>PID 1 e SIGTERM</b>; o System Design manda rodar <code class="i">EXPLAIN ANALYZE</code> pelo <code class="i">psql</code>; a Nuvem exige <b>teardown por comando</b>. Os nove documentos pressupõem o terminal — e nenhum explica. Em cima, a <b>trilha visual</b>: 37 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 17 tópicos em 9 partes. E a mesma regra do nono: <b>nenhum conceito sem o caso concreto</b> — o container que ignora o <code class="i">Ctrl+C</code>, o disco que encheu sem nenhum arquivo grande, a porta que não responde, o log que sumiu porque foi para o lugar errado.</p>
+
+      <!-- MAPA MENTAL PRINCIPAL — VISÃO SISTÊMICA LINUX & TERMINAL -->
+      <figure class="topic-img" style="margin: 28px 0 20px 0; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; background: var(--bg2); box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+        <img src="img/linux_mapa_mental_principal.jpg" alt="Mapa Mental Completo de Linux e Terminal: Da Linha de Comando ao Kernel, Arquitetura, Processos, Syscalls e Produtividade" style="width: 100%; height: auto; display: block; cursor: zoom-in;" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL SISTÊMICO')">
+        <figcaption style="padding: 10px 16px; font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); background: var(--card); display: flex; justify-content: space-between; align-items: center;">
+          <span><b>Mapa Mental Completo:</b> Arquitetura do Linux, Shell, Syscalls, Gerenciamento de Processos, Rede e Produtividade.</span>
+          <span style="color: var(--brand); font-weight: 600; font-size: 0.78rem;">🔍 Clique para ampliar</span>
+        </figcaption>
+      </figure>
+
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
         <a href="#p1"><b>↓ O conteúdo</b>do shell ao que muda dentro do container</a>
@@ -1147,6 +1201,57 @@ dmesg -T | grep -i "killed process"</code></pre>
         </div>
         <button class="done" type="button" data-k="i1">marcar dominado</button>
       </article>
+
+      <article class="topic" id="i2">
+        <div class="th"><h3>Da Linha de Comando ao Kernel: O Ciclo de Syscalls, a Matriz de Ferramentas &amp; Produtividade</h3><div class="badges"><span class="badge b-ess">arquitetura &amp; prática</span></div></div>
+        <p class="direto"><b>Direto:</b> entender Linux em nível sênior exige enxergar a ponte invisível entre a digitação no terminal, o parsing do shell, a invocação de <b>syscalls</b> no kernel e o agendamento de hardware. Dominar o ecossistema significa escolher as ferramentas certas (emuladores rápidos, multiplexadores resilientes como <code>tmux</code> e utilitários de fluxo como <code>jq</code> e <code>rsync</code>), além de trilhar certificações como LPIC e RHCSA.</p>
+
+        <p class="caso"><b>O caso clássico em produção:</b> o desenvolvedor dispara um script pesado de migração ou backup via sessão SSH direta. A conexão Wi-Fi oscila por dois segundos, o SSH é encerrado com <code>broken pipe</code>, o shell do servidor recebe <code>SIGHUP</code> e mata sumariamente o processo na metade, deixando o banco de dados em estado inconsistente. Com <code>tmux</code> ou <code>screen</code>, a sessão roda desatrelada do descritor de terminal local: a conexão pode cair cem vezes que o trabalho continua no servidor até você reconectar com <code>tmux attach</code>.</p>
+
+        <h4 class="codelab">o ciclo de vida de um comando: da tecla física ao kernel</h4>
+        <div class="escada">
+          <div class="degrau"><b>1. Captura pelo Terminal (Emulador)</b>O emulador (Alacritty, Kitty, WezTerm, iTerm2) lê os códigos de tecla, trata UTF-8 e envia a sequência de bytes para o pseudo-terminal (pty) mestre.</div>
+          <div class="degrau"><b>2. Lexing e Parsing pelo Shell (Bash/Zsh)</b>O shell lê do pty escravo, analisa aspas, divide tokens, realiza expansões de variáveis (<code class="i">$VAR</code>), substituições aritméticas, curingas (globbing) e alias.</div>
+          <div class="degrau"><b>3. Resolução no PATH &amp; Chamada de Sistema (Syscalls)</b>Se não for um comando interno (builtin), o shell busca o binário nas pastas do <code class="i">$PATH</code>. Ele invoca a syscall <code class="i">fork()</code> (ou <code class="i">clone()</code>) para clonar a si mesmo e <code class="i">execve()</code> para sobrepor a memória com o binário.</div>
+          <div class="degrau"><b>4. Atuação do Kernel &amp; VFS (Virtual File System)</b>O kernel valida permissões (UID/GID), aloca páginas de memória virtual (VMM), conecta os file descriptors 0, 1 e 2, e entrega fatias de tempo de CPU via agendador CFS (Completely Fair Scheduler).</div>
+          <div class="degrau"><b>5. Término e Recolhimento de Status</b>O processo executa a syscall <code class="i">exit_group(status)</code>. O kernel libera seus recursos mas mantém a entrada na tabela até que o shell pai invoque <code class="i">waitpid()</code> para ler o código de saída (<code class="i">$?</code>).</div>
+        </div>
+
+        <h4 class="codelab">matriz do ecossistema linux: ferramentas modernas, terminais e homelab</h4>
+        <div class="duo">
+          <div class="box">
+            <h5>Emuladores &amp; Editores de Terminal</h5>
+            <ul>
+              <li><b>Emuladores GPU:</b> <b>Alacritty</b> (foco em velocidade e baixo consumo de recursos com renderização via GPU), <b>Kitty</b> (renderização rica, abas nativas e gráficos) e <b>WezTerm</b> (configurável em Lua, multiplataforma).</li>
+              <li><b>Multiplexador de Sessão:</b> <b>tmux</b> — divide janelas e painéis (split), gerencia sessões desconectáveis e impede a morte de processos por queda de SSH.</li>
+              <li><b>Editores Modernos:</b> <b>Neovim (Nvim)</b> e <b>Vim</b> com LSP (Language Server Protocol), Treesitter e Fuzzy Finder (Telescope) para edição ultra-rápida sem interface gráfica.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h5>Utilitários de Linha de Comando &amp; Homelab</h5>
+            <ul>
+              <li><b>Manipulação de Dados:</b> <code>jq</code> (processamento e filtro de JSON em pipes), <code>rsync</code> (sincronização diferencial inteligente de arquivos via SSH) e <code>curl</code>/<code>httpie</code>.</li>
+              <li><b>Monitoramento:</b> <code>htop</code> e <code>btop</code> para visualização moderna de CPU, memória, I/O e árvores de processos com interface TUI.</li>
+              <li><b>Cultura Homelab:</b> Proxmox VE, TrueNAS, containers LXC e clusters k3s caseiros para dominar networking (VLANs, DNS local com Pi-hole/AdGuard) e armazenamento seguro.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="analogia"><b>Analogia definitiva da arquitetura:</b> o <i>terminal</i> é o monitor e o teclado; o <i>shell</i> é o garçom que anota o pedido, corrige gírias e confere o cardápio; as <i>syscalls</i> são a campainha que chama o cozinheiro; e o <i>kernel</i> é a cozinha blindada com acesso exclusivo à despensa e aos fogões (memória, disco e processador).</p>
+
+        <div class="gotcha">
+          <b>Gotcha de Produção — O perigo do nohup sem desatrelar descritores:</b>
+          <p>Muitos executam <code>nohup ./app &amp;</code> e fecham o terminal achando que a aplicação está protegida. Se a aplicação tentar ler do <code>stdin</code> (descritor 0) ou se o arquivo <code>nohup.out</code> encher o disco com logs não rotacionados, ela trava ou é abatida. A prática corporativa correta é usar unidades do <b>systemd</b> com limites de log no <b>journald</b>, ou rodar dentro de sessões nomeadas do <b>tmux</b>.</p>
+        </div>
+
+        <div class="cs"><b>Carreira e Certificações do Mundo Linux:</b> As certificações <b>LPIC-1 / LPIC-2</b> (Linux Professional Institute) e <b>RHCSA / RHCE</b> (Red Hat Certified System Administrator / Engineer) são os maiores padrões corporativos globais. Focam exatamente na habilidade prática sob pressão: particionamento LVM, permissões SELinux, troubleshooting de boot via GRUB e automação de serviços em nível enterprise.</div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Crie uma sessão nomeada no tmux (<code>tmux new -s deploy</code>), inicie um tail de log infinito, desconecte com <code>Ctrl+B</code> depois <code>D</code>, saia do terminal, abra um novo e retome com <code>tmux attach -t deploy</code>. O processo nunca parou.</div>
+          <div><b>prova de domínio</b>Você sabe explicar em uma entrevista exatamente o que acontece entre o pressionamento de uma tecla no terminal e a entrega do resultado pelo kernel, citando fork, execve e descritores.</div>
+        </div>
+        <button class="done" type="button" data-k="i2">marcar dominado</button>
+      </article>
     </section>
 
 
@@ -1232,7 +1337,9 @@ var T=[
 {g:"09",n:"Como aprender de verdade",s:"a única área em que quebrar é de graça",c:"var(--amber)",cs:"var(--amber-soft)",items:[
  {t:"O ciclo",x:"ler, consultar, quebrar, consertar",dg:"ciclo",oq:"Ler aqui → conferir no <code class=\"i\">man</code> → quebrar de propósito num container descartável → consertar → escrever o que aprendeu.",ps:"Terminal é a única área do acervo em que o laboratório não tem risco nenhum: o container morre e você recomeça.",cf:"Um <code class=\"i\">docker run --rm -it debian bash</code> é um ambiente onde você pode apagar o que quiser. Use isso: encha o disco de propósito, mate o PID 1, tire a permissão de um diretório, veja o que acontece. <b>Erro comum:</b> estudar comando de terminal lendo lista de comandos — o que fixa é a sequência sintoma → hipótese → verificação."},
  {t:"Canais e cursos em português",x:"para este assunto",oq:"Fontes em PT-BR que tratam de Linux e linha de comando com profundidade.",ps:"Ter o vocabulário em português antes de atravessar o <code class=\"i\">man</code>, que é em inglês e denso.",cf:"<b>Diolinux</b> é a referência em português para Linux em geral, com bom material de fundamentos. <b>Linux Tips</b> (Jeferson Fernando) trata de Linux com foco em operação e DevOps, que é exatamente o recorte deste documento. <b>Fabio Akita</b> tem material sobre o funcionamento por baixo. Em texto, o <b>Linux Journey</b> e o <b>Guia Foca</b> (em português) cobrem o básico de forma organizada. <b>Regra:</b> confirme toda flag no <code class=\"i\">man</code> da sua versão — as opções variam entre distribuições e entre GNU e BusyBox."},
- {t:"Praticar",x:"o laboratório dos sintomas",oq:"Reproduzir, num container descartável, os quatro sintomas deste documento.",ps:"Você não aprende a investigar lendo sobre investigação.",cf:"(1) Crie um arquivo grande, apague-o com um processo segurando e reproduza o <code class=\"i\">df</code>/<code class=\"i\">du</code> divergente; (2) suba um container com <code class=\"i\">CMD</code> em forma shell e outro em forma exec, mande TERM nos dois e compare; (3) suba um serviço escutando em <code class=\"i\">127.0.0.1</code> e descubra pelo <code class=\"i\">ss</code> por que não responde de fora; (4) ponha um limite de memória baixo e provoque o 137.",ex:"# 1 — o disco que nao volta\ndocker run --rm -it debian bash\n  dd if=/dev/zero of=/tmp/g bs=1M count=500\n  tail -f /tmp/g &        # segura o descritor\n  rm /tmp/g\n  df -h /tmp ; du -sh /tmp   # discordam\n  lsof +L1                   # o culpado\n\n# 2 — o sinal que se perde\ndocker run --name a -d imagem   # CMD shell form\ndocker stop a                   # cronometre: 10 s de espera\n\n# 4 — o 137\ndocker run --rm -m 64m imagem-java\n# morre sem excecao; o rastro esta no dmesg do host",star:true}
+ {t:"Praticar",x:"o laboratório dos sintomas",oq:"Reproduzir, num container descartável, os quatro sintomas deste documento.",ps:"Você não aprende a investigar lendo sobre investigação.",cf:"(1) Crie um arquivo grande, apague-o com um processo segurando e reproduza o <code class=\"i\">df</code>/<code class=\"i\">du</code> divergente; (2) suba um container com <code class=\"i\">CMD</code> em forma shell e outro em forma exec, mande TERM nos dois e compare; (3) suba um serviço escutando em <code class=\"i\">127.0.0.1</code> e descubra pelo <code class=\"i\">ss</code> por que não responde de fora; (4) ponha um limite de memória baixo e provoque o 137.",ex:"# 1 — o disco que nao volta\ndocker run --rm -it debian bash\n  dd if=/dev/zero of=/tmp/g bs=1M count=500\n  tail -f /tmp/g &        # segura o descritor\n  rm /tmp/g\n  df -h /tmp ; du -sh /tmp   # discordam\n  lsof +L1                   # o culpado\n\n# 2 — o sinal que se perde\ndocker run --name a -d imagem   # CMD shell form\ndocker stop a                   # cronometre: 10 s de espera\n\n# 4 — o 137\ndocker run --rm -m 64m imagem-java\n# morre sem excecao; o rastro esta no dmesg do host",star:true},
+ {t:"Do shell ao kernel: syscalls e execução",x:"da tecla à interrupção",oq:"O ciclo completo de um comando: o terminal captura, o shell faz o parsing e expansões, o kernel cria o processo via fork/execve e gerencia CPU, VFS e descritores.",ps:"Entender o caminho exato que um comando percorre para diagnosticar travamentos e erros de permissão.",cf:"O shell não executa binários diretamente: ele invoca chamadas de sistema (syscalls). O kernel agenda a execução, aloca páginas de memória virtual e canaliza stdout/stderr pelos file descriptors 1 e 2. <b>Erro comum:</b> achar que o terminal interpreta comandos — quem interpreta é o shell."},
+ {t:"Matriz de ferramentas, tmux e homelab",x:"produtividade e infraestrutura",oq:"A seleção essencial de utilitários de produção: emuladores modernos (Alacritty, WezTerm), editores (Vim/Neovim), multiplexadores (tmux), pipelines com jq/rsync e homelabs.",ps:"Sair do uso pontual do terminal para um fluxo de trabalho profissional, automatizado e resiliente a quedas de SSH.",cf:"O tmux mantém processos vivos mesmo se a conexão cair e permite janelas divididas. Utilitários como jq filtram dados estruturados em uma linha e rsync sincroniza deltas com eficiência criptográfica. <b>Erro comum:</b> rodar jobs longos via SSH direto sem multiplexador ou nohup."}
 ]}
 ];
 
@@ -1611,5 +1718,33 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   }).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script src="js/img-modal.js"></script>
 </body>
 </html>

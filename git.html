@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/img-modal.css">
 <style>
 :root{
   --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
@@ -266,6 +267,49 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 }
 @media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
 </style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -292,6 +336,16 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <span class="eyebrow">Git · setembro 2026</span>
       <h1>Um <em>grafo</em>, não uma pilha de versões.</h1>
       <p class="lede">O décimo primeiro documento, e o que unifica os <b>quatro roadmaps de Git</b> que estavam concorrendo no vault. A tese é uma só: quase todo problema de Git vem de tratá-lo como histórico linear, quando ele é um <b>grafo dirigido acíclico de snapshots</b> — e quase toda recuperação é possível porque o Git praticamente não apaga nada por trinta dias. Em cima, a <b>trilha visual</b>: 30 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 15 tópicos em 9 partes. Com o mesmo compromisso dos dois anteriores: <b>nenhum comando sem o caso que o justifica</b> — o commit no branch errado, o segredo que vazou, a regressão que ninguém sabe quando entrou, o <code class="i">push --force</code> que apagou o trabalho de outra pessoa.</p>
+
+      <!-- MAPA MENTAL PRINCIPAL: GIT -->
+      <figure class="topic-img">
+        <img src="img/git_mapa_mental_principal.jpg" alt="Mapa Mental: Git — Controle de versão para construir melhores projetos, em equipe" loading="lazy" title="Clique para abrir no visualizador ampliado" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL PRINCIPAL')">
+        <figcaption>
+          <span>MAPA MENTAL PRINCIPAL</span>
+          <em>GIT — Controle de versão para construir melhores projetos, em equipe</em>
+        </figcaption>
+      </figure>
+
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
         <a href="#p1"><b>↓ O conteúdo</b>do grafo à recuperação e ao time</a>
@@ -997,6 +1051,67 @@ git commit --fixup=<sha> && git rebase -i --autosquash <base>
         </div>
         <button class="done" type="button" data-k="i1">marcar dominado</button>
       </article>
+
+      <article class="topic" id="i2">
+        <div class="th"><h3>O Ciclo Operacional, Ecossistema de Ferramentas &amp; Governança Corporativa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">ecossistema</span></div></div>
+        <p class="direto"><b>Direto:</b> dominar Git no ambiente profissional exige enxergar além dos comandos isolados: trata-se de um <b>fluxo cíclico em 7 etapas</b> que conecta o arquivo editado no seu editor até a governança de código em produção, suportado por um rico ecossistema de ferramentas gráficas, plataformas remotas e práticas de GitOps.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>A Esteira Fabril com Controle de Qualidade e Despacho Alfandegário.</b> Modificar código no editor é montar a peça na bancada de trabalho (Working Directory). <code>git add</code> é empacotar e colocar na esteira de inspeção (Staging). O commit lacra a caixa com número de série e notas explicativas. O branch abre um desvio temporário para não interromper a linha principal. O push transporta o contêiner ao porto internacional (GitHub/GitLab), e o Pull Request é a vistoria fiscal colegiada (Code Review e CI/CD) que autoriza o produto a entrar em circulação oficial.</p></div>
+
+        <div class="duo o">
+          <div><h4>As 7 Etapas do Ciclo Operacional</h4>
+            <ul>
+              <li><b>1. Edição no Working Directory:</b> alterações no código-fonte local sem rastreamento até a próxima ação.</li>
+              <li><b>2. Staging Area (Index):</b> seleção cirúrgica de trechos via <code>git add -p</code> ou arquivos inteiros para preparar o snapshot atômico.</li>
+              <li><b>3. Commit Local:</b> gravação definitiva do snapshot imutável com mensagem clara no formato Conventional Commits.</li>
+              <li><b>4. Isolamento em Branches:</b> ramificação paralela (Trunk-Based ou GitHub Flow) para isolar novas features de bugs em produção.</li>
+              <li><b>5. Sincronização Remota (Push/Pull):</b> envio de commits e reconciliação contínua com <code>git pull --rebase</code> para evitar merges espúrios.</li>
+              <li><b>6. Merge &amp; Pull Request:</b> revisão por pares (Code Review), checagem de linters/testes automatizados e aprovação de mantenedores.</li>
+              <li><b>7. Histórico &amp; Auditoria:</b> rastreabilidade perpétua no DAG, facilitando investigações com <code>git log</code>, <code>bisect</code> e <code>blame</code>.</li>
+            </ul>
+          </div>
+          <div><h4>A Matriz de Ferramentas &amp; Plataformas</h4>
+            <ul>
+              <li><b>Git CLI:</b> a ferramenta canônica definitiva e o padrão obrigatório para automações, servidores headless e scripts de CI/CD.</li>
+              <li><b>IDEs &amp; Extensões:</b> VS Code Source Control com extensões de produtividade (GitLens para anotações em linha de autoria e histórico de blocos; Git Graph para visualização do DAG).</li>
+              <li><b>Clientes Gráficos (GUI):</b> GitKraken e SourceTree para navegar em árvores complexas de branches e resolver conflitos visuais tridimensionais.</li>
+              <li><b>Plataformas Remotas:</b> GitHub (maior comunidade open-source e Actions), GitLab (DevOps e CI/CD completo self-hosted), Azure DevOps (integração corporativa com pipelines Microsoft) e Bitbucket (ecossistema Jira/Atlassian).</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 class="codelab">git além do código: gitops, iac e governança empresarial</h4>
+        <div class="escada" style="margin-top:14px">
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">01</div>
+            <div><b>GitOps (ArgoCD &amp; Flux):</b> o repositório Git é a <i>única fonte da verdade</i> para o estado do cluster Kubernetes. Agentes sincronizam automaticamente manifests declarativos (Helm/Kustomize) direto do Git para a nuvem.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">02</div>
+            <div><b>Infraestrutura como Código &amp; AI Engineering:</b> arquivos do Terraform (IaC), configurações de modelos e pipelines de prompts versionados com tags semânticas, viabilizando rollbacks instantâneos de infraestrutura inteira.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">03</div>
+            <div><b>Governança &amp; Compliance:</b> Branch Protection Rules (bloqueio de push direto na <code>main</code>), regras de <code>CODEOWNERS</code> para revisões obrigatórias de times de segurança e commits assinados criptograficamente com chaves GPG/SSH.</div>
+          </div>
+        </div>
+
+        <div class="cs"><b>O Roadmap em 5 Fases: da linha de comando à liderança técnica.</b> 1) <i>Domine o Básico:</i> instale, configure credenciais SSH e entenda os 3 estados (working, stage, repo); 2) <i>Pratique no Dia a Dia:</i> commits pequenos e atômicos, branches curtas e mensagens contextualizadas; 3) <i>Trabalhe em Equipe:</i> abra PRs com descrições ricas, resolva conflitos sem pânico e revise código com empatia técnica; 4) <i>Recursos Avançados:</i> domine <code>rebase -i</code>, <code>cherry-pick</code>, <code>stash</code>, <code>worktree</code>, tags e hooks; 5) <i>Evolução Contínua:</i> contribua para projetos open-source, modele fluxos de Trunk-Based Development e desenhe esteiras de CI/CD seguras.</div>
+
+        <div class="gotcha"><b>Armadilhas</b>
+          <ul>
+            <li><b>Achar que Git é só para código de aplicação:</b> não versionar infraestrutura, scripts de migração de banco e documentação técnica fragmenta o conhecimento e impede automações.</li>
+            <li><b>Usar cliente gráfico sem conhecer os comandos do CLI:</b> quando a interface travar em um conflito obscuro de rebase em produção, só o terminal resolve.</li>
+            <li><b>Pular revisão por pares em times pequenos:</b> mesmo com duas pessoas, o Pull Request força o desenvolvedor a auto-revisar o diff antes de enviar para a esteira.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>Pratique agora</b>Crie um arquivo <code>.github/CODEOWNERS</code> no seu repositório exigindo aprovação de um time específico para qualquer alteração na pasta <code>infra/</code>. Abra um PR alterando um arquivo nessa pasta e observe o GitHub bloquear o merge automaticamente até a revisão ser aprovada.</div>
+          <div><b>Prova de domínio</b>Você descreve as 7 etapas do ciclo operacional do Git, explica a diferença entre Git e GitHub/GitLab, e demonstra como aplicar Branch Protection Rules e GitOps em ambientes corporativos.</div>
+        </div>
+        <button class="done" type="button" data-k="i2">marcar dominado</button>
+      </article>
     </section>
 
 
@@ -1076,7 +1191,9 @@ var T=[
 {g:"09",n:"Como aprender de verdade",s:"num repositório descartável, destruir é de graça",c:"var(--amber)",cs:"var(--amber-soft)",items:[
  {t:"O ciclo",x:"quebrar e recuperar",dg:"ciclo",oq:"Ler aqui → criar um repositório de teste → destruir de propósito → recuperar pelo reflog → escrever o que aprendeu.",ps:"A confiança de saber recuperar é o que permite usar as ferramentas boas — rebase interativo, bisect, cherry-pick.",cf:"Quase todo mundo usa três comandos de Git por medo dos outros. O antídoto é um repositório descartável: faça <code class=\"i\">reset --hard</code> errado, apague um branch, rebaseie o que não devia, e traga tudo de volta. Depois de recuperar três vezes, o medo passa. <b>Erro comum:</b> aprender Git só em repositório de trabalho, onde errar custa caro — e por isso nunca experimentar."},
  {t:"Canais e cursos em português",x:"para este assunto",oq:"Fontes em PT-BR que tratam de Git além dos três comandos básicos.",ps:"Ter o vocabulário do grafo antes de atravessar a documentação oficial.",cf:"<b>Rodrigo Branas</b> tem material sólido de Git em português, incluindo fluxos de trabalho. <b>Fabio Akita</b> explica o funcionamento interno, que é o recorte dos marcos 01 e 08. <b>Willian Justen</b> e <b>Código Fonte TV</b> cobrem bem o básico e o fluxo de PR. Em texto, o <b>Pro Git</b> (Chacon e Straub) está <b>traduzido para o português e é gratuito</b> no site oficial — é a melhor referência única que existe, e a que eu consultaria antes de qualquer vídeo."},
- {t:"Praticar",x:"o laboratório dos cinco acidentes",oq:"Reproduzir, num repositório de teste, os cinco acidentes mais comuns — e recuperar de cada um.",ps:"Você não aprende a recuperar lendo sobre recuperação.",cf:"(1) <code class=\"i\">reset --hard</code> perdendo três commits, e o resgate pelo reflog; (2) commit no branch errado, movido com cherry-pick e removido da origem; (3) uma regressão plantada de propósito, encontrada com bisect; (4) um histórico bagunçado, limpo com <code class=\"i\">rebase -i --autosquash</code>; (5) um segredo commitado, com a resposta completa na ordem certa.",ex:"# o laboratorio inteiro cabe em um diretorio\nmkdir lab-git && cd lab-git && git init\nfor i in 1 2 3 4 5; do\n  echo \"linha $i\" >> arquivo.txt\n  git add . && git commit -m \"commit $i\"\ndone\n\ngit reset --hard HEAD~3     # 'perdeu' tres\ngit reflog                  # eles estao aqui\ngit branch resgate <sha>    # de volta",star:true}
+ {t:"Praticar",x:"o laboratório dos cinco acidentes",oq:"Reproduzir, num repositório de teste, os cinco acidentes mais comuns — e recuperar de cada um.",ps:"Você não aprende a recuperar lendo sobre recuperação.",cf:"(1) <code class=\"i\">reset --hard</code> perdendo três commits, e o resgate pelo reflog; (2) commit no branch errado, movido com cherry-pick e removido da origem; (3) uma regressão plantada de propósito, encontrada com bisect; (4) um histórico bagunçado, limpo com <code class=\"i\">rebase -i --autosquash</code>; (5) um segredo commitado, com a resposta completa na ordem certa.",ex:"# o laboratorio inteiro cabe em um diretorio\nmkdir lab-git && cd lab-git && git init\nfor i in 1 2 3 4 5; do\n  echo \"linha $i\" >> arquivo.txt\n  git add . && git commit -m \"commit $i\"\ndone\n\ngit reset --hard HEAD~3     # 'perdeu' tres\ngit reflog                  # eles estao aqui\ngit branch resgate <sha>    # de volta",star:true},
+ {t:"O ciclo do arquivo ao remoto",x:"as 7 etapas operacionais",oq:"A travessia completa do código: do Working Directory ao Staging, Commit local, Branches, Push/Pull, Merge com Pull Request e Histórico imutável no DAG.",ps:"Compreender a mecânica exata de cada etapa antes de abrir PRs ou integrar com a equipe.",cf:"O arquivo nasce solto no disco, é indexado pelo <code>git add</code>, vira snapshot criptográfico com <code>git commit</code>, viaja pela rede no <code>git push</code> e é auditado coletivamente no PR antes de entrar na branch de produção. <b>Erro comum:</b> usar <code>git add .</code> às cegas sem revisar o que está sendo empacotado."},
+ {t:"Ecossistema, GitOps e governança",x:"ferramentas, CI/CD e regras",oq:"A matriz de plataformas (GitHub, GitLab, Azure DevOps), clientes visuais (GitLens, GitKraken), sincronização GitOps (ArgoCD) e compliance (CODEOWNERS e branch protection).",ps:"Operar o Git como espinha dorsal da engenharia de software moderna e da entrega contínua.",cf:"Git não é apenas CLI: é a fonte da verdade para infraestrutura (IaC/Terraform) e Kubernetes via GitOps. Em times maduros, regras de CODEOWNERS e commits assinados impedem código vulnerável em produção. <b>Erro comum:</b> tratar Git apenas como repositório de backup em vez de esteira de governança."}
 ]}
 ];
 
@@ -1454,5 +1571,33 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   }).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script src="js/img-modal.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/img-modal.css">
 <style>
 
 /* ===================== DRACULA — tema único ===================== */
@@ -389,6 +390,49 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 }
 
 </style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -519,6 +563,15 @@ teto de réplicas:    <span class="n">15</span>
     <section class="part" id="p2">
       <div class="ph"><span class="num">02</span><div><h2>Race condition: dois clientes, um produto</h2><p>O problema que só aparece com concorrência — e as cinco formas de resolver, da mais simples à mais cara.</p></div></div>
 
+      <!-- MAPA CONCEITUAL: CONCORRÊNCIA E RACE CONDITION -->
+      <figure class="topic-img">
+        <img src="img/concorrencia_race_condition.jpg" alt="Mapa Conceitual: Concorrência e Race Condition — Executando mais, com segurança" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>MAPA MENTAL</span>
+          <em>CONCORRÊNCIA E RACE CONDITION — Executando mais, com segurança</em>
+        </figcaption>
+      </figure>
+
       <article class="topic" id="b1">
         <div class="th"><h3>A janela entre ler e escrever</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o clássico</span></div></div>
         <p class="direto"><b>Direto:</b> o padrão perigoso é sempre o mesmo: <b>ler o estado → decidir com base nele → escrever</b>. Entre a leitura e a escrita existe uma janela, e nela outro processo pode ter mudado o mundo. O resultado passa a depender de quem chegou primeiro — que é a definição de race condition.</p>
@@ -582,10 +635,77 @@ teto de réplicas:    <span class="n">15</span>
         <div class="prova"><div class="lab"><b>Pratique agora</b>Implemente a mesma compra com as saídas 1, 2 e 3 e gere carga concorrente nas três. Compare vazão e número de falhas — a diferença entre otimista e pessimista fica evidente.</div><div><b>Prova de domínio</b>Dado um caso, você escolhe a saída mais barata que resolve e justifica por que as outras seriam excesso.</div></div>
         <button class="done" type="button" data-k="b2">marcar dominado</button>
       </article>
+
+      <article class="topic" id="b3">
+        <div class="th"><h3>Concorrência vs Paralelismo: Seção Crítica, Deadlock, Livelock e Starvation</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">fundamento</span></div></div>
+        <p class="direto"><b>Direto:</b> <b>concorrência</b> é lidar com múltiplas coisas ao mesmo tempo (composição e estrutura); <b>paralelismo</b> é fazer múltiplas coisas fisicamente ao mesmo tempo (hardware multicore). Seção crítica é o trecho de código que toca recurso compartilhado mutável — e sem sincronização adequada, surgem as três anomalias clássicas: deadlock, livelock e starvation.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>O Malabarista vs Vários Malabaristas.</b> Um único malabarista com 4 bolas no ar é concorrência: ele só tem duas mãos (núcleos de CPU), mas alterna entre as bolas com tanta velocidade que todas parecem progredir juntas. Quatro malabaristas jogando bolas simultaneamente é paralelismo real. A seção crítica é o ponto em que duas bolas precisam passar pela mesma cesta ao mesmo tempo.</p></div>
+
+        <div class="duo o">
+          <div><h4>Conceitos Fundamentais &amp; Unidades</h4>
+            <ul>
+              <li><b>Processo:</b> instância isolada pelo Sistema Operacional com seu próprio espaço de endereçamento de memória virtual. Alto custo de chaveamento de contexto.</li>
+              <li><b>Thread do SO (Platform Thread):</b> linha de execução que compartilha a mesma memória do processo. Custo de stack (~1MB) e agendamento pelo kernel.</li>
+              <li><b>Tasks / Coroutines / Virtual Threads:</b> abstrações leves em nível de runtime (ex: Loom no Java, goroutines em Go) escalando milhões de fluxos sem esgotar memória.</li>
+              <li><b>Recurso Compartilhado &amp; Seção Crítica:</b> variáveis globais em Heap, buffers de socket ou pools de banco de dados onde duas threads disputam escrita.</li>
+            </ul>
+          </div>
+          <div><h4>As 3 Anomalias de Coordenação</h4>
+            <ul>
+              <li><b>1. Deadlock (Impasse):</b> Tarefa A segura Lock 1 e quer Lock 2; Tarefa B segura Lock 2 e quer Lock 1. Ambas congelam para sempre. Quebra-se impondo uma <i>ordenação estrita universal</i> de aquisição de travas.</li>
+              <li><b>2. Livelock:</b> Tarefas detectam o conflito e tentam ceder educadamente o recurso, mas mudam de estado em sincronia perfeita (como duas pessoas tentando desviar uma da outra no corredor). Consome 100% de CPU sem produzir trabalho útil. Quebra-se com <i>backoff aleatório (jitter)</i>.</li>
+              <li><b>3. Starvation (Inanição):</b> Uma tarefa nunca ganha o recurso porque processos de maior prioridade furam a fila perpetuamente. Resolve-se com <i>Fair Locks (FIFO)</i>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 class="codelab">ferramentas de detecção e observabilidade em produção</h4>
+        <div class="escada" style="margin-top:14px">
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">01</div>
+            <div><b>ThreadSanitizer (TSan) &amp; Helgrind (Valgrind):</b> ferramentas de instrumentação em nível de compilador/binário (C/C++, Go) que interceptam acessos concorrentes desprotegidos à memória em tempo real.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">02</div>
+            <div><b>Java / .NET Concurrency Visualizers (VisualVM / JConsole):</b> capturam thread dumps sob demanda, revelando threads em estado <code>BLOCKED</code> ou <code>WAITING</code> e detectando ciclos de deadlock nativos automaticamente.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">03</div>
+            <div><b>Testes Concorrentes no CI (JMeter / k6 / Gatling):</b> testes unitários com uma thread nunca pegam race condition. O pipeline de integração contínua deve rodar testes de estresse concorrente sob carga real.</div>
+          </div>
+        </div>
+
+        <div class="cs"><b>Sistemas confiáveis não acontecem por acaso, mas por boas decisões de concorrência.</b> O design idiomático moderno segue 3 regras de ouro: 1) Projete para <b>imutabilidade</b> sempre que possível (dado que não muda não precisa de lock); 2) Minimize o <b>escopo da seção crítica</b> ao menor número de nanossegundos possível; 3) Isole estado volátil através de filas e mensagens em vez de memória compartilhada.</div>
+
+        <div class="gotcha"><b>Armadilhas</b>
+          <ul>
+            <li><b>Achar que multicore resolve concorrência:</b> mais núcleos de CPU apenas aumentam a probabilidade física de duas threads colidirem exatamente no mesmo ciclo de clock.</li>
+            <li><b>Synchronized aninhado sem ordem:</b> chamar método sincronizado de outro objeto dentro de um bloco já sincronizado é a receita perfeita para deadlock em produção.</li>
+            <li><b>Retentativas síncronas sem jitter:</b> quando um recurso falha, se 100 requisições tentarem de novo a cada 500ms cravados, o sistema entra em tempestade de livelock.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>Pratique agora</b>Escreva duas threads em Java onde a Thread 1 trava o Lock A e tenta pegar o Lock B, enquanto a Thread 2 trava o Lock B e tenta pegar o Lock A. Rode, abra o VisualVM ou rode <code>jcmd &lt;PID&gt; Thread.print</code> e veja a JVM acusar o deadlock em vermelho.</div>
+          <div><b>Prova de domínio</b>Você explica a diferença exata entre deadlock, livelock e starvation, e como o ThreadSanitizer e testes no CI evitam que bugs de corrida subam para produção.</div>
+        </div>
+        <button class="done" type="button" data-k="b3">marcar dominado</button>
+      </article>
     </section>
+
     <!-- ========================= PARTE 03 ========================= -->
     <section class="part" id="p3">
       <div class="ph"><span class="num">03</span><div><h2>Locks: pessimista, otimista e distribuído</h2><p>Três mecanismos, três suposições diferentes sobre a probabilidade de conflito.</p></div></div>
+
+      <!-- MAPA CONCEITUAL: LOCKS PESSIMISTA, OTIMISTA E DISTRIBUÍDOS -->
+      <figure class="topic-img">
+        <img src="img/locks_pessimista_otimista_distribuido.jpg" alt="Mapa Conceitual: Locks (Pessimista, Otimista e Distribuídos) — Controle de acesso para mais consistência, segurança e escala" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>MAPA MENTAL</span>
+          <em>LOCKS (PESSIMISTA, OTIMISTA E DISTRIBUÍDOS) — Controle de acesso para mais consistência</em>
+        </figcaption>
+      </figure>
 
       <article class="topic" id="c1">
         <div class="th"><h3>Pessimista x otimista: a aposta que você faz</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
@@ -690,11 +810,69 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
         <div class="prova"><div class="lab"><b>Pratique agora</b>Escreva duas chamadas assíncronas que leem um contador, somam 1 e gravam. Rode mil vezes e confira o valor final — vai faltar. Assincronia não protege nada.</div><div><b>Prova de domínio</b>Você explica que assincronia e exclusão são eixos independentes, e identifica race condition em código assíncrono.</div></div>
         <button class="done" type="button" data-k="c3">marcar dominado</button>
       </article>
+
+      <article class="topic" id="c4">
+        <div class="th"><h3>A Matriz Prática de Locks: Bancos Relacionais, ORMs e Coordenadores Distribuídos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">ecossistema</span></div></div>
+        <p class="direto"><b>Direto:</b> a escolha da ferramenta de lock deve acompanhar a fronteira física onde a disputa acontece. Disputa por linha de banco resolve-se no motor relacional com <code>SELECT FOR UPDATE</code> ou no ORM via <code>@Version</code>. Disputa entre múltiplos microsserviços ou jobs agendados sem estado compartilhado exige coordenadores distribuídos (Redis/ShedLock/etcd) com <b>fencing tokens</b> para neutralizar pausas de GC e clock drift.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>A Tranca da Gaveta vs A Chave da Sede da Empresa.</b> Trancar uma única pasta suspensa de cliente é o lock de linha do banco (rápido, barato, escopo mínimo). Se o documento for público mas ninguém pode reescrever sem conferir a data do carimbo, é o lock otimista. Já impedir que duas filiais assinem o mesmo contrato em cidades diferentes sem comunicação direta exige uma autoridade cartorial centralizada com prazo estrito (lock distribuído).</p></div>
+
+        <div class="duo o">
+          <div><h4>Camada 1: Bancos Relacionais (RDBMS)</h4>
+            <ul>
+              <li><b>PostgreSQL:</b> <code>FOR UPDATE</code> (lock exclusivo de linha), <code>FOR SHARE</code> (lock compartilhado de leitura). Suporta <code>NOWAIT</code> (falha imediatamente se ocupado) e <code>SKIP LOCKED</code> (pula linhas travadas, perfeito para implementar filas concorrentes de alta vazão no próprio Postgres).</li>
+              <li><b>MySQL InnoDB:</b> locks de linha atrelados a índices. <b>Atenção:</b> se o <code>UPDATE/SELECT FOR UPDATE</code> não usar um índice, o InnoDB pode elevar a trava para <i>Table Lock</i> ou <i>Gap Lock</i>, travando a tabela inteira!</li>
+              <li><b>SQL Server:</b> <code>WITH (UPDLOCK, ROWLOCK)</code> para prevenir deadlocks de conversão de lock compartilhado para exclusivo.</li>
+            </ul>
+          </div>
+          <div><h4>Camada 2: ORMs &amp; Nível de Aplicação</h4>
+            <ul>
+              <li><b>JPA / Hibernate:</b> anotação <code>@Version</code> (Long ou Timestamp) incrementada atomicamente no <code>UPDATE ... WHERE id=? AND versao=?</code>. Lança <code>OptimisticLockException</code> se violado.</li>
+              <li><b>LockModeType:</b> <code>PESSIMISTIC_WRITE</code> (emite FOR UPDATE na consulta) e <code>PESSIMISTIC_READ</code> (garante que ninguém altere enquanto você lê).</li>
+              <li><b>Entity Framework / Prisma:</b> suporte nativo a concorrência otimista via tokens de concorrência ou campos <code>version</code>/<code>rowversion</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 class="codelab">camada 3: coordenadores distribuídos e o perigo do gc pause</h4>
+        <table style="width:100%;border-collapse:collapse;margin-top:14px;font:400 .88rem/1.45 Georgia,serif">
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Solução</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Mecanismo Central</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Cenário Recomendado</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>Redis (Redlock / Lua)</b></td><td style="padding:9px;color:var(--ink2)"><code>SET key uuid NX PX 30000</code> com liberação atômica em script Lua</td><td style="padding:9px;color:var(--ink2)">Operações efêmeras e proteção contra execuções duplicadas de curta duração</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>ShedLock</b></td><td style="padding:9px;color:var(--ink2)">Tabela no banco relacional ou chave no Redis com <code>lockAtMostFor</code> e <code>lockAtLeastFor</code></td><td style="padding:9px;color:var(--ink2)">Garantir que um <code>@Scheduled</code> rode em apenas 1 réplica de cluster Kubernetes</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px"><b>etcd / Consul</b></td><td style="padding:9px;color:var(--ink2)">Algoritmo Raft com sessões e leases renovados por heartbeat</td><td style="padding:9px;color:var(--ink2)">Eleição de líder em clusters e coordenação de infraestrutura crítica</td></tr>
+          <tr><td style="padding:9px"><b>Apache ZooKeeper</b></td><td style="padding:9px;color:var(--ink2)">Ephemeral Sequential znodes com watchers de ordenação estrita</td><td style="padding:9px;color:var(--ink2)">Ecossistema Big Data e coordenação estrita de nós distribuídos</td></tr>
+        </table>
+
+        <div class="cs"><b>O perigo invisível do Lock Distribuído: GC Pauses e Clock Drift.</b> Imagine que o Pod 1 pega um lock no Redis com TTL de 10s. O Java entra numa pausa longa de Garbage Collection (Stop-The-World) de 12 segundos. Durante a pausa, a trava no Redis expira por timeout! O Pod 2 pega a trava e inicia o trabalho. O Pod 1 acorda do GC achando que ainda é o dono e também executa a escrita no banco, corrompendo os dados! A solução matemática proposta por Martin Kleppmann são <b>fencing tokens</b>: cada lock entrega um número sequencial estritamente crescente (ex: 101, 102). O banco/storage rejeita qualquer escrita que venha com um token menor ou igual ao último processado.</div>
+
+        <div class="gotcha"><b>Armadilhas</b>
+          <ul>
+            <li><b>Lock pessimista segurando conexão HTTP:</b> se você fizer um <code>SELECT FOR UPDATE</code> e dentro da transação chamar uma API externa, o pool do banco congela e a aplicação para.</li>
+            <li><b>Redlock sem fencing token em operações de storage:</b> assumir que o lock garante exclusão perfeita sem validação monotônica no armazenamento é ignorar falhas de rede assíncronas.</li>
+            <li><b>PostgreSQL sem SKIP LOCKED em filas:</b> se múltiplos workers fazem <code>SELECT FOR UPDATE</code> na mesma tabela de fila, todos enfileiram atrás do primeiro em vez de pegarem a próxima tarefa livre.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>Pratique agora</b>Crie uma tabela com 5 tarefas pendentes. Suba duas transações concorrentes fazendo <code>SELECT * FROM tarefas WHERE status='PENDENTE' LIMIT 1 FOR UPDATE SKIP LOCKED</code>. Comprove que o Worker 2 pega imediatamente a tarefa 2 sem travar esperando o Worker 1 terminar.</div>
+          <div><b>Prova de domínio</b>Você compara com precisão o uso de NOWAIT vs SKIP LOCKED no Postgres, explica como o ShedLock protege CronJobs no Kubernetes e detalha por que fencing tokens são necessários em locks distribuídos.</div>
+        </div>
+        <button class="done" type="button" data-k="c4">marcar dominado</button>
+      </article>
     </section>
 
     <!-- ========================= PARTE 04 ========================= -->
     <section class="part" id="p4">
       <div class="ph"><span class="num">04</span><div><h2>Idempotência e defesas</h2><p>Repetir sem estragar — e se proteger de quem chama demais.</p></div></div>
+
+      <!-- MAPA CONCEITUAL: IDEMPOTÊNCIA E DEFESAS -->
+      <figure class="topic-img">
+        <img src="img/idempotencia_defesas.jpg" alt="Mapa Conceitual: Idempotência e Defesas — Mesma requisição, mesmo resultado com consistência e segurança" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>MAPA MENTAL</span>
+          <em>IDEMPOTÊNCIA E DEFESAS — Mesma requisição, mesmo resultado</em>
+        </figcaption>
+      </figure>
 
       <article class="topic" id="d1">
         <div class="th"><h3>Idempotency key: o padrão que resolve na prática</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">obrigatório</span></div></div>
@@ -760,6 +938,62 @@ criarPedido(clienteId, valor);
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Limitar por IP.</b> Empresa inteira sai por um IP só; e o abusador troca de IP.</li><li><b>Retry sem espera e sem aleatoriedade.</b> Todo mundo tenta junto e derruba o serviço que estava se recuperando.</li><li><b>Disjuntor sem estado meio-aberto.</b> Ele nunca descobre que a dependência voltou.</li><li><b>429 sem <code class="i">Retry-After</code>.</b> O cliente não sabe quando tentar e fica martelando.</li></ul></div>
         <div class="prova"><div class="lab"><b>Pratique agora</b>Coloque timeout e disjuntor numa chamada externa. Depois simule o parceiro travado — sem responder, sem recusar — e confirme que a sua aplicação continua atendendo o resto.</div><div><b>Prova de domínio</b>Você monta a cadeia timeout → retry com espera → disjuntor e explica por que o timeout tem que vir primeiro.</div></div>
         <button class="done" type="button" data-k="d2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="d3">
+        <div class="th"><h3>Defesas Distribuídas: Idempotência em Mensageria, Gateways e Semântica Segura</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
+        <p class="direto"><b>Direto:</b> em sistemas distribuídos, a rede e os brokers de mensageria operam sob a semântica <b>at-least-once</b>: mensagens <em>serão</em> entregues mais de uma vez em caso de reconexão ou rebalanceamento. Idempotência não é um detalhe de API HTTP — é o único mecanismo que garante que reentregas de mensagens, webhooks duplicados e retentativas em API Gateways não corrompam o saldo ou gerem duplicidade no banco.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>O Carimbo de Registro na Alfândega.</b> Um contêiner de mercadoria chega ao porto. Se a conexão de rádio oscilar, a transportadora pode reenviar o aviso de chegada. Em vez de abrir um novo processo e cobrar imposto duas vezes, o fiscal bate o olho no número de registro lacrado (Idempotency Key / Message ID): se o carimbo já existe no livro oficial, ele apenas entrega a liberação já emitida sem reprocessar as caixas.</p></div>
+
+        <div class="duo o">
+          <div><h4>Garantias de Entrega em Mensageria (Kafka / RabbitMQ)</h4>
+            <ul>
+              <li><b>At-most-once:</b> a mensagem é enviada e confirmada antes do processamento. Se o nó falhar, a mensagem é perdida (fogo e esquece). Nunca duplica, mas perde dados.</li>
+              <li><b>At-least-once:</b> a mensagem é confirmada (ACK) apenas após o processamento. Se a rede oscilar antes do ACK chegar ao broker, ele reenvia a mensagem. <b>Exige consumidor idempotente obrigatoriamente!</b></li>
+              <li><b>Exactly-once (Semântica Efetiva):</b> combina produtores idempotentes no Kafka com transações entre tópicos e deduplicação no banco de dados final via chave única.</li>
+            </ul>
+          </div>
+          <div><h4>Padrões Arquiteturais de Deduplicação</h4>
+            <ul>
+              <li><b>Transactional Outbox + De-duplication Table:</b> o consumidor grava o <code>message_id</code> (UUID ou ULID) na tabela de eventos processados dentro da <i>mesma transação relacional</i> que altera o domínio. Se a chave já existir (violação de UNIQUE), a transação é descartada com segurança.</li>
+              <li><b>Idempotência na Borda (API Gateway):</b> plugins de idempotência em Kong, Apigee, AWS API Gateway ou NGINX armazenam a resposta gerada em cache distribuído indexado por <code>Idempotency-Key</code> durante uma janela de TTL (ex: 24h a 72h).</li>
+              <li><b>Tratamento de Payload Divergente:</b> se o cliente reenviar a mesma <code>Idempotency-Key</code> mas alterar os parâmetros da requisição (ex: valor da compra mudou de R$ 100 para R$ 200), a API <b>deve</b> rejeitar com <code>409 Conflict</code> ou <code>422 Unprocessable Entity</code> para evitar adulteração acidental!</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 class="codelab">fluxo de execução idempotente de ponta a ponta</h4>
+        <div class="escada" style="margin-top:14px">
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">01</div>
+            <div><b>Cliente gera Chave Única (UUID v4 / ULID):</b> a chave viaja no header <code>Idempotency-Key</code>. O ULID é recomendado por conter timestamp embutido de 48 bits, facilitando ordenação e expurgo temporal.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">02</div>
+            <div><b>Bloqueio Atômico ou Transação Única:</b> o servidor verifica se a chave está em processamento (status <code>PROCESSING</code>). Se uma segunda requisição idêntica chegar antes da primeira terminar, devolve <code>409 Conflict</code> com header <code>Retry-After</code>.</div>
+          </div>
+          <div class="deg" style="display:grid;grid-template-columns:50px minmax(0,1fr);gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)">
+            <div style="font:800 1.2rem 'Inter',sans-serif;color:var(--brand)">03</div>
+            <div><b>Armazenamento do Snapshot da Resposta:</b> ao concluir o domínio com sucesso, persiste-se o status HTTP, headers e o payload JSON original junto à chave. Novas requisições com a mesma chave retornam esse snapshot idêntico sem executar nenhuma lógica de negócio.</div>
+          </div>
+        </div>
+
+        <div class="cs"><b>Idempotência em leitura vs escrita: a semântica dos verbos HTTP.</b> Verbos seguros como <code>GET</code>, <code>HEAD</code> e <code>OPTIONS</code> não geram efeitos colaterais e são naturalmente idempotentes. <code>PUT</code> e <code>DELETE</code> são idempotentes por contrato RFC 9110: substituir o recurso X pelo estado Y dez vezes deixa o recurso no mesmo estado Y; deletar o ID 5 dez vezes garante que o ID 5 não existe. Já o <code>POST</code> (e <code>PATCH</code> em operações relativas como somar saldo) não são idempotentes por natureza e <b>exigem obrigatoriamente</b> o cabeçalho <code>Idempotency-Key</code> em qualquer operação financeira ou de mutação crítica.</div>
+
+        <div class="gotcha"><b>Armadilhas</b>
+          <ul>
+            <li><b>Armazenar resposta apenas em cache volátil (Redis sem persistência):</b> se o nó de cache reiniciar durante um pico de instabilidade de rede, as repetições de clientes reenviarão requisições que serão processadas duas vezes no banco.</li>
+            <li><b>Retornar 200 OK genérico sem corpo:</b> se a requisição original devolveu <code>{"id": "ped_999", "status": "CRIADO"}</code>, a repetição deve retornar os mesmos dados para que o cliente consiga guardar o identificador do pedido.</li>
+            <li><b>Esquecer de expurgar chaves antigas:</b> sem política de TTL ou job de particionamento/expurgo (ex: reter por 7 dias), a tabela de idempotência cresce descontroladamente e degrada a performance das consultas.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>Pratique agora</b>Implemente uma tabela <code>tabela_idempotencia (chave VARCHAR(64) PRIMARY KEY, status_code INT, body TEXT, criado_em TIMESTAMP)</code>. Dispare 10 requisições simultâneas com a mesma chave em threads concorrentes e confirme que apenas 1 fez o INSERT no domínio e todas as outras 9 receberam o mesmo JSON de volta.</div>
+          <div><b>Prova de domínio</b>Você detalha a diferença entre as três semânticas de entrega de mensageria, projeta uma tabela de deduplicação transacional e explica como API Gateways tratam chaves colidentes com payloads distintos.</div>
+        </div>
+        <button class="done" type="button" data-k="d3">marcar dominado</button>
       </article>
     </section>
     <!-- ========================= PARTE 05 ========================= -->
@@ -1336,7 +1570,9 @@ var T=[
  {t:"Nível de isolamento",x:"o que a transação enxerga",oq:"Define o que uma transação vê das outras que estão rodando: READ COMMITTED, REPEATABLE READ, SERIALIZABLE.",ps:"Entender qual anomalia cada nível permite — leitura suja, não repetível, fantasma.",cf:"Quanto mais forte o isolamento, menos concorrência. SERIALIZABLE resolve quase tudo e custa vazão. O padrão da maioria dos bancos é READ COMMITTED, que <b>não</b> impede a race condition acima. <b>Erro comum:</b> supor que 'estar numa transação' já protege."},
  {t:"Reserva temporária com TTL",x:"segurar sem travar",oq:"Em vez de bloquear o registro, cria-se uma reserva com prazo: o item fica indisponível por N minutos e volta sozinho se a compra não fechar.",ps:"Fluxos longos — checkout, assento, agendamento — em que travar o banco por minutos seria inviável.",cf:"A reserva é uma linha com validade, não uma trava de banco. Um job ou o próprio TTL do Redis libera o que expirou. <b>Erro comum:</b> criar reserva sem expiração e acumular estoque fantasma."},
  {t:"Operações atômicas no Redis",x:"contador e trava rápidos",oq:"Comandos como INCR, DECR e SETNX são atômicos por natureza — o Redis é single-threaded no processamento de comandos.",ps:"Contador, limite de taxa e trava simples com latência muito menor que a do banco.",cf:"Para sequências de comandos, use script Lua, que executa como uma unidade. <b>Erro comum:</b> fazer GET e depois SET esperando atomicidade — entre os dois cabe outro cliente.",ex:"SETNX trava:pedido:42 1\nEXPIRE trava:pedido:42 30\n# melhor: SET k v NX EX 30  (uma operação só)"},
- {t:"Filas como serialização",x:"quando a ordem resolve",oq:"Mandar todas as operações sobre a mesma entidade para uma fila consumida por um worker faz elas acontecerem uma de cada vez.",ps:"Elimina a concorrência por construção, em vez de coordenar concorrentes.",cf:"Funciona bem quando o processamento pode ser assíncrono. Se houver vários consumidores, a serialização só vale por chave — roteie por id da entidade. <b>Erro comum:</b> esperar ordem global com múltiplos consumidores."}
+ {t:"Filas como serialização",x:"quando a ordem resolve",oq:"Mandar todas as operações sobre a mesma entidade para uma fila consumida por um worker faz elas acontecerem uma de cada vez.",ps:"Elimina a concorrência por construção, em vez de coordenar concorrentes.",cf:"Funciona bem quando o processamento pode ser assíncrono. Se houver vários consumidores, a serialização só vale por chave — roteie por id da entidade. <b>Erro comum:</b> esperar ordem global com múltiplos consumidores."},
+ {t:"Anomalias de concorrência",x:"deadlock, livelock e starvation",oq:"As três falhas clássicas de sincronização: deadlock (espera circular infinita), livelock (mudança síncrona sem progresso) e starvation (inanição perpétua).",ps:"Saber diagnosticar travamentos em ambientes concorrentes e quebrar impasses com ordenação e backoff.",cf:"Deadlock quebra com ordenação global de locks. Livelock quebra com jitter aleatório nas retentativas. Starvation quebra com Fair Queues (FIFO). <b>Erro comum:</b> tratar travamento dando mais CPU e memória."},
+ {t:"Ferramentas de concorrência",x:"TSan, JConsole e testes de estresse",oq:"Instrumentação e observabilidade para detectar race conditions e thread contention antes e durante a produção.",ps:"Encontrar bugs concorrentes que testes unitários tradicionais nunca conseguem pegar.",cf:"ThreadSanitizer intercepta acessos no binário; VisualVM e JConsole analisam thread dumps da JVM; k6, JMeter e Gatling simulam rajadas reais no CI. <b>Erro comum:</b> confiar apenas em testes locais com 1 usuário."}
 ]},
 {g:"03",n:"Locks",s:"pessimista, otimista e distribuído — quando cada um",c:"var(--amber)",cs:"var(--amber-soft)",items:[
  {t:"O que é um lock",x:"acesso exclusivo a um recurso",dg:"lock",oq:"Mecanismo que garante que só um fluxo por vez manipule um recurso, para que o resultado não dependa do tempo.",ps:"Proteger invariantes que uma instrução atômica sozinha não consegue expressar.",cf:"Todo lock troca <em>concorrência</em> por <em>correção</em>. A pergunta certa nunca é 'devo usar lock?', e sim 'qual é o menor escopo de exclusão que resolve?'. <b>Erro comum:</b> travar mais do que o necessário e transformar o lock no novo gargalo."},
@@ -1344,7 +1580,8 @@ var T=[
  {t:"Lock otimista",x:"assume que não vai dar conflito",oq:"Não bloqueia nada. Lê a versão junto com o dado e, ao gravar, exige que a versão ainda seja a mesma.",ps:"Conflito raro e leitura intensa — não paga o custo de bloquear enquanto quase nunca há disputa.",cf:"Se a versão mudou, o UPDATE afeta 0 linhas e a aplicação decide: repetir, avisar o usuário ou desistir. Em JPA é o <code>@Version</code>. <b>Erro comum:</b> não tratar a falha de versão e perder a escrita em silêncio.",ex:"UPDATE produto SET estoque=?, versao=versao+1\n WHERE id=? AND versao=?;\n-- 0 linhas = alguém alterou antes → refaça"},
  {t:"Lock distribuído",x:"exclusão entre processos diferentes",oq:"Quando o recurso não é uma linha de banco — um job que não pode rodar duas vezes, um arquivo, uma chamada externa — a trava vive fora, geralmente no Redis.",ps:"Garantir que só uma instância da aplicação execute algo, mesmo com várias réplicas.",cf:"Sempre com TTL, senão a queda do dono trava o recurso para sempre. E a trava precisa de um valor único do dono, para que só ele libere. <b>Erro comum:</b> DEL sem conferir o dono — você libera a trava de outro processo.",ex:"SET trava:job valor-unico NX EX 30\n# ... trabalho ...\n# libera SÓ se o valor ainda for meu (Lua)\nif redis.call('get',k)==v then redis.call('del',k) end"},
  {t:"Lock x Promise",x:"a confusão que vale desfazer",oq:"Promise (ou Future) é sobre <em>quando</em> um valor fica pronto — assincronia. Lock é sobre <em>quem</em> pode mexer num recurso — exclusão.",ps:"São eixos independentes: código assíncrono também sofre race condition, e código síncrono também precisa de lock.",cf:"Uma Promise não serializa nada: dois fluxos assíncronos podem ler o mesmo estado e escrever por cima um do outro exatamente como duas threads. <b>Erro comum:</b> achar que 'é async, então é seguro'."},
- {t:"Qual escolher",x:"a régua de decisão",oq:"Do mais barato ao mais caro: instrução atômica → lock otimista → lock pessimista → lock distribuído.",ps:"Escolher o menor mecanismo que resolve, em vez do mais forte disponível.",cf:"Se cabe num UPDATE condicional, use isso. Se o conflito é raro, otimista. Se é frequente e curto, pessimista. Se atravessa processos, distribuído. <b>Erro comum:</b> começar pelo lock distribuído, que é o mais complexo e o mais fácil de errar."}
+ {t:"Qual escolher",x:"a régua de decisão",oq:"Do mais barato ao mais caro: instrução atômica → lock otimista → lock pessimista → lock distribuído.",ps:"Escolher o menor mecanismo que resolve, em vez do mais forte disponível.",cf:"Se cabe num UPDATE condicional, use isso. Se o conflito é raro, otimista. Se é frequente e curto, pessimista. Se atravessa processos, distribuído. <b>Erro comum:</b> começar pelo lock distribuído, que é o mais complexo e o mais fácil de errar."},
+ {t:"Ecossistema de locks",x:"bancos, ORMs e Redlock/ShedLock",oq:"Do SELECT FOR UPDATE (com NOWAIT e SKIP LOCKED) e @Version ao Redlock com fencing tokens e ShedLock para jobs agendados.",ps:"Mapear a ferramenta exata para a camada correta sem inventar locks caseiros frágeis.",cf:"No Postgres/MySQL, SKIP LOCKED cria filas paralelas de alta vazão no próprio banco. No Spring, @Version cuida de conflitos otimistas. No Kubernetes, ShedLock impede execução duplicada de CronJobs. <b>Erro comum:</b> lock distribuído sem fencing token suscetível a pausas de GC."}
 ]},
 {g:"04",n:"Idempotência e defesas",s:"repetir sem estragar, e se proteger de excesso",c:"var(--green)",cs:"var(--green-soft)",items:[
  {t:"Idempotência",x:"repetir dá o mesmo resultado",oq:"Operação que, executada N vezes, produz o mesmo efeito observável de uma vez só.",ps:"Rede falha, cliente repete, fila reentrega. Sem idempotência, cada repetição vira cobrança dupla.",cf:"Não é 'detectar duplicata' — é o efeito ser o mesmo. <code>status = PAGO</code> é idempotente; <code>saldo -= 10</code> não é. <b>Erro comum:</b> deixar para depois. A repetição vai acontecer, e no pior dia."},
@@ -1352,7 +1589,8 @@ var T=[
  {t:"Métodos HTTP idempotentes",x:"o que a especificação já garante",oq:"GET, PUT e DELETE são idempotentes por definição; POST não é.",ps:"Saber onde você ganha idempotência de graça e onde precisa construir.",cf:"PUT manda o estado final desejado, por isso repetir não muda nada; POST cria algo novo a cada chamada. <b>Erro comum:</b> usar POST para uma operação que era naturalmente um PUT e criar o problema sem necessidade."},
  {t:"Rate limiting",x:"quantas chamadas por período",oq:"Limitar o número de requisições que um cliente pode fazer numa janela de tempo, devolvendo 429 quando estoura.",ps:"Proteger o sistema de abuso, de laço infinito de cliente e de um parceiro mal comportado.",cf:"Algoritmos: janela fixa (simples, com pico na virada), janela deslizante (justa, mais cara), token bucket (permite rajada controlada) e leaky bucket (saída constante). <b>Erro comum:</b> limitar por IP quando vários usuários compartilham o mesmo IP.",ex:"HTTP/1.1 429 Too Many Requests\nRetry-After: 30\nX-RateLimit-Remaining: 0"},
  {t:"Throttle x rate limit",x:"recusar ou atrasar",oq:"Rate limiting <em>recusa</em> o que passa do limite. Throttling <em>atrasa</em> ou enfileira para manter um ritmo constante.",ps:"Escolher entre proteger o servidor (recusar) e não perder trabalho (atrasar).",cf:"Recusar dá resposta rápida e clara ao cliente; atrasar preserva o trabalho ao custo de segurar recurso. <b>Erro comum:</b> enfileirar sem teto, o que troca uma falha rápida por uma lenta."},
- {t:"Circuit breaker",x:"parar de bater na porta fechada",oq:"Depois de N falhas seguidas de uma dependência, o disjuntor abre e as chamadas falham imediatamente, sem nem tentar.",ps:"Evitar que um serviço lento consuma todas as suas threads e derrube o que não tinha relação com ele.",cf:"Três estados: fechado (passa), aberto (falha rápido) e meio-aberto (deixa uma chamada testar). <b>Erro comum:</b> disjuntor sem timeout na chamada — sem timeout, ele nunca conta falha, só acumula thread presa."}
+ {t:"Circuit breaker",x:"parar de bater na porta fechada",oq:"Depois de N falhas seguidas de uma dependência, o disjuntor abre e as chamadas falham imediatamente, sem nem tentar.",ps:"Evitar que um serviço lento consuma todas as suas threads e derrube o que não tinha relação com ele.",cf:"Três estados: fechado (passa), aberto (falha rápido) e meio-aberto (deixa uma chamada testar). <b>Erro comum:</b> disjuntor sem timeout na chamada — sem timeout, ele nunca conta falha, só acumula thread presa."},
+ {t:"Defesas e mensageria",x:"at-least-once, gateways e outbox",oq:"Como lidar com mensagens duplicadas de brokers (Kafka, RabbitMQ) e rajadas na borda de API Gateways com chaves ULID/UUID e tabelas de desduplicação.",ps:"Garantir que a repetição inevitável da rede ou do broker não gere efeitos colaterais duplos no banco.",cf:"Brokers garantem at-least-once; o consumidor DEVE ser idempotente via Transactional Outbox ou De-duplication table. Gateways (Kong, AWS) cacheiam respostas por Idempotency-Key. <b>Erro comum:</b> acreditar que mensageria garante entrega única sem deduplicar no receptor."}
 ]},
 {g:"05",n:"Dados",s:"índices, JOINs e a escolha do banco",c:"var(--blue)",cs:"var(--blue-soft)",items:[
  {t:"Índice: a B-tree em 30 segundos",x:"por que a busca fica rápida",dg:"idx",oq:"Estrutura ordenada em árvore que permite achar uma linha em poucos saltos em vez de varrer a tabela inteira.",ps:"A diferença entre varrer 10 milhões de linhas e fazer 3 ou 4 saltos.",cf:"Cada nó guarda valores ordenados e ponteiros; a busca desce comparando. Por ser ordenada, serve também para intervalo, ORDER BY e prefixo de texto. <b>Erro comum:</b> esperar que índice ajude em <code>LIKE '%x'</code> — sem o começo fixo, a ordem não serve."},
@@ -1885,5 +2123,33 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   });
 })();
 </script>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script src="js/img-modal.js"></script>
 </body>
 </html>

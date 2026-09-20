@@ -378,6 +378,338 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
   .pl-flow{grid-template-columns:1fr 1fr;gap:8px}
 }
 
+
+
+/* ==================== IMAGEM / MAPA MENTAL PRINCIPAL ==================== */
+.topic-img {
+  margin: 24px 0 28px 0;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line2, #44475a);
+  background: #1e1f29;
+  box-shadow: 0 14px 36px rgba(0,0,0,0.5);
+  transition: border-color .2s ease;
+}
+.topic-img:hover {
+  border-color: var(--brand, #bd93f9);
+}
+.topic-img a {
+  display: block;
+  text-decoration: none;
+  cursor: zoom-in;
+}
+.topic-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform .3s ease;
+}
+.topic-img:hover img {
+  transform: scale(1.008);
+}
+.topic-img figcaption {
+  padding: 11px 18px;
+  font: 600 .82rem "Inter", sans-serif;
+  color: var(--muted, #9aa1c0);
+  background: var(--bg2, #21222c);
+  border-top: 1px solid var(--line, #343746);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.topic-img figcaption span {
+  color: var(--cyan, #8be9fd);
+  font-family: "Cascadia Code", monospace;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+.topic-img figcaption em {
+  font-style: normal;
+  color: var(--ink, #f8f8f2);
+}
+
+</style>
+
+<style id="img-modal-styles">
+
+/* ==================== MODAL DE IMAGEM / LIGHTBOX COM ZOOM ==================== */
+.img-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+.img-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.im-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 14, 22, 0.90);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.im-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  overflow: hidden;
+  user-select: none;
+}
+.im-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+  background: rgba(28, 29, 39, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line2, #44475a);
+  z-index: 10;
+}
+.im-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.im-badge {
+  font: 800 .68rem/1 "Inter", sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand, #bd93f9);
+  background: var(--brand-s, #332a4e);
+  border: 1px solid var(--brand, #bd93f9);
+  border-radius: 6px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+.im-caption {
+  margin: 0;
+  font: 600 .9rem/1.25 "Inter", sans-serif;
+  color: var(--ink, #f8f8f2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.im-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.im-btn {
+  background: var(--card, #2f313f);
+  color: var(--ink, #f8f8f2);
+  border: 1px solid var(--line2, #44475a);
+  border-radius: 8px;
+  padding: 0 11px;
+  font: 700 .86rem "Inter", sans-serif;
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  min-width: 34px;
+}
+.im-btn:hover {
+  background: var(--brand, #bd93f9);
+  color: #1e1f29;
+  border-color: var(--brand, #bd93f9);
+}
+.im-btn.im-scale-val {
+  min-width: 58px;
+  font-family: "Cascadia Code", monospace;
+  font-size: .78rem;
+}
+.im-btn.im-close {
+  background: rgba(255, 85, 85, 0.16);
+  border-color: rgba(255, 85, 85, 0.4);
+  color: #ff5555;
+  font-size: 1rem;
+  margin-left: 6px;
+}
+.im-btn.im-close:hover {
+  background: #ff5555;
+  border-color: #ff5555;
+  color: #ffffff;
+}
+.im-viewport {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+.im-viewport.is-dragging {
+  cursor: grabbing;
+}
+.im-canvas {
+  position: absolute;
+  transform-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+.im-canvas img {
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  border: 1px solid var(--line2, #44475a);
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
+}
+.im-viewport.is-dragging .im-canvas img {
+  cursor: grabbing;
+}
+.im-footer {
+  flex: 0 0 auto;
+  padding: 9px 18px;
+  text-align: center;
+  background: rgba(20, 21, 30, 0.88);
+  border-top: 1px solid var(--line, #343746);
+  z-index: 10;
+}
+.im-hint {
+  font: 400 .78rem "Inter", sans-serif;
+  color: var(--muted, #9aa1c0);
+}
+.im-hint b {
+  color: var(--cyan, #8be9fd);
+}
+
+@media (max-width: 640px) {
+  .im-header { padding: 10px 14px; }
+  .im-badge { display: none; }
+  .im-caption { font-size: .8rem; }
+  .im-btn { height: 30px; min-width: 30px; padding: 0 7px; font-size: .8rem; }
+  .im-hint { font-size: .7rem; }
+}
+
+/* ==================== IMAGENS & MAPAS CONCEITUAIS PADRÃO ==================== */
+.topic-img {
+  margin: 24px 0 28px 0;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line2, #44475a);
+  background: #1e1f29;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  transition: border-color .2s ease, box-shadow .2s ease;
+  cursor: zoom-in;
+}
+.topic-img:hover {
+  border-color: var(--brand, #bd93f9);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
+}
+.topic-img a {
+  display: block;
+  text-decoration: none;
+  cursor: zoom-in;
+}
+.topic-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform .3s ease;
+  cursor: zoom-in;
+}
+.topic-img:hover img {
+  transform: scale(1.008);
+}
+.topic-img figcaption {
+  padding: 11px 18px;
+  font: 600 .82rem/1.3 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--muted, #9aa1c0);
+  background: var(--bg2, #21222c);
+  border-top: 1px solid var(--line, #343746);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.topic-img figcaption span {
+  color: var(--cyan, #8be9fd);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+.topic-img figcaption em {
+  font-style: normal;
+  color: var(--ink, #f8f8f2);
+  font-weight: 500;
+}
+
+</style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -405,6 +737,16 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <span class="eyebrow">Docker e Kubernetes · setembro 2026</span>
       <h1>Do <em>processo isolado</em> ao <em>cluster em produção</em>.</h1>
       <p class="lede">O quarto da série, no mesmo formato de Java, Spring e Arquitetura. Em cima, a <b>trilha visual</b>: 74 nós em 14 marcos, do porquê dos containers até deployar a sua aplicação Spring no cluster — com modo teste e fila de revisão. Embaixo, o <b>conteúdo</b>: 36 tópicos em 10 partes, com a origem de cada mecanismo, <b>o que ele veio substituir</b>, o comando que prova, os diagramas e as armadilhas que custam uma tarde. Tudo <b>pelo terminal Linux</b>, que é como você vai encontrar em produção.</p>
+
+      <!-- MAPA MENTAL PRINCIPAL -->
+      <figure class="topic-img">
+        <img src="img/docker-kubernetes/docker_kubernetes_mapa_mental_principal.jpg" alt="Mapa Mental: DOCKER E KUBERNETES - CONTAINERS QUE EMPACOTAM" loading="lazy">
+        <figcaption>
+          <span>MAPA MENTAL PRINCIPAL</span>
+          <em>DOCKER &amp; KUBERNETES — Containers, Imagens, Compose &amp; Orquestração</em>
+        </figcaption>
+      </figure>
+
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
         <a href="#p1"><b>↓ O conteúdo</b>entender a fundo, com história e comando</a>
@@ -427,6 +769,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
     <!-- ========================= PARTE 01 ========================= -->
     <section class="part" id="p1">
       <div class="ph"><span class="num">01</span><div><h2>Por que containers existem</h2><p>Antes de qualquer comando: o problema real que o Docker resolveu — e o que ele <em>não</em> é.</p></div></div>
+
 
       <article class="topic" id="a1">
         <div class="th"><h3>O problema: "na minha máquina funciona"</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a origem</span></div></div>
@@ -2172,5 +2515,301 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   });
 })();
 </script>
+
+
+<!-- ==================== MODAL DE IMAGEM / LIGHTBOX INTERATIVO ==================== -->
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+
+<script>
+// ==================== IMAGE MODAL & ZOOM CONTROLLER ====================
+(function(){
+  if (window.__imgModalInit) return;
+  window.__imgModalInit = true;
+
+  var modal = document.getElementById('imgModal');
+  if (!modal) return;
+
+  var backdrop = document.getElementById('imBackdrop');
+  var viewport = document.getElementById('imViewport');
+  var canvas = document.getElementById('imCanvas');
+  var img = document.getElementById('imImg');
+  var caption = document.getElementById('imCaption');
+  var badge = document.getElementById('imBadge');
+  var btnClose = document.getElementById('imClose');
+  var btnZoomIn = document.getElementById('imZoomIn');
+  var btnZoomOut = document.getElementById('imZoomOut');
+  var btnReset = document.getElementById('imZoomReset');
+
+  var scale = 1;
+  var panX = 0;
+  var panY = 0;
+  var isDragging = false;
+  var dragStartX = 0;
+  var dragStartY = 0;
+  var initialPanX = 0;
+  var initialPanY = 0;
+  var hasMoved = false;
+
+  function updateTransform() {
+    canvas.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
+    if (btnReset) btnReset.textContent = Math.round(scale * 100) + '%';
+  }
+
+  function resetZoom() {
+    scale = 1;
+    panX = 0;
+    panY = 0;
+    updateTransform();
+  }
+
+  function openModal(src, titleText, badgeText) {
+    if (!src) return;
+    img.src = src;
+    if (caption) caption.textContent = titleText || 'Visualização Ampliada';
+    if (badge && badgeText) badge.textContent = badgeText;
+    resetZoom();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      if (!modal.classList.contains('open')) {
+        img.src = '';
+      }
+    }, 250);
+  }
+
+  // Intercept click on any .topic-img, .visual-diagram, or zoomable image
+  document.addEventListener('click', function(e) {
+    var trigger = e.target.closest('.topic-img a, .topic-img img, figure.visual-diagram img, [data-zoomable]');
+    if (!trigger) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var targetImg = trigger.tagName.toLowerCase() === 'img' ? trigger : trigger.querySelector('img');
+    var fig = trigger.closest('figure');
+    var cap = fig ? (fig.querySelector('figcaption em') || fig.querySelector('figcaption')) : null;
+    var bd = fig ? fig.querySelector('figcaption span') : null;
+
+    var src = '';
+    if (targetImg) {
+      src = targetImg.getAttribute('src') || targetImg.src;
+    } else if (trigger.tagName.toLowerCase() === 'a') {
+      src = trigger.getAttribute('href');
+    }
+
+    if (src) {
+      var capText = cap ? cap.textContent.trim() : (targetImg ? targetImg.alt : '');
+      var bdText = bd ? bd.textContent.trim() : 'MAPA MENTAL';
+      openModal(src, capText, bdText);
+    }
+  }, true);
+
+  if (btnClose) {
+    btnClose.addEventListener('click', function(e){
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', function(e){
+      closeModal();
+    });
+  }
+
+  // Close on Escape or shortcut keys
+  document.addEventListener('keydown', function(e){
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      closeModal();
+    } else if (e.key === '+' || e.key === '=') {
+      scale = Math.min(6, scale * 1.25);
+      updateTransform();
+    } else if (e.key === '-') {
+      scale = Math.max(0.3, scale / 1.25);
+      updateTransform();
+    } else if (e.key === '0') {
+      resetZoom();
+    }
+  });
+
+  if (btnZoomIn) {
+    btnZoomIn.addEventListener('click', function(e){
+      e.stopPropagation();
+      scale = Math.min(6, scale * 1.25);
+      updateTransform();
+    });
+  }
+
+  if (btnZoomOut) {
+    btnZoomOut.addEventListener('click', function(e){
+      e.stopPropagation();
+      scale = Math.max(0.3, scale / 1.25);
+      updateTransform();
+    });
+  }
+
+  if (btnReset) {
+    btnReset.addEventListener('click', function(e){
+      e.stopPropagation();
+      resetZoom();
+    });
+  }
+
+  // Double click toggles zoom (100% -> 200% -> 100%)
+  if (canvas) {
+    canvas.addEventListener('dblclick', function(e){
+      e.stopPropagation();
+      if (scale <= 1.15) {
+        scale = 2;
+      } else {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+      }
+      updateTransform();
+    });
+  }
+
+  // Mouse wheel zoom
+  if (viewport) {
+    viewport.addEventListener('wheel', function(e){
+      if (!modal.classList.contains('open')) return;
+      e.preventDefault();
+      var zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
+      var newScale = scale * zoomFactor;
+      if (newScale >= 0.3 && newScale <= 6) {
+        scale = newScale;
+        updateTransform();
+      }
+    }, { passive: false });
+
+    // Drag / Pan & Click Outside
+    viewport.addEventListener('mousedown', function(e){
+      if (e.button !== 0) return;
+      if (e.target.closest('.im-btn') || e.target.closest('.im-header') || e.target.closest('.im-footer')) return;
+
+      isDragging = true;
+      hasMoved = false;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      initialPanX = panX;
+      initialPanY = panY;
+      viewport.classList.add('is-dragging');
+    });
+
+    window.addEventListener('mousemove', function(e){
+      if (!isDragging) return;
+      var dx = e.clientX - dragStartX;
+      var dy = e.clientY - dragStartY;
+      if (Math.hypot(dx, dy) > 5) {
+        hasMoved = true;
+      }
+      panX = initialPanX + dx;
+      panY = initialPanY + dy;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', function(e){
+      if (isDragging) {
+        isDragging = false;
+        viewport.classList.remove('is-dragging');
+        // If user clicked outside the image without dragging
+        if (!hasMoved && (e.target === viewport || e.target === backdrop || e.target === modal)) {
+          closeModal();
+        }
+      }
+    });
+
+    // Touch support (mobile pinch / drag)
+    var touchStartDist = 0;
+    var initialTouchScale = 1;
+    viewport.addEventListener('touchstart', function(e){
+      if (e.touches.length === 1) {
+        isDragging = true;
+        hasMoved = false;
+        dragStartX = e.touches[0].clientX;
+        dragStartY = e.touches[0].clientY;
+        initialPanX = panX;
+        initialPanY = panY;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        touchStartDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialTouchScale = scale;
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', function(e){
+      if (e.touches.length === 1 && isDragging) {
+        var dx = e.touches[0].clientX - dragStartX;
+        var dy = e.touches[0].clientY - dragStartY;
+        if (Math.hypot(dx, dy) > 5) hasMoved = true;
+        panX = initialPanX + dx;
+        panY = initialPanY + dy;
+        updateTransform();
+      } else if (e.touches.length === 2 && touchStartDist > 0) {
+        var currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        var factor = currentDist / touchStartDist;
+        var newScale = initialTouchScale * factor;
+        if (newScale >= 0.4 && newScale <= 6) {
+          scale = newScale;
+          updateTransform();
+        }
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', function(e){
+      if (isDragging) {
+        isDragging = false;
+        if (!hasMoved && (e.target === viewport || e.target === backdrop)) {
+          closeModal();
+        }
+      }
+      if (e.touches.length < 2) {
+        touchStartDist = 0;
+      }
+    });
+  }
+})();
+</script>
+
 </body>
 </html>

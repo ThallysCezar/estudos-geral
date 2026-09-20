@@ -1,0 +1,3258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering: O Guia Definitivo V4 · Didática Visual & Split-Screen</title>
+<meta name="description" content="Guia completo e didático de AI Engineering estruturado estritamente nos 6 Grandes Níveis: Fundamentos, Dominar LLMs, IA no Desenvolvimento, Construir Apps, Agentes e MLOps em Produção. Didática cirúrgica com O que é, Para que serve, O que veio substituir, Como funciona e Exemplos práticos.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd; --cyan-s:#12303a;
+  --orange:#ffb86c; --orange-s:#3a2a17;
+  --code:#1e1f29; --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+
+/* Top bar progress */
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+
+/* Layout Shell */
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1440px;margin:0 auto}
+
+/* Sticky Sidebar */
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+
+/* Main Area */
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.2rem,4.6vw,3.6rem);line-height:1.06;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:72ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 180px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px);text-decoration:none}
+.jump a b{display:block;font-size:.95rem;color:var(--ink);margin-bottom:2px}
+
+/* Value Props Grid */
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+
+/* Central Interactive Trail Section */
+.trailwrap{padding:40px 0 10px}
+.trail-head{text-align:center;max-width:800px;margin:0 auto 20px}
+.trail-head h2{font-size:1.85rem;font-weight:400;margin:0 0 6px}
+.trail-head p{margin:0;color:var(--muted);font-style:italic;font-size:.98rem}
+.trail-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:16px 0 0;justify-content:center}
+.trail-legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.trail-legend b{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.trail{position:relative;margin:34px auto 0;max-width:1160px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(210px,260px) 1fr;align-items:center;margin:0 0 32px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+
+.cluster{display:flex;flex-wrap:wrap;gap:8px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:10px;padding:8px 12px;cursor:pointer;transition:.15s;font-family:"Inter","Segoe UI",sans-serif;max-width:260px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:2px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+
+.trail-end{text-align:center;margin-top:12px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:10px 24px;font:800 .78rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+
+/* Topics Section */
+section.part{padding:60px 0 10px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:10px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+
+article.topic{padding:38px 0 32px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.48rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--brand-s);color:var(--brand)}
+.b-caso{background:var(--cyan-s);color:var(--cyan)}
+.b-ver{background:var(--rose-s);color:var(--rose)}
+.b-gold{background:var(--gold-s);color:var(--gold)}
+
+/* 5 Didactic Blocks */
+.direto{font-size:1.06rem;color:var(--ink);margin:16px 0 0;padding:14px 18px;background:var(--brand-s);border-radius:12px;border-left:4px solid var(--brand);line-height:1.6}
+.direto b{font-weight:700;color:var(--brand)}
+
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .7rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.duo.o h4{color:var(--cyan)}
+.duo p{margin:0!important;font-size:.94rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.15rem;font-size:.94rem;color:var(--ink2)}
+.duo li{margin:.35rem 0}
+
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:18px 0 0}
+.trio>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.trio h4{margin:0 0 7px;font:700 .7rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--brand)}
+.trio p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+.vs .lab{font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:10px 14px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs .conteudo{padding:12px 14px;font-size:.92rem;color:var(--ink2)}
+.vs pre{margin:0;border:0;border-radius:0}
+
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}
+
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--cyan-s);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+
+/* Diagramas SVG Elegantes Integrados */
+.visual-diagram{margin:22px 0 16px;background:#171822;border:1px solid var(--line2);border-radius:14px;padding:20px;overflow-x:auto}
+.visual-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.visual-diagram figcaption{text-align:center;font:600 .78rem "Inter",sans-serif;color:var(--muted);margin-top:10px}
+.visual-diagram figcaption span{color:var(--cyan);font-family:"Cascadia Code",monospace}
+
+/* Tabela Comparativa Didática */
+table.didatica{width:100%;border-collapse:collapse;margin:18px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.didatica th{background:var(--bg2);text-align:left;padding:12px 16px;font:700 .7rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);border-bottom:2px solid var(--line2)}
+table.didatica td{padding:12px 16px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.didatica tr:hover{background:rgba(255,255,255,0.02)}
+
+/* Interactive Simulator */
+.agent-lab{margin:24px 0;border:1px solid var(--line2);border-radius:18px;background:#1e1f29;padding:22px;box-shadow:0 16px 40px #00000055}
+.agent-lab .al-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px}
+.agent-lab .al-head h4{margin:0;font:700 .68rem "Cascadia Code",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}
+.agent-lab .al-ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.agent-lab .btn-al{border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .74rem "Inter",sans-serif;padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .2s}
+.agent-lab .btn-al:hover{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 15%,transparent);transform:translateY(-2px)}
+.agent-lab .btn-al.btn-ok{border-color:color-mix(in srgb,var(--teal) 50%,transparent);color:var(--teal)}
+.agent-lab .btn-al.btn-err{border-color:color-mix(in srgb,var(--rose) 50%,transparent);color:var(--rose)}
+.agent-lab .btn-al.btn-warn{border-color:color-mix(in srgb,var(--orange) 50%,transparent);color:var(--orange)}
+
+.agent-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:20px 0 16px}
+.agent-node{background:#282a36;border:1px solid var(--line);border-radius:12px;padding:12px 10px;font-size:.74rem;transition:all .3s}
+.agent-node .an-tag{font:700 .55rem "Cascadia Code",monospace;color:var(--soft);text-transform:uppercase;display:block;margin-bottom:4px}
+.agent-node .an-val{font-weight:600;color:var(--ink);display:block;line-height:1.3}
+.agent-node.active{border-color:var(--cyan);background:radial-gradient(100% 120% at 50% 0%,#8be9fd25,#282a36);box-shadow:0 0 18px #8be9fd44;transform:translateY(-2px)}
+.agent-node.ok{border-color:var(--teal);background:radial-gradient(100% 120% at 50% 0%,#50fa7b25,#282a36)}
+.agent-node.err{border-color:var(--rose);background:radial-gradient(100% 120% at 50% 0%,#ff555525,#282a36)}
+.agent-node.warn{border-color:var(--orange);background:radial-gradient(100% 120% at 50% 0%,#ffb86c25,#282a36)}
+
+.agent-hud{background:#14151e;border:1px solid var(--line2);border-radius:12px;padding:12px 16px;font:500 .74rem "Cascadia Code",monospace;color:var(--ink2);min-height:75px;max-height:130px;overflow-y:auto}
+.agent-hud .ah-l{margin:3px 0;line-height:1.45}
+.agent-hud .ah-ok{color:var(--teal)}
+.agent-hud .ah-err{color:var(--rose)}
+.agent-hud .ah-warn{color:var(--orange)}
+.agent-hud .ah-info{color:var(--cyan)}
+
+/* Drawer Side Panel */
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(580px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.94rem;color:var(--ink2);line-height:1.55}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.trio{grid-template-columns:1fr}
+  .agent-flow{grid-template-columns:1fr 1fr}
+  .panel{width:100%}
+}
+</style>
+
+<style id="img-modal-styles">
+
+/* ==================== MODAL DE IMAGEM / LIGHTBOX COM ZOOM ==================== */
+.img-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+.img-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.im-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 14, 22, 0.90);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.im-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  overflow: hidden;
+  user-select: none;
+}
+.im-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+  background: rgba(28, 29, 39, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line2, #44475a);
+  z-index: 10;
+}
+.im-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.im-badge {
+  font: 800 .68rem/1 "Inter", sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand, #bd93f9);
+  background: var(--brand-s, #332a4e);
+  border: 1px solid var(--brand, #bd93f9);
+  border-radius: 6px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+.im-caption {
+  margin: 0;
+  font: 600 .9rem/1.25 "Inter", sans-serif;
+  color: var(--ink, #f8f8f2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.im-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.im-btn {
+  background: var(--card, #2f313f);
+  color: var(--ink, #f8f8f2);
+  border: 1px solid var(--line2, #44475a);
+  border-radius: 8px;
+  padding: 0 11px;
+  font: 700 .86rem "Inter", sans-serif;
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  min-width: 34px;
+}
+.im-btn:hover {
+  background: var(--brand, #bd93f9);
+  color: #1e1f29;
+  border-color: var(--brand, #bd93f9);
+}
+.im-btn.im-scale-val {
+  min-width: 58px;
+  font-family: "Cascadia Code", monospace;
+  font-size: .78rem;
+}
+.im-btn.im-close {
+  background: rgba(255, 85, 85, 0.16);
+  border-color: rgba(255, 85, 85, 0.4);
+  color: #ff5555;
+  font-size: 1rem;
+  margin-left: 6px;
+}
+.im-btn.im-close:hover {
+  background: #ff5555;
+  border-color: #ff5555;
+  color: #ffffff;
+}
+.im-viewport {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+.im-viewport.is-dragging {
+  cursor: grabbing;
+}
+.im-canvas {
+  position: absolute;
+  transform-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+.im-canvas img {
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  border: 1px solid var(--line2, #44475a);
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
+}
+.im-viewport.is-dragging .im-canvas img {
+  cursor: grabbing;
+}
+.im-footer {
+  flex: 0 0 auto;
+  padding: 9px 18px;
+  text-align: center;
+  background: rgba(20, 21, 30, 0.88);
+  border-top: 1px solid var(--line, #343746);
+  z-index: 10;
+}
+.im-hint {
+  font: 400 .78rem "Inter", sans-serif;
+  color: var(--muted, #9aa1c0);
+}
+.im-hint b {
+  color: var(--cyan, #8be9fd);
+}
+
+@media (max-width: 640px) {
+  .im-header { padding: 10px 14px; }
+  .im-badge { display: none; }
+  .im-caption { font-size: .8rem; }
+  .im-btn { height: 30px; min-width: 30px; padding: 0 7px; font-size: .8rem; }
+  .im-hint { font-size: .7rem; }
+}
+
+/* ==================== IMAGENS & MAPAS CONCEITUAIS PADRÃO ==================== */
+.topic-img {
+  margin: 24px 0 28px 0;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line2, #44475a);
+  background: #1e1f29;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  transition: border-color .2s ease, box-shadow .2s ease;
+  cursor: zoom-in;
+}
+.topic-img:hover {
+  border-color: var(--brand, #bd93f9);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
+}
+.topic-img a {
+  display: block;
+  text-decoration: none;
+  cursor: zoom-in;
+}
+.topic-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform .3s ease;
+  cursor: zoom-in;
+}
+.topic-img:hover img {
+  transform: scale(1.008);
+}
+.topic-img figcaption {
+  padding: 11px 18px;
+  font: 600 .82rem/1.3 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--muted, #9aa1c0);
+  background: var(--bg2, #21222c);
+  border-top: 1px solid var(--line, #343746);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.topic-img figcaption span {
+  color: var(--cyan, #8be9fd);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+.topic-img figcaption em {
+  font-style: normal;
+  color: var(--ink, #f8f8f2);
+  font-weight: 500;
+}
+
+
+/* ==================== V4 DIDÁTICA: MODELOS MENTAIS & METÁFORAS ==================== */
+.mental-model {
+  margin: 18px 0;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #191b26;
+  border: 1px solid var(--line2);
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color .2s ease;
+}
+.mental-model:hover {
+  border-color: var(--line2);
+  border-left-color: var(--gold);
+}
+.mental-model .mm-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+  flex-wrap: wrap;
+}
+.mental-model .mm-tag {
+  font: 700 .66rem/1 "Cascadia Code", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-s);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(241, 250, 140, 0.25);
+}
+.mental-model .mm-title {
+  margin: 0;
+  font: 700 .92rem "Inter", sans-serif;
+  color: var(--ink);
+}
+.mental-model p {
+  margin: 0 !important;
+  font-size: .93rem;
+  line-height: 1.65;
+  color: var(--ink2);
+}
+.mental-model p b {
+  color: var(--gold);
+}
+.mental-model p i {
+  color: var(--cyan);
+}
+.mental-model .mm-formula {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #14151e;
+  border-radius: 8px;
+  border: 1px dashed var(--cyan);
+  font: 700 .82rem/1.4 "Cascadia Code", monospace;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mental-model .mm-formula span {
+  color: var(--teal);
+}
+
+/* Chunking Visual Comparison */
+.chunk-flow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+@media (max-width: 768px) {
+  .chunk-flow { grid-template-columns: 1fr; }
+}
+.chunk-card {
+  background: #21222c;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.chunk-card h5 {
+  margin: 0 0 6px;
+  font: 700 .75rem "Cascadia Code", monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.chunk-card.bad h5 { color: var(--rose); }
+.chunk-card.good h5 { color: var(--teal); }
+.chunk-card p {
+  margin: 0;
+  font-size: .86rem;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+</style>
+
+<style>
+
+</style>
+
+  <style>
+  /* Split Screen Layout */
+  @media(min-width: 1200px) {
+    .shell {
+      display: grid !important;
+      grid-template-columns: 280px minmax(0, 1fr) !important;
+      max-width: 1680px !important;
+      margin: 0 auto !important;
+    }
+    main {
+      padding: 0 48px !important;
+    }
+    
+    /* Transform topics into 2-column split */
+    .topic-split {
+      display: grid !important;
+      grid-template-columns: 1.15fr 0.95fr !important;
+      gap: 36px !important;
+      align-items: start !important;
+      margin-top: 20px !important;
+    }
+    .topic-split-left {
+      min-width: 0;
+    }
+    .topic-split-right {
+      min-width: 0;
+      position: sticky;
+      top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .topic-split-right .topic-img {
+      margin: 0 !important;
+    }
+    .topic-split-right .exemplo-box {
+      margin: 0 !important;
+    }
+    .topic-split-right pre {
+      margin: 0 !important;
+    }
+    .topic-split-right .visual-diagram {
+      margin: 0 !important;
+    }
+  }
+  </style>
+  <style>
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 48px !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title {
+    margin: 0 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i id="tp"></i></div>
+
+<div class="shell">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="side">
+    <div class="brand"><i>◈</i><b>AI ENG V4</b></div>
+    <p class="sub">Do modelo ao agente no dia a dia dev.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (mcp, rag, harness, sdd, tokens)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main id="main">
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+
+      
+  
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;font-family:'Inter',sans-serif;font-size:.83rem;flex-wrap:wrap">
+        <a href="acervo.html" style="color:var(--cyan);font-weight:600">← Voltar ao Acervo Geral</a>
+        <span style="color:var(--line2)">|</span>
+        <span style="color:var(--teal);font-weight:700">★ Você está na Versão V4 (Didática Avançada &amp; Metáforas Físicas)</span>
+        <span style="color:var(--line2)">|</span>
+        <a href="ia.html" style="color:var(--muted)">Ver Versão V1 (Fundações &amp; Vault) →</a>
+      </div>
+      <div class="eyebrow">Guia de Engenharia em 6 Níveis · Edição V4 (Didática Visual &amp; Metáforas)</div>
+      <h1>AI Engineering: <em>O Molde Definitivo</em></h1>
+      <p class="lede">Um guia rigoroso e cirúrgico para engenheiros de software. <b>Aprenda a orquestrar modelos, ferramentas, dados e subagentes</b> para construir sistemas reais, confiáveis e resilientes de produção.</p>
+
+      <!-- MAPA MENTAL PRINCIPAL -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_mapa_mental_principal.jpg" alt="Mapa Mental: INTELIGÊNCIA ARTIFICIAL - DA TEORIA À APLICAÇÃO EM SOLUÇÕES REAIS" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>MAPA MENTAL PRINCIPAL</span>
+          <em>INTELIGÊNCIA ARTIFICIAL — Da Teoria à Aplicação: Fundamentos, Modelos, Interação &amp; Sistemas</em>
+        </figcaption>
+      </figure>
+
+      
+      <div class="jump">
+        <a href="#p1"><b>Nível 1 · Fundamentos</b>IA &rarr; ML &rarr; DL &rarr; LLM &rarr; Transformer</a>
+        <a href="#p2"><b>Nível 2 · Dominar LLMs</b>Tokens, Contexto, Temp &amp; Latência</a>
+        <a href="#p3"><b>Nível 3 · IA no Dev</b>SDD, 4 Camadas de Prompt &amp; 11 Pilares</a>
+        <a href="#p4"><b>Nível 4 · Criar Aplicações</b>Structured Output, Tool Calling &amp; pgvector</a>
+        <a href="#p5"><b>Nível 5 · Agentes &amp; Subagentes</b>ReAct, Orchestrator-Workers &amp; MCP</a>
+        <a href="#p6"><b>Nível 6 · MLOps &amp; Produção</b>Test Harness, Evals, Cache &amp; Tracing</a>
+      </div>
+
+      <div class="legenda">
+        <div><b>🎯 O Que É</b><span>Definição direta e cirúrgica do conceito.</span></div>
+        <div><b>🚀 Para Que Serve</b><span>Aplicação prática e utilidade no dia a dia.</span></div>
+        <div><b>🔄 O Que Substituiu</b><span>A limitação anterior vs a solução moderna.</span></div>
+        <div><b>⚙️ Como Funciona</b><span>Mecânica interna, fluxo e algoritmos.</span></div>
+        <div><b>💻 Exemplo Real</b><span>Código concreto em Java 21, SQL e JSON.</span></div>
+      </div>
+    </header>
+
+    <!-- TRILHA CENTRAL INTERATIVA -->
+    <section class="trailwrap" id="trilha">
+      <div class="trail-head">
+        <h2>Mapa Visual da Trilha de Aprendizado</h2>
+        <p>Clique em qualquer nó para abrir os detalhes didáticos completos, navegar entre os tópicos ou testar seu conhecimento.</p>
+        <div class="trail-legend">
+          <span><b style="background:var(--teal)"></b> Nível 1: Fundamentos</span>
+          <span><b style="background:var(--brand)"></b> Nível 2: Mecânica LLM</span>
+          <span><b style="background:var(--green)"></b> Nível 3: IA no Dev</span>
+          <span><b style="background:var(--cyan)"></b> Nível 4: Aplicações</span>
+          <span><b style="background:var(--orange)"></b> Nível 5: Agentes</span>
+          <span><b style="background:var(--rose)"></b> Nível 6: MLOps / Harness</span>
+        </div>
+      </div>
+
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== NÍVEL 1 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>Nível 1 — Fundamentos de IA: O Funil Conceitual</h2><p>Da Ciência da Computação à IA Generativa: desmistificando vocabulários e estruturas.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 1: FUNDAMENTOS DE IA -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_1_fundamentos_funil.jpg" alt="Mapa Conceitual: Fundamentos de IA — O Funil Conceitual" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 1 · MAPA CONCEITUAL</span>
+          <em>Fundamentos de IA — O Funil Conceitual: Da Teoria à Prática</em>
+        </figcaption>
+      </figure>
+
+
+
+      <!-- DIAGRAMA 1: CAMADAS CONCÊNTRICAS -->
+      <figure class="visual-diagram">
+        <img src="img/ia-camadas-concentricas.svg" alt="Diagrama de Camadas Concêntricas da IA" style="width:100%;height:auto;display:block;border-radius:10px;">
+        <figcaption>A Hierarquia em Camadas: <span>Ciência da Computação &rarr; IA &rarr; Machine Learning &rarr; Deep Learning &rarr; LLMs &rarr; IA Generativa</span></figcaption>
+      </figure>
+
+      <!-- 1.1 IA -->
+      <article class="topic" id="t1-ia">
+        <div class="th"><h3>1.1 Inteligência Artificial (IA) — Do Campo Geral à Automação Cognitiva</h3><div class="badges"><span class="badge b-ess">campo geral</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O campo amplo da ciência da computação dedicado a construir sistemas computacionais capazes de executar tarefas cognitivas tradicionalmente associadas à inteligência humana (raciocinar, aprender, resolver problemas complexos e tomar decisões adaptativas).</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Automatizar decisões e tarefas cognitivas em escala: diagnóstico por imagens médicas, transcrição de áudio, carros autônomos, detecção de anomalias em cartões e assistência na escrita de software.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>Opera em 3 fases: <b>Captura/Percepção</b> (textos, imagens, sinais), <b>Processamento</b> (modelos probabilísticos ajustando pesos matemáticos) e <b>Atuação/Geração</b> (previsões ou chamadas de API no mundo real).</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Sistemas especialistas com milhares de regras estáticas (<code>if/else</code>) escritas manualmente por especialistas, que quebravam diante de qualquer dado com ruído ou cenário imprevisto.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM IA MODERNA)</div>
+            <div class="conteudo">Sistemas probabilísticos adaptativos que generalizam a partir de exemplos, aprendendo a lidar com ambiguidade, ruído sensorial e variações infinitas do mundo real.</div>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Motores anti-fraude bancários avaliando 350 variáveis de uma transação de cartão de crédito em 15 milissegundos para aprovar ou bloquear a operação antes de disparar a liquidação.</p>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">💡</i>
+          <p><b>Além do óbvio:</b> IA é o continente inteiro. Machine Learning é um país dentro dele. Não chame qualquer algoritmo de IA para não parecer amador diante de arquitetos seniores.</p>
+        </div>
+        <button class="done" type="button" data-k="t1-ia">marcar dominado</button>
+      </article>
+
+      <!-- 1.2 ML -->
+      <article class="topic" id="t1-ml">
+        <div class="th"><h3>1.2 Machine Learning (ML) — A Base: Aprender Padrões em Dados</h3><div class="badges"><span class="badge b-ess">estatística</span><span class="badge b-prof">os 3 tipos</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Subconjunto da IA focado em algoritmos que ajustam seus parâmetros matemáticos diretamente a partir de dados históricos para identificar padrões estatísticos, sem que cada regra seja programada manualmente.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Prever métricas de negócio futuras (demanda, vendas), estimar preços, classificar eventos de risco e clusterizar usuários para personalização de conteúdo.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Os 3 Paradigmas de ML</h4>
+            <ul>
+              <li><b>Supervisionado:</b> Aprende com pares de entrada e saída rotulados (<i>X &rarr; Y</i>). Ex: prever churn de clientes.</li>
+              <li><b>Não Supervisionado:</b> Descobre clusters e correlações sem rótulos prévios. Ex: segmentação de clientes.</li>
+              <li><b>Por Reforço (RL):</b> Aprende por tentativa, erro e recompensas em ambientes dinâmicos (base do RLHF em LLMs).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Para classificar emails em spam, o desenvolvedor mantinha listas de milhares de palavras-chave manuais: <code>if (text.contains("promoção"))</code>.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM MACHINE LEARNING)</div>
+            <div class="conteudo">O modelo recebe 100.000 emails históricos rotulados e ajusta seus pesos matemáticos sozinho, classificando novos emails com alta precisão mesmo com erros ortográficos.</div>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Um modelo de gradiente aumentado (XGBoost) analisando o histórico de uso de uma API por clientes corporativos e emitindo um alerta de risco de cancelamento de contrato com 30 dias de antecedência.</p>
+        </div>
+        <button class="done" type="button" data-k="t1-ml">marcar dominado</button>
+      </article>
+
+      <!-- 1.3 DEEP LEARNING -->
+      <article class="topic" id="t1-dl">
+        <div class="th"><h3>1.3 Deep Learning (DL) — Redes Neurais Profundas &amp; Representações</h3><div class="badges"><span class="badge b-prof">redes profundas</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Especialização de Machine Learning baseada em redes neurais artificiais com dezenas ou centenas de camadas ocultas (<i>deep networks</i>), capazes de aprender representações hierárquicas diretamente de dados brutos não estruturados (pixels, ondas de áudio, textos).</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Resolver problemas de percepção complexa onde dados tabulares não funcionam: visão computacional, síntese e transcrição de fala, tradução automática e modelos de linguagem.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>Camadas iniciais aprendem primitivas geométricas simples (bordas, curvas); camadas intermediárias combinam bordas em texturas e formas; camadas profundas reconhecem objetos inteiros (faces, carros, células cancerígenas).</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Engenharia manual de atributos (<i>Feature Engineering</i>): cientistas de dados passavam meses calculando filtros de arestas manuais e transformadas de Fourier para cada tipo de imagem.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM DEEP LEARNING)</div>
+            <div class="conteudo">A rede neural recebe a matriz de pixels brutos da imagem e extrai automaticamente as representações matemáticas ideais por retropropagação (<i>backpropagation</i>).</div>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Redes Convolucionais (CNNs) processando imagens de ressonância magnética para identificar micro-tumores cerebrais com precisão comparável a radiologistas seniores.</p>
+        </div>
+        <button class="done" type="button" data-k="t1-dl">marcar dominado</button>
+      </article>
+
+      <!-- 1.4 LLM -->
+      <article class="topic" id="t1-llm">
+        <div class="th"><h3>1.4 LLM (Large Language Models) — O Motor de Linguagem &amp; Raciocínio</h3><div class="badges"><span class="badge b-ess">cpu neural</span><span class="badge b-caso">fundamento dev</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Modelo de Deep Learning massivo construído sobre a arquitetura <b>Transformer</b>, treinado em centenas de bilhões de tokens de texto para prever sequências, capturar contexto semântico e atuar como o motor de raciocínio de sistemas de software.</div>
+
+        <!-- DIAGRAMA 2: O FUNIL HORIZONTAL -->
+        <figure class="visual-diagram">
+          <img src="img/ia-hierarquia-funil.svg" alt="O Funil de Escala da IA aos Produtos" style="width:100%;height:auto;display:block;border-radius:10px;">
+          <figcaption>O Funil de Escala da IA: <span>Como o campo amplo afunila até a CPU neural (LLM) e os Produtos de mercado</span></figcaption>
+        </figure>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Atuar como cérebro cognitivo de aplicações: interpretar linguagens formais e naturais, gerar e refatorar código, resumir bases de conhecimento, planejar planos de execução e coordenar agentes de software.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>O LLM não guarda respostas prontas em um banco relacional interno. Ele calcula a distribuição de probabilidades do próximo token condicionado a todos os tokens anteriores na janela de contexto via matrizes de atenção.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Modelos rígidos de NLP clássico (Regex, TF-IDF, N-grams, Word2Vec estático) que quebravam quando a frase mudava de ordem e eram incapazes de raciocinar sobre código.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM LLMS MODERNOS)</div>
+            <div class="conteudo">Uma única rede neural foundation model capaz de interpretar linguagem natural, gerar código em dezenas de linguagens, traduzir idiomas e seguir instruções complexas em zero-shot.</div>
+          </div>
+        </div>
+
+        <div class="trio">
+          <div>
+            <h4>Modelos (Motores)</h4>
+            <p><b>GPT-4o, Claude 3.7 Sonnet, Gemini 2.0 Flash</b>: são os motores neurais de inferência disponibilizados via API bruta.</p>
+          </div>
+          <div>
+            <h4>Produtos (Interfaces)</h4>
+            <p><b>ChatGPT, Claude Web, Gemini Web</b>: são produtos comerciais completos com interface web, banco de dados, histórico de conversas e guardrails.</p>
+          </div>
+          <div>
+            <h4>AI Engineering</h4>
+            <p>O desenvolvedor não usa o produto web; ele integra os <b>modelos via API</b> com bancos relacionais, ferramentas e código backend.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t1-llm">marcar dominado</button>
+      </article>
+
+      <!-- 1.5 GENERATIVOS VS DISCRIMINATIVOS -->
+      <article class="topic" id="t1-generativos">
+        <div class="th"><h3>1.5 Modelos Generativos vs Discriminativos</h3><div class="badges"><span class="badge b-prof">paradigmas</span></div></div>
+        <div class="direto">🎯 <b>O que são:</b> Modelos <b>Discriminativos</b> aprendem a fronteira de decisão entre classes para categorizar dados existentes <i>P(Y|X)</i>. Modelos <b>Generativos</b> aprendem a distribuição completa dos dados <i>P(X, Y)</i> para <b>gerar amostras totalmente inéditas</b> (texto, código, imagens, áudio).</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Criar novos conteúdos de software e multimídia: gerar classes Java completas, criar testes unitários, sintetizar áudio natural e desenhar mockups visuais sob demanda.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>Modelos autoregressivos geram token por token prevendo o próximo elemento; modelos de difusão removem ruído gaussiano progressivamente de uma matriz de pixels até revelar uma imagem nítida.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Templates estáticos de código, geração baseada em interpolação manual de strings (<code>String.format</code>) e bancos de imagens fixas.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM IA GENERATIVA)</div>
+            <div class="conteudo">Geração sintética sob medida que cria novos artefatos funcionais e coerentes adaptados dinamicamente a especificações técnicas detalhadas.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t1-generativos">marcar dominado</button>
+      </article>
+
+      <!-- 1.6 AGENTES -->
+      <article class="topic" id="t1-agentes">
+        <div class="th"><h3>1.6 Agentes de IA — Autonomia que Age no Mundo com Ferramentas</h3><div class="badges"><span class="badge b-ess">autonomia</span><span class="badge b-caso">agentes</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Um sistema de software onde o LLM atua como motor de raciocínio dentro de um loop contínuo (ReAct), utilizando memória e ferramentas externas (APIs, SQL, shell, compilador) para alcançar um objetivo de engenharia sem supervisão humana a cada passo.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Resolver fluxos complexos de engenharia de ponta a ponta: investigar bugs em logs, navegar pelo repositório, alterar múltiplos arquivos, executar testes unitários, corrigir erros de compilação e abrir Pull Requests.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Ciclo Operacional (ReAct)</h4>
+            <p>Opera em 4 fases recursivas: <b>1. Thought</b> (planeja o próximo passo) &rarr; <b>2. Action</b> (chama uma ferramenta com argumentos) &rarr; <b>3. Observation</b> (lê a saída da ferramenta) &rarr; <b>4. Reflection</b> (decide se concluiu ou se tenta novamente).</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">O chatbot passivo de perguntas e respostas: o desenvolvedor copiava o código gerado, colava na IDE, via o erro de compilação, copiava de volta para o chat e pedia nova versão manualmente.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM AGENTES DE IA)</div>
+            <div class="conteudo">O agente tem ferramentas no terminal, executa <code>mvn test</code>, lê o erro sozinho, reflete sobre a stack trace e corrige o código em loop autônomo até tudo passar em verde.</div>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Um agente de migração de código que recebe a instrução: <i>"Migre todos os controladores legados de Spring MVC para WebFlux reativo e garanta que a suíte de testes de integração passe com 100% de sucesso"</i>.</p>
+        </div>
+        <button class="done" type="button" data-k="t1-agentes">marcar dominado</button>
+      </article>
+
+      <!-- 1.7 TRANSFORMER -->
+      <article class="topic" id="t1-transformer">
+        <div class="th"><h3>1.7 A Arquitetura Transformer — Autoatenção e Vetores Q, K, V</h3><div class="badges"><span class="badge b-prof">arquitetura</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A arquitetura neural fundacional baseada no mecanismo de <b>Autoatenção (Self-Attention)</b> que processa todos os tokens de uma sequência simultaneamente em paralelo nas GPUs, utilizando <b>Positional Encodings</b> para preservar a ordem gramatical.</div>
+        
+        <div class="analogia">
+          <i class="ic">💡</i>
+          <p><b>O Molde e o Bolo:</b> O LLM é o bolo assado pronto. A estrutura arquitetural que define como ele foi assado é o <b>Transformer</b>. O Transformer é a estrutura técnica usada por modelos como GPT-4o, Claude 3.7, Gemini 2.0 e Llama 3.3.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Permitir que o modelo correlacione conceitos e variáveis situadas em pontos distantes do documento, mantendo consistência global de contexto em arquivos com milhares de linhas.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona (Q, K, V)</h4>
+            <p>Cada token projeta 3 vetores: <b>Query</b> (o que busco?), <b>Key</b> (o que ofereço?) e <b>Value</b> (qual meu conteúdo?). A atenção calcula o produto escalar escalonado de Q com K, multiplicando pelo Value via Softmax:</p>
+            <pre><code>Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V</code></pre>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O QUE FOI SUBSTITUÍDO)</div>
+            <div class="conteudo">Redes Recorrentes (RNNs e LSTMs) que processavam palavra por palavra sequencialmente, sofrendo de lentidão extrema no treino e esquecimento de termos distantes (<i>vanishing gradient</i>).</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM TRANSFORMER)</div>
+            <div class="conteudo">Processamento 100% paralelo em clusters de GPU onde cada token calcula a sua relação de relevância com todos os outros tokens simultaneamente.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t1-transformer">marcar dominado</button>
+      </article>
+
+      <!-- 1.8 FINE-TUNING VS RAG -->
+      <article class="topic" id="t1-finetuning">
+        <div class="th"><h3>1.8 O Triângulo Estratégico: Prompt Engineering vs RAG vs Fine-Tuning</h3><div class="badges"><span class="badge b-prof">especialização</span><span class="badge b-ver">trade-offs</span><span class="badge b-ess">decisão arquitetural</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O modelo mental definitivo de engenharia para escolher como adaptar um modelo de linguagem aos seus requisitos de negócio, equilibrando custo de computação, dinamismo dos dados e especialização sintática.</div>
+
+        <!-- MODELO MENTAL: O TRIÂNGULO DA ADAPTAÇÃO -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">A Metáfora da Formação Profissional</h4>
+          </div>
+          <p>
+            • <b>Prompt Engineering:</b> É dar <i>instruções claras e precisas no briefing</i> para um estagiário brilhante. Não custa nada treinar, funciona imediatamente, mas depende do que cabe na folha de instruções.<br>
+            • <b>RAG (Retrieval-Augmented Generation):</b> É entregar para o engenheiro uma <i>colinha com livro aberto</i> durante a prova. Ele consulta o regulamento ou banco de dados em tempo real e responde sem alucinar.<br>
+            • <b>Fine-Tuning:</b> É matricular o profissional em uma <i>pós-graduação de 2 anos</i>. Ele internaliza profundamente o vocabulário, estilo e jargões da área (muda os pesos neurais), mas seus dados ficam congelados no dia da formatura.
+          </p>
+          <div class="mm-formula">
+            ⚖️ <b>Regra de Ouro:</b> <span>Fine-Tuning muda FORMA e ESTILO. RAG entrega FATOS e DADOS ATUALIZADOS.</span>
+          </div>
+        </div>
+
+        <!-- TABELA COMPARATIVA DO TRIÂNGULO -->
+        <table class="didatica">
+          <thead>
+            <tr>
+              <th>Dimensão de Engenharia</th>
+              <th>1. Prompt Engineering</th>
+              <th>2. RAG (Busca Vetorial)</th>
+              <th>3. Fine-Tuning (LoRA / QLoRA)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Natureza do Conhecimento</b></td>
+              <td>Instruções imediatas na janela</td>
+              <td><b>Dados dinâmicos</b> atualizados em tempo real</td>
+              <td><b>Estático</b> (congelado nos pesos neurais)</td>
+            </tr>
+            <tr>
+              <td><b>Custo &amp; Complexidade</b></td>
+              <td>Praticamente zero (só tokens)</td>
+              <td>Médio (Banco Vetorial + Chunking)</td>
+              <td><b>Alto</b> (GPU dedicada, dataset rotulado)</td>
+            </tr>
+            <tr>
+              <td><b>Alucinação &amp; Auditoria</b></td>
+              <td>Média (depende da atenção)</td>
+              <td><b>Mínima</b> (com citação de fontes)</td>
+              <td>Alta se perguntar dados fora do treino</td>
+            </tr>
+            <tr>
+              <td><b>Caso de Uso Primário</b></td>
+              <td>Formatação, tarefas ad-hoc, regras rápidas</td>
+              <td>Documentações, políticas internas, APIs</td>
+              <td>DSLs proprietárias, estilo médico/jurídico</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve cada um</h4>
+            <ul>
+              <li><b>Fine-Tuning:</b> Ajustar formato rígido, tom de voz institucional e sintaxe especializada (ex: dialetos jurídicos ou geração estrita de DSLs).</li>
+              <li><b>RAG:</b> Consultar dados privados voláteis da empresa (tabelas do banco, documentações atualizadas diariamente) sem alucinação.</li>
+            </ul>
+          </div>
+          <div class="o">
+            <h4>⚙️ A Regra de Ouro da Engenharia</h4>
+            <p><b>Fine-Tuning ajusta FORMA e ESTILO. RAG fornece FATOS e DADOS.</b> NUNCA faça Fine-Tuning para tentar memorizar regras de negócio ou documentações que mudam com frequência!</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O ERRO COMUM)</div>
+            <div class="conteudo">Empresas gastavam dezenas de milhares de dólares fine-tunando modelos com manuais internos. Duas semanas depois, as regras mudavam e o modelo respondia dados defasados.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (ARQUITETURA MODERNA COM RAG)</div>
+            <div class="conteudo">O modelo base permanece intacto. Um banco vetorial com pgvector busca o documento alterado há 2 minutos e injeta o texto exato na janela de contexto do LLM.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t1-finetuning">marcar dominado</button>
+      </article>
+
+      <!-- 1.9 O ECOSSISTEMA DOS 4 PILARES -->
+      <article class="topic" id="t1-ecossistema">
+        <div class="th"><h3>1.9 O Ecossistema Completo da IA: Os 4 Pilares &amp; Aplicações Reais</h3><div class="badges"><span class="badge b-ess">visão 360</span><span class="badge b-caso">arquitetura</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A visão integrada da engenharia moderna de IA, que não se resume a um chatbot isolado, mas compreende <b>4 Pilares Interconectados</b> orquestrados por software para transformar problemas de negócio em soluções de software.</div>
+
+        <!-- DIAGRAMA 3: OS 4 PILARES -->
+        <figure class="visual-diagram">
+          <img src="img/ia-ecossistema-4-pilares.svg" alt="O Ecossistema Completo dos 4 Pilares da IA" style="width:100%;height:auto;display:block;border-radius:10px;">
+          <figcaption>O Ecossistema dos 4 Pilares: <span>Machine Learning, LLMs, Modelos Especializados e Agentes conectados pelo Engenheiro de Software</span></figcaption>
+        </figure>
+
+        <table class="didatica">
+          <thead>
+            <tr>
+              <th>Pilar</th>
+              <th>Papel na Arquitetura</th>
+              <th>O Que Veio Substituir</th>
+              <th>Tecnologias Chave</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Machine Learning</b></td>
+              <td>A base estatística para prever padrões em dados numéricos e tabulares.</td>
+              <td>Regras manuais de negócio e milhares de <code>if/else</code> espalhados pelo código.</td>
+              <td>XGBoost, Scikit-Learn, LightGBM, Random Forest</td>
+            </tr>
+            <tr>
+              <td><b>2. LLMs</b></td>
+              <td>O motor cognitivo e de raciocínio de linguagem e código.</td>
+              <td>Modelos rígidos de NLP clássico, Regex e parsers gramaticais frágeis.</td>
+              <td>GPT-4o, Claude 3.7 Sonnet, Gemini 2.0, DeepSeek R1</td>
+            </tr>
+            <tr>
+              <td><b>3. Modelos de IA</b></td>
+              <td>Especialistas dedicados para cada modalidade sensorial e biológica.</td>
+              <td>Softwares e algoritmos isolados mono-tarefa sem capacidade generativa.</td>
+              <td>Whisper (voz), Midjourney (imagem), AlphaFold (biologia)</td>
+            </tr>
+            <tr>
+              <td><b>4. Agentes de IA</b></td>
+              <td>Autonomia, loops iterativos e execução de ações no mundo real com ferramentas.</td>
+              <td>Chatbots passivos onde o usuário tinha que executar cada passo manualmente.</td>
+              <td>ReAct Loops, Spring AI, MCP, LangGraph, Test Harness</td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="done" type="button" data-k="t1-ecossistema">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== NÍVEL 2 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Nível 2 — Dominar LLMs: A Mecânica Operacional</h2><p>Tokens, embeddings, janela de contexto, temperatura, alucinação, latência e seleção de modelos.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 2: DOMINAR LLMS -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_2_dominar_llms.jpg" alt="Mapa Conceitual: Dominar LLMs — A Mecânica Operacional" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 2 · MAPA CONCEITUAL</span>
+          <em>Dominar LLMs — A Mecânica Operacional: Tokens, Contexto, Limitações &amp; Ferramentas</em>
+        </figcaption>
+      </figure>
+
+
+      <!-- 2.1 MECÂNICA OPERACIONAL -->
+      <article class="topic" id="t2-mecanica">
+        <div class="th"><h3>2.1 A Mecânica Operacional: Tokens, Embeddings e Inferência Autoregressiva</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">física do modelo</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O pipeline físico de transformação de dados que converte caracteres digitados pelo usuário em inteiros (tokens), vetores multidimensionais (embeddings), pesos de autoatenção e probabilidades de saída na inferência.</div>
+
+        <!-- MODELO MENTAL: O GPS DO SIGNIFICADO -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">Embeddings: Coordenadas em um Mapa de Significados</h4>
+          </div>
+          <p>
+            Computadores não entendem sentimentos ou nuances textuais; eles operam com álgebra linear. Um <b>Embedding</b> pega uma palavra, código ou frase e gera suas <i>coordenadas de latitude e longitude</i> em um espaço vetorial de centenas de dimensões.<br>
+            Imagine uma cidade gigantesca onde:
+            • Frases como <i>"como pedir estorno"</i> e <i>"quero meu dinheiro de volta"</i> moram no <b>mesmo quarteirão</b> (alta proximidade de cosseno), mesmo sem compartilhar nenhuma palavra idêntica.<br>
+            • Uma frase como <i>"receita de bolo de milho"</i> fica localizada em <b>outro continente</b> desse mapa.
+          </p>
+          <div class="mm-formula">
+            📍 <b>Fórmula Intuitiva:</b> <span>Texto Bruto &rarr; Tokenizer (IDs) &rarr; Embedding Model &rarr; Vetor Numérico [0.024, -0.891, ... 1536d]</span>
+          </div>
+        </div>
+
+        <!-- DIAGRAMA 4: PIPELINE DO TOKEN -->
+        <figure class="visual-diagram">
+          <svg viewBox="0 0 760 190" width="100%" height="190">
+            <rect x="10" y="30" width="90" height="50" rx="8" fill="#21222c" stroke="#6272a4" stroke-width="1.5"/>
+            <text x="55" y="60" fill="#f8f8f2" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Texto</text>
+
+            <path d="M 100 55 L 125 55" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="125" y="30" width="95" height="50" rx="8" fill="#332a4e" stroke="#bd93f9" stroke-width="1.5"/>
+            <text x="172" y="60" fill="#bd93f9" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Tokens</text>
+
+            <path d="M 220 55 L 245 55" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="245" y="30" width="115" height="50" rx="8" fill="#21222c" stroke="#8be9fd" stroke-width="1.5"/>
+            <text x="302" y="60" fill="#8be9fd" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Embeddings</text>
+
+            <path d="M 360 55 L 385 55" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="385" y="20" width="140" height="70" rx="10" fill="#36381e" stroke="#f1fa8c" stroke-width="2"/>
+            <text x="455" y="50" fill="#f1fa8c" font-family="Inter" font-weight="800" font-size="13" text-anchor="middle">ATTENTION</text>
+            <text x="455" y="72" fill="#dcdce0" font-family="Inter" font-size="10" text-anchor="middle">(com Contexto)</text>
+
+            <path d="M 525 55 L 550 55" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="550" y="30" width="105" height="50" rx="8" fill="#173726" stroke="#50fa7b" stroke-width="1.5"/>
+            <text x="602" y="60" fill="#50fa7b" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Inferência</text>
+
+            <path d="M 655 55 L 680 55" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="680" y="30" width="70" height="50" rx="8" fill="#21222c" stroke="#bd93f9" stroke-width="1.5"/>
+            <text x="715" y="60" fill="#bd93f9" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Resposta</text>
+
+            <path d="M 455 125 L 455 95" stroke="#6272a4" stroke-width="1.5" stroke-dasharray="3,3" fill="none"/>
+            <text x="455" y="145" fill="#6272a4" font-family="Inter" font-weight="600" font-size="11" text-anchor="middle">Pesos Treinados (Parâmetros Congelados)</text>
+
+            <text x="380" y="175" fill="#ffb86c" font-family="Inter" font-weight="600" font-size="11" text-anchor="middle">Controles: Temperatura · Top-p · Janela de Contexto</text>
+          </svg>
+          <figcaption>A Pipeline de Inferência do LLM: <span>Do caractere bruto à previsão autoregressiva do próximo token</span></figcaption>
+        </figure>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Entender a física do modelo para não cometer erros conceituais graves: o LLM não armazena fatos como banco relacional e não realiza operações aritméticas como uma CPU.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>O tokenizador divide o texto em IDs numéricos (via BPE - <i>Byte-Pair Encoding</i>). A camada de embedding projeta esses IDs em vetores de 1.536 ou 3.072 dimensões. As camadas de autoatenção combinam os vetores e a camada final Softmax calcula as probabilidades do próximo token.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (A VISÃO INGÊNUA)</div>
+            <div class="conteudo">Acreditar que o modelo "pensa", possui consciência lógica interna ou consulta um repositório de respostas pré-fabricadas.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (A VISÃO DE ENGENHARIA)</div>
+            <div class="conteudo">Compreender que o LLM é um previsor estatístico hiper-preciso condicionado ao contexto: entradas de prompt determinam o espaço probabilístico da resposta.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t2-mecanica">marcar dominado</button>
+      </article>
+
+      <!-- 2.2 TOKENS & JANELA -->
+      <article class="topic" id="t2-tokens">
+        <div class="th"><h3>2.2 Tokens, Janela de Contexto e o Efeito "Lost in the Middle"</h3><div class="badges"><span class="badge b-ess">tokens</span><span class="badge b-ver">lost in the middle</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O <b>Token</b> é a unidade fundamental de texto (~4 caracteres ou 0.75 palavras) processada e faturada pelo modelo. A <b>Janela de Contexto</b> é a quantidade máxima de tokens de entrada e saída que o modelo consegue manter na memória de trabalho transitória durante uma única requisição.</div>
+
+        <!-- MODELO MENTAL: A MESA DE TRABALHO -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">A Janela de Contexto como a Mesa de Trabalho do Modelo</h4>
+          </div>
+          <p>
+            Pense na Janela de Contexto não como a memória permanente do modelo, mas como o <b>tampo físico de uma mesa de trabalho</b>.<br>
+            • O modelo só pode raciocinar sobre as folhas que estão <i>espalhadas na mesa neste exato momento</i> (sua instrução de sistema, arquivos anexados e as últimas perguntas).<br>
+            • Quando a conversa fica muito longa e a mesa enche, você é forçado a <b>empilhar ou descartar papéis antigos</b> (resumos de memória).<br>
+            • <b>O Efeito Lost in the Middle:</b> Se você colocar um bilhete urgente no meio de uma pilha de 500 páginas soltas na mesa, o assistente enxerga com perfeição a folha do topo (início) e o papel que você acabou de entregar na mão dele (final), mas o bilhete soterrado no meio da pilha é facilmente negligenciado!
+          </p>
+          <div class="mm-formula">
+            📌 <b>Regra de Arquitetura:</b> <span>Instruções de Sistema no TOPO · Documentação e Logs no MEIO · Regras de Saída no FINAL ABSOLUTO</span>
+          </div>
+        </div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Dimensionar custos financeiros de chamadas de API, controlar a memória dos agentes e desenhar arquiteturas de RAG que não excedam os limites físicos dos modelos.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Efeito "Lost in the Middle"</h4>
+            <p>A atenção do Transformer é quadrática em relação ao tamanho da sequência. Em janelas longas (100k+ tokens), o modelo retém com perfeição o que está no <b>início</b> (prompt do sistema) e no <b>final</b> (última instrução), mas degrada a atenção em dados colocados no meio.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O ERRO DE CONTEXTO)</div>
+            <div class="conteudo">Colocar instruções de segurança críticas no meio de 20 páginas de código despejadas no prompt, sofrendo falhas recorrentes onde o modelo ignorava as restrições.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (ENGENHARIA DE CONTEXTO)</div>
+            <div class="conteudo">Injetar a documentação no início, o código no meio e <b>as regras de saída e restrições obrigatórias no final absoluto do prompt</b> para capturar atenção máxima.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t2-tokens">marcar dominado</button>
+      </article>
+
+      <!-- 2.3 TEMPERATURA E TOP-P -->
+      <article class="topic" id="t2-temperatura">
+        <div class="th"><h3>2.3 Temperatura e Top-p: O Controle de Estocasticidade</h3><div class="badges"><span class="badge b-prof">parâmetros</span><span class="badge b-caso">código seguro</span></div></div>
+        <div class="direto">🎯 <b>O que são:</b> Os dois controles matemáticos fundamentais sobre a aleatoriedade da camada Softmax durante a inferência do LLM.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Garantir respostas previsíveis, sintaticamente perfeitas e reprodutíveis para código, SQL e JSON, ou incentivar riqueza vocabular para geração de ideias e redação.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Matemática</h4>
+            <ul>
+              <li><b>Temperatura:</b> Divide os logits antes da Softmax. Próxima de 0.0, torna o modelo puramente ganancioso (<i>greedy</i>), escolhendo sempre o token mais provável.</li>
+              <li><b>Top-p (Nucleus Sampling):</b> Considera apenas o menor conjunto de tokens cuja soma acumulada de probabilidades atinja o percentual <i>p</i> (ex: 0.9 = 90%), descartando a cauda de tokens absurdos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 GUIA PRÁTICO DE CONFIGURAÇÃO PARA DESENVOLVEDORES</b>
+          <p>• <b>Geração de Código, DTOs, Testes e SQL:</b> <code>temperature = 0.0</code>, <code>top_p = 0.1</code> (Determinismo absoluto, zero quebras sintáticas).</p>
+          <p>• <b>Resumos de Logs e Documentações Técnicas:</b> <code>temperature = 0.2</code>, <code>top_p = 0.8</code>.</p>
+          <p>• <b>Brainstorming e Redação Criativa:</b> <code>temperature = 0.7</code>, <code>top_p = 0.95</code>.</p>
+        </div>
+        <button class="done" type="button" data-k="t2-temperatura">marcar dominado</button>
+      </article>
+
+      <!-- 2.4 ALUCINAÇÃO E ANCORAGEM -->
+      <article class="topic" id="t2-alucinacao">
+        <div class="th"><h3>2.4 Alucinação, Ancoragem e Salvaguardas de Confiabilidade</h3><div class="badges"><span class="badge b-ver">risco crítico</span><span class="badge b-ess">ancoragem</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> <b>Alucinação</b> é o fenômeno estatístico no qual o LLM gera saídas factualmente incorretas, pacotes inexistentes ou métodos inventados com tom de absoluta certeza. <b>Ancoragem (Grounding)</b> é a prática de forçar o modelo a responder estritamente com base em um documento verificado fornecido no contexto.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Evitar que sistemas corporativos enviem dados falsos a clientes, gerem comandos SQL que apaguem dados ou invoquem bibliotecas de código inexistentes que causem exceções em produção.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Ancoragem</h4>
+            <p>1. Injetar a documentação real ou schema de banco no prompt.<br>
+            2. Adicionar uma regra de recusa obrigatória: <i>"Se a resposta não constar explicitamente no texto fornecido, responda estritamente NÃO ENCONTRADO."</i><br>
+            3. Fornecer exemplos Few-Shot de recusa.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (SEM ANCORAGEM)</div>
+            <div class="conteudo">Ao perguntar como calcular o imposto de uma nota fiscal, o modelo inventava uma fórmula plausível da cabeça dele, gerando inconsistência fiscal grave.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM ANCORAGEM RAG)</div>
+            <div class="conteudo">O sistema busca a tabela oficial da Receita Federal via RAG, injeta no contexto e o modelo calcula estritamente com base nas alíquotas oficiais fornecidas.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t2-alucinacao">marcar dominado</button>
+      </article>
+
+      <!-- 2.5 MÉTRICAS E SELEÇÃO DE MODELOS -->
+      <article class="topic" id="t2-metricas">
+        <div class="th"><h3>2.5 Métricas de Performance (TTFT, TPS) e Seleção de Modelos</h3><div class="badges"><span class="badge b-prof">latência &amp; sla</span><span class="badge b-caso">finops</span></div></div>
+        <div class="direto">🎯 <b>O que são:</b> <b>TTFT (Time To First Token)</b> é o tempo decorrido desde o envio da requisição até a chegada do primeiro caractere em streaming. <b>TPS (Tokens Per Second)</b> é a velocidade de geração contínua de texto por segundo.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Escolher o modelo correto para cada requisito funcional: interfaces interativas com o usuário exigem baixo TTFT (&lt; 300ms); análises arquiteturais profundas exigem raciocínio complexo mesmo com maior latência.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ A Estratégia do Model Router</h4>
+            <p>Arquiteturas maduras usam roteamento: tarefas simples de classificação e extração vão para modelos ultrarrápidos e baratos (ex: <b>Gemini 2.0 Flash</b> a $0.15/M tokens); tarefas de raciocínio profundo vão para modelos de ponta (ex: <b>Claude 3.7 Sonnet</b> a $3.00/M tokens).</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (A PRÁTICA CARA E LENTA)</div>
+            <div class="conteudo">Usar Claude Sonnet ou GPT-4o para todas as chamadas do sistema, inclusive para classificar se o usuário disse "bom dia" ou "cancelar", gerando latência de 2s e contas de milhares de dólares.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (ROTEAMENTO INTELIGENTE)</div>
+            <div class="conteudo">O Model Router despacha 85% das requisições para o Gemini Flash (150ms TTFT e custo residual) e reserva o Sonnet apenas para síntese e resolução de bugs complexos.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t2-metricas">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== NÍVEL 3 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Nível 3 — IA Aplicada ao Desenvolvimento</h2><p>Spec-Driven Development, engenharia de prompt em 4 camadas e os 11 pilares de software.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 3: IA APLICADA AO DESENVOLVIMENTO -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_3_ia_aplicada_dev.jpg" alt="Mapa Conceitual: IA Aplicada ao Desenvolvimento" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 3 · MAPA CONCEITUAL</span>
+          <em>IA Aplicada ao Desenvolvimento — Produtividade, Práticas &amp; Riscos</em>
+        </figcaption>
+      </figure>
+
+
+      <!-- 3.1 AS 4 CAMADAS DO PROMPT -->
+      <article class="topic" id="t3-prompt">
+        <div class="th"><h3>3.1 As 4 Camadas do Prompt de Engenharia (Contrato de Software)</h3><div class="badges"><span class="badge b-ess">engenharia de prompt</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A metodologia de estruturar instruções para o LLM não como conversas informais, mas como <b>contratos formais de software</b> divididos em 4 camadas canônicas: Instrução, Contexto, Regras e Exemplos Few-Shot.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Eliminar alucinações, acabar com respostas prolixas desnecessárias e forçar o modelo a acertar o código de primeira sem retrabalho no chat.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ As 4 Camadas Estruturais</h4>
+            <ul>
+              <li><b>1. Instrução de Alto Nível:</b> O papel e a tarefa exata a ser executada.</li>
+              <li><b>2. Contexto de Dados:</b> Trechos de código, logs de erro, schemas DDL e versões de bibliotecas.</li>
+              <li><b>3. Regras &amp; Restrições:</b> Proibições estritas (ex: "sem Lombok", "use Java 21").</li>
+              <li><b>4. Exemplos Few-Shot:</b> Pares concretos de entrada e saída esperada.</li>
+            </ul>
+          </div>
+        </div>
+
+        <pre><code class="language-markdown"><span class="c"># CAMADA 1: INSTRUÇÃO</span>
+Atue como Engenheiro de Software Sênior especializado em Spring Boot 3.3 e Java 21.
+Escreva a classe de serviço para processamento de transferências PIX.
+
+<span class="c"># CAMADA 2: CONTEXTO</span>
+- Entidade Conta: id (UUID), saldo (BigDecimal), status (ContaStatus).
+- Repositório: ContaRepository com método findByIdWithLock(UUID id) usando PESSIMISTIC_WRITE.
+
+<span class="c"># CAMADA 3: REGRAS E RESTRIÇÕES</span>
+- Proibido usar Lombok (@Data, @Getter). Escreva construtores explícitos.
+- Use Records do Java 21 para DTOs de entrada e saída.
+- Lance SaldoInsuficienteException se saldo < valor.
+- A anotação @Transactional deve ser obrigatória no método transferir.
+
+<span class="c"># CAMADA 4: FEW-SHOT (PADRÃO ESPERADO)</span>
+Entrada: TransferenciaRequest(origemId, destinoId, valor)
+Saída: TransferenciaResponse(transacaoId, status, timestamp)</code></pre>
+        <button class="done" type="button" data-k="t3-prompt">marcar dominado</button>
+      </article>
+
+      <!-- 3.2 SPEC-DRIVEN DEVELOPMENT -->
+      <article class="topic" id="t3-sdd">
+        <div class="th"><h3>3.2 Spec-Driven Development (SDD): A Spec como Fonte da Verdade</h3><div class="badges"><span class="badge b-ess">metodologia</span><span class="badge b-caso">sdd</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Metodologia de desenvolvimento onde a <b>Especificação Técnica (Spec)</b> é escrita formalmente antes de gerar qualquer linha de código, servindo como a única fonte de verdade e qualidade do sistema.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Acabar com o "vibe coding" caótico (pedir código no chat sem desenho prévio e passar horas consertando bugs decorrentes de falta de planejamento arquitetural).</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Fluxo SDD em 4 Etapas</h4>
+            <p><b>1. Spec (.md):</b> Escreve-se os requisitos, regras e contratos.<br>
+            <b>2. Plan:</b> O modelo propõe a lista de arquivos a criar/modificar.<br>
+            <b>3. Code:</b> O modelo gera o código aderente à especificação.<br>
+            <b>4. Test:</b> A suíte automatizada valida o código contra a Spec.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (VIBE CODING CAÓTICO)</div>
+            <div class="conteudo">O dev pedia: <i>"Crie um sistema de pagamentos"</i>. A IA gerava 500 linhas de código sem validações, o dev encontrava um erro, pedia para ajustar, a IA quebrava outro ponto, gerando um ciclo infinito de frustração.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM SDD RIGOROSO)</div>
+            <div class="conteudo">A especificação técnica em Markdown define os limites, tipos e erros esperados. O código é apenas a consequência transitória gerada a partir da spec. Se algo estiver errado, ajusta-se a spec e regenera-se o código.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t3-sdd">marcar dominado</button>
+      </article>
+
+      <!-- 3.3 OS 11 PILARES -->
+      <article class="topic" id="t3-pilares">
+        <div class="th"><h3>3.3 A IA nos 11 Pilares de Engenharia de Software</h3><div class="badges"><span class="badge b-ess">dia a dia dev</span><span class="badge b-prof">11 pilares</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O mapeamento sistemático de como a inteligência artificial potencializa e acelera os 11 pilares essenciais do ciclo de vida de desenvolvimento de software moderno.</div>
+
+        <table class="didatica">
+          <thead>
+            <tr>
+              <th>Pilar</th>
+              <th>O Que Veio Substituir</th>
+              <th>Aplicação Concreta com IA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Escrever Código</b></td>
+              <td>Digitação manual de boilerplate repetitivo e estruturas óbvias.</td>
+              <td>Geração acelerada de Records Java 21, Controllers REST e Mappers DTO a partir de specs.</td>
+            </tr>
+            <tr>
+              <td><b>2. Revisar Código</b></td>
+              <td>Revisões humanas superficiais em Pull Requests que deixam passar race conditions.</td>
+              <td>Auditoria automatizada de PRs identificando memory leaks, concorrência e vulnerabilidades OWASP.</td>
+            </tr>
+            <tr>
+              <td><b>3. Refatorar</b></td>
+              <td>Medo de tocar em código legado complexo por falta de documentação.</td>
+              <td>Migração assistida de Java 8 para Java 21 (Pattern Matching, Records, Virtual Threads).</td>
+            </tr>
+            <tr>
+              <td><b>4. Gerar Testes</b></td>
+              <td>Testes manuais superficiais que só cobrem o caminho feliz (happy path).</td>
+              <td>Geração em massa de testes JUnit 5 com Boundary Testing (valores nulos, vazios, limites numéricos).</td>
+            </tr>
+            <tr>
+              <td><b>5. Analisar Logs</b></td>
+              <td>Desenvolvedor rolando 800 linhas de stack trace no CloudWatch manualmente.</td>
+              <td>Diagnóstico instantâneo da causa raiz de NullPointerExceptions correlacionando logs e commits.</td>
+            </tr>
+            <tr>
+              <td><b>6. Debugging</b></td>
+              <td>Debugging artesanal colocando <code>System.out.println</code> pelo código.</td>
+              <td>Identificação de deadlocks e off-by-one errors analisando thread dumps e heap dumps.</td>
+            </tr>
+            <tr>
+              <td><b>7. Documentação</b></td>
+              <td>Wikis e manuais desatualizados que ninguém lê nem mantém.</td>
+              <td>Geração contínua de especificações OpenAPI 3.0, READMEs e diagramas Mermaid a partir do código.</td>
+            </tr>
+            <tr>
+              <td><b>8. SQL &amp; Bancos</b></td>
+              <td>Queries lentas com Full Table Scan travando o banco de produção.</td>
+              <td>Análise de <code>EXPLAIN ANALYZE</code> e sugestão precisa de índices parciais, B-Tree e GIN.</td>
+            </tr>
+            <tr>
+              <td><b>9. Arquitetura</b></td>
+              <td>Monolitos com acoplamento espaguete e regras misturadas em controllers.</td>
+              <td>Desenho de diagramas C4, separação de Bounded Contexts DDD e Transactional Outbox Pattern.</td>
+            </tr>
+            <tr>
+              <td><b>10. Git</b></td>
+              <td>Mensagens de commit inúteis como <i>"ajustes"</i>, <i>"fix bug"</i> e <i>"subindo código"</i>.</td>
+              <td>Geração automática de commits no padrão Conventional Commits analisando <code>git diff</code>.</td>
+            </tr>
+            <tr>
+              <td><b>11. DevOps &amp; CI/CD</b></td>
+              <td>Imagens Docker de 1.4 GB cheias de ferramentas de build desnecessárias.</td>
+              <td>Criação de Dockerfiles multi-stage otimizados em imagens Distroless enxutas (120 MB).</td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="done" type="button" data-k="t3-pilares">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== NÍVEL 4 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Nível 4 — Construir Aplicações com IA</h2><p>Structured Output, Tool Calling seguro com Spring AI, RAG com pgvector e Streaming.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 4: CONSTRUIR APLICAÇÕES COM IA -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_4_construir_aplicacoes.jpg" alt="Mapa Conceitual: Construir Aplicações com IA — Da Ideia ao Impacto Real" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 4 · MAPA CONCEITUAL</span>
+          <em>Construir Aplicações com IA — Da Ideia ao Impacto Real: RAG, Tool Calling, Memória &amp; Deploy</em>
+        </figcaption>
+      </figure>
+
+
+      <!-- 4.1 STRUCTURED OUTPUT -->
+      <article class="topic" id="t4-structured">
+        <div class="th"><h3>4.1 Structured Output Estrito (JSON Schema &amp; Records Java 21)</h3><div class="badges"><span class="badge b-ess">produção</span><span class="badge b-caso">java 21</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A garantia técnica fornecida pela API de LLM de que a resposta gerada seguirá estritamente um <b>JSON Schema</b> predefinido, sem nenhum caractere conversacional fora do padrão.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Integrar LLMs diretamente com sistemas fortemente tipados (Java 21, Spring Boot, TypeScript) com deserialização direta em DTOs sem riscos de exceptions de parsing em runtime.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Engenharia</h4>
+            <p>O provedor de LLM aplica uma <b>máscara gramatical (Grammar-Constrained Decoding)</b> diretamente nos logits da camada Softmax durante a inferência, tornando matematicamente impossível o modelo emitir qualquer token fora da gramática do schema.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (PARSING FRÁGIL COM REGEX)</div>
+            <div class="conteudo">O dev pedia: <i>"Responda apenas em JSON"</i>. O modelo respondia: <i>"Claro! Segue o JSON: ```json { ... } ``` Espero ter ajudado!"</i>, quebrando o <code>objectMapper.readValue()</code> em produção.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (STRUCTURED OUTPUT ESTRITO)</div>
+            <div class="conteudo">O motor garante zero texto extra. A resposta é 100% JSON puro validado em nível de token, deserializando diretamente no Record Java.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-java"><span class="c">// Record DTO imutável no Java 21</span>
+<span class="k">public record</span> <span class="t">AnaliseRiscoDTO</span>(
+    <span class="t">String</span> transacaoId,
+    <span class="t">int</span> scoreRisco,
+    <span class="t">boolean</span> fraudeDetectada,
+    <span class="t">List</span>&lt;<span class="t">String</span>&gt; motivosAlerta
+) {}
+
+<span class="c">// Chamada tipada com Spring AI</span>
+<span class="t">AnaliseRiscoDTO</span> resultado = chatClient.prompt()
+    .user(<span class="s">"Analise os metadados da transação: "</span> + transacaoJson)
+    .call()
+    .entity(<span class="t">AnaliseRiscoDTO</span>.<span class="k">class</span>); <span class="c">// 100% tipado e seguro!</span></code></pre>
+        <button class="done" type="button" data-k="t4-structured">marcar dominado</button>
+      </article>
+
+      <!-- 4.2 TOOL CALLING / FUNCTION CALLING -->
+      <article class="topic" id="t4-toolcalling">
+        <div class="th"><h3>4.2 Function Calling / Tool Calling Seguro com Spring AI</h3><div class="badges"><span class="badge b-ess">ferramentas</span><span class="badge b-prof">spring ai</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Capacidade do LLM de detectar a necessidade de uma ação externa e emitir uma solicitação estruturada em JSON contendo o nome e argumentos de um método do seu backend, delegando a execução física ao código seguro da aplicação.</div>
+
+        <!-- MODELO MENTAL: O FORMULÁRIO DE PEDIDO -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">Tool Calling: O Formulário de Pedido Formal</h4>
+          </div>
+          <p>
+            Muitos desenvolvedores novatos acham que o modelo "executa SQL" ou "conecta no banco". <b>O LLM não tem mãos, conexões de rede nem permissões de execução.</b><br>
+            Ele funciona como um assistente que preenche um <b>formulário de requisição oficial em JSON</b> com carimbo e parâmetros estritos. O assistente entrega o formulário para o seu backend Java/Spring. É a sua aplicação quem valida a autenticação, checa as regras de firewall, roda o SQL no PostgreSQL e devolve o comprovante impresso para o assistente ler.
+          </p>
+          <div class="mm-formula">
+            🛡️ <b>Princípio de Segurança:</b> <span>LLM prevê o JSON de intenção &rarr; Backend valida e executa &rarr; Resultado volta ao LLM</span>
+          </div>
+        </div>
+
+        <!-- MAPA CONCEITUAL TÓPICO 4.2: TOOL CALLING SEGURO -->
+        <figure class="topic-img">
+          <img src="img/ia/ia_topico_4_2_tool_calling_seguro.jpg" alt="Mapa Conceitual: Tool Calling / Function Calling Seguro — Mais Capacidade, com Mais Controle" loading="lazy" title="Clique para abrir no visualizador ampliado">
+          <figcaption>
+            <span>TÓPICO 4.2 · MAPA CONCEITUAL</span>
+            <em>Tool Calling / Function Calling Seguro — Mais Capacidade, com Mais Controle: Validação, Execução &amp; Observabilidade</em>
+          </figcaption>
+        </figure>
+
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Conectar o LLM ao mundo real: consultar saldo no PostgreSQL, consultar cotação de moedas em APIs externas, disparar emails transacionais e atualizar cadastros.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Fluxo Seguro em 4 Etapas</h4>
+            <p>1. O Backend envia a lista de ferramentas disponíveis com seus JSON Schemas.<br>
+            2. O LLM decide chamar <code>consultarSaldo(contaId=402)</code>.<br>
+            3. <b>O BACKEND executa o código</b> via JDBC/JPA seguro (o LLM não tem acesso direto à rede nem ao banco).<br>
+            4. O retorno da função é devolvido ao LLM para síntese final da resposta.</p>
+          </div>
+        </div>
+
+        <!-- SIMULADOR INTERATIVO DE TOOL CALLING -->
+        <div class="agent-lab" id="labSim">
+          <div class="al-head">
+            <h4>Simulador Interativo de Tool Calling Seguro</h4>
+            <span class="badge b-prof">Pipeline em Tempo Real</span>
+          </div>
+
+          <div class="al-ctrls">
+            <button class="btn-al btn-ok" id="btnRunOk" type="button">▶ Cenário Sucesso: Consulta Saldo</button>
+            <button class="btn-al btn-err" id="btnRunErr" type="button">⚠ Cenário Falha: Conta Não Encontrada</button>
+            <button class="btn-al btn-warn" id="btnRunWarn" type="button">🛡 Cenário Bloqueio: Injeção SQL Detectada</button>
+            <button class="btn-al" id="btnResetLab" type="button">↺ Reset</button>
+          </div>
+
+          <div class="agent-flow">
+            <div class="agent-node" id="an1">
+              <span class="an-tag">01 · Input</span>
+              <span class="an-val">Entrada Usuário</span>
+            </div>
+            <div class="agent-node" id="an2">
+              <span class="an-tag">02 · Reasoning</span>
+              <span class="an-val">Raciocínio LLM</span>
+            </div>
+            <div class="agent-node" id="an3">
+              <span class="an-tag">03 · Tool Call</span>
+              <span class="an-val">Emissão JSON</span>
+            </div>
+            <div class="agent-node" id="an4">
+              <span class="an-tag">04 · Backend</span>
+              <span class="an-val">Execução Java</span>
+            </div>
+            <div class="agent-node" id="an5">
+              <span class="an-tag">05 · Output</span>
+              <span class="an-val">Síntese Final</span>
+            </div>
+          </div>
+
+          <div class="agent-hud" id="agentHud">
+            <div class="ah-l ah-info">// Terminal pronto. Escolha um dos cenários acima para simular o pipeline.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-java"><span class="c">// Registro de Tool nativo no Spring AI</span>
+<span class="a">@Configuration</span>
+<span class="k">public class</span> <span class="t">ToolsConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="a">@Description</span>(<span class="s">"Consulta o saldo atual de uma conta bancária através do ID da conta."</span>)
+    <span class="k">public</span> <span class="t">Function</span>&lt;<span class="t">ConsultaSaldoRequest</span>, <span class="t">ConsultaSaldoResponse</span>&gt; consultarSaldo(<span class="t">ContaRepository</span> repo) {
+        <span class="k">return</span> req -&gt; {
+            <span class="k">var</span> conta = repo.findById(req.contaId())
+                .orElseThrow(() -&gt; <span class="k">new</span> <span class="t">ContaNaoEncontradaException</span>(req.contaId()));
+            <span class="k">return new</span> <span class="t">ConsultaSaldoResponse</span>(conta.getId(), conta.getSaldo());
+        };
+    }
+}</code></pre>
+        <button class="done" type="button" data-k="t4-toolcalling">marcar dominado</button>
+      </article>
+
+      <!-- 4.3 RAG COM PGVECTOR -->
+      <article class="topic" id="t4-rag">
+        <div class="th"><h3>4.3 RAG (Retrieval-Augmented Generation) com pgvector, Busca Híbrida &amp; Chunking</h3><div class="badges"><span class="badge b-ess">rag</span><span class="badge b-prof">pgvector</span><span class="badge b-caso">busca híbrida</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A arquitetura corporativa que busca trechos semântica e textualmente relevantes da base privada da empresa, injetando-os dinamicamente no prompt do LLM para responder com precisão cirúrgica e fontes citadas.</div>
+
+        <!-- MODELO MENTAL: A PROVA COM LIVRO ABERTO -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">RAG: A Prova com Livro Aberto (The Open-Book Test)</h4>
+          </div>
+          <p>
+            O modelo de linguagem estudou milhões de livros na universidade (pré-treino), mas ele <b>não sabe o que está no inventário da sua empresa hoje às 15h</b> nem as cláusulas do contrato assinado ontem.<br>
+            Sem o RAG, ele tentará "chutar" com base no que lembra da faculdade (alucinação). Com o RAG, o seu sistema busca nos documentos corporativos os 3 parágrafos exatos que respondem à pergunta e coloca essa <b>colinha oficial</b> na frente do modelo antes de ele começar a escrever.
+          </p>
+          <div class="mm-formula">
+            📐 <b>A Equação Mestre do RAG (Sagar Purohit):</b><br>
+            <span>Good Data</span> + <span>Good Retrieval</span> + <span>Good Context</span> + <span>Good Prompts</span> = <b>Better AI Answers</b>
+          </div>
+        </div>
+
+        <!-- MAPA CONCEITUAL TÓPICO 4.3: RAG COM PGVECTOR -->
+        <figure class="topic-img">
+          <img src="img/ia/ia_topico_4_3_rag_pgvector.jpg" alt="Mapa Conceitual: RAG com pgvector — Seus Dados, Respostas Reais" loading="lazy" title="Clique para abrir no visualizador ampliado">
+          <figcaption>
+            <span>TÓPICO 4.3 · MAPA CONCEITUAL</span>
+            <em>RAG com pgvector — Seus Dados, Respostas Reais: Ingestão, Embeddings, Busca Vetorial &amp; Recuperação</em>
+          </figcaption>
+        </figure>
+
+
+        <!-- A ESTRATÉGIA CRÍTICA DE CHUNKING & OVERLAP -->
+        <div class="visual-diagram" style="background:#141520;border-left:4px solid var(--cyan)">
+          <h4 style="margin:0 0 10px;font:700 .85rem 'Inter',sans-serif;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em">
+            ✂️ A Engenharia de Chunking: Por que o Tamanho e a Sobreposição (Overlap) Importam?
+          </h4>
+          <p style="margin:0 0 12px;font-size:.9rem;color:var(--ink2)">
+            Um erro amador clássico é indexar documentos inteiros de 50 páginas como um único vetor ou cortar o texto cegamente a cada 100 caracteres. A qualidade do RAG depende da granularidade semântica:
+          </p>
+          <div class="chunk-flow">
+            <div class="chunk-card bad">
+              <h5>❌ Chunking Sem Overlap (Corte Cego)</h5>
+              <p>Se a frase <i>"O prazo de devolução é de 30 dias..."</i> for cortada exatamente na palavra <i>"30"</i> pelo limite do bloco, o Chunk 1 recebe o início sem saber o prazo, e o Chunk 2 recebe <i>"dias para produtos com defeito"</i> sem saber sobre o que se fala. <b>Ambos os vetores perdem o significado.</b></p>
+            </div>
+            <div class="chunk-card good">
+              <h5>✅ Chunking Inteligente com 10% a 20% de Overlap</h5>
+              <p>Fatiar em blocos de <b>500 a 1.000 tokens</b> com <b>sobreposição de 100 tokens</b>. O final do Bloco A é repetido no início do Bloco B. Isso garante que nenhum raciocínio, cláusula ou definição seja degolado no meio, preservando a coerência semântica para a busca vetorial.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Responder dúvidas técnicas, jurídicas ou de negócio sobre dados privados e voláteis da organização sem precisar retreinar ou fine-tunar o modelo e com índice de alucinação próximo de zero.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Busca Híbrida</h4>
+            <p>Combina <b>Busca Vetorial de Cosseno</b> (captura significado semântico via pgvector com índice HNSW) com <b>Busca Textual BM25 Full-Text</b> (captura nomes exatos de métodos, classes e CPFs), unificando os rankings via <b>RRF (Reciprocal Rank Fusion)</b>.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (BUSCA PURAMENTE VETORIAL)</div>
+            <div class="conteudo">Ao buscar por <code>TransferenciaPixService.java</code>, a busca vetorial trazia artigos conceituais sobre pagamentos eletrônicos, mas não encontrava o arquivo exato que o desenvolvedor precisava.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (BUSCA HÍBRIDA HNSW + BM25)</div>
+            <div class="conteudo">A busca textual por palavra-chave acha o nome exato da classe e a busca vetorial acha os métodos relacionados semanticamente, entregando 100% de relevância.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-sql"><span class="c">-- Extensão e tabela no PostgreSQL com pgvector</span>
+<span class="k">CREATE EXTENSION IF NOT EXISTS</span> vector;
+
+<span class="k">CREATE TABLE</span> documentos_chunks (
+    id <span class="t">BIGSERIAL PRIMARY KEY</span>,
+    documento_id <span class="t">VARCHAR(64)</span>,
+    conteudo <span class="t">TEXT NOT NULL</span>,
+    embedding <span class="t">vector(1536)</span>,
+    tsv_conteudo <span class="t">tsvector</span> GENERATED ALWAYS AS (to_tsvector('portuguese', conteudo)) STORED
+);
+
+<span class="c">-- Índice HNSW ultrarrápido para vetores de alta dimensão</span>
+<span class="k">CREATE INDEX</span> idx_chunks_hnsw <span class="k">ON</span> documentos_chunks <span class="k">USING</span> hnsw (embedding vector_cosine_ops);
+<span class="k">CREATE INDEX</span> idx_chunks_bm25 <span class="k">ON</span> documentos_chunks <span class="k">USING</span> gin (tsv_conteudo);</code></pre>
+        <button class="done" type="button" data-k="t4-rag">marcar dominado</button>
+      </article>
+
+      <!-- 4.4 STREAMING & MEMÓRIA -->
+      <article class="topic" id="t4-streaming">
+        <div class="th"><h3>4.4 Streaming Reativo (SSE) e Memória Conversacional com Redis</h3><div class="badges"><span class="badge b-prof">ux &amp; latência</span><span class="badge b-caso">redis</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> <b>Streaming Reativo</b> via Server-Sent Events (SSE) é a transmissão contínua token por token da resposta conforme ela é gerada pela GPU. <b>Memória Conversacional</b> é o armazenamento estruturado do histórico de turnos de diálogo em cache rápido de chave-valor (Redis).</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Proporcionar percepção de resposta instantânea para o usuário (TTFT em ~200ms em vez de travar a tela por 8 segundos) e manter o contexto de diálogo em aplicações web escaláveis sem estado.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Estratégias de Memória de Contexto</h4>
+            <ul>
+              <li><b>Sliding Window:</b> Guarda apenas as últimas N mensagens no Redis para evitar estourar o contexto.</li>
+              <li><b>Summary Buffer:</b> Um modelo rápido resume periodicamente os turnos anteriores, preservando fatos vitais em poucas linhas.</li>
+            </ul>
+          </div>
+        </div>
+
+        <pre><code class="language-java"><span class="c">// Controller Reativo com Streaming SSE no Spring Boot</span>
+<span class="a">@GetMapping</span>(value = <span class="s">"/stream"</span>, produces = <span class="t">MediaType</span>.TEXT_EVENT_STREAM_VALUE)
+<span class="k">public</span> <span class="t">Flux</span>&lt;<span class="t">String</span>&gt; streamPrompt(<span class="a">@RequestParam</span> <span class="t">String</span> pergunta, <span class="a">@RequestParam</span> <span class="t">String</span> sessionId) {
+    <span class="k">return</span> chatClient.prompt()
+        .user(pergunta)
+        .advisors(<span class="k">new</span> <span class="t">MessageChatMemoryAdvisor</span>(redisChatMemory, sessionId, 10))
+        .stream()
+        .content(); <span class="c">// Emite tokens reativamente via SSE</span>
+}</code></pre>
+        <button class="done" type="button" data-k="t4-streaming">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== NÍVEL 5 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Nível 5 — Agentes, Multiagentes &amp; Subagentes</h2><p>Loop ReAct, isolamento de contexto, Orchestrator-Workers, matriz de papéis e protocolo MCP.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 5: AGENTES, MULTIAGENTES & SUBAGENTES -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_5_agentes_multiagentes.jpg" alt="Mapa Conceitual: Agentes, Multiagentes &amp; Subagentes — Da Intenção à Execução" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 5 · MAPA CONCEITUAL</span>
+          <em>Agentes, Multiagentes &amp; Subagentes — Da Intenção à Execução: Orquestração &amp; Autonomia</em>
+        </figcaption>
+      </figure>
+
+
+      <!-- 5.1 O LOOP AGÊNTICO -->
+      <article class="topic" id="t5-react">
+        <div class="th"><h3>5.1 O Loop Agêntico (ReAct: Thought, Action, Observation)</h3><div class="badges"><span class="badge b-ess">react loop</span><span class="badge b-prof">autonomia</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> A arquitetura algorítmica iterativa onde o modelo raciocina sobre a meta atual (<i>Thought</i>), seleciona e executa uma ação ou ferramenta (<i>Action</i>), analisa o resultado devolvido (<i>Observation</i>) e decide dinamicamente o próximo passo até a conclusão.</div>
+
+        <!-- MAPA CONCEITUAL TÓPICO 5.1: O LOOP AGÊNTICO REACT -->
+        <figure class="topic-img">
+          <img src="img/ia/ia_topico_5_1_loop_react.jpg" alt="Mapa Conceitual: O Loop Agêntico ReAct — Raciocínio + Ação = Resultados Reais" loading="lazy" title="Clique para abrir no visualizador ampliado">
+          <figcaption>
+            <span>TÓPICO 5.1 · MAPA CONCEITUAL</span>
+            <em>O Loop Agêntico ReAct — Raciocínio + Ação = Resultados Reais: Ciclo Iterativo, Ferramentas &amp; Autonomia</em>
+          </figcaption>
+        </figure>
+
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Resolver problemas de software que não possuem solução direta em passo único: depurar um bug, iterar sobre compilações de código e navegar em árvores de diretórios.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Pseudocódigo do Loop ReAct</h4>
+            <pre><code>while (!objetivoAlcancado && passos < maxPassos) {
+    Thought pensamento = llm.planejar(meta, historico);
+    ToolCall acao = llm.escolherFerramenta(pensamento);
+    ToolResult resultado = backend.executar(acao);
+    historico.adicionar(pensamento, acao, resultado);
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (CHAMADAS MONO-PASSO / ONE-SHOT)</div>
+            <div class="conteudo">Uma chamada única de API onde, se houvesse qualquer erro de digitação ou dependência ausente, o pipeline abortava e exigia intervenção humana imediata.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM LOOP AGÊNTICO REACT)</div>
+            <div class="conteudo">O agente recebe a mensagem de erro de compilação, lê o número da linha no stack trace, altera o arquivo de código e roda o build novamente de forma autônoma.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t5-react">marcar dominado</button>
+      </article>
+
+      <!-- 5.2 SUBAGENTES & ISOLAMENTO -->
+      <article class="topic" id="t5-subagentes">
+        <div class="th"><h3>5.2 Subagentes &amp; Isolamento de Contexto (Orchestrator-Workers)</h3><div class="badges"><span class="badge b-ess">arquitetura enterprise</span><span class="badge b-caso">subagentes</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O padrão arquitetural onde um <b>Agente Orquestrador (Supervisor)</b> delega tarefas especializadas a instâncias filhas autônomas (<b>Subagentes</b>) que rodam com <b>janelas de contexto 100% isoladas e limpas</b>.</div>
+
+        <!-- MAPA CONCEITUAL TÓPICO 5.2: SUBAGENTES & ISOLAMENTO -->
+        <figure class="topic-img">
+          <img src="img/ia/ia_topico_5_2_subagentes_isolamento.jpg" alt="Mapa Conceitual: Subagentes &amp; Isolamento de Contexto — Orquestrador e Especialistas" loading="lazy" title="Clique para abrir no visualizador ampliado">
+          <figcaption>
+            <span>TÓPICO 5.2 · MAPA CONCEITUAL</span>
+            <em>Subagentes &amp; Isolamento de Contexto — Padrão Orquestrador-Trabalhadores: Contexto Limpo, Paralelismo e Escalabilidade</em>
+          </figcaption>
+        </figure>
+
+        <!-- DIAGRAMA 5: ORCHESTRATOR WORKERS -->
+        <figure class="visual-diagram">
+          <svg viewBox="0 0 760 210" width="100%" height="210">
+            <rect x="20" y="70" width="160" height="70" rx="10" fill="#332a4e" stroke="#bd93f9" stroke-width="2"/>
+            <text x="100" y="100" fill="#bd93f9" font-family="Inter" font-weight="800" font-size="13" text-anchor="middle">ORQUESTRADOR</text>
+            <text x="100" y="122" fill="#dcdce0" font-family="Inter" font-size="10" text-anchor="middle">(Supervisor / Planejador)</text>
+
+            <path d="M 180 85 L 280 45" stroke="#bd93f9" stroke-width="2" fill="none"/>
+            <path d="M 180 105 L 280 105" stroke="#bd93f9" stroke-width="2" fill="none"/>
+            <path d="M 180 125 L 280 165" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="280" y="20" width="190" height="50" rx="8" fill="#21222c" stroke="#8be9fd" stroke-width="1.5"/>
+            <text x="375" y="42" fill="#8be9fd" font-family="Inter" font-weight="700" font-size="11" text-anchor="middle">Subagente Pesquisador</text>
+            <text x="375" y="58" fill="#9aa1c0" font-family="Inter" font-size="9" text-anchor="middle">Contexto Isolado · Lê 40 arquivos</text>
+
+            <rect x="280" y="80" width="190" height="50" rx="8" fill="#21222c" stroke="#50fa7b" stroke-width="1.5"/>
+            <text x="375" y="102" fill="#50fa7b" font-family="Inter" font-weight="700" font-size="11" text-anchor="middle">Subagente Coder</text>
+            <text x="375" y="118" fill="#9aa1c0" font-family="Inter" font-size="9" text-anchor="middle">Escreve a classe pontual</text>
+
+            <rect x="280" y="140" width="190" height="50" rx="8" fill="#21222c" stroke="#ffb86c" stroke-width="1.5"/>
+            <text x="375" y="162" fill="#ffb86c" font-family="Inter" font-weight="700" font-size="11" text-anchor="middle">Subagente Tester</text>
+            <text x="375" y="178" fill="#9aa1c0" font-family="Inter" font-size="9" text-anchor="middle">Executa JUnit &amp; valida regressões</text>
+
+            <path d="M 470 45 L 570 85" stroke="#50fa7b" stroke-width="2" fill="none"/>
+            <path d="M 470 105 L 570 105" stroke="#50fa7b" stroke-width="2" fill="none"/>
+            <path d="M 470 165 L 570 125" stroke="#50fa7b" stroke-width="2" fill="none"/>
+
+            <rect x="570" y="75" width="165" height="60" rx="10" fill="#173726" stroke="#50fa7b" stroke-width="2"/>
+            <text x="652" y="102" fill="#50fa7b" font-family="Inter" font-weight="800" font-size="12" text-anchor="middle">SÍNTESE FINAL</text>
+            <text x="652" y="122" fill="#dcdce0" font-family="Inter" font-size="10" text-anchor="middle">Contexto Pai Preservado</text>
+          </svg>
+          <figcaption>A Arquitetura Orchestrator-Workers: <span>Isolamento total de contexto em tarefas multi-especialistas</span></figcaption>
+        </figure>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Evitar a <b>saturação e poluição de contexto</b>. Em tarefas grandes (ler 50 arquivos ou logs extensos), um agente único acumula centenas de milhares de tokens inúteis, perde o foco e começa a alucinar.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona</h4>
+            <p>O Orquestrador despacha o Subagente Pesquisador em um subprocesso. O subagente lê 50 arquivos (consumindo 80k tokens), sintetiza um **resumo cirúrgico de 10 linhas** e encerra sua execução, descartando o lixo de tokens. O pai recebe apenas o resumo limpo.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (O AGENTE MONOLÍTICO FALHO)</div>
+            <div class="conteudo">Um único agente lia todos os arquivos, gerava logs de testes temporários e, no meio do caminho, seu contexto estourava os limites, fazendo-o esquecer a instrução original.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM SUBAGENTES DESACOPLADOS)</div>
+            <div class="conteudo">Arquitetura modular de microserviços agênticos: cada subagente é descartável, focado em sua tarefa especializada e devolve apenas a informação consolidada ao orquestrador.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t5-subagentes">marcar dominado</button>
+      </article>
+
+      <!-- 5.3 SKILL VS AGENTE VS SUBAGENTE -->
+      <article class="topic" id="t5-matriz">
+        <div class="th"><h3>5.3 A Matriz Definitiva: Skill vs Agente vs Subagente</h3><div class="badges"><span class="badge b-prof">matriz de decisão</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O modelo mental de engenharia para decidir quando uma tarefa requer apenas uma Skill (procedimento de prompt), um Agente completo (loop ReAct) ou Subagentes especializados com contexto isolado.</div>
+
+        <table class="didatica">
+          <thead>
+            <tr>
+              <th>Conceito</th>
+              <th>O Que É</th>
+              <th>Quando Utilizar</th>
+              <th>Custo &amp; Latência</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Skill</b></td>
+              <td>Instrução e procedimento estático de engenharia injetado no prompt.</td>
+              <td>Tarefas padronizadas sem necessidade de loops ou tentativa e erro (ex: formatar commit, gerar DTO).</td>
+              <td><b>Mínimo:</b> 1 única chamada de inferência sem custo de iterações.</td>
+            </tr>
+            <tr>
+              <td><b>Agente</b></td>
+              <td>Sistema autônomo com loop ReAct, ferramentas e memória operacional.</td>
+              <td>Tarefas investigativas ou multi-etapas que exigem tentativa e erro (ex: caçar a causa de um teste quebrando).</td>
+              <td><b>Moderado:</b> 3 a 8 chamadas em loop conforme a complexidade.</td>
+            </tr>
+            <tr>
+              <td><b>Subagente</b></td>
+              <td>Agente filho instanciado com janela de contexto 100% isolada e limpa.</td>
+              <td>Varreduras profundas em bases extensas que saturariam a memória do agente pai com tokens descartáveis.</td>
+              <td><b>Alto:</b> Mas vital para manter a estabilidade em projetos corporativos complexos.</td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="done" type="button" data-k="t5-matriz">marcar dominado</button>
+      </article>
+
+      <!-- 5.4 MCP & GUARDRAILS -->
+      <article class="topic" id="t5-mcp">
+        <div class="th"><h3>5.4 Model Context Protocol (MCP) &amp; Guardrails de Segurança</h3><div class="badges"><span class="badge b-ess">padrão da indústria</span><span class="badge b-ver">guardrails</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O protocolo aberto padrão criado pela Anthropic e adotado universalmente pela indústria como o <b>"USB-C das ferramentas de IA"</b>, padronizando a comunicação JSON-RPC entre clientes (Cursor, Antigravity, Claude) e servidores de ferramentas (PostgreSQL, Git, terminal).</div>
+
+        <!-- MODELO MENTAL: O USB-C UNIVERSAL -->
+        <div class="mental-model">
+          <div class="mm-header">
+            <span class="mm-tag">💡 Modelo Mental</span>
+            <h4 class="mm-title">MCP: O Fim dos Cabos e Conectores Proprietários para IA</h4>
+          </div>
+          <p>
+            Antes do padrão USB-C, cada aparelho eletrônico vinha com um cabo proprietário incompatível (um para a câmera, outro para o celular, outro para o monitor). No ecossistema inicial de IA, acontecia o mesmo absurdo: se você criasse uma ferramenta para consultar seu banco de dados, precisava escrever um conector para OpenAI Plugins, outro para LangChain, outro para Semantic Kernel e outro para o Cursor.<br>
+            <b>O Model Context Protocol (MCP) padronizou a tomada:</b> você constrói o servidor MCP do seu banco de dados uma única vez. Automaticamente, qualquer cliente compatível com MCP do mercado pode consumir suas ferramentas sem que você precise alterar uma única linha de código.
+          </p>
+          <div class="mm-formula">
+            🔌 <b>A Arquitetura Unificada:</b> <span>Cliente de IA (Claude / Cursor / Antigravity) &harr; [JSON-RPC sobre Stdio / SSE] &harr; Servidores MCP (Postgres / Git / APIs)</span>
+          </div>
+        </div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Permitir que uma ferramenta corporativa seja escrita uma única vez e conectada instantaneamente a qualquer IDE, agente ou pipeline sem plugins proprietários.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Guardrails &amp; Human-in-the-Loop</h4>
+            <p>1. <b>Max Iterations:</b> Teto máximo de passos (ex: max 15) para impedir loops infinitos cobrando faturas da API.<br>
+            2. <b>Ações Destrutivas:</b> Comandos perigosos (<code>DROP TABLE</code>, <code>rm -rf</code>, <code>git push --force</code>) EXIGEM confirmação humana explícita no console.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (ECOSSISTEMA FRAGMENTADO)</div>
+            <div class="conteudo">Cada empresa criava seu próprio formato de plugin (OpenAI Plugins, LangChain Tools, Semantic Kernel), obrigando desenvolvedores a reescrever integrações do zero para cada cliente.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM O PADRÃO ABERTO MCP)</div>
+            <div class="conteudo">Um servidor MCP expõe recursos, ferramentas e prompts via JSON-RPC. Qualquer cliente compatível com MCP consome as ferramentas automaticamente.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t5-mcp">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== NÍVEL 6 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Nível 6 — Engenharia de IA em Produção (MLOps &amp; Harness)</h2><p>Test Harness no CI/CD, Evals sistemáticas, Caching Semântico e Observabilidade com Tracing.</p></div></div>
+
+      <!-- MAPA CONCEITUAL NÍVEL 6: MLOPS & HARNESS -->
+      <figure class="topic-img">
+        <img src="img/ia/ia_nivel_6_mlops_harness.jpg" alt="Mapa Conceitual: Engenharia de IA em Produção — MLOps &amp; Harness" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>NÍVEL 6 · MAPA CONCEITUAL</span>
+          <em>Engenharia de IA em Produção — MLOps &amp; Harness: Ciclo Contínuo, Qualidade &amp; Observabilidade</em>
+        </figcaption>
+      </figure>
+
+
+      <!-- 6.1 O QUE É HARNESS -->
+      <article class="topic" id="t6-harness">
+        <div class="th"><h3>6.1 O que é Harness? Test Harness, Eval Harness e SWE-bench</h3><div class="badges"><span class="badge b-ess">quality gate</span><span class="badge b-prof">ci/cd</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> <b>Harness</b> (armação ou bancada de ensaios) é a infraestrutura automatizada de testes que encapsula um sistema de IA sob condições fixas e controladas no pipeline de CI/CD para medir cientificamente se o sistema está melhorando ou regredindo.</div>
+
+        <!-- MAPA CONCEITUAL TÓPICO 6.1: TEST HARNESS NO CI/CD -->
+        <figure class="topic-img">
+          <img src="img/ia/ia_topico_6_1_test_harness_cicd.jpg" alt="Mapa Conceitual: Test Harness no CI/CD — Testes Confiáveis para IA em Produção" loading="lazy" title="Clique para abrir no visualizador ampliado">
+          <figcaption>
+            <span>TÓPICO 6.1 · MAPA CONCEITUAL</span>
+            <em>Test Harness no CI/CD — Testes Confiáveis para IA em Produção: Qualidade, Segurança &amp; Regressão</em>
+          </figcaption>
+        </figure>
+
+
+        <!-- DIAGRAMA 6: TEST HARNESS & CI/CD GATE -->
+        <figure class="visual-diagram">
+          <svg viewBox="0 0 760 190" width="100%" height="190">
+            <rect x="10" y="55" width="115" height="50" rx="8" fill="#21222c" stroke="#6272a4" stroke-width="1.5"/>
+            <text x="67" y="78" fill="#f8f8f2" font-family="Inter" font-weight="700" font-size="11" text-anchor="middle">PR / Commit</text>
+            <text x="67" y="94" fill="#9aa1c0" font-family="Inter" font-size="9" text-anchor="middle">Prompt / Código</text>
+
+            <path d="M 125 80 L 155 80" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="155" y="25" width="180" height="110" rx="10" fill="#332a4e" stroke="#bd93f9" stroke-width="2"/>
+            <text x="245" y="52" fill="#bd93f9" font-family="Inter" font-weight="800" font-size="12" text-anchor="middle">TEST HARNESS RUNNER</text>
+            <text x="245" y="72" fill="#f8f8f2" font-family="Inter" font-size="10" text-anchor="middle">50 Casos de Teste Fixos</text>
+            <text x="245" y="90" fill="#f8f8f2" font-family="Inter" font-size="10" text-anchor="middle">Seeds Determinísticas</text>
+            <text x="245" y="108" fill="#f8f8f2" font-family="Inter" font-size="10" text-anchor="middle">Sandbox Docker Efêmera</text>
+
+            <path d="M 335 80 L 365 80" stroke="#bd93f9" stroke-width="2" fill="none"/>
+
+            <rect x="365" y="40" width="160" height="80" rx="8" fill="#21222c" stroke="#f1fa8c" stroke-width="1.5"/>
+            <text x="445" y="65" fill="#f1fa8c" font-family="Inter" font-weight="700" font-size="11" text-anchor="middle">ASSERTION MATRIX</text>
+            <text x="445" y="85" fill="#f8f8f2" font-family="Inter" font-size="10" text-anchor="middle">Pass Rate: 98% (49/50)</text>
+            <text x="445" y="103" fill="#50fa7b" font-family="Inter" font-size="10" text-anchor="middle">Schema 100% Válido</text>
+
+            <path d="M 525 80 L 555 80" stroke="#50fa7b" stroke-width="2" fill="none"/>
+
+            <rect x="555" y="35" width="195" height="90" rx="10" fill="#173726" stroke="#50fa7b" stroke-width="2"/>
+            <text x="652" y="62" fill="#50fa7b" font-family="Inter" font-weight="800" font-size="12" text-anchor="middle">QUALITY GATE CI/CD</text>
+            <text x="652" y="82" fill="#f8f8f2" font-family="Inter" font-size="10" text-anchor="middle">Regra: Pass Rate &ge; 95%</text>
+            <text x="652" y="100" fill="#50fa7b" font-family="Inter" font-weight="700" font-size="10" text-anchor="middle">✓ DEPLOY AUTORIZADO</text>
+          </svg>
+          <figcaption>O Fluxo do Test Harness no CI/CD: <span>Do commit à liberação determinística no Quality Gate</span></figcaption>
+        </figure>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Acabar definitivamente com o <b>"vibe check" amador</b> (testar duas perguntas manuais no chat e achar que o sistema está pronto para produção). Garante que alterações em prompts ou modelos não causem regressões silenciosas.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Os 3 Tipos Essenciais</h4>
+            <ul>
+              <li><b>1. Eval Harness no CI/CD:</b> Roda 50 casos de teste controlados no GitHub Actions e bloqueia o merge se a nota for inferior a 95%.</li>
+              <li><b>2. Agent Sandbox Harness:</b> Container Docker efêmero isolado onde o agente executa comandos sem risco de afetar servidores de produção.</li>
+              <li><b>3. SWE-bench Harness:</b> O benchmark padrão ouro que avalia agentes contra issues reais de repositórios open-source do GitHub.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (VIBE CHECK AMADOR)</div>
+            <div class="conteudo">O dev alterava uma vírgula no prompt para melhorar uma resposta, subia para produção sem testes e quebrava 20% dos casos de borda que já funcionavam perfeitamente.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM TEST HARNESS AUTOMATIZADO)</div>
+            <div class="conteudo">O Harness executa automaticamente a suíte inteira a cada Pull Request, gerando um relatório estatístico de aprovação e bloqueando o merge diante de qualquer regressão.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t6-harness">marcar dominado</button>
+      </article>
+
+      <!-- 6.2 EVALS & LLM-AS-A-JUDGE -->
+      <article class="topic" id="t6-evals">
+        <div class="th"><h3>6.2 Evals &amp; LLM-as-a-Judge com Rubricas Estritas</h3><div class="badges"><span class="badge b-prof">avaliações</span><span class="badge b-caso">deepEval</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O processo contínuo de avaliar respostas geradas combinando <b>asserções determinísticas</b> (JSON Schema, testes unitários, regex) com <b>modelos fortes atuando como juízes (LLM-as-a-Judge)</b> avaliando segundo uma rubrica estrita.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Medir a fidelidade factual das respostas geradas pelo RAG (se a IA inventou algo não constante nos documentos) e a aderência a políticas corporativas em larga escala.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ As Principais Métricas de Avaliação</h4>
+            <ul>
+              <li><b>Faithfulness (Fidelidade):</b> Mede se cada afirmação da resposta pode ser comprovada no contexto recuperado.</li>
+              <li><b>Answer Relevance (Relevância):</b> Mede se a resposta aborda diretamente a dúvida real do usuário.</li>
+              <li><b>Context Precision:</b> Mede se os chunks mais úteis foram colocados no topo do ranking pelo banco vetorial.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE RUBRICA DE JUIZ</b>
+          <p>O modelo juiz (Claude 3.7 Sonnet) recebe o prompt: <i>"Avalie a resposta abaixo segundo uma nota de 1 a 5 para a métrica de Fidelidade Factual. Se a resposta contiver qualquer dado ausente no contexto fornecido, a nota máxima permitida é 2. Justifique em JSON."</i></p>
+        </div>
+        <button class="done" type="button" data-k="t6-evals">marcar dominado</button>
+      </article>
+
+      <!-- 6.3 CACHING SEMÂNTICO & FINOPS -->
+      <article class="topic" id="t6-caching">
+        <div class="th"><h3>6.3 Caching Semântico &amp; FinOps com Redis Vetorial</h3><div class="badges"><span class="badge b-prof">finops</span><span class="badge b-caso">redis vetorial</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O armazenamento de perguntas e respostas anteriores em um cache em memória (Redis) indexado por similaridade de embeddings vetoriais.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Responder perguntas frequentes ou variações semânticas em <b>15 milissegundos</b> a <b>custo ZERO de tokens</b>, derrubando a fatura financeira de APIs de IA em até 80%.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Lógica</h4>
+            <p>Quando o usuário pergunta algo, o sistema gera o embedding da pergunta e busca no Redis. Se a similaridade de cosseno com uma pergunta já respondida for <b>&ge; 95%</b>, a resposta é entregue instantaneamente da memória sem chamar o LLM.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (SEM CACHE SEMÂNTICO)</div>
+            <div class="conteudo">1.000 usuários perguntando <i>"Como resetar minha senha?"</i>, <i>"Esqueci a senha, o que faço?"</i> e <i>"Recuperar acesso da conta"</i> geravam 1.000 chamadas pagas ao LLM com latência de 2 segundos cada.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (COM CACHE SEMÂNTICO NO REDIS)</div>
+            <div class="conteudo">Apenas a primeira pergunta bate no LLM. Todas as outras 999 variações são identificadas semanticamente e respondidas do Redis em 12ms a custo zero.</div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="t6-caching">marcar dominado</button>
+      </article>
+
+      <!-- 6.4 OBSERVABILIDADE & ENTERPRISE -->
+      <article class="topic" id="t6-observabilidade">
+        <div class="th"><h3>6.4 Observabilidade, Tracing Distribuído &amp; Arquitetura Enterprise</h3><div class="badges"><span class="badge b-ess">sre</span><span class="badge b-prof">langsmith</span><span class="badge b-caso">enterprise</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> O rastreamento de ponta a ponta (Tracing distribuído via OpenTelemetry / LangSmith) de cada passo de raciocínio, tool call, tokens consumidos e latência acumulada pelo agente em ambiente corporativo.</div>
+        
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Responder com precisão a pergunta mais crítica em produção: <i>"Por que o agente tomou essa decisão errada?"</i> e auditar conformidade regulatória (LGPD / GDPR) com histórico auditável.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ O Blueprint da Arquitetura Enterprise</h4>
+            <p><b>API Gateway &amp; Rate Limit</b> &rarr; <b>Semantic Cache (Redis)</b> &rarr; <b>Input Guardrails</b> &rarr; <b>Model Router</b> &rarr; <b>Núcleo Agêntico (ReAct / Subagentes)</b> &rarr; <b>Servidores MCP &amp; pgvector</b> &rarr; <b>Tracing &amp; Output Guardrails</b> &rarr; <b>Test Harness CI/CD</b>.</p>
+          </div>
+        </div>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE TELEMETRIA</b>
+          <p>O painel de tracing do LangSmith registra que uma requisição que levou 5.4 segundos teve 5.1 segundos gastos na espera pelo pool de conexões do PostgreSQL e apenas 300ms de inferência no LLM, inocentando a IA e apontando o gargalo exato no banco de dados.</p>
+        </div>
+        <button class="done" type="button" data-k="t6-observabilidade">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <p>Desenvolvido para o <b>Cérebro Secundário · Trilha de Inteligência Artificial</b></p>
+      <p>Gerado em 20 de Setembro de 2026 · Edição V4 Didática Visual &amp; Mapas Conceituais</p>
+    </footer>
+
+    <div class="nores" id="nores">Nenhum nó ou tópico encontrado para essa busca. Tente termos como "mcp", "rag", "harness", "sdd", "tokens" ou "transformer".</div>
+
+  </main>
+</div>
+
+<!-- ==================== SIDE PANEL DRAWER ==================== -->
+<div class="scrim" id="scrim"></div>
+<div class="panel" id="panel">
+  <div class="p-h" id="pHead">
+    <div>
+      <span class="tag" id="pTag">CONCEITO</span>
+      <h3 id="pTitle">Título do Nó</h3>
+      <p id="pSub">Subtítulo explicativo</p>
+    </div>
+    <button class="x" id="pClose" type="button">✕</button>
+  </div>
+  <div class="p-b" id="pBody">
+    <div class="gate" id="pGate" hidden>
+      <div class="gate-in">
+        <span class="ghint">MODO DE TESTE ATIVO</span>
+        <h5 id="gateTitle">Você domina este conceito?</h5>
+        <em>Tente formular mentalmente o que é, para que serve e como funciona antes de ver a resposta.</em>
+        <button class="reveal-btn" id="btnReveal" type="button">👁 Revelar Conteúdo Didático</button>
+      </div>
+    </div>
+    <div class="blk" id="bOq">
+      <h4>🎯 O que é / O que seria</h4>
+      <p id="pOq"></p>
+    </div>
+    <div class="blk" id="bPs">
+      <h4>🚀 Para que serve no dia a dia dev</h4>
+      <p id="pPs"></p>
+    </div>
+    <div class="blk" id="bSubst">
+      <h4>🔄 O que veio substituir</h4>
+      <p id="pSubst"></p>
+    </div>
+    <div class="blk" id="bPq">
+      <h4>⚙️ Como funciona (Engenharia &amp; Mecânica)</h4>
+      <p id="pPq"></p>
+    </div>
+    <div class="blk" id="bEx">
+      <h4>💻 Exemplo real no código / arquitetura</h4>
+      <pre><code id="pEx"></code></pre>
+    </div>
+    <div class="blk" id="bAl">
+      <h4>💡 Além do óbvio / Arquitetura prática</h4>
+      <p id="pAl"></p>
+    </div>
+  </div>
+  <div class="p-f">
+    <button class="mark" id="pMark" type="button">marcar dominado</button>
+    <button class="grade ok" id="gOk" type="button" hidden>✓ acertei</button>
+    <button class="grade no" id="gNo" type="button" hidden>✗ revisar</button>
+    <button class="nav-b" id="pPrev" type="button">◀ anterior</button>
+    <button class="nav-b" id="pNext" type="button">próximo ▶</button>
+  </div>
+</div>
+
+<button class="up" id="up" type="button" title="Voltar ao topo">↑</button>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+/* ==================== DADOS DA TRILHA CENTRAL INTERATIVA (24 NÓS) ==================== */
+var DATA = [
+  {
+    g: "01", n: "Nível 1: Fundamentos", s: "o funil conceitual de IA ao Transformer", c: "var(--teal)", cs: "var(--teal-s)",
+    items: [
+      {
+        t: "IA & Automação Cognitiva", x: "o campo geral da CC",
+        oq: "O campo geral da ciência da computação dedicado a construir sistemas capazes de executar tarefas cognitivas humanas.",
+        ps: "Automatizar decisões complexas em escala, diagnósticos, direção autônoma e escrita assistida de software.",
+        sub: "Substituiu sistemas especialistas baseados em milhares de regras rígidas manuais que quebravam com ruído.",
+        pq: "Opera em 3 fases contínuas: Percepção de dados brutos, processamento probabilístico e atuação/geração de saídas.",
+        ex: "Motores de análise de risco bancário avaliando 350 variáveis de cartão de crédito em 15 milissegundos.",
+        alem: "IA é o continente inteiro. Não chame qualquer regressão linear de IA para evitar parecer amador."
+      },
+      {
+        t: "Machine Learning & 3 Tipos", x: "aprender padrões em dados",
+        oq: "Ramo da IA focado em algoritmos que ajustam seus parâmetros matemáticos diretamente a partir de dados históricos.",
+        ps: "Prever métricas de negócio futuras (vendas, churn), estimar preços e detectar anomalias em tempo real.",
+        sub: "Substituiu a manutenção de milhares de linhas de regras if/else manuais escritas no código-fonte.",
+        pq: "Dividido em Supervisionado (pares X->Y rotulados), Não Supervisionado (clusters) e Por Reforço (tentativa e recompensa).",
+        ex: "XGBoost prevendo a probabilidade de um cliente cancelar a assinatura com 30 dias de antecedência.",
+        alem: "Para dados tabulares numéricos estruturados, ML clássico (XGBoost) supera LLMs em velocidade e precisão."
+      },
+      {
+        t: "Deep Learning & Representações", x: "redes neurais profundas",
+        oq: "Especialização de ML baseada em redes neurais artificiais com múltiplas camadas ocultas que aprendem representações abstratas.",
+        ps: "Resolver problemas de altíssima percepção onde dados tabulares não funcionam: visão, voz, linguagem.",
+        sub: "Substituiu a extração manual de atributos (Feature Engineering) que demorava meses para ser calibrada.",
+        pq: "Primeiras camadas aprendem bordas e contrastes; intermediárias formam texturas; profundas reconhecem objetos inteiros.",
+        ex: "Redes Convolucionais analisando imagens médicas para detectar micro-fraturas e tumores.",
+        alem: "Deep Learning precisa de GPUs e volumes massivos de dados para convergir adequadamente."
+      },
+      {
+        t: "LLMs & Transformer Q/K/V", x: "a CPU neural de linguagem",
+        oq: "Modelos massivos baseados na arquitetura Transformer treinados para prever sequências e raciocinar sobre código.",
+        ps: "Atuar como motor cognitivo para aplicações de software: interpretar linguagem, gerar código e orquestrar agentes.",
+        sub: "Substituiu abordagens rígidas de PLN clássico (Regex, TF-IDF, N-grams) que não entendiam contexto.",
+        pq: "Autoatenção paralela onde cada token calcula matrizes de Query (Q), Key (K) e Value (V) para relacionar conceitos distantes.",
+        ex: "Claude 3.7 Sonnet ou GPT-4o analisando 2.000 linhas de logs para apontar um deadlock em Java.",
+        alem: "ChatGPT é o produto com interface; o LLM é a CPU crua integrada via API pelo desenvolvedor."
+      }
+    ]
+  },
+  {
+    g: "02", n: "Nível 2: Dominar LLMs", s: "a mecânica operacional do token e inferência", c: "var(--brand)", cs: "var(--brand-s)",
+    items: [
+      {
+        t: "Tokens & Embeddings", x: "a moeda física e o espaço vetorial",
+        oq: "Tokens são pedaços de texto (~4 caracteres). Embeddings são vetores densos que capturam significado semântico em alta dimensão.",
+        ps: "Controlar faturas financeiras de API e permitir que o sistema calcule similaridade semântica entre textos.",
+        sub: "Substituiu a busca puramente textual por strings exatas que falhava com sinônimos.",
+        pq: "O tokenizador converte texto em inteiros; a camada de embedding projeta esses inteiros em coordenadas vetoriais de 1536D.",
+        ex: "Distância de cosseno entre 'Spring Boot' e 'Micronaut' resulta em ~0.89 por serem frameworks correlatos.",
+        alem: "Tudo na IA é medido e cobrado em tokens. Quem não calcula tokens quebra o orçamento do projeto."
+      },
+      {
+        t: "Contexto & Lost in the Middle", x: "atenção e degradação central",
+        oq: "A janela de contexto é a RAM transitória da chamada. Lost in the middle é a perda de atenção em documentos longos.",
+        ps: "Estruturar o prompt de forma a garantir que regras de segurança e restrições obrigatórias nunca sejam ignoradas.",
+        sub: "Substituiu as janelas minúsculas de 2k tokens; hoje modelos suportam de 128k a 1M tokens.",
+        pq: "A atenção quadrática foca intensamente no início e no final da janela, reduzindo o peso dos tokens do meio.",
+        ex: "Injetar os schemas no início, os logs no meio e as regras de saída no final absoluto do prompt.",
+        alem: "Mesmo com janelas de 1 milhão de tokens, prompts concisos e limpos geram saídas 3x mais confiáveis."
+      },
+      {
+        t: "Temperatura & Top-P", x: "o controle de estocasticidade",
+        oq: "Parâmetros matemáticos que controlam a aleatoriedade da distribuição Softmax na inferência.",
+        ps: "Garantir código determinístico e sem erros de sintaxe (temperatura 0) ou textos criativos (temperatura 0.7).",
+        sub: "Substituiu modelos fechados sem controle sobre a aleatoriedade das previsões.",
+        pq: "Temperatura divide os logits antes da Softmax; Top-p corta a cauda acumulada de tokens improváveis.",
+        ex: "temperature=0.0 e top_p=0.1 para geração de endpoints Spring Boot e queries SQL.",
+        alem: "Nunca mexa agressivamente em Temperatura e Top-p ao mesmo tempo; ajuste um parâmetro por vez."
+      },
+      {
+        t: "Métricas TTFT / TPS & Roteamento", x: "latência e model routers",
+        oq: "TTFT (Time To First Token) mede a latência inicial; TPS mede a velocidade contínua. Model Router direciona a requisição.",
+        ps: "Otimizar custos em até 80% direcionando tarefas simples para modelos rápidos e complexas para modelos de raciocínio.",
+        sub: "Substituiu o uso ineficiente do modelo mais caro e lento para todas as chamadas do sistema.",
+        pq: "Model Router avalia a intenção e envia tarefas corriqueiras ao Gemini Flash e análises densas ao Claude Sonnet.",
+        ex: "Classificação de emails respondida em 180ms pelo Flash; auditoria de segurança de código feita pelo Sonnet.",
+        alem: "Latência em streaming importa mais para a percepção humana do que o tempo total de resposta da requisição."
+      }
+    ]
+  },
+  {
+    g: "03", n: "Nível 3: IA no Dev", s: "engenharia de prompt e spec-driven development", c: "var(--green)", cs: "var(--green-soft)",
+    items: [
+      {
+        t: "4 Camadas de Prompt", x: "o contrato de software",
+        oq: "Metodologia de estruturar prompts em: 1. Instrução; 2. Contexto de dados; 3. Regras estritas; 4. Exemplos Few-Shot.",
+        ps: "Eliminar alucinações e fazer o modelo gerar código correto na primeira tentativa sem bate-boca no chat.",
+        sub: "Substituiu prompts amadores de uma linha que geravam respostas genéricas e incompletas.",
+        pq: "Cada camada restringe graus de liberdade no espaço probabilístico do modelo, forçando a saída correta.",
+        ex: "[INSTRUÇÃO]: Arquiteto Java. [CONTEXTO]: DDL da tabela. [REGRAS]: Sem Lombok, Java 21. [FEW-SHOT]: Exemplo de Record.",
+        alem: "Um bom exemplo Few-Shot ensina mais ao modelo do que três parágrafos de regras textuais em prosa."
+      },
+      {
+        t: "Spec-Driven Development (SDD)", x: "a spec como fonte da verdade",
+        oq: "Metodologia onde a Especificação Técnica em Markdown é escrita e validada antes de gerar código com IA.",
+        ps: "Evitar o 'vibe coding' descontrolado e garantir que o sistema atenda aos requisitos de negócio e arquitetura.",
+        sub: "Substituiu a prática caótica de pedir código no chat sem planejamento e ficar consertando bugs ad-hoc.",
+        pq: "O código gerado por IA é descartável; a especificação técnica formal é o ativo permanente do projeto.",
+        ex: "Especificação pix-transfer.md define fluxos e erros; a IA gera o código estritamente aderente à spec.",
+        alem: "O SDD transforma o programador em um arquiteto de sistemas que revisa contratos antes do código."
+      },
+      {
+        t: "IA em Refatoração & Testes", x: "modernização e suites completas",
+        oq: "A utilização sistemática de LLMs para modernizar bases legadas e gerar suítes exaustivas de testes automatizados.",
+        ps: "Migrar aplicações legadas de Java 8 para Java 21 e elevar a cobertura de testes para cobrir casos de borda.",
+        sub: "Substituiu o medo de refatorar código legado e testes manuais simplórios de caminho feliz.",
+        pq: "O modelo analisa a árvore sintática e reescreve padrões antigos respeitando a semântica original.",
+        ex: "Converter loops antigos com iteradores para streams reativas e records com pattern matching no Java 21.",
+        alem: "Sempre rode os testes unitários após a refatoração para garantir que nenhuma regressão foi introduzida."
+      },
+      {
+        t: "IA em Logs, SQL & DevOps", x: "diagnóstico, explain e docker",
+        oq: "Aplicação de IA na análise profunda de stack traces, otimização de queries com EXPLAIN e criação de Dockerfiles enxutos.",
+        ps: "Resolver incidentes de produção em minutos, eliminar gargalos de banco e criar imagens de container otimizadas.",
+        sub: "Substituiu a leitura manual cansativa de 800 linhas de stack trace e queries com Full Table Scan.",
+        pq: "O modelo correlaciona os métodos do stack trace com o código fonte e sugere índices baseados nos custos de plano SQL.",
+        ex: "Sugestão de índice composto B-Tree reduzindo tempo de query de 4.2 segundos para 8 milissegundos.",
+        alem: "Na análise de logs corporativos, lembre-se de mascarar CPFs e dados sensíveis antes de enviar ao LLM."
+      }
+    ]
+  },
+  {
+    g: "04", n: "Nível 4: Criar Aplicações", s: "structured output, tool calling e pgvector", c: "var(--cyan)", cs: "var(--cyan-s)",
+    items: [
+      {
+        t: "Structured Output & Records DTO", x: "garantia de schema rígido",
+        oq: "Mecanismo que força o LLM a emitir respostas estritamente formatadas em conformidade com um JSON Schema.",
+        ps: "Permitir deserialização direta em Records e DTOs Java sem exceptions de parsing em runtime.",
+        sub: "Substituiu o parsing frágil com Regex que quebrava quando o modelo adicionava saudações ao JSON.",
+        pq: "O provedor impõe restrição gramatical na Softmax, tornando impossível emitir tokens fora do schema.",
+        ex: "chatClient.prompt().user(...).call().entity(AnaliseRiscoDTO.class); mapeado com 100% de segurança de tipos.",
+        alem: "Use validações Bean Validation (ex: @NotNull, @Positive) no DTO para garantir sanidade semântica."
+      },
+      {
+        t: "Tool Calling com Spring AI", x: "interação com o mundo real",
+        oq: "Capacidade do LLM de solicitar a execução de métodos do backend com argumentos tipados em JSON.",
+        ps: "Dar superpoderes ao modelo: consultar bancos relacionais, ler arquivos e invocar APIs externas com segurança.",
+        sub: "Substituiu a tentativa inviável de passar toda a base de dados dentro do prompt da requisição.",
+        pq: "O modelo emite a chamada tipada; o backend executa o código seguro e devolve o resultado para o LLM sintetizar.",
+        ex: "Endpoint Spring AI expondo uma Function que roda um SELECT parametrizado seguro no PostgreSQL.",
+        alem: "O LLM NUNCA deve executar comandos SQL diretamente no banco; o backend sempre valida e executa via JPA/JDBC."
+      },
+      {
+        t: "RAG com pgvector & HNSW", x: "busca semântica e contextual",
+        oq: "Arquitetura que recupera trechos relevantes da documentação privada da empresa e injeta no contexto do LLM.",
+        ps: "Responder dúvidas técnicas sobre código e regras corporativas com precisão e ausência de alucinação.",
+        sub: "Substituiu o custo astronômico e a ineficiência de tentar fazer fine-tuning toda vez que um documento muda.",
+        pq: "Combina busca vetorial por cosseno (HNSW) com busca textual exata (BM25), unindo os rankings via RRF.",
+        ex: "Tabela PostgreSQL com coluna vector(1536) indexada com índice HNSW para busca em 10 milissegundos.",
+        alem: "A qualidade do RAG depende 80% da qualidade do chunking dos documentos e 20% do modelo gerador."
+      },
+      {
+        t: "Streaming SSE & Memória Redis", x: "tempo real e histórico",
+        oq: "Transmissão contínua de tokens via Server-Sent Events (SSE) e persistência de histórico de diálogo em cache Redis.",
+        ps: "Proporcionar sensação de resposta imediata ao usuário e manter o contexto em aplicações web escaláveis sem estado.",
+        sub: "Substituiu telas travadas aguardando a resposta completa e perda de histórico em cada reload de página.",
+        pq: "Flux reativo do Spring WebFlux emitindo eventos de texto conforme chegam da GPU e lendo histórico do Redis.",
+        ex: "Controller retornando Flux<String> com MediaType TEXT_EVENT_STREAM_VALUE conectado ao Redis.",
+        alem: "Adote a estratégia Summary Buffer para resumir turnos antigos e economizar tokens de contexto."
+      }
+    ]
+  },
+  {
+    g: "05", n: "Nível 5: Agentes", s: "loops ReAct, subagentes e protocolo MCP", c: "var(--orange)", cs: "var(--orange-s)",
+    items: [
+      {
+        t: "Loop Agêntico ReAct", x: "pensamento, ação e observação",
+        oq: "Ciclo contínuo onde o LLM formula um pensamento, aciona uma ferramenta e observa o retorno até cumprir a missão.",
+        ps: "Resolver problemas complexos que exigem iteração e depuração autônoma de erros.",
+        sub: "Substituiu chamadas isoladas mono-passo que falhavam diante do primeiro erro de execução.",
+        pq: "Loop while gerenciando pensamento, escolha de ferramentas, execução segura e reflexão contínua de status.",
+        ex: "Agente executando mvn test, lendo a linha do erro no stack trace e alterando o código até compilar.",
+        alem: "Configure sempre um teto máximo de iterações (Max Steps) para evitar loops infinitos consumindo créditos."
+      },
+      {
+        t: "Subagentes & Contexto Isolado", x: "o padrão orchestrator-workers",
+        oq: "Arquitetura onde um Orquestrador delega tarefas a instâncias filhas com janelas de contexto 100% isoladas e limpas.",
+        ps: "Evitar a degradação e saturação de contexto em tarefas longas que envolvem ler dezenas de arquivos de código.",
+        sub: "Substituiu o modelo falho de Agente Monolítico Único que acumulava centenas de milhares de tokens de ruído.",
+        pq: "O orquestrador despacha subagentes especializados que sintetizam resumos pontuais e encerram sua execução.",
+        ex: "Subagente lê 40 classes, gera um resumo de 5 linhas e encerra, deixando o contexto do pai limpo.",
+        alem: "Microserviços agênticos: mantenha cada subagente focado em um único escopo de especialidade."
+      },
+      {
+        t: "Skill vs Agente vs Subagente", x: "a matriz de decisão",
+        oq: "A matriz técnica para decidir o nível correto de autonomia, custo e complexidade para cada tarefa de software.",
+        ps: "Evitar overengineering: usar a abordagem mais simples e econômica que resolva o problema com eficácia.",
+        sub: "Substituiu a prática errônea de criar agentes complexos para tarefas simples de passo único.",
+        pq: "Skills são procedimentos estáticos de prompt; Agentes têm loops ReAct; Subagentes têm contexto isolado.",
+        ex: "Skill para formatar mensagens de commit; Agente para caçar bugs; Subagente para varrer bases legadas.",
+        alem: "Se a tarefa pode ser resolvida com uma Skill bem escrita, nunca desperdice recursos criando um agente com loop."
+      },
+      {
+        t: "Protocolo MCP & Guardrails", x: "o USB-C e a segurança agêntica",
+        oq: "O padrão aberto de comunicação entre clientes de IA e servidores de ferramentas, associado a travas de segurança.",
+        ps: "Padronizar o ecossistema de ferramentas de engenharia e impedir que agentes executem ações destrutivas em produção.",
+        sub: "Substituiu a proliferação de plugins proprietários e scripts de automação sem travas de segurança.",
+        pq: "Comunicação via JSON-RPC padronizado com exigência de aprovação humana (Human-in-the-Loop) em comandos críticos.",
+        ex: "Servidor MCP PostgreSQL expondo consultas seguras e bloqueando comandos DROP TABLE sem confirmação.",
+        alem: "Ações destrutivas (git push --force, drop table, rm -rf) NUNCA devem ser liberadas sem aprovação humana."
+      }
+    ]
+  },
+  {
+    g: "06", n: "Nível 6: MLOps / Harness", s: "test harness, evals, cache semântico e tracing", c: "var(--rose)", cs: "var(--rose-s)",
+    items: [
+      {
+        t: "Test Harness & Quality Gates", x: "o fim do vibe check",
+        oq: "A armação automatizada de testes que alimenta o sistema de IA com casos controlados no pipeline de CI/CD.",
+        ps: "Medir cientificamente se alterações em prompts ou modelos estão melhorando ou regredindo o sistema.",
+        sub: "Substituiu o 'vibe check' amador de fazer duas perguntas manuais no chat e achar que está tudo funcionando.",
+        pq: "Executa suítes determinísticas em containers efêmeros e bloqueia o merge no PR se a taxa for menor que 95%.",
+        ex: "GitHub Actions rodando 50 prompts de teste contra o modelo antes de autorizar o deploy em produção.",
+        alem: "Se você não tem um Test Harness automatizado no CI/CD, você não tem engenharia de software com IA em produção."
+      },
+      {
+        t: "SWE-bench & Sandboxes", x: "benchmarks e ambientes isolados",
+        oq: "O benchmark padrão ouro da indústria que avalia agentes contra issues reais do GitHub em containers Docker isolados.",
+        ps: "Garantir segurança operacional e medir a real capacidade resolutiva do agente em repositórios corporativos.",
+        sub: "Substituiu a execução insegura de código gerado por IA diretamente na máquina do desenvolvedor.",
+        pq: "O agente é clonado em um container efêmero sem acesso à rede produtiva e tem seu patch validado pela suíte do projeto.",
+        ex: "Container Docker descartado automaticamente após rodar a suíte de testes unitários do Pull Request.",
+        alem: "Nunca permita que um agente com acesso a comandos bash execute scripts fora de uma sandbox isolada."
+      },
+      {
+        t: "Caching Semântico & FinOps", x: "redis vetorial e economia",
+        oq: "Armazenamento de perguntas e respostas anteriores em cache indexado por similaridade de embeddings de cosseno.",
+        ps: "Responder variações da mesma dúvida em 15ms a custo zero de tokens, derrubando a fatura em até 80%.",
+        sub: "Substituiu o desperdício financeiro de reenviar perguntas equivalentes à API repetidas vezes.",
+        pq: "Se a similaridade de cosseno com uma chave existente no Redis for >= 95%, a resposta é entregue da memória RAM.",
+        ex: "'Como resetar senha' e 'Esqueci minha senha' batendo no mesmo nó do Redis em 12 milissegundos.",
+        alem: "FinOps para IA começa com Caching Semântico e roteamento inteligente de modelos para chamadas simples."
+      },
+      {
+        t: "Tracing OpenTelemetry & Enterprise", x: "observabilidade de ponta a ponta",
+        oq: "Rastreamento distribuído de cada decisão, tool call, tempo de latência e consumo de tokens em ferramentas como LangSmith.",
+        ps: "Diagnosticar gargalos de performance, auditar o raciocínio do agente e garantir conformidade regulatória.",
+        sub: "Substituiu sistemas de IA como caixas-pretas onde erros silenciosos ocorriam sem registro investigativo.",
+        pq: "Cada chamada de LLM e ferramenta gera spans distribuídos com metadados de tokens, latência e parâmetros de entrada.",
+        ex: "Dashboard LangSmith demonstrando que o atraso de 6s foi causado por lentidão no banco e não pela inferência da IA.",
+        alem: "Em produção corporativa, todo log deve ser auditável para comprovar conformidade com LGPD e GDPR."
+      }
+    ]
+  }
+];
+
+/* ==================== INICIALIZAÇÃO DA TRILHA CENTRAL ==================== */
+var trackEl = document.getElementById("track");
+var navEl = document.getElementById("nav");
+var flat = [];
+
+DATA.forEach(function(g, gi){
+  var grp = document.createElement("div");
+  grp.className = "grp " + (gi % 2 === 0 ? "l" : "r");
+  grp.style.setProperty("--gc", g.c);
+  grp.style.setProperty("--gs", g.cs);
+
+  var m = document.createElement("div");
+  m.className = "milestone";
+  m.innerHTML = '<span class="n">' + g.g + '</span><h2>' + g.n + '</h2><small>' + g.s + '</small>';
+  grp.appendChild(m);
+
+  var clus = document.createElement("div");
+  clus.className = "cluster";
+
+  g.items.forEach(function(it){
+    it._g = g.g; it._gc = g.c; it._id = "t_" + flat.length;
+    var idx = flat.length;
+    flat.push(it);
+
+    var node = document.createElement("div");
+    node.className = "node";
+    node.dataset.i = idx;
+    node.innerHTML = '<b>' + it.t + '</b><span>' + it.x + '</span>';
+    node.addEventListener("click", function(){ openDrawer(idx); });
+    clus.appendChild(node);
+  });
+
+  grp.appendChild(clus);
+  trackEl.appendChild(grp);
+});
+
+var endDiv = document.createElement("div");
+endDiv.className = "trail-end";
+endDiv.innerHTML = '<span>★ AI Engineering &amp; Arquiteto de Sistemas com IA</span>';
+trackEl.appendChild(endDiv);
+
+/* Constrói Navegação Lateral */
+document.querySelectorAll("section.part").forEach(function(sec){
+  var h2 = sec.querySelector(".ph h2");
+  if(!h2) return;
+  var sa = document.createElement("a");
+  sa.className = "sec";
+  sa.href = "#" + sec.id;
+  sa.innerHTML = '<b>' + (sec.querySelector(".ph .num") ? sec.querySelector(".ph .num").textContent : "§") + '</b> ' + h2.textContent;
+  navEl.appendChild(sa);
+
+  sec.querySelectorAll("article.topic").forEach(function(top){
+    var th3 = top.querySelector("h3");
+    if(!th3) return;
+    var ta = document.createElement("a");
+    ta.className = "top";
+    ta.href = "#" + top.id;
+    ta.dataset.k = top.id;
+    ta.textContent = th3.textContent;
+    navEl.appendChild(ta);
+  });
+});
+
+/* ==================== ESTADO E PERSISTÊNCIA ==================== */
+var KEYT = "ai_eng_v4_trail";
+var KEYM = "ai_eng_v4_marks";
+var doneT = JSON.parse(localStorage.getItem(KEYT) || localStorage.getItem("ai_eng_v3_trail") || "{}");
+var doneM = JSON.parse(localStorage.getItem(KEYM) || localStorage.getItem("ai_eng_v3_marks") || "{}");
+
+function updateProgress(){
+  var tCount = 0, mCount = 0;
+  document.querySelectorAll(".node").forEach(function(n){
+    var idx = +n.dataset.i;
+    var isD = !!doneT[flat[idx]._id];
+    n.classList.toggle("done", isD);
+    if(isD) tCount++;
+  });
+  document.querySelectorAll("button.done").forEach(function(b){
+    var k = b.dataset.k;
+    var isD = !!doneM[k];
+    b.classList.toggle("is", isD);
+    b.textContent = isD ? "✓ dominado" : "marcar dominado";
+    var navA = navEl.querySelector('a.top[data-k="'+k+'"]');
+    if(navA) navA.classList.toggle("ok", isD);
+    if(isD) mCount++;
+  });
+
+  var total = flat.length + document.querySelectorAll("button.done").length;
+  var done = tCount + mCount;
+  var pct = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById("rdone").textContent = done + " de " + total;
+  document.getElementById("rsub").textContent = tCount + " nós · " + mCount + " tópicos";
+  document.getElementById("rpct").textContent = pct + "%";
+  document.getElementById("ring").style.setProperty("--deg", (pct * 3.6) + "deg");
+}
+
+document.querySelectorAll("button.done").forEach(function(b){
+  b.addEventListener("click", function(){
+    var k = b.dataset.k;
+    doneM[k] = !doneM[k];
+    localStorage.setItem(KEYM, JSON.stringify(doneM));
+    updateProgress();
+  });
+});
+
+document.getElementById("reset").addEventListener("click", function(){
+  if(!confirm("Zerar todo o progresso de estudo deste guia V4?")) return;
+  doneT = {}; doneM = {};
+  localStorage.setItem(KEYT, "{}"); localStorage.setItem(KEYM, "{}");
+  updateProgress();
+});
+
+/* ==================== BUSCA GLOBAL EM TEMPO REAL ==================== */
+var searchIn = document.getElementById("q");
+searchIn.addEventListener("input", function(){
+  var v = searchIn.value.trim().toLowerCase(), hits = 0;
+  document.querySelectorAll(".node").forEach(function(node){
+    var it = flat[+node.dataset.i];
+    var txt = (it.t + " " + it.x + " " + it.oq + " " + it.ps + " " + it.sub + " " + it.pq + " " + it.ex).toLowerCase();
+    var ok = v && txt.indexOf(v) > -1;
+    node.classList.toggle("hit", !!ok);
+    node.classList.toggle("dim", !!v && !ok);
+    if(ok) hits++;
+  });
+  document.querySelectorAll(".grp").forEach(function(g){
+    if(!v){ g.classList.remove("hide"); return; }
+    g.classList.toggle("hide", !g.querySelector(".node.hit"));
+  });
+  document.querySelectorAll("article.topic").forEach(function(top){
+    var ok = !v || top.textContent.toLowerCase().indexOf(v) > -1;
+    top.classList.toggle("hide", !ok);
+    var na = navEl.querySelector('a.top[data-k="'+top.id+'"]');
+    if(na) na.classList.toggle("hide", !ok);
+    if(ok && v) hits++;
+  });
+  document.querySelectorAll("section.part").forEach(function(sec){
+    var has = sec.querySelector("article.topic:not(.hide)");
+    sec.style.display = has ? "" : "none";
+    var sa = navEl.querySelector('a.sec[href="#'+sec.id+'"]');
+    if(sa) sa.classList.toggle("hide", !has);
+  });
+  document.getElementById("nores").classList.toggle("on", !!v && hits === 0);
+});
+
+/* ==================== SCROLL E BARRA SUPERIOR ==================== */
+function onScroll(){
+  var h = document.body.scrollHeight - window.innerHeight;
+  document.getElementById("tp").style.width = (h > 0 ? (window.scrollY / h * 100) : 0) + "%";
+  document.getElementById("up").classList.toggle("on", window.scrollY > 600);
+}
+window.addEventListener("scroll", onScroll, {passive: true});
+document.getElementById("up").addEventListener("click", function(){ window.scrollTo({top:0, behavior:"smooth"}); });
+document.getElementById("top").addEventListener("click", function(){ window.scrollTo({top:0, behavior:"smooth"}); });
+
+/* ==================== GAVETA LATERAL (DRAWER) ==================== */
+var curDrawer = -1;
+var panel = document.getElementById("panel");
+var scrim = document.getElementById("scrim");
+var pMark = document.getElementById("pMark");
+var isTestMode = false;
+
+function openDrawer(idx){
+  curDrawer = idx;
+  var it = flat[idx];
+  document.getElementById("pTag").textContent = "NÍVEL " + it._g;
+  document.getElementById("pTitle").textContent = it.t;
+  document.getElementById("pSub").textContent = it.x;
+  document.getElementById("pOq").textContent = it.oq;
+  document.getElementById("pPs").textContent = it.ps;
+  document.getElementById("pSubst").textContent = it.sub;
+  document.getElementById("pPq").textContent = it.pq;
+  document.getElementById("pEx").textContent = it.ex;
+  document.getElementById("pAl").textContent = it.alem;
+  panel.style.setProperty("--pc", it._gc);
+
+  var isD = !!doneT[it._id];
+  pMark.classList.toggle("is", isD);
+  pMark.textContent = isD ? "✓ dominado" : "marcar dominado";
+
+  if(isTestMode){
+    panel.classList.add("test");
+    panel.classList.remove("revealed");
+    document.getElementById("pGate").hidden = false;
+    document.getElementById("gateTitle").textContent = it.t;
+  } else {
+    panel.classList.remove("test", "revealed");
+    document.getElementById("pGate").hidden = true;
+  }
+
+  panel.classList.add("on");
+  scrim.classList.add("on");
+}
+
+function closeDrawer(){
+  panel.classList.remove("on");
+  scrim.classList.remove("on");
+}
+
+document.getElementById("pClose").addEventListener("click", closeDrawer);
+scrim.addEventListener("click", closeDrawer);
+
+document.getElementById("pPrev").addEventListener("click", function(){
+  if(curDrawer > 0) openDrawer(curDrawer - 1);
+});
+document.getElementById("pNext").addEventListener("click", function(){
+  if(curDrawer < flat.length - 1) openDrawer(curDrawer + 1);
+});
+
+pMark.addEventListener("click", function(){
+  if(curDrawer < 0) return;
+  var it = flat[curDrawer];
+  doneT[it._id] = !doneT[it._id];
+  localStorage.setItem(KEYT, JSON.stringify(doneT));
+  pMark.classList.toggle("is", !!doneT[it._id]);
+  pMark.textContent = doneT[it._id] ? "✓ dominado" : "marcar dominado";
+  updateProgress();
+});
+
+document.getElementById("btnReveal").addEventListener("click", function(){
+  panel.classList.add("revealed");
+  document.getElementById("pGate").hidden = true;
+});
+
+/* Modo Estudo vs Teste */
+var modeBtn = document.getElementById("mode");
+modeBtn.addEventListener("click", function(){
+  isTestMode = !isTestMode;
+  modeBtn.classList.toggle("on", isTestMode);
+  modeBtn.textContent = isTestMode ? "🎯 auto-teste" : "📖 estudo";
+  if(curDrawer >= 0) openDrawer(curDrawer);
+});
+
+/* Teclas de Atalho */
+window.addEventListener("keydown", function(e){
+  if(e.key === "Escape") closeDrawer();
+  if(panel.classList.contains("on")){
+    if(e.key === "ArrowLeft" && curDrawer > 0) openDrawer(curDrawer - 1);
+    if(e.key === "ArrowRight" && curDrawer < flat.length - 1) openDrawer(curDrawer + 1);
+  }
+});
+
+/* ==================== SIMULADOR DE TOOL CALLING (LAB) ==================== */
+var hud = document.getElementById("agentHud");
+var anNodes = [
+  document.getElementById("an1"),
+  document.getElementById("an2"),
+  document.getElementById("an3"),
+  document.getElementById("an4"),
+  document.getElementById("an5")
+];
+
+function logHud(msg, cls){
+  var l = document.createElement("div");
+  l.className = "ah-l " + (cls || "");
+  l.textContent = msg;
+  hud.appendChild(l);
+  hud.scrollTop = hud.scrollHeight;
+}
+
+function resetLabNodes(){
+  anNodes.forEach(function(n){ n.className = "agent-node"; });
+}
+
+document.getElementById("btnResetLab").addEventListener("click", function(){
+  resetLabNodes();
+  hud.innerHTML = '<div class="ah-l ah-info">// Terminal reiniciado. Escolha um cenário acima.</div>';
+});
+
+document.getElementById("btnRunOk").addEventListener("click", function(){
+  resetLabNodes();
+  hud.innerHTML = '';
+  logHud("[01 · INPUT USUÁRIO]: 'Qual é o saldo da minha conta corrente 402?'", "ah-info");
+  anNodes[0].className = "agent-node active";
+
+  setTimeout(function(){
+    anNodes[0].className = "agent-node ok";
+    anNodes[1].className = "agent-node active";
+    logHud("[02 · RACIOCÍNIO LLM]: 'Necessito invocar a tool consultarSaldo(contaId=402)'", "ah-info");
+  }, 600);
+
+  setTimeout(function(){
+    anNodes[1].className = "agent-node ok";
+    anNodes[2].className = "agent-node active";
+    logHud("[03 · TOOL CALL EMITIDO]: {\"tool\": \"consultarSaldo\", \"args\": {\"contaId\": 402}}", "ah-ok");
+  }, 1300);
+
+  setTimeout(function(){
+    anNodes[2].className = "agent-node ok";
+    anNodes[3].className = "agent-node active";
+    logHud("[04 · BACKEND SPRING AI]: Executando SELECT saldo FROM contas WHERE id = 402;", "ah-info");
+    logHud("[04 · BACKEND RETORNO]: Saldo recuperado: R$ 4.850,20. Retornando ao LLM...", "ah-ok");
+  }, 2100);
+
+  setTimeout(function(){
+    anNodes[3].className = "agent-node ok";
+    anNodes[4].className = "agent-node ok";
+    logHud("[05 · RESPOSTA AO USUÁRIO]: 'O saldo da sua conta 402 é de R$ 4.850,20.'", "ah-ok");
+  }, 2900);
+});
+
+document.getElementById("btnRunErr").addEventListener("click", function(){
+  resetLabNodes();
+  hud.innerHTML = '';
+  logHud("[01 · INPUT USUÁRIO]: 'Consulte o saldo da conta 999.'", "ah-info");
+  anNodes[0].className = "agent-node active";
+
+  setTimeout(function(){
+    anNodes[0].className = "agent-node ok";
+    anNodes[1].className = "agent-node active";
+    logHud("[02 · RACIOCÍNIO LLM]: 'Invocando consultarSaldo(contaId=999)'", "ah-info");
+  }, 600);
+
+  setTimeout(function(){
+    anNodes[1].className = "agent-node ok";
+    anNodes[2].className = "agent-node active";
+    logHud("[03 · TOOL CALL]: {\"tool\": \"consultarSaldo\", \"args\": {\"contaId\": 999}}", "ah-ok");
+  }, 1300);
+
+  setTimeout(function(){
+    anNodes[2].className = "agent-node ok";
+    anNodes[3].className = "agent-node err";
+    logHud("[04 · BACKEND EXCEPTION]: ContaNaoEncontradaException: ID 999 inexistente!", "ah-err");
+    logHud("[04 · BACKEND]: Devolvendo erro tratado em JSON para o LLM...", "ah-warn");
+  }, 2100);
+
+  setTimeout(function(){
+    anNodes[3].className = "agent-node ok";
+    anNodes[4].className = "agent-node ok";
+    logHud("[05 · RESPOSTA TRATADA AO USUÁRIO]: 'A conta 999 não foi localizada no sistema.'", "ah-warn");
+  }, 2900);
+});
+
+document.getElementById("btnRunWarn").addEventListener("click", function(){
+  resetLabNodes();
+  hud.innerHTML = '';
+  logHud("[01 · INPUT MALICIOSO]: 'Consulte saldo da conta: 1; DROP TABLE contas;--'", "ah-warn");
+  anNodes[0].className = "agent-node active";
+
+  setTimeout(function(){
+    anNodes[0].className = "agent-node warn";
+    anNodes[1].className = "agent-node active";
+    logHud("[02 · RACIOCÍNIO LLM]: 'Tentativa de injeção SQL identificada. Sanitizando parâmetros...'", "ah-warn");
+  }, 700);
+
+  setTimeout(function(){
+    anNodes[1].className = "agent-node ok";
+    anNodes[2].className = "agent-node active";
+    logHud("[03 · TOOL CALL REJEITADO]: Violação de Schema detectada pelo Guardrail de entrada.", "ah-err");
+  }, 1500);
+
+  setTimeout(function(){
+    anNodes[2].className = "agent-node err";
+    anNodes[3].className = "agent-node";
+    anNodes[4].className = "agent-node err";
+    logHud("[05 · BLOQUEIO DE SEGURANÇA]: 'Entrada inválida. Parâmetros numéricos esperados.'", "ah-err");
+  }, 2300);
+});
+
+// Inicialização de progresso ao carregar
+updateProgress();
+</script>
+
+
+<!-- ==================== MODAL DE IMAGEM / LIGHTBOX INTERATIVO ==================== -->
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+
+<script>
+// ==================== IMAGE MODAL & ZOOM CONTROLLER ====================
+(function(){
+  if (window.__imgModalInit) return;
+  window.__imgModalInit = true;
+
+  var modal = document.getElementById('imgModal');
+  if (!modal) return;
+
+  var backdrop = document.getElementById('imBackdrop');
+  var viewport = document.getElementById('imViewport');
+  var canvas = document.getElementById('imCanvas');
+  var img = document.getElementById('imImg');
+  var caption = document.getElementById('imCaption');
+  var badge = document.getElementById('imBadge');
+  var btnClose = document.getElementById('imClose');
+  var btnZoomIn = document.getElementById('imZoomIn');
+  var btnZoomOut = document.getElementById('imZoomOut');
+  var btnReset = document.getElementById('imZoomReset');
+
+  var scale = 1;
+  var panX = 0;
+  var panY = 0;
+  var isDragging = false;
+  var dragStartX = 0;
+  var dragStartY = 0;
+  var initialPanX = 0;
+  var initialPanY = 0;
+  var hasMoved = false;
+
+  function updateTransform() {
+    canvas.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
+    if (btnReset) btnReset.textContent = Math.round(scale * 100) + '%';
+  }
+
+  function resetZoom() {
+    scale = 1;
+    panX = 0;
+    panY = 0;
+    updateTransform();
+  }
+
+  function openModal(src, titleText, badgeText) {
+    if (!src) return;
+    img.src = src;
+    if (caption) caption.textContent = titleText || 'Visualização Ampliada';
+    if (badge && badgeText) badge.textContent = badgeText;
+    resetZoom();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      if (!modal.classList.contains('open')) {
+        img.src = '';
+      }
+    }, 250);
+  }
+
+  // Intercept click on any .topic-img, .visual-diagram, or zoomable image
+  document.addEventListener('click', function(e) {
+    var trigger = e.target.closest('.topic-img a, .topic-img img, figure.visual-diagram img, [data-zoomable]');
+    if (!trigger) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var targetImg = trigger.tagName.toLowerCase() === 'img' ? trigger : trigger.querySelector('img');
+    var fig = trigger.closest('figure');
+    var cap = fig ? (fig.querySelector('figcaption em') || fig.querySelector('figcaption')) : null;
+    var bd = fig ? fig.querySelector('figcaption span') : null;
+
+    var src = '';
+    if (targetImg) {
+      src = targetImg.getAttribute('src') || targetImg.src;
+    } else if (trigger.tagName.toLowerCase() === 'a') {
+      src = trigger.getAttribute('href');
+    }
+
+    if (src) {
+      var capText = cap ? cap.textContent.trim() : (targetImg ? targetImg.alt : '');
+      var bdText = bd ? bd.textContent.trim() : 'MAPA MENTAL';
+      openModal(src, capText, bdText);
+    }
+  }, true);
+
+  if (btnClose) {
+    btnClose.addEventListener('click', function(e){
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', function(e){
+      closeModal();
+    });
+  }
+
+  // Close on Escape or shortcut keys
+  document.addEventListener('keydown', function(e){
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      closeModal();
+    } else if (e.key === '+' || e.key === '=') {
+      scale = Math.min(6, scale * 1.25);
+      updateTransform();
+    } else if (e.key === '-') {
+      scale = Math.max(0.3, scale / 1.25);
+      updateTransform();
+    } else if (e.key === '0') {
+      resetZoom();
+    }
+  });
+
+  if (btnZoomIn) {
+    btnZoomIn.addEventListener('click', function(e){
+      e.stopPropagation();
+      scale = Math.min(6, scale * 1.25);
+      updateTransform();
+    });
+  }
+
+  if (btnZoomOut) {
+    btnZoomOut.addEventListener('click', function(e){
+      e.stopPropagation();
+      scale = Math.max(0.3, scale / 1.25);
+      updateTransform();
+    });
+  }
+
+  if (btnReset) {
+    btnReset.addEventListener('click', function(e){
+      e.stopPropagation();
+      resetZoom();
+    });
+  }
+
+  // Double click toggles zoom (100% -> 200% -> 100%)
+  if (canvas) {
+    canvas.addEventListener('dblclick', function(e){
+      e.stopPropagation();
+      if (scale <= 1.15) {
+        scale = 2;
+      } else {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+      }
+      updateTransform();
+    });
+  }
+
+  // Mouse wheel zoom
+  if (viewport) {
+    viewport.addEventListener('wheel', function(e){
+      if (!modal.classList.contains('open')) return;
+      e.preventDefault();
+      var zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
+      var newScale = scale * zoomFactor;
+      if (newScale >= 0.3 && newScale <= 6) {
+        scale = newScale;
+        updateTransform();
+      }
+    }, { passive: false });
+
+    // Drag / Pan & Click Outside
+    viewport.addEventListener('mousedown', function(e){
+      if (e.button !== 0) return;
+      if (e.target.closest('.im-btn') || e.target.closest('.im-header') || e.target.closest('.im-footer')) return;
+
+      isDragging = true;
+      hasMoved = false;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      initialPanX = panX;
+      initialPanY = panY;
+      viewport.classList.add('is-dragging');
+    });
+
+    window.addEventListener('mousemove', function(e){
+      if (!isDragging) return;
+      var dx = e.clientX - dragStartX;
+      var dy = e.clientY - dragStartY;
+      if (Math.hypot(dx, dy) > 5) {
+        hasMoved = true;
+      }
+      panX = initialPanX + dx;
+      panY = initialPanY + dy;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', function(e){
+      if (isDragging) {
+        isDragging = false;
+        viewport.classList.remove('is-dragging');
+        // If user clicked outside the image without dragging
+        if (!hasMoved && (e.target === viewport || e.target === backdrop || e.target === modal)) {
+          closeModal();
+        }
+      }
+    });
+
+    // Touch support (mobile pinch / drag)
+    var touchStartDist = 0;
+    var initialTouchScale = 1;
+    viewport.addEventListener('touchstart', function(e){
+      if (e.touches.length === 1) {
+        isDragging = true;
+        hasMoved = false;
+        dragStartX = e.touches[0].clientX;
+        dragStartY = e.touches[0].clientY;
+        initialPanX = panX;
+        initialPanY = panY;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        touchStartDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialTouchScale = scale;
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', function(e){
+      if (e.touches.length === 1 && isDragging) {
+        var dx = e.touches[0].clientX - dragStartX;
+        var dy = e.touches[0].clientY - dragStartY;
+        if (Math.hypot(dx, dy) > 5) hasMoved = true;
+        panX = initialPanX + dx;
+        panY = initialPanY + dy;
+        updateTransform();
+      } else if (e.touches.length === 2 && touchStartDist > 0) {
+        var currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        var factor = currentDist / touchStartDist;
+        var newScale = initialTouchScale * factor;
+        if (newScale >= 0.4 && newScale <= 6) {
+          scale = newScale;
+          updateTransform();
+        }
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', function(e){
+      if (isDragging) {
+        isDragging = false;
+        if (!hasMoved && (e.target === viewport || e.target === backdrop)) {
+          closeModal();
+        }
+      }
+      if (e.touches.length < 2) {
+        touchStartDist = 0;
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

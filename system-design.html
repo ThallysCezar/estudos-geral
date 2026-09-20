@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>System Design completo — trilha visual + conteúdo · projetar com número na mão</title>
-<meta name="description" content="O nono documento: como projetar um sistema sob número, não sob palpite. Trilha visual em 9 marcos, mais 23 tópicos em 9 partes — o método (contrato, workload, gargalo), contas de guardanapo e a lei de Little, a escada de escalar leitura, sharding e partition key, fila como amortecedor, Bloom filter, paginação keyset, arquivos grandes, tempo real e sobrevivência à falha. Cada conceito com o caso que o obriga a existir. Tema Dracula.">
+<title>System Design Completo — Trilha Visual + Matriz dos 8 Passos, 15 Sistemas Reais & IA 2026</title>
+<meta name="description" content="O nono documento: como projetar um sistema sob número, não sob palpite. Trilha visual em 12 marcos (65 nós), mais 43 tópicos em 12 partes — incluindo o framework de 8 passos, 15 sistemas do mundo real e arquitetura para IA e LLM Engineering (2026) — o método (contrato, workload, gargalo), contas de guardanapo e a lei de Little, a escada de escalar leitura, sharding e partition key, fila como amortecedor, Bloom filter, paginação keyset, arquivos grandes, tempo real e sobrevivência à falha. Cada conceito com o caso que o obriga a existir. Tema Dracula.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/img-modal.css">
 <style>
 
 /* ===================== DRACULA — tema único ===================== */
@@ -292,6 +293,49 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 @media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
 
 </style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -317,10 +361,23 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
     <header class="hero">
       <span class="eyebrow">System Design · setembro 2026</span>
       <h1>Projetar com <em>número</em> na mão.</h1>
-      <p class="lede">O nono da série. Os outros explicam <b>mecanismos</b>; este ensina a <b>escolher entre eles sob restrição</b> — que é o que System Design realmente é. Em cima, a <b>trilha visual</b>: 42 nós em 9 marcos. Embaixo, o <b>conteúdo</b>: 23 tópicos em 9 partes. E a regra que atravessa o documento inteiro: <b>nenhum conceito aparece sozinho</b>. Cada um chega junto com o caso que o obriga a existir — 10 mil requisições por segundo no banco, 1 milhão de eventos por segundo, dois bilhões de usernames, um milhão de pedidos para paginar. Quando o mecanismo já foi explicado em outro documento do acervo, aqui ele aparece <b>sendo escolhido</b>, com o link de volta em vez da repetição.</p>
+      <p class="lede">O nono da série. Os outros explicam <b>mecanismos</b>; este ensina a <b>escolher entre eles sob restrição</b> — que é o que System Design realmente é. Em cima, a <b>trilha visual interativa</b> e o <b>mapa mental completo</b> da disciplina. Embaixo, o <b>conteúdo dissecado em 12 partes</b>: o método, as contas de guardanapo, a escala de leitura/escrita, a sobrevivência à falha, o <b>framework dos 8 passos</b>, o catálogo dos <b>15 sistemas do mundo real</b> e o módulo de <b>System Design para IA e LLMs (2026)</b>.</p>
+
+      <!-- MAPA MENTAL PRINCIPAL -->
+      <figure class="topic-img">
+        <img src="img/system_design_mapa_mental_principal.jpg" alt="Mapa Mental: SYSTEM DESIGN - PROJETANDO SISTEMAS PARA O PRESENTE E PARA O FUTURO" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <figcaption>
+          <span>MAPA MENTAL PRINCIPAL</span>
+          <em>SYSTEM DESIGN — Projetando Sistemas para o Presente e para o Futuro</em>
+        </figcaption>
+      </figure>
+
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
         <a href="#p1"><b>↓ O conteúdo</b>o método, os casos e as contas</a>
+        <a href="#p10"><b>↓ 8 Passos &amp; Guardanapo</b>framework e fórmulas</a>
+        <a href="#p11"><b>↓ 15 Sistemas Reais</b>catálogo de entrevistas</a>
+        <a href="#p12"><b>↓ IA &amp; LLMs (2026)</b>serving, RAG e MCP</a>
       </div>
       <div class="legenda">
         <div><b>Sempre com caso</b><span>Todo tópico abre com o problema concreto e os números dele.</span></div>
@@ -1374,6 +1431,465 @@ psql -c "EXPLAIN ANALYZE
 
 
 
+    
+    <!-- ===================== PARTE 10 ===================== -->
+    <section class="part" id="p10">
+      <div class="ph"><span class="num">10</span><div><h2>O Framework de 8 Passos &amp; As Fórmulas de Guardanapo</h2><p>Da pergunta em aberto à arquitetura aprovada: o roteiro metódico de entrevista e a matemática de restrições.</p></div></div>
+
+      <article class="topic" id="j1">
+        <div class="th"><h3>O Framework de 8 Passos de System Design: da Pergunta ao Sistema em Produção</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">entrevista &amp; liderança</span><span class="badge b-caso">roteiro mestre</span></div></div>
+        <p class="direto"><b>Direto:</b> em entrevistas e decisões corporativas, quem desenha caixas nos primeiros cinco minutos é eliminado. System Design é uma conversa de <b>engenharia de requisitos sob restrição</b> dividida em 8 passos lógicos e sequenciais.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O entrevistador propõe: <i>"Projete o sistema de pagamentos da Uber ou o feed do Instagram"</i>.</p>
+          <p>O candidato júnior desenha um quadrado escrito "API Gateway", outro escrito "Microserviço" e outro escrito "Banco". O candidato sênior assume a lousa e conduz os <b>8 passos</b>: delimita escopo, extrai números de tráfego, calcula armazenamento para 5 anos, declara os trade-offs do Teorema PACELC e só depois desce ao nível de componentes e contratos de rede.</p>
+        </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É como um cirurgião antes de uma intervenção de alta complexidade. Ele não pega o bisturi e começa a cortar. Primeiro ele revisa os exames (requisitos), verifica alergias e tipo sanguíneo (restrições e estimativas), define a equipe e os instrumentos (arquitetura HLD e tecnologias) e prepara o plano de contingência caso a pressão caia (resiliência e failover).</p></div>
+
+        <div class="escada">
+          <div class="deg"><div class="n">01</div><div class="txt"><h4>Entendimento do Problema e Escopo</h4><p>Separe <b>Requisitos Funcionais</b> (o que o usuário consegue fazer) de <b>Não-Funcionais</b> (latência p99 &lt; 50ms, disponibilidade de 99.99%, consistência forte vs eventual). Defina explicitamente o que está <b>fora de escopo</b> para não desperdiçar tempo.</p></div><div class="gt"><b>gate de entrada</b>Listar de 3 a 4 casos de uso principais e os SLOs prometidos antes de desenhar.</div></div>
+          <div class="deg"><div class="n">02</div><div class="txt"><h4>Estimativas de Capacidade (Back-of-the-envelope)</h4><p>Calcule DAU/MAU, QPS médio de leitura e escrita, proporção Read:Write, Throughput de rede (Bandwidth) e espaço em disco necessário para 5 anos, além da RAM para cache (regra 80/20).</p></div><div class="gt"><b>gate de entrada</b>Números de QPS e armazenamento calculados com a regra dos 100.000s.</div></div>
+          <div class="deg"><div class="n">03</div><div class="txt"><h4>Definição da Arquitetura High-Level (HLD)</h4><p>Desenhe o fluxo ponta a ponta: Clientes (Web/Mobile) → DNS/Anycast → CDN → API Gateway/Reverse Proxy → Load Balancers (L4 vs L7) → Serviços de Aplicação Stateless → Cache Distribuído → Filas/Streaming → Camada de Persistência.</p></div><div class="gt"><b>gate de entrada</b>Identificar o caminho crítico da requisição em caixas bem definidas.</div></div>
+          <div class="deg"><div class="n">04</div><div class="txt"><h4>Escolha de Tecnologias &amp; Trade-offs (CAP / PACELC)</h4><p>Defenda a escolha do banco com base no Teorema PACELC: Se há Partição (P), escolha entre Disponibilidade (A) ou Consistência (C); Senão (Else), escolha entre Latência (L) ou Consistência (C). Escolha entre SQL relacional (ACID), NoSQL colunar (Cassandra), Documentos (MongoDB) ou Chave-Valor (Redis/DynamoDB).</p></div><div class="gt"><b>gate de entrada</b>Toda escolha deve ter a justificativa do trade-off explicitada.</div></div>
+          <div class="deg"><div class="n">05</div><div class="txt"><h4>Desenho dos Dados e Estrutura de Armazenamento</h4><p>Modele as entidades, tipos de chaves primárias (UUIDv7, Snowflake ID, autoincremento), estratégias de particionamento (Sharding por hash vs range) e topologia de replicação (Single-Leader vs Multi-Leader vs Quorum).</p></div><div class="gt"><b>gate de entrada</b>Modelagem que elimina hot-shards e suporta o volume de 5 anos.</div></div>
+          <div class="deg"><div class="n">06</div><div class="txt"><h4>Fluxos de Comunicação e Contratos de API</h4><p>Defina as assinaturas das APIs (REST, gRPC em HTTP/2 com Protobuf para comunicação inter-serviços, GraphQL para agregações complexas) e eventos assíncronos (Kafka/RabbitMQ com CloudEvents e Outbox Pattern).</p></div><div class="gt"><b>gate de entrada</b>Contratos de API idempotentes com cabeçalhos de rastreamento.</div></div>
+          <div class="deg"><div class="n">07</div><div class="txt"><h4>Resiliência, Segurança &amp; Confiabilidade</h4><p>Antecipe o que vai quebrar: Circuit Breaker com Resilience4j, Rate Limiting distribuído no Redis (Token Bucket), Retries exponenciais com Jitter, mTLS interno, autenticação OAuth2/JWT e Fallbacks graciosos.</p></div><div class="gt"><b>gate de entrada</b>Demonstrar o comportamento do sistema quando um banco ou serviço terceiro cai.</div></div>
+          <div class="deg"><div class="n">08</div><div class="txt"><h4>Monitoramento, Observabilidade &amp; Evolução</h4><p>Defina os três pilares: Métricas com Prometheus e Grafana, Tracing distribuído com OpenTelemetry (W3C TraceContext), Logs estruturados JSON em OpenSearch. Acompanhe SLIs, SLOs e Error Budgets.</p></div><div class="gt"><b>gate de entrada</b>Definir alertas nos percentis p95/p99 e planos de contingência/autoscaling.</div></div>
+        </div>
+
+        <div class="gotcha"><b>armadilhas que reprovam candidatos</b>
+          <ul>
+            <li><b>Pular direto para a tecnologia da moda.</b> Começar dizendo "vou usar Kubernetes e Kafka" sem saber qual o QPS e sem saber se uma fila SQS ou um processo único bastariam.</li>
+            <li><b>Ignorar o Teorema PACELC.</b> Dizer apenas "meu sistema é CAP" sem saber que em 99,9% do tempo a rede está saudável, e o verdadeiro trade-off diário é entre <i>Latência</i> e <i>Consistência</i>.</li>
+            <li><b>Esquecer de perguntar a distribuição das chaves.</b> Tratar tráfego de celebridade (Justin Bieber no Twitter) como se fosse uniforme, gerando sobrecarga fatal de cache e réplicas.</li>
+            <li><b>Não calcular o custo de replicação.</b> Propor 3 réplicas de leitura e storage multi-região sem contabilizar o custo financeiro e o lag de replicação síncrona.</li>
+          </ul>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Pegue o problema "Projetar um encurtador de URL" e cronometre 45 minutos no relógio. Siga estritamente os 8 passos anotando cada item num papel ou Miro.</div>
+          <div><b>prova de domínio</b>Você consegue conduzir uma entrevista técnica de arquitetura de ponta a ponta sem hesitar, gastando os primeiros 10 minutos exclusivamente em requisitos e estimativas antes de qualquer diagrama.</div>
+        </div>
+        <button class="done" type="button" data-k="j1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="j2">
+        <div class="th"><h3>Fórmulas de Guardanapo e Números de Latência que Todo Engenheiro Deve Conhecer</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">contas de cabeça</span><span class="badge b-caso">capacidade 5 anos</span></div></div>
+        <p class="direto"><b>Direto:</b> contas de guardanapo (<i>back-of-the-envelope calculations</i>) não servem para prever o futuro com precisão decimal; servem para <b>eliminar ordens de magnitude inviáveis</b> em menos de dois minutos de cálculo mental.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O cliente pede para guardar o histórico de rastreamento de 1 milhão de veículos enviando telemetria a cada 1 segundo em banco relacional único com backup em disco mecânico comum.</p>
+          <p>Em 30 segundos de cálculo mental: 1.000.000 veículos × 1 req/s = <b>1.000.000 QPS de escrita</b>. Um disco magnético (HDD) faz ~100 IOPS aleatórios; um SSD NVMe topo de linha faz ~50.000 a 100.000 IOPS de escrita. Conclusão imediata: uma máquina só derrete em milissegundos. Você precisa de particionamento distribuído (Kafka + Cassandra/ScyllaDB) antes mesmo de discutir qual linguagem usar.</p>
+        </div>
+
+        <h4 class="codelab">a tabela de latências clássica de jeff dean</h4>
+        <p>Números que todo engenheiro de sistemas distribuídos sênior precisa manter calibrados na cabeça:</p>
+
+        <div class="conta">
+          <div><code>L1 Cache: ~0.5 a 1 ns</code><small>O referencial mais rápido da física de computação moderna.</small></div>
+          <div><code>RAM Principal: ~100 ns</code><small>100 a 200 vezes mais lenta que a memória cache L1 da CPU.</small></div>
+          <div><code>SSD NVMe (1MB): ~100 µs</code><small>1.000 vezes mais lento que a leitura de 1MB de RAM.</small></div>
+          <div><code>Rede mesmo Datacenter: ~500 µs</code><small>0.5 milissegundo. O custo de um salto de rede local interna.</small></div>
+          <div><code>Disco Mecânico (HDD seek): ~10 ms</code><small>10.000.000 ns. 100.000 vezes mais lento que um SSD!</small></div>
+          <div><code>WAN Intercontinental: ~120 a 150 ms</code><small>Ida e volta São Paulo &lt;-&gt; Virgínia/EUA pela velocidade da luz na fibra.</small></div>
+        </div>
+
+        <h4 class="codelab">o kit de fórmulas rápidas para entrevistas</h4>
+        <div class="duo">
+          <div><h4>1. O Truque dos 100.000 Segundos</h4>
+            <p>1 dia tem 86.400 segundos. Em contas mentais de System Design, <b>arredonde sempre para 100.000 (10^5)</b>. Isso transforma divisões complexas em simples cortes de zeros.</p>
+            <pre><code>// 100 milhões de requisições por dia:
+QPS Médio = 100.000.000 / 100.000 = 1.000 QPS
+QPS de Pico = QPS Médio × 2 a 3 = 2.000 a 3.000 QPS</code></pre>
+          </div>
+          <div><h4>2. Estimativa de Armazenamento para 5 Anos</h4>
+            <p>Multiplique o número de escritas diárias pelo tamanho do payload, multiplique por 365 dias e por 5 anos. Adicione fator de replicação (geralmente 3x).</p>
+            <pre><code>// 10 milhões de posts/dia de 1 KB cada:
+10M × 1 KB = 10 GB / dia
+10 GB × 365 = 3.65 TB / ano
+5 anos = ~18.25 TB (bruto)
+Com replicação 3x: ~55 TB de storage</code></pre>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div><h4>3. Estimativa de RAM para Cache (Regra 80/20)</h4>
+            <p>Pelo princípio de Pareto, 20% das chaves (posts, produtos, links) são responsáveis por 80% das requisições de leitura. Guarde os 20% mais quentes na RAM do Redis.</p>
+            <pre><code>// Tráfego diário de leitura: 50 GB de dados consultados
+RAM necessária no cache = 50 GB × 0.20 = 10 GB de RAM
+Adicione 25% de margem operacional: ~12.5 GB</code></pre>
+          </div>
+          <div><h4>4. Cálculo de Throughput de Rede (Bandwidth)</h4>
+            <p>Multiplique o QPS de leitura/escrita pelo tamanho médio da resposta para encontrar o tráfego de rede que os links e gateways precisam suportar.</p>
+            <pre><code>// 5.000 RPS de saída × 20 KB de JSON/HTML:
+Throughput = 5.000 × 20 KB = 100.000 KB/s
+= 100 MB/s = 800 Mbps de tráfego de saída</code></pre>
+          </div>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Calcule mentalmente: um sistema de mensagens recebe 500 milhões de mensagens de 200 bytes por dia. Qual o QPS médio, o QPS de pico (3x) e o armazenamento bruto necessário para 3 anos?</div>
+          <div><b>prova de domínio</b>Você resolve a estimativa em menos de 60 segundos com o truque dos 100k segundos: QPS médio = 5.000/s; QPS de pico = 15.000/s; Storage diário = 100 GB; 3 anos = ~110 TB.</div>
+        </div>
+        <button class="done" type="button" data-k="j2">marcar dominado</button>
+      </article>
+    </section>
+
+
+    <!-- ===================== PARTE 11 ===================== -->
+    <section class="part" id="p11">
+      <div class="ph"><span class="num">11</span><div><h2>O Catálogo dos 15 Sistemas do Mundo Real (Deep-Dive Prático)</h2><p>Os 15 projetos canônicos de arquitetura de larga escala dissecados por fluxo, gargalo e trade-offs de entrevista.</p></div></div>
+
+      <!-- 1. URL SHORTENER -->
+      <article class="topic" id="k1">
+        <div class="th"><h3>01 · URL Shortener (TinyURL / Bitly)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso canônico</span></div></div>
+        <p class="direto"><b>Direto:</b> converter URLs longas em chaves curtas de 7 caracteres (Base62) com latência de redirecionamento sub-10ms e alta taxa de leitura (100:1).</p>
+        <div class="caso"><b>o caso e os números</b>
+          <p>100 milhões de novas URLs por mês; 10 bilhões de acessos mensais (proporção 100:1 de leitura). Armazenamento de 5 anos: 100M × 12 × 5 = 6 bilhões de URLs. Com 500 bytes por registro, temos ~3 TB de dados.</p>
+          <p>Com <b>Base62</b> ([a-z, A-Z, 0-9]), uma chave de 7 caracteres produz <b>62^7 ≈ 3,5 trilhões de combinações</b> — espaço de sobra para séculos de operação sem colisão.</p>
+        </div>
+        <div class="duo">
+          <div><h4>Geração de Chave: Hash vs KGS</h4>
+            <p>Fazer MD5/SHA-256 da URL e pegar os primeiros 7 caracteres gera <i>colisões</i> que exigem re-hash e checagem no banco. A solução de alto desempenho é o <b>KGS (Key Generation Service)</b>: um serviço standalone que gera previamente milhões de strings Base62 únicas e as mantém prontas no Redis. A gravação vira um simples pop O(1).</p>
+          </div>
+          <div><h4>HTTP 301 vs 302: O Grande Trade-off</h4>
+            <p><b>301 Moved Permanently:</b> o navegador faz cache do redirecionamento localmente. As próximas visitas não batem no servidor (ótimo para aliviar infra), mas <b>destrói a capacidade de métricas</b> e contagem de cliques.</p>
+            <p><b>302 Found / 307 Temporary:</b> toda requisição passa pelo servidor, permitindo coletar analytics, geolocalização e cliques em tempo real.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k1">marcar dominado</button>
+      </article>
+
+      <!-- 2. WHATSAPP -->
+      <article class="topic" id="k2">
+        <div class="th"><h3>02 · WhatsApp &amp; Chat Messenger em Tempo Real</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">tempo real</span></div></div>
+        <p class="direto"><b>Direto:</b> troca bidirecional de mensagens com latência sub-segundo, garantia de entrega ponta a ponta e indicador de presença em tempo real.</p>
+        <div class="caso"><b>o caso e os números</b>
+          <p>2 bilhões de usuários ativos enviando 100 bilhões de mensagens/dia. QPS médio = 1.000.000 msgs/s; pico = 2.500.000 msgs/s. Conexões TCP simultâneas: centenas de milhões.</p>
+        </div>
+        <div class="duo">
+          <div><h4>Conexões &amp; Gateway WebSocket</h4>
+            <p>Conexões <b>WebSockets persistentes</b> mantidas em clusters de <i>Connection Handlers</i>. Como o remetente e o destinatário estão conectados em servidores físicos diferentes, um <b>Message Broker (Kafka / Redis PubSub)</b> faz o roteamento entre as máquinas com base no <code class="i">user_id</code>.</p>
+          </div>
+          <div><h4>Presence Service &amp; Armazenamento</h4>
+            <p>Status de presença (online/offline) é mantido com <b>Heartbeat periódico</b> (ex.: ping a cada 25s) atualizando uma chave no Redis com TTL de 30s. Se o ping não chega, o Redis expira e o usuário fica offline automaticamente. Histórico persistido em banco Wide-Column (Cassandra) particionado por <code class="i">chat_id</code>.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k2">marcar dominado</button>
+      </article>
+
+      <!-- 3. UBER -->
+      <article class="topic" id="k3">
+        <div class="th"><h3>03 · Uber &amp; Rastreamento Geoespacial</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">geoespacial</span></div></div>
+        <p class="direto"><b>Direto:</b> ingerir telemetria de milhões de motoristas a cada 4 segundos e realizar matching com passageiros em raio de 3 km em milissegundos.</p>
+        <div class="caso"><b>o caso e os números</b>
+          <p>5 milhões de motoristas ativos enviando coordenadas (latitude, longitude) a cada 4 segundos = <b>1.250.000 QPS de escrita geoespacial</b>.</p>
+          <p>Varreduras SQL tradicionais com cálculo euclidiano ou Haversine em tabela relacional (<code class="i">WHERE lat BETWEEN ... AND lng BETWEEN ...</code>) causam Table Scan e travam o banco.</p>
+        </div>
+        <div class="duo">
+          <div><h4>Indexação: Geohash vs QuadTree vs Google S2/H3</h4>
+            <p><b>Geohash:</b> divide o mundo em grade hierárquica base32; prefixos comuns significam proximidade (fácil busca no Redis via <code class="i">GEORADIUS</code>).</p>
+            <p><b>QuadTree:</b> árvore em memória onde cada nó tem 4 quadrantes que se subdividem recursivamente conforme a densidade urbana aumenta.</p>
+            <p><b>Uber H3 / Google S2:</b> grade de células hexagonais que cobrem o globo sem distorção nos polos, ideal para cálculo de <i>Surge Pricing</i> dinâmico.</p>
+          </div>
+          <div><h4>Arquitetura de Matching</h4>
+            <p>Telemetria entra via gRPC em Apache Kafka → gravada em memória volátil no <b>Redis Geospatial</b>. O motor de matching pesquisa os motoristas livres nas células adjacentes, calcula ETA e aplica um <b>Distributed Lock temporário</b> (15 segundos) no motorista ofertado.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k3">marcar dominado</button>
+      </article>
+
+      <!-- 4. NETFLIX / YOUTUBE -->
+      <article class="topic" id="k4">
+        <div class="th"><h3>04 · Netflix &amp; YouTube (Streaming de Vídeo em Escala Global)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">streaming &amp; cdn</span></div></div>
+        <p class="direto"><b>Direto:</b> entregar petabytes de vídeo em 4K/1080p sem engasgos (buffering), adaptando-se instantaneamente à qualidade da rede do usuário.</p>
+        <div class="duo">
+          <div><h4>Pipeline de Transcodificação &amp; Chunking</h4>
+            <p>Ao fazer upload de um vídeo master, um pipeline assíncrono em lote (FFmpeg distribuído em containers) fatia o arquivo em pedaços de 4 a 10 segundos e converte para múltiplos formatos: <b>HLS</b> (HTTP Live Streaming da Apple) e <b>DASH</b> (Dynamic Adaptive Streaming over HTTP), em diversas resoluções (360p, 720p, 1080p, 4K) e taxas de bits.</p>
+          </div>
+          <div><h4>Adaptive Bitrate (ABR) &amp; Open Connect CDN</h4>
+            <p>O player no dispositivo do usuário monitora constantemente a largura de banda. Se o sinal Wi-Fi oscilar, o algoritmo ABR requisita o próximo chunk em 720p em vez de 1080p, <b>evitando a pausa do vídeo</b>. Os chunks ficam armazenados em Object Storage (S3) e cacheados em <i>Edge Appliances</i> (Open Connect) instalados diretamente dentro dos provedores de internet (ISPs).</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k4">marcar dominado</button>
+      </article>
+
+      <!-- 5. GOOGLE MAPS -->
+      <article class="topic" id="k5">
+        <div class="th"><h3>05 · Google Maps &amp; Serviços de Proximidade (Yelp)</h3><div class="badges"><span class="badge b-prof">grafos &amp; mapas</span></div></div>
+        <p class="direto"><b>Direto:</b> renderizar mapas globais com rolagem suave e calcular a rota de menor tempo em grafos com bilhões de interseções sob tráfego variável.</p>
+        <div class="duo">
+          <div><h4>Renderização em Map Tiles</h4>
+            <p>O planeta é dividido em azulejos (<i>Tiles</i> de 256x256 pixels) em múltiplos níveis de zoom (de 0 a 21). Tiles estáticos são pré-renderizados em formato vetorial e distribuídos em CDN global. Conforme o usuário arrasta o mapa, o aplicativo apenas busca os blocos vetoriais correspondentes às coordenadas da viewport.</p>
+          </div>
+          <div><h4>Roteamento: A* &amp; Contraction Hierarchies</h4>
+            <p>O algoritmo de Dijkstra ingênuo varreria milhões de nós e levaria segundos para calcular uma viagem São Paulo-Curitiba. A técnica de <b>Contraction Hierarchies</b> pré-processa o grafo rodoviário criando "atalhos" entre nós de alta velocidade (rodovias), reduzindo o cálculo de rota para <b>menos de 5 milissegundos</b>. Dados de tráfego em tempo real via Apache Flink ajustam o peso das arestas dinamicamente.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k5">marcar dominado</button>
+      </article>
+
+      <!-- 6. GOOGLE SEARCH / CRAWLER -->
+      <article class="topic" id="k6">
+        <div class="th"><h3>06 · Google Search &amp; Web Crawler Distribuído</h3><div class="badges"><span class="badge b-prof">busca &amp; big data</span></div></div>
+        <p class="direto"><b>Direto:</b> varrer a web inteira, indexar centenas de bilhões de páginas em estruturas invertidas e devolver resultados relevantes em menos de 100ms.</p>
+        <div class="duo">
+          <div><h4>URL Frontier &amp; Deduplicação SimHash</h4>
+            <p>O rastreador gerencia a <b>URL Frontier</b> com dois conjuntos de filas: <i>Priority Queues</i> (rastrear primeiro páginas de alta autoridade) e <i>Politeness Queues</i> (respeitar delay entre requisições para o mesmo host). Para não armazenar páginas duplicadas ou espelhos, utiliza-se <b>SimHash / MinHash</b> para calcular a distância de Hamming entre os textos.</p>
+          </div>
+          <div><h4>Índice Invertido (Inverted Index) &amp; PageRank</h4>
+            <p>Um <b>Índice Invertido</b> mapeia cada termo para a lista ordenada de documentos onde ele aparece (<i>Posting List</i>). Ao buscar "system design", o motor faz a interseção das duas listas de documentos. O ranqueamento final combina <b>BM25</b> (frequência do termo e raridade no corpus) com <b>PageRank</b> (autoridade por links) e embeddings densos de modelos neurais.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k6">marcar dominado</button>
+      </article>
+
+      <!-- 7. E-COMMERCE FLASH SALE -->
+      <article class="topic" id="k7">
+        <div class="th"><h3>07 · Amazon E-Commerce &amp; Flash Sale (Black Friday / Ingressos)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">alta concorrência</span></div></div>
+        <p class="direto"><b>Direto:</b> vender 1.000 itens promocionais com 100.000 pessoas tentando comprar no mesmo milissegundo, garantindo <b>zero sobrevenda (overselling)</b>.</p>
+        <div class="duo">
+          <div><h4>Controle de Concorrência de Estoque</h4>
+            <p><b>Optimistic Locking</b> com coluna de versão funciona bem com pouca colisão, mas em flash sales 99% das transações falhariam com <code class="i">OptimisticLockException</code>. <b>Pessimistic Locking</b> (<code class="i">SELECT ... FOR UPDATE</code>) enfileira no banco e esgota o pool de conexões. A solução corporativa: <b>Atomic Decr no Redis com scripts Lua</b> ou <b>Distributed Lock com Redis Redlock</b> mantendo o estoque em memória volátil ultrarrápida.</p>
+          </div>
+          <div><h4>Virtual Waiting Room &amp; Padrão Saga</h4>
+            <p>Uma <b>Sala de Espera Virtual</b> (ex.: Cloudflare Waiting Room) retém o tráfego excedente na borda, liberando tokens de checkout em vazão compatível com a capacidade do banco. A compra executa o <b>Padrão Saga Orquestrado</b>: (1) Reserva estoque temporária (15 min) → (2) Processa pagamento com <i>Idempotency Key</i> → (3) Baixa definitiva do estoque ou compensação reversa se o cartão falhar.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k7">marcar dominado</button>
+      </article>
+
+      <!-- 8. TWITTER FEED -->
+      <article class="topic" id="k8">
+        <div class="th"><h3>08 · Twitter / Instagram Social Feed</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fanout</span></div></div>
+        <p class="direto"><b>Direto:</b> gerar e exibir feeds cronológicos e algorítmicos para centenas de milhões de usuários com latência de carregamento sub-100ms.</p>
+        <div class="duo">
+          <div><h4>Fanout-on-Write (Push Model)</h4>
+            <p>Quando um usuário comum posta, um worker assíncrono entrega o ID do post diretamente na caixa de entrada (<i>Timeline Cache</i> em Redis Sorted Set) de cada seguidor. <b>Vantagem:</b> leitura ultrarrápida O(1). <b>Gargalo:</b> Quando um perfil com 100 milhões de seguidores (ex.: celebridade) posta, o sistema precisaria fazer 100M de escritas no Redis (o infame <i>Fanout Bomb</i>), travando as filas.</p>
+          </div>
+          <div><h4>Fanout-on-Read (Pull Model) &amp; Modelo Híbrido</h4>
+            <p>No modelo Pull, nenhum post é entregue antecipadamente; o feed é montado dinamicamente na hora em que o usuário abre o app. Lento para quem segue muitas pessoas. A <b>Arquitetura Híbrida</b> é a solução da indústria: usuários comuns usam Fanout-on-Write; contas com mais de 25.000 seguidores não fazem push. Na leitura, o feed mescla o cache local com os posts recentes das celebridades seguidas.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k8">marcar dominado</button>
+      </article>
+
+      <!-- 9. NOTIFICAÇÕES -->
+      <article class="topic" id="k9">
+        <div class="th"><h3>09 · Sistema de Notificações Distribuído em Grande Escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">resiliência</span></div></div>
+        <p class="direto"><b>Direto:</b> disparar bilhões de alertas push, SMS e e-mails garantindo prioridade crítica (2FA) e impedindo mensagens duplicadas.</p>
+        <div class="duo">
+          <div><h4>Gateway Multi-Canal &amp; Filas com Prioridade</h4>
+            <p>O Notification Gateway desacopla a aplicação dos provedores externos (APNs para iOS, FCM para Android, Twilio para SMS, AWS SES para e-mail). Usa <b>Filas de Prioridade separadas</b>: eventos de alta prioridade (códigos 2FA, fraudes bancárias) nunca ficam retidos atrás de milhões de notificações de marketing ou promoções.</p>
+          </div>
+          <div><h4>Deduplicação &amp; Rate Limiting de Notificações</h4>
+            <p>Para evitar que falhas de rede ou retries de microsserviços enviem o mesmo e-mail cinco vezes, um <b>Deduplication Filter</b> no Redis checa um hash <code class="i">hash(user_id, event_type, payload_hash)</code> em uma janela deslizante de 5 minutos. Um <b>User Rate Limiter</b> garante respeito a limites diários e janelas de silêncio (<i>Quiet Hours</i>).</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k9">marcar dominado</button>
+      </article>
+
+      <!-- 10. GOOGLE DRIVE / DROPBOX -->
+      <article class="topic" id="k10">
+        <div class="th"><h3>10 · Google Drive / Dropbox (Armazenamento e Sincronização)</h3><div class="badges"><span class="badge b-prof">storage &amp; deduplicação</span></div></div>
+        <p class="direto"><b>Direto:</b> sincronizar arquivos de gigabytes economizando banda e tempo quando apenas pequenos trechos sofrem alteração.</p>
+        <div class="duo">
+          <div><h4>Chunking de 4MB &amp; Deduplicação SHA-256</h4>
+            <p>Arquivos grandes nunca são tratados como uma massa única de bytes. O cliente divide o arquivo em blocos lógicos (chunks de 4MB) e calcula o hash criptográfico SHA-256 de cada bloco. Se dez usuários subirem o mesmo arquivo de instalação do Node.js, <b>o S3/Object Storage armazena os blocos físicos apenas uma vez</b> (Deduplicação de Bloco).</p>
+          </div>
+          <div><h4>Delta-Sync &amp; Separação de Metadados</h4>
+            <p>Quando o usuário edita um documento, o algoritmo de <i>Rabin Fingerprinting</i> detecta exatamente quais blocos foram modificados e envia <b>apenas os blocos alterados</b> (Delta Sync). A camada de Metadados (árvore de pastas, permissões, histórico de versão no PostgreSQL/Spanner) opera 100% isolada da camada de blocos brutos (S3).</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k10">marcar dominado</button>
+      </article>
+
+      <!-- 11. RATE LIMITER -->
+      <article class="topic" id="k11">
+        <div class="th"><h3>11 · Distributed Rate Limiter</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">proteção de api</span></div></div>
+        <p class="direto"><b>Direto:</b> limitar chamadas por IP, API Key ou usuário em cluster distribuído sem criar race conditions nem sobrecarregar o Redis.</p>
+        <div class="duo">
+          <div><h4>Comparação dos 5 Algoritmos</h4>
+            <p><b>Token Bucket:</b> tokens adicionados em taxa constante; permite rajadas controladas (o mais usado no AWS/Stripe).<br>
+            <b>Leaky Bucket:</b> fila FIFO de vazão fixa; achata picos para taxa estritamente constante.<br>
+            <b>Fixed Window:</b> conta chamadas no minuto cheio; vulnerável a 2x de carga na virada do minuto.<br>
+            <b>Sliding Window Log:</b> armazena timestamps individuais; perfeito em precisão, horrível em consumo de RAM.<br>
+            <b>Sliding Window Counter:</b> pondera o contador da janela anterior com a proporção da janela atual. Excelente precisão com custo de memória de dois inteiros.</p>
+          </div>
+          <div><h4>Implementação Atômica com Redis Lua Script</h4>
+            <p>Em sistemas distribuídos com dezenas de servidores web, fazer <code class="i">GET contador</code> e depois <code class="i">INCR contador</code> gera <b>Race Condition</b>. A operação precisa ser executada atomicamente dentro de um <b>Script Lua no Redis</b>. Retorna os cabeçalhos padrão: <code class="i">X-RateLimit-Limit</code>, <code class="i">X-RateLimit-Remaining</code> e código HTTP <code class="i">429 Too Many Requests</code>.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k11">marcar dominado</button>
+      </article>
+
+      <!-- 12. DISTRIBUTED CACHE -->
+      <article class="topic" id="k12">
+        <div class="th"><h3>12 · Cache Distribuído de Alta Performance (Redis / Memcached)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
+        <p class="direto"><b>Direto:</b> manter dezenas de servidores de cache em memória sem perder chaves em caso de queda e sem sofrer catástrofes de saturação.</p>
+        <div class="duo">
+          <div><h4>Consistent Hashing com Nós Virtuais</h4>
+            <p>O algoritmo ingênuo <code class="i">hash(key) % N</code> quebra completamente se o número de nós N mudar (99% das chaves mudam de máquina, derrubando o banco). O <b>Consistent Hashing</b> mapeia chaves e servidores em um anel circular de 2^32 posições. Ao adicionar ou remover um nó, apenas 1/N das chaves sofrem migração. <b>Nós Virtuais (Vnodes)</b> garantem distribuição uniforme de carga.</p>
+          </div>
+          <div><h4>Mitigação das 3 Catástrofes de Cache</h4>
+            <p><b>1. Cache Stampede / Thundering Herd:</b> chave quente expira e milhares de requisições batem no banco juntas → use <i>Mutex Lock distribuído</i> ou <i>Probabilistic Early Expiration (XFetch)</i>.<br>
+            <b>2. Cache Avalanche:</b> centenas de chaves expiram no mesmo segundo → adicione <i>Jitter aleatório</i> no TTL (<code class="i">TTL + rand(0, 300)</code>).<br>
+            <b>3. Cache Penetration:</b> consultas a IDs inexistentes furam o cache e vão ao banco → coloque um <i>Bloom Filter</i> antes do cache ou guarde nulos com TTL curto.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k12">marcar dominado</button>
+      </article>
+
+      <!-- 13. AUTOCOMPLETE / TYPEAHEAD -->
+      <article class="topic" id="k13">
+        <div class="th"><h3>13 · Autocomplete &amp; Typeahead (Google Suggest)</h3><div class="badges"><span class="badge b-prof">estruturas de dados</span></div></div>
+        <p class="direto"><b>Direto:</b> prever e sugerir os 5 termos mais buscados enquanto o usuário digita letras em um campo de busca em menos de 30ms.</p>
+        <div class="duo">
+          <div><h4>Estrutura de Dados Trie (Prefix Tree)</h4>
+            <p>Uma árvore <b>Trie</b> onde cada nó representa um caractere. Percorrer a subárvore na hora da consulta para ordenar por frequência seria lento demais O(V). O segredo de escala: <b>cada nó da árvore já armazena pré-calculada a lista dos Top-5 termos mais populares</b> daquele prefixo. A busca de sugestão tem complexidade estrita <b>O(p)</b>, onde p é o número de caracteres digitados.</p>
+          </div>
+          <div><h4>Pipeline de Atualização Offline</h4>
+            <p>As frequências de pesquisa não são recalculadas online. Um pipeline em lote com <b>Apache Spark / MapReduce</b> processa os logs de buscas do dia anterior, gera novas contagens agregadas e reconstrói o Trie offline. Prefixos de 1 e 2 letras ficam cacheados nas pontas (CDNs).</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k13">marcar dominado</button>
+      </article>
+
+      <!-- 14. MÉTRICAS E TSDB -->
+      <article class="topic" id="k14">
+        <div class="th"><h3>14 · Métricas e Observabilidade em Tempo Real (Prometheus / Datadog)</h3><div class="badges"><span class="badge b-prof">observabilidade</span></div></div>
+        <p class="direto"><b>Direto:</b> ingerir dezenas de milhões de pontos de métricas por segundo e responder consultas agregadas de monitoramento sem estourar o disco.</p>
+        <div class="duo">
+          <div><h4>Push vs Pull &amp; TSDB Architecture</h4>
+            <p><b>Pull (Prometheus):</b> o servidor central varre os endpoints <code class="i">/metrics</code> dos serviços. Controle de tráfego centralizado e detecção de nós mortos automática.<br>
+            <b>Push (OpenTelemetry / Datadog):</b> os serviços empurram métricas para agentes locais. Ideal para ambientes efêmeros (Serverless / AWS Lambda).<br>
+            Armazenamento em <b>Time-Series Database (TSDB)</b> particionado em blocos temporais (2 horas) imutáveis.</p>
+          </div>
+          <div><h4>Compressão Gorilla &amp; Downsampling</h4>
+            <p>O algoritmo <b>Gorilla</b> do Facebook usa <i>Delta-of-delta</i> para timestamps e codificação <i>XOR</i> para valores de ponto flutuante, reduzindo o tamanho de cada amostra de 16 bytes para meros <b>1.37 bytes</b>. <b>Downsampling automático:</b> dados brutos (1s) mantidos por 7 dias; agregados de 5 minutos por 30 dias; agregados de 1 hora por 1 ano.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k14">marcar dominado</button>
+      </article>
+
+      <!-- 15. STRIPE / LEDGER FINANCEIRO -->
+      <article class="topic" id="k15">
+        <div class="th"><h3>15 · Stripe &amp; Ledger Financeiro de Pagamentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">consistência crítica</span></div></div>
+        <p class="direto"><b>Direto:</b> processar movimentações financeiras com garantia absoluta de que nenhum centavo será duplicado, criado ou perdido na rede.</p>
+        <div class="duo">
+          <div><h4>Princípio da Partida Dobrada (Double-Entry Bookkeeping)</h4>
+            <p>Em sistemas financeiros sérios, <b>nunca existe uma coluna simples com saldo numérico que sofre UPDATE</b> (<code class="i">UPDATE conta SET saldo = saldo + 100</code> é proibido!). Toda movimentação financeira exige ao menos duas linhas em um <b>Ledger Imutável Append-Only</b>: um Débito em uma conta e um Crédito equivalente em outra conta. A soma de todos os débitos e créditos do sistema deve ser matematicamente <b>zero</b> a qualquer instante.</p>
+          </div>
+          <div><h4>Idempotency Keys &amp; Reconciliação</h4>
+            <p>Toda chamada de cobrança exige um cabeçalho <code class="i">Idempotency-Key</code> único. O gateway armazena o hash da chave e o resultado da transação. Se a rede cair e o cliente reenviar a requisição, o gateway retorna a resposta prévia sem processar cobrança duplicada. Workers de reconciliação assíncronos cruzam o ledger interno com os relatórios diários de liquidação dos adquirentes e bancos.</p>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="k15">marcar dominado</button>
+      </article>
+    </section>
+
+
+    <!-- ===================== PARTE 12 ===================== -->
+    <section class="part" id="p12">
+      <div class="ph"><span class="num">12</span><div><h2>System Design para Inteligência Artificial &amp; LLM Engineering (2026)</h2><p>Como projetar sistemas de inferência, pipelines RAG e agentes autônomos sob restrição de hardware e custo.</p></div></div>
+
+      <!-- 12.1 MODEL SERVING -->
+      <article class="topic" id="l1">
+        <div class="th"><h3>Model Serving &amp; Inferência de LLMs em Larga Escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">ia 2026</span><span class="badge b-caso">vllm &amp; pagedattention</span></div></div>
+        <p class="direto"><b>Direto:</b> servir modelos fundacionais exige gerenciar a assimetria brutal entre processamento de prompt e geração de tokens, dominando <b>Continuous Batching</b> e <b>PagedAttention</b>.</p>
+
+        <div class="caso"><b>o caso e as restrições físicas</b>
+          <p>Diferente de um microsserviço web comum que consome 50ms de CPU por chamada, um modelo de 70B parâmetros consome 140 GB de VRAM em GPUs caras (H100 / A100). Fazer filas tradicionais gera filas quilométricas ou custos de nuvem de dezenas de milhares de dólares por dia.</p>
+        </div>
+
+        <div class="duo">
+          <div><h4>A Física da Inferência: Prefill vs Decode</h4>
+            <p><b>Fase Prefill (Prompt Phase):</b> processa todos os tokens da pergunta em paralelo. É <b>Compute-Bound</b> (utiliza quase 100% dos Tensor Cores da GPU).<br>
+            <b>Fase Decode (Token Generation):</b> gera um único token por vez recursivamente. É <b>Memory-Bandwidth Bound</b> (para cada token gerado, todos os 70 bilhões de pesos e o KV-Cache de todos os usuários precisam ser lidos da memória da GPU).<br>
+            <b>Métricas de Ouro:</b> <i>TTFT (Time To First Token)</i> mede o tempo de espera até o primeiro caractere; <i>ITL (Inter-Token Latency)</i> mede a fluidez da leitura.</p>
+          </div>
+          <div><h4>Continuous Batching &amp; PagedAttention</h4>
+            <p><b>Continuous Batching (In-Flight Batching):</b> motores modernos (vLLM, Triton) não esperam uma resposta de 1.000 tokens terminar para aceitar a próxima; a cada novo ciclo de token, requisições prontas saem e novas entram dinamicamente.<br>
+            <b>PagedAttention:</b> o KV-Cache tradicional alocava blocos contíguos de memória prevendo o tamanho máximo de contexto, desperdiçando 60-80% da VRAM por fragmentação. O PagedAttention divide o KV-Cache em páginas virtuais não contíguas, multiplicando a capacidade de requisições simultâneas por 4x.</p>
+          </div>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Compare a latência de uma chamada síncrona aguardando o payload completo de texto vs uma chamada com Server-Sent Events (SSE) medindo o TTFT percebido pelo usuário.</div>
+          <div><b>prova de domínio</b>Você explica por que o gargalo de geração de tokens em LLMs é a largura de banda de memória (HBM da GPU) e não o poder computacional, e defende a adoção de Continuous Batching.</div>
+        </div>
+        <button class="done" type="button" data-k="l1">marcar dominado</button>
+      </article>
+
+      <!-- 12.2 RAG CORPORATIVO -->
+      <article class="topic" id="l2">
+        <div class="th"><h3>RAG Corporativo em Escala &amp; Hybrid Search</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">rag corporativo</span></div></div>
+        <p class="direto"><b>Direto:</b> busca vetorial pura falha em termos exatos; a arquitetura robusta de RAG corporativo combina <b>BM25 léxico</b> com <b>Dense Vectors (HNSW)</b> e <b>Cross-Encoder Reranking</b>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O usuário busca: <i>"Qual o valor da fatura NF-e 88129 de 14/03/2026?"</i></p>
+          <p>Buscas baseadas exclusivamente em embeddings de similaridade semântica retornam documentos sobre "faturas gerais e notas fiscais", mas erram o número do documento por ser um token incomum. Para sistemas corporativos sérios, <b>busca vetorial pura é insuficiente</b>.</p>
+        </div>
+
+        <div class="duo">
+          <div><h4>Busca Híbrida (Hybrid Search com RRF)</h4>
+            <p>A arquitetura madura executa duas buscas simultâneas:<br>
+            <b>1. Busca Léxica Tradicional (BM25 / Full-Text Search):</b> encontra palavras exatas, códigos, SKUs, IDs e datas com precisão cirúrgica.<br>
+            <b>2. Busca Vetorial Densa (Dense Embeddings com índice HNSW em pgvector/Qdrant):</b> captura sinônimos, intenção e semântica.<br>
+            Os resultados são fundidos usando o algoritmo <b>RRF (Reciprocal Rank Fusion)</b>, garantindo o melhor dos dois mundos.</p>
+          </div>
+          <div><h4>Cross-Encoder Reranking &amp; Chunking</h4>
+            <p>Os 100 melhores resultados da busca híbrida passam por um <b>Reranker (Cross-Encoder)</b>. Ao contrário dos modelos de embedding (que avaliam texto e pergunta separadamente), o Cross-Encoder processa o par [pergunta + chunk] simultaneamente, calculando a relevância exata e filtrando os Top-5 chunks mais relevantes. Isso reduz o ruído de prompt e <b>evita alucinações</b>.</p>
+          </div>
+        </div>
+
+        <div class="gotcha"><b>armadilhas de rag</b>
+          <ul>
+            <li><b>Chunking arbitrário por quantidade fixa de caracteres.</b> Cortar sentenças no meio quebra a semântica. Use <i>Recursive Character Splitting</i> com 15% de overlap.</li>
+            <li><b>Não incluir metadados no embedding.</b> Ignorar data, autor e permissões impede filtros relacionais eficientes (<code class="i">WHERE tenant_id = ? AND data &gt; ?</code>).</li>
+            <li><b>Inundar o contexto do modelo.</b> Mandar 50 documentos para a LLM gera perda de atenção no meio do prompt (<i>Lost in the Middle</i>). O Reranker resolve isso.</li>
+          </ul>
+        </div>
+        <button class="done" type="button" data-k="l2">marcar dominado</button>
+      </article>
+
+      <!-- 12.3 MCP & AGENTES -->
+      <article class="topic" id="l3">
+        <div class="th"><h3>Protocolo MCP, Sistemas de Agentes &amp; Caching Semântico</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">mcp &amp; agentes</span><span class="badge b-caso">arquitetura moderna</span></div></div>
+        <p class="direto"><b>Direto:</b> agentes de IA em produção exigem contratos formais de ferramentas via <b>MCP (Model Context Protocol)</b>, guardrails estritos e otimização radical de custo com <b>Prompt &amp; Semantic Caching</b>.</p>
+
+        <div class="duo">
+          <div><h4>Protocolo MCP (Model Context Protocol)</h4>
+            <p>O <b>MCP</b> é o padrão aberto que substitui integrações proprietárias ponto a ponto. Funciona em arquitetura Client-Host-Server:<br>
+            • <b>MCP Server:</b> expõe <i>Resources</i> (arquivos, dados corporativos), <i>Prompts</i> e <i>Tools</i> (funções com schema JSON rigoroso).<br>
+            • <b>Host / Client:</b> gerencia autenticação, controle de permissões e entrega das ferramentas ao contexto do modelo de IA.<br>
+            Isso permite que qualquer agente utilize ferramentas de banco, Git, CI/CD e APIs corporativas sem reescrever código de integração.</p>
+          </div>
+          <div><h4>Arquitetura de Agentes (Loop ReAct &amp; Guardrails)</h4>
+            <p>Agentes autônomos operam no loop <b>ReAct (Reasoning → Action → Observation)</b>. O modelo pensa sobre o estado atual, seleciona uma ferramenta via tool call, a aplicação executa a ação e devolve a resposta observada para o próximo ciclo.<br>
+            <b>Guardrails Essenciais:</b> (1) Validação estruturada da saída com JSON Schema / Pydantic; (2) Detecção de injeção de prompt; (3) Limite de passos máximos no loop para evitar loops infinitos de custo.</p>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div><h4>Prompt Caching (Hardware-Level)</h4>
+            <p>Modelos de ponta (Claude, Gemini, GPT-4) permitem <b>Prompt Caching</b>: quando você reutiliza instruções de sistema (system prompt) e schemas de ferramentas grandes idênticos entre requisições, a GPU reaproveita o KV-Cache pré-calculado. O custo de tokens de entrada cai em <b>até 80-90%</b> e o TTFT cai de segundos para milissegundos.</p>
+          </div>
+          <div><h4>Semantic Caching (Redis Vector Cache)</h4>
+            <p>Se um usuário pergunta "Como redefinir minha senha?" e outro pergunta "Esqueci a senha, como altero?", um cache tradicional por chave de string dá miss. O <b>Semantic Cache</b> armazena o embedding da pergunta no Redis. Antes de chamar a LLM, calcula a similaridade cosseno: se for superior a 0.95, <b>devolve a resposta cacheada instantaneamente</b> com custo zero de API.</p>
+          </div>
+        </div>
+
+        <div class="prova">
+          <div class="lab"><b>pratique agora</b>Desenhe o fluxo de um agente que consulta saldo bancário: cliente → LLM (decide chamar ferramenta) → MCP Server (valida parâmetros e roda SQL) → Guardrail (mascara dados sensíveis) → resposta final.</div>
+          <div><b>prova de domínio</b>Você detalha a arquitetura de um sistema de agentes escalável protegendo contra loops infinitos, injeção de prompt e demonstrando como Semantic Caching reduz o orçamento em 40%.</div>
+        </div>
+        <button class="done" type="button" data-k="l3">marcar dominado</button>
+      </article>
+    </section>
+
+
     <footer class="foot">
       <p>System Design completo · setembro de 2026 · o nono documento do acervo, em tema Dracula. Nasceu das notas de System Design espalhadas pelo vault — os cadernos visuais de escala, o Pressure Lab de entrevistas e os atômicos de concorrência — reunidas sob uma regra: conceito sempre com o caso que o obriga a existir. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code>, <code class="i">Conceitos de Backend completo</code> e <code class="i">Biblioteca completa</code>. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
     </footer>
@@ -1465,7 +1981,199 @@ var T=[
  {t:"Como pesquisar",x:"o nome exato, na fonte certa",oq:"Buscar pelo nome do mecanismo, restrito à documentação oficial, em vez de pelo sintoma.",ps:"Metade da competência é saber o nome da coisa. Com ele, a resposta vem em minutos.",cf:"Para banco, rode <code class=\"i\">EXPLAIN ANALYZE</code> antes de pesquisar — o plano diz o nome do problema. Para escala, procure pelo mecanismo (<i>keyset pagination</i>, <i>hot partition</i>, <i>cache stampede</i>), não pelo sintoma ('API lenta').",ex:"site:postgresql.org index-only scan covering\n\"keyset pagination\" tuple comparison postgres\n\"hot partition\" dynamodb partition key design\ncache stampede thundering herd mitigation"},
  {t:"Praticar: os quatro casos",x:"o laboratório que fecha o documento",oq:"Reproduzir localmente os quatro problemas deste documento, com dados sintéticos e medição.",ps:"Você não precisa de 10k RPS reais para aprender: precisa de uma curva que mude quando você muda o desenho.",cf:"(1) Gere 1 milhão de pedidos e compare OFFSET 500000 com keyset, medindo a diferença; (2) dispare carga concorrente e observe a fila do pool antes e depois de reduzir queries por request; (3) implemente o Bloom filter na frente de um índice único e meça quantas idas ao banco desapareceram; (4) monte o consumidor com batching e compare a vazão com inserts isolados. Todos rodam num PostgreSQL em container.",ex:"# a curva que prova a paginacao\nfor p in 1 10 100 1000 5000; do\n  psql -c \"EXPLAIN ANALYZE SELECT * FROM pedido\n           ORDER BY criado_em DESC, id DESC\n           LIMIT 10 OFFSET $((p*10));\"\ndone\n# offset: o tempo cresce. keyset: o tempo nao muda.",star:true}
 ]}
+,
+{
+    g: "10",
+    n: "8 Passos & Contas",
+    s: "o framework das entrevistas e a matemática das restrições",
+    c: "var(--teal)",
+    cs: "var(--teal-soft)",
+    items: [
+      {
+        t: "Os 8 passos da entrevista",
+        x: "o roteiro metódico completo",
+        oq: "Roteiro sequencial de condução de System Design: escopo, estimativas, arquitetura HLD, trade-offs, dados, APIs, resiliência e observabilidade.",
+        ps: "Garantir que a solução ataque os requisitos reais e não caia na armadilha de desenhar caixas cedo demais.",
+        cf: "Gaste os primeiros 10 minutos exclusivamente em requisitos funcionais/não-funcionais e estimativas antes de desenhar qualquer componente."
+      },
+      {
+        t: "Teorema PACELC",
+        x: "latência vs consistência no dia a dia",
+        oq: "Extensão moderna do Teorema CAP: Se há Partição (P), escolha entre Disponibilidade (A) ou Consistência (C); Senão (Else), escolha entre Latência (L) ou Consistência (C).",
+        ps: "Decidir o comportamento do sistema durante 99.9% do tempo de operação normal sem partição de rede.",
+        cf: "Bancos como DynamoDB e Cassandra optam por PA/EL (baixa latência sob operação normal); MongoDB e Spanner priorizam consistência PC/EC."
+      },
+      {
+        t: "Latências de Jeff Dean",
+        x: "as ordens de grandeza da física",
+        oq: "Tabela referencial de latências: L1 (0.5ns), RAM (100ns), SSD (100µs), LAN Datacenter (0.5ms), HDD (10ms), WAN (120ms).",
+        ps: "Validar em segundos se um desenho arquitetural é fisicamente viável para o SLO exigido.",
+        cf: "RAM é ~1000x mais rápida que SSD e ~100.000x mais rápida que disco mecânico. Toda proposta arquitetural deve somar os saltos de rede e I/O."
+      },
+      {
+        t: "Fórmulas de guardanapo",
+        x: "o truque dos 100k segundos",
+        oq: "Regras de conversão rápida: 1 dia ≈ 100.000 segundos; QPS = requisições/dia ÷ 100.000; regra 80/20 de RAM para cache de dados diários.",
+        ps: "Calcular capacidade de tráfego, armazenamento de 5 anos e tamanho de cluster sem calculadora.",
+        cf: "100 milhões de requisições/dia equivalem a 1.000 QPS médios e 2.000 a 3.000 QPS de pico."
+      }
+    ]
+  },
+  {
+    g: "11",
+    n: "15 Sistemas do Mundo Real",
+    s: "arquitetura, fluxo e trade-offs dos casos canônicos",
+    c: "var(--violet)",
+    cs: "var(--violet-s)",
+    items: [
+      {
+        t: "URL Shortener & KGS",
+        x: "Base62 e pré-geração de chaves",
+        oq: "Encurtar URLs com chaves Base62 de 7 caracteres (3.5 trilhões de combinações) e Key Generation Service (KGS).",
+        ps: "Evitar colisões de hash e locks de escrita em alta concorrência.",
+        cf: "HTTP 301 cacheia no browser (alivia servidor); HTTP 302/307 força passagem pelo servidor (permite métricas e analytics)."
+      },
+      {
+        t: "WhatsApp & Presence",
+        x: "WebSockets e Heartbeat no Redis",
+        oq: "Mensageria bidirecional via WebSockets com roteamento entre servidores via Kafka/Redis e presença por heartbeat TTL.",
+        ps: "Manter milhões de conexões abertas com entrega sub-segundo e indicação de online/offline.",
+        cf: "Armazenamento local no SQLite do aparelho para fluidez imediata e Cassandra particionado por chat_id na nuvem."
+      },
+      {
+        t: "Uber & Geohash",
+        x: "telemetria e matching geoespacial",
+        oq: "Ingestão de GPS a cada 4s indexada via Geohash, QuadTree ou Google S2/H3 com Redis Geospatial.",
+        ps: "Localizar motoristas livres em raio de 3km em milissegundos sem esgotar banco relacional.",
+        cf: "Matching engine aplica lock distribuído temporário de 15 segundos para evitar corrida entre motoristas."
+      },
+      {
+        t: "Netflix & ABR Video",
+        x: "chunking e CDN descentralizada",
+        oq: "Transcoding em chunks de 4 a 10s em múltiplos formatos (HLS/DASH) servidos via Open Connect CDN nos ISPs.",
+        ps: "Evitar buffering em redes instáveis adaptando a resolução dinamicamente.",
+        cf: "Adaptive Bitrate (ABR) no player do usuário reduz de 1080p para 720p se a banda oscilar sem pausar a reprodução."
+      },
+      {
+        t: "Google Maps & Contraction",
+        x: "map tiles e grafos rodoviários",
+        oq: "Renderização por azulejos vetoriais (Map Tiles) em CDN e roteamento por Contraction Hierarchies em grafos de transporte.",
+        ps: "Calcular rotas de milhares de quilômetros em menos de 5 milissegundos.",
+        cf: "Contraction Hierarchies pré-calcula atalhos em rodovias principais; Flink ajusta pesos com tráfego em tempo real."
+      },
+      {
+        t: "Search & Inverted Index",
+        x: "URL frontier e busca invertida",
+        oq: "Crawler com filas de prioridade e politeness delay, deduplicação SimHash e Índice Invertido distribuído.",
+        ps: "Varrer a web sem derrubar alvos e buscar termos em milissegundos.",
+        cf: "BM25 avalia frequência de termos; PageRank avalia autoridade; busca por interseção de posting lists."
+      },
+      {
+        t: "Flash Sale & Redlock",
+        x: "estoque atômico e padrão Saga",
+        oq: "Prevenção de sobrevenda com scripts Lua atômicos no Redis, Redlock e filas virtuais de espera na borda.",
+        ps: "Vender 1.000 ingressos para 100.000 compradores simultâneos com zero inconsistência.",
+        cf: "Padrão Saga orquestrado com chaves de idempotência garante reserva temporária, cobrança e baixa segura."
+      },
+      {
+        t: "Twitter & Hybrid Fanout",
+        x: "push para comuns, pull para celebridades",
+        oq: "Arquitetura híbrida de feed: Fanout-on-Write (Push) para usuários normais e Fanout-on-Read (Pull) para perfis com mais de 25k seguidores.",
+        ps: "Evitar o Fanout Bomb de 100 milhões de escritas quando celebridades postam.",
+        cf: "Timeline cacheada em Redis Sorted Sets (ZSet) ordenada por timestamp do post."
+      },
+      {
+        t: "Notificações & Multi-Canal",
+        x: "prioridade e deduplicação",
+        oq: "Gateway multi-canal (APNs, FCM, SMS, Email) com filas de prioridade e deduplicação por sliding window.",
+        ps: "Garantir envio prioritário de 2FA sem que mensagens promocionais travem o sistema.",
+        cf: "Redis sliding window impede envio repetido do mesmo alerta em caso de retries."
+      },
+      {
+        t: "Drive & Block Deduplication",
+        x: "chunks de 4MB e delta-sync",
+        oq: "Divisão de arquivos em blocos de 4MB com hash SHA-256 e sincronização apenas de blocos modificados (Delta-Sync).",
+        ps: "Economizar petabytes de storage em arquivos compartilhados e gigabytes de tráfego de rede.",
+        cf: "Metadados (permissões, pastas) no banco relacional/Spanner; blocos brutos imutáveis no S3/Object Storage."
+      },
+      {
+        t: "Rate Limiter Distribuído",
+        x: "Token Bucket e Sliding Window",
+        oq: "Controle de taxa de requisições usando Token Bucket ou Sliding Window Counter implementado com scripts Lua no Redis.",
+        ps: "Proteger serviços contra abuso e sobrecarga com execução atômica sem race conditions.",
+        cf: "Retorna cabeçalhos padronizados X-RateLimit e código HTTP 429 Too Many Requests com Retry-After."
+      },
+      {
+        t: "Cache Distribuído & Anticatástrofe",
+        x: "consistent hashing e stampede",
+        oq: "Cluster de cache com Consistent Hashing (Vnodes) e proteção contra Cache Stampede, Avalanche e Penetration.",
+        ps: "Garantir resiliência máxima na camada de cache em memória.",
+        cf: "XFetch / Mutex lock impede thundering herd; Jitter no TTL previne avalanche; Bloom Filter barra penetration."
+      },
+      {
+        t: "Autocomplete & Trie Top-K",
+        x: "árvore de prefixos com Top-5 pré-salvo",
+        oq: "Estrutura Trie onde cada nó armazena pré-calculada a lista dos Top-5 termos mais frequentes, com consulta O(p).",
+        ps: "Devolver sugestões de pesquisa em menos de 30 milissegundos enquanto o usuário digita.",
+        cf: "Pipeline offline em Apache Spark/MapReduce recalcula as frequências e reconstrói o Trie periodicamente."
+      },
+      {
+        t: "Métricas & Gorilla TSDB",
+        x: "compressão delta-of-delta e rollup",
+        oq: "Ingestão massiva de telemetria em Time-Series Database com compressão Gorilla (1.37 bytes/amostra) e downsampling.",
+        ps: "Monitorar milhares de microsserviços sem explodir custos de armazenamento.",
+        cf: "Dados de 1s guardados por 7 dias; agregados de 5m por 30 dias; médias de 1h retidas por 1 ano."
+      },
+      {
+        t: "Stripe & Double-Entry Ledger",
+        x: "partida dobrada e idempotência",
+        oq: "Contabilidade de partida dobrada (débito + crédito = 0) em ledger append-only imutável com chaves de idempotência.",
+        ps: "Garantir integridade financeira absoluta: nenhum centavo duplicado ou perdido em quedas de rede.",
+        cf: "Chave de idempotência no header HTTP e reconciliação diária assíncrona com adquirentes e bancos."
+      }
+    ]
+  },
+  {
+    g: "12",
+    n: "System Design para IA (2026)",
+    s: "model serving, RAG híbrido, MCP e agentes em escala",
+    c: "var(--cyan)",
+    cs: "var(--arc-soft)",
+    items: [
+      {
+        t: "Inference Serving & PagedAttention",
+        x: "continuous batching e gestão de VRAM",
+        oq: "Arquitetura de model serving para LLMs dominando o desbalanço entre fase Prefill (compute-bound) e Decode (memory-bound).",
+        ps: "Maximizar throughput de tokens e minimizar TTFT em clusters de GPU de alto custo.",
+        cf: "Continuous batching inclui novas requisições a cada token; PagedAttention divide KV-Cache em páginas virtuais não contíguas."
+      },
+      {
+        t: "Enterprise RAG & Hybrid Search",
+        x: "BM25 + Dense Vectors + Reranking",
+        oq: "Pipeline RAG combinando busca léxica exata (BM25) com busca vetorial densa (HNSW) via RRF e Cross-Encoder Reranking.",
+        ps: "Eliminar alucinações e permitir busca precisa de termos exatos (códigos, IDs, datas) e semântica.",
+        cf: "Reranker avalia os 100 melhores chunks e seleciona os 5 mais relevantes para o prompt final da LLM."
+      },
+      {
+        t: "Protocolo MCP (Model Context Protocol)",
+        x: "o padrão aberto de conexão com IA",
+        oq: "Protocolo aberto Client-Host-Server para conectar modelos de linguagem a ferramentas, dados corporativos e prompts.",
+        ps: "Desacoplar os modelos e agentes das integrações de sistemas de produção com schemas JSON padronizados.",
+        cf: "MCP Servers expõem recursos, ferramentas e prompts de forma segura com controle estrito de permissões pelo Host."
+      },
+      {
+        t: "Semantic Cache & AI Agents",
+        x: "ReAct loop e economia radical de tokens",
+        oq: "Agentes autônomos com loop ReAct e guardrails, acelerados por Prompt Caching na GPU e Semantic Caching no Redis Vector.",
+        ps: "Reduzir custos de API em 40% a 80% e responder perguntas repetidas com latência instantânea.",
+        cf: "Se uma pergunta tem similaridade de cosseno > 0.95 com uma anterior, responde direto do cache sem chamar a LLM."
+      }
+    ]
+  }
 ];
+
+
+/* ---------- render ---------- */
 
 
 /* ---------- render ---------- */
@@ -1479,7 +2187,7 @@ flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]
 var KEYT="system-design-completo-CL-trilha-v1";
 var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
 var track=document.getElementById("track"),lg=document.getElementById("lg");
-navHead("A trilha · 9 marcos");
+navHead("A trilha · 12 marcos");
 T.forEach(function(g,gi){
   var sec=document.createElement("section");
   sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
@@ -1558,7 +2266,7 @@ mark.addEventListener("click",function(){
 /* ================== CONTEÚDO (tópicos profundos) ================== */
 var parts=[].slice.call(document.querySelectorAll("section.part"));
 var entries=[];
-navHead("O conteúdo · 9 partes");
+navHead("O conteúdo · 12 partes");
 parts.forEach(function(sec){
   var num=sec.querySelector(".ph .num").textContent.trim();
   var h2=sec.querySelector(".ph h2").textContent;
@@ -1855,5 +2563,33 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   }).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script src="js/img-modal.js"></script>
 </body>
 </html>

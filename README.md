@@ -48,6 +48,7 @@ Quinze documentos de estudo e bancada prática organizados em trilhas especializ
 
 - **⚡ Pílula de MicroLearning Diário (3 Minutos)**: Desafio prático no dashboard (`index.html`) sincronizado com o cronograma semanal de estudos e contador de streak (dias seguidos).
 - **📱 Responsividade Mobile-First com Drawer Navigation**: Menu off-canvas deslizante (`☰ Tópicos`), tabelas adaptativas e rolagem horizontal suave em snippets de código para celulares e tablets.
+- **🏠 Botão Flutuante 'Voltar ao Início'**: Botão elegante com estética Dracula Glassmorphism fixado no canto inferior direito em todas as páginas para navegação direta ao dashboard principal.
 - **🎯 Fixação Ativa & Exercícios**:
   - *Pontos Críticos & Recapitulando*: Síntese com pegadinhas de entrevista e modelos mentais de produção.
   - *Quizzes Interativos*: Perguntas situacionais com feedback explicativo imediato (verde/vermelho).

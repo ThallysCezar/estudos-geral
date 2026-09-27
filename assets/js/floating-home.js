@@ -1,86 +1,23 @@
-/* ==================== RESPONSIVE DRAWER & NAVIGATION CONTROLLER ====================
- * - Controla o Drawer mobile responsivo para navegação lateral.
- * - Gerencia o botão flutuante 'Voltar ao Início' no canto inferior direito.
- * ================================================================================== */
+/* ==================== FLOATING HOME BUTTON CONTROLLER ====================
+ * Injeta um botão elegante, flutuante e discreto no canto inferior direito
+ * em todas as páginas para retornar à tela inicial (index.html) sem precisar
+ * rolar até o topo.
+ * - Estilo: Dracula Glassmorphism (blur + borda sutil com acento roxo/verde).
+ * - Inteligente: Detecta automaticamente o caminho relativo (../index.html ou index.html).
+ * - Responsivo: Totalmente adaptado para Mobile, Tablets e Telas Retina com Safe Area.
+ * - Seguro: Não é renderizado na própria tela inicial (index.html).
+ * ========================================================================= */
+
 (function() {
-  function initDrawer() {
-    var side = document.querySelector('.side');
-    if (!side) return;
-
-    var brandEl = side.querySelector('.brand b');
-    var brandIconEl = side.querySelector('.brand i');
-    var guideTitle = brandEl ? brandEl.textContent.trim() : document.title.split('—')[0].trim();
-    var guideIcon = brandIconEl ? brandIconEl.textContent.trim() : '📖';
-
-    // 1. Create Mobile Topbar
-    var header = document.createElement('header');
-    header.className = 'mobile-header';
-    header.innerHTML = '<div class="mh-left">'
-      + '<span class="mh-brand-icon">' + guideIcon + '</span>'
-      + '<span class="mh-title">' + guideTitle + '</span>'
-      + '</div>'
-      + '<div class="mh-right">'
-      + '<button class="mh-btn-menu" type="button" aria-label="Abrir menu de tópicos">'
-      + '<span>☰</span> <span>Tópicos</span>'
-      + '</button>'
-      + '</div>';
-    document.body.insertBefore(header, document.body.firstChild);
-
-    // 2. Create Backdrop
-    var backdrop = document.createElement('div');
-    backdrop.className = 'drawer-backdrop';
-    document.body.appendChild(backdrop);
-
-    // 3. Create Close bar inside sidebar
-    var closeBar = document.createElement('div');
-    closeBar.className = 'drawer-close-bar';
-    closeBar.innerHTML = '<span>' + guideTitle + '</span>'
-      + '<button class="drawer-close-btn" type="button" aria-label="Fechar navegação">✕</button>';
-    side.insertBefore(closeBar, side.firstChild);
-
-    var btnOpen = header.querySelector('.mh-btn-menu');
-    var btnClose = closeBar.querySelector('.drawer-close-btn');
-
-    function openDrawer() {
-      side.classList.add('drawer-open');
-      backdrop.classList.add('active');
-      document.documentElement.style.overflow = 'hidden';
-    }
-
-    function closeDrawer() {
-      side.classList.remove('drawer-open');
-      backdrop.classList.remove('active');
-      document.documentElement.style.overflow = '';
-    }
-
-    if (btnOpen) btnOpen.addEventListener('click', openDrawer);
-    if (btnClose) btnClose.addEventListener('click', closeDrawer);
-    backdrop.addEventListener('click', closeDrawer);
-
-    // Close when tapping any link inside nav on mobile
-    var navLinks = side.querySelectorAll('nav a');
-    navLinks.forEach(function(link) {
-      link.addEventListener('click', function() {
-        if (window.innerWidth <= 991) {
-          closeDrawer();
-        }
-      });
-    });
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && side.classList.contains('drawer-open')) {
-        closeDrawer();
-      }
-    });
-  }
-
-  /* ==================== BOTÃO FLUTUANTE VOLTAR AO INÍCIO ==================== */
   function isHomePage() {
+    // 1. Checagem por elementos característicos da home
     if (document.getElementById('microlearningMount') ||
         document.querySelector('.hero-hub') ||
         document.querySelector('.semana-banner')) {
       return true;
     }
+
+    // 2. Checagem por pathname
     var p = window.location.pathname.toLowerCase().replace(/\\/g, '/');
     if (p.endsWith('/index.html') || p.endsWith('/site-estudos/') || p.endsWith('/site-estudos') || p === '/') {
       if (!p.includes('/trilhas/') && !p.includes('/cadernos/') && !p.includes('/lab/') && !p.includes('/ferramentas/')) {
@@ -103,7 +40,7 @@
     return 'index.html';
   }
 
-  function injectFloatingStyles() {
+  function injectStyles() {
     if (document.getElementById('styleFloatingHome')) return;
     var style = document.createElement('style');
     style.id = 'styleFloatingHome';
@@ -224,7 +161,7 @@
     if (isHomePage()) return;
     if (document.getElementById('btnFloatingHome')) return;
 
-    injectFloatingStyles();
+    injectStyles();
 
     var homeUrl = getHomeUrl();
     var btn = document.createElement('a');
@@ -243,14 +180,12 @@
     document.body.appendChild(btn);
   }
 
-  function init() {
-    initDrawer();
-    initFloatingHome();
-  }
+  // Exportar globalmente para que responsive-drawer possa chamá-lo
+  window.initFloatingHome = initFloatingHome;
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initFloatingHome);
   } else {
-    init();
+    initFloatingHome();
   }
 })();

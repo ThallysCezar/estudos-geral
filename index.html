@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="O tema de hoje e a semana de estudos de backend: Java, Spring, Mensageria, Nuvem, Docker e Kubernetes, Arquitetura.">
 <meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Estudos · hoje</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -246,10 +248,17 @@ footer{margin:clamp(56px,9vh,96px) 0 44px;padding-top:24px;border-top:1px solid 
 footer a{color:var(--accent)}
 
 @media(max-width:680px){
-  .wrap{width:calc(100% - 28px)}.island{width:calc(100% - 24px)}
+  .wrap{width:calc(100% - 28px)}
+  .island{width:calc(100% - 24px);flex-wrap:wrap;border-radius:22px;padding:10px 13px;gap:7px}
+  .island .brand{margin-right:0;width:100%;margin-bottom:2px;font-size:.72rem}
+  .island a,.island button.btn-act{font-size:.71rem;padding:6px 10px}
   .island a.hide{display:none}
   .day{grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 10px 16px 12px}
   .day .rt{grid-column:2;margin-top:9px}
+  pre{overflow-x:auto;max-width:100%}
+  code{overflow-wrap:anywhere}
+  pre code{overflow-wrap:normal}
+  table{display:block;overflow-x:auto;max-width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
@@ -292,6 +301,7 @@ footer a{color:var(--accent)}
 .backup-actions button:hover{filter:brightness(1.2)}
 
 </style>
+<link rel="stylesheet" href="assets/css/pratica.css">
 </head>
 <body style="--accent:var(--cyan)">
 
@@ -303,9 +313,9 @@ footer a{color:var(--accent)}
   <button type="button" class="btn-act" id="btnPalette" title="Buscar no acervo completo (Ctrl+K)">🔍 Buscar <kbd>Ctrl+K</kbd></button>
   <button type="button" class="btn-act" id="btnBackup" title="Fazer backup ou restaurar dados">💾 Backup</button>
   <a href="acervo.html">o acervo completo</a>
-  <a href="projetos.html">projetos</a>
-  <a href="prompt-studio.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">🧠 prompt studio</a>
-  <a href="refinador.html" style="color:var(--purple);font-weight:700;border-color:color-mix(in srgb,var(--purple) 45%,transparent);background:color-mix(in srgb,var(--purple) 10%,transparent)">✨ formatador</a>
+  <a href="lab/projetos.html">projetos</a>
+  <a href="ferramentas/prompt-studio.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">🧠 prompt studio</a>
+  <a href="ferramentas/refinador.html" style="color:var(--purple);font-weight:700;border-color:color-mix(in srgb,var(--purple) 45%,transparent);background:color-mix(in srgb,var(--purple) 10%,transparent)">✨ formatador</a>
 </nav>
 
 <main class="wrap">
@@ -325,6 +335,9 @@ footer a{color:var(--accent)}
     <div class="acts" id="acts"></div>
   </section>
 
+  <!-- MicroLearning Diário -->
+  <section class="ml-section" id="microlearningMount"></section>
+
   <section class="wk">
     <div class="hd">
       <h2>A semana</h2>
@@ -336,7 +349,7 @@ footer a{color:var(--accent)}
   <section class="outros">
     <div class="hd"><h2>Outros</h2></div>
 
-    <a class="duv" href="conceitos-backend.html">
+    <a class="duv" href="cadernos/conceitos-backend.html">
       <span class="mk">?</span>
       <span class="bd">
         <span class="kk">fora da sequência</span>
@@ -347,7 +360,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="biblioteca.html" style="--dv:var(--purple)">
+    <a class="duv" href="cadernos/biblioteca.html" style="--dv:var(--purple)">
       <span class="mk">▤</span>
       <span class="bd">
         <span class="kk">a estante</span>
@@ -358,7 +371,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="git.html" style="--dv:var(--pink)">
+    <a class="duv" href="cadernos/git.html" style="--dv:var(--pink)">
       <span class="mk">⑂</span>
       <span class="bd">
         <span class="kk">o histórico</span>
@@ -369,7 +382,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="linux.html" style="--dv:var(--orange)">
+    <a class="duv" href="cadernos/linux.html" style="--dv:var(--orange)">
       <span class="mk">$_</span>
       <span class="bd">
         <span class="kk">o térreo</span>
@@ -380,7 +393,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="system-design.html" style="--dv:var(--cyan)">
+    <a class="duv" href="trilhas/system-design.html" style="--dv:var(--cyan)">
       <span class="mk">⧉</span>
       <span class="bd">
         <span class="kk">o projeto inteiro</span>
@@ -391,7 +404,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="ia.html" style="--dv:var(--purple)" id="cardIA">
+    <a class="duv" href="trilhas/ia.html" style="--dv:var(--purple)" id="cardIA">
       <span class="mk">◈</span>
       <span class="bd">
         <span class="kk">o que prevê · dois caminhos</span>
@@ -402,7 +415,7 @@ footer a{color:var(--accent)}
       <span class="go">↗</span>
     </a>
 
-    <a class="duv" href="projetos.html" style="--dv:var(--lime)">
+    <a class="duv" href="lab/projetos.html" style="--dv:var(--lime)">
       <span class="mk">⌘</span>
       <span class="bd">
         <span class="kk">a bancada</span>
@@ -426,43 +439,38 @@ footer a{color:var(--accent)}
 
 <script>
 var SEM=[
- {sig:"seg",tema:"Java",cor:"var(--cyan)",doc:"java.html",doc2:"java_v2.html",label:"Java (V1 - Vault)",label2:"Java (V2 - 7 Pilares)",ini:"19:30",fim:"22:30",
+ {sig:"seg",tema:"Java",cor:"var(--cyan)",doc:"trilhas/java.html",label:"Java (7 Pilares)",ini:"19:30",fim:"22:30",
   slot:"seg",passado:"na segunda passada",
   n1:"Plataforma e runtime: valores, referências, generics, coleções, falhas, JDBC sem ORM, concorrência e JVM.",
   n2:"Java 21 Moderno em 7 Pilares: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência.",
   nota:"Da plataforma ao runtime em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Lab Interativo)."},
- {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"spring.html",doc2:"spring_v2.html",label:"Spring (V1)",label2:"Spring (V2)",ini:"19:30",fim:"22:30",
+ {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"trilhas/spring.html",label:"Spring Boot 3 (7 Pilares)",ini:"19:30",fim:"22:30",
   slot:"ter",passado:"na terça passada",
-  opcoes:[
-    {f:"spring.html",nome:"Spring Boot (V1 - Vault)",nota:"O container de IoC até a produção: ciclo de vida do bean, AOP e proxies, transação, Boot e configuração.",versao:"V1"},
-    {f:"spring_v2.html",nome:"Spring Boot (V2 - 7 Pilares)",nota:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade.",versao:"V2"},
-    {f:"mensageria.html",nome:"Mensageria (V1 - Vault)",nota:"A fila que desacopla o OrderFlow: publisher confirms, ack manual, retry com DLQ e idempotência.",versao:"V1"},
-    {f:"mensageria_v2.html",nome:"Mensageria (V2 - 7 Pilares)",nota:"Mensageria & RabbitMQ em 7 Pilares: topologia AMQP, Dead Letter Queue, Outbox Pattern e Kafka.",versao:"V2"}
-  ],
+  opcoes:[{f:"trilhas/spring.html",nome:"Spring Boot 3 (7 Pilares)",nota:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade."},{f:"trilhas/mensageria.html",nome:"Mensageria & RabbitMQ (7 Pilares)",nota:"Mensageria & RabbitMQ em 7 Pilares: topologia AMQP, Dead Letter Queue, Outbox Pattern e Kafka."}],
   n1:"O container de IoC até a produção: ciclo de vida do bean, AOP e proxies, transação, Boot e configuração.",
   n2:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade.",
   nota:"Do container de IoC à mensageria resiliente: escolha entre as versões V1 e V2 de Spring e Mensageria."},
- {sig:"qua",tema:"Nuvem",cor:"var(--orange)",doc:"nuvem.html",doc2:"nuvem_v2.html",label:"Nuvem (V1 - Vault)",label2:"Nuvem (V2 - 7 Pilares)",ini:"19:30",fim:"22:30",
+ {sig:"qua",tema:"Nuvem",cor:"var(--orange)",doc:"trilhas/nuvem.html",label:"Nuvem (7 Pilares)",ini:"19:30",fim:"22:30",
   slot:"qua",passado:"na quarta passada",
   n1:"Conceitual e sem vendor: mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage e IaC.",
   n2:"Nuvem Multicloud em 7 Pilares: simulador interativo de VPC/CIDR, matriz comparativa AWS/Azure/GCP, IAM Least Privilege, S3 storage tiers e FinOps.",
   nota:"Arquitetura de nuvem agnóstica: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Simulador VPC)."},
- {sig:"qui",tema:"Docker e Kubernetes",cor:"var(--lime)",doc:"docker-kubernetes.html",doc2:"docker_kubernetes_v2.html",label:"Docker & K8s (V1 - Vault)",label2:"Docker & K8s (V2 - 7 Pilares)",ini:"19:30",fim:"22:30",
+ {sig:"qui",tema:"Docker e Kubernetes",cor:"var(--lime)",doc:"trilhas/docker-kubernetes.html",label:"Docker & K8s (7 Pilares)",ini:"19:30",fim:"22:30",
   slot:"qui",passado:"na quinta passada",
   n1:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Pod, Service, Ingress e HPA.",
   n2:"Containers e Kubernetes em 7 Pilares: simulador interativo de Probes (Liveness/Readiness/Startup), multi-stage builds, isolamento cgroups e autoescalonamento.",
   nota:"Do processo isolado ao cluster em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador de Probes)."},
- {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",doc:"arquitetura.html",doc2:"arquitetura_v2.html",label:"Arquitetura (V1 - Vault)",label2:"Arquitetura (V2 - 7 Pilares)",ini:"19:30",fim:"21:00",
+ {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",doc:"trilhas/arquitetura.html",label:"Arquitetura (7 Pilares)",ini:"19:30",fim:"21:00",
   slot:"sex",passado:"na sexta passada",
   n1:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, e como decidir, documentar e influenciar.",
   n2:"Arquitetura de Software em 7 Pilares: simulador interativo de Circuit Breaker com estados CLOSED/OPEN/HALF-OPEN, Saga, Outbox, C4 Model e consistência eventual.",
   nota:"Arquitetura de sistemas em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador Circuit Breaker)."},
- {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",doc:"ingles.html",doc2:"oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
+ {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",doc:"cadernos/ingles.html",doc2:"cadernos/oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
   slot:"sab",passado:"no sábado passado",
   n1:"Entrada antes de saída: escuta, leitura, shadowing e a reunião ao vivo em inglês.",
   n2:"Gravar a própria voz, estruturar antes do slide e defender uma decisão técnica.",
   nota:"Sábado sai da sequência técnica: inglês e oratória. O inglês pede 20 min por dia; o sábado é para a parte que precisa de bloco — shadowing, gravação da própria voz e as falas do laboratório."},
- {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"ia.html",doc2:"ia_v4.html",label:"IA (V1 - Vault)",label2:"AI Eng (V4 - Didática & Visual)",livre:"projeto próprio e IA",
+ {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"trilhas/ia.html",label:"AI Engineering (Didática & Visual)",livre:"projeto próprio e IA",
   slot:"dom",passado:"no domingo passado",
   n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector, MCP e guardrails.",
   n2:"AI Engineering V4 em 6 Níveis com Mapas Conceituais e Didática Visual: Fundamentos, Tokens, SDD, Spring AI, Agentes e Test Harness.",
@@ -498,7 +506,7 @@ function pintarActs(dia){
   else if(dia.doc2)acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.label.toLowerCase()+' ou '+dia.label2.toLowerCase()+' →</button>');
   else if(dia.doc)acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
   acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
-  acts.push('<a class="act ghost" href="conceitos-backend.html">caderno de dúvidas</a>');
+  acts.push('<a class="act ghost" href="cadernos/conceitos-backend.html">caderno de dúvidas</a>');
   q("acts").innerHTML=acts.join("");
   var bt=q("btEscolher");
   if(bt)bt.addEventListener("click",function(){abrirModal(dia,bt)});
@@ -784,7 +792,9 @@ if(btnExportar){
     try {
       for(var i = 0; i < localStorage.length; i++){
         var k = localStorage.key(i);
-        if(k && (k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-"))){
+        // Proteção estrita: NUNCA exportar chaves de API, senhas ou tokens
+        if(!k || /api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+        if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
           backup.dados[k] = localStorage.getItem(k);
         }
       }
@@ -805,7 +815,7 @@ if(btnExportar){
     URL.revokeObjectURL(url);
     var msg = q("backupMsg");
     if(msg){
-      msg.textContent = "✓ Backup exportado com sucesso!";
+      msg.textContent = "✓ Backup exportado com sucesso (sem credenciais)!";
       msg.style.display = "block";
       setTimeout(function(){ msg.style.display = "none"; }, 4000);
     }
@@ -823,20 +833,28 @@ if(btnRestaurar && fileInput){
     reader.onload = function(e){
       try {
         var json = JSON.parse(e.target.result);
-        if(!json || !json.dados){
+        if(!json || !json.dados || typeof json.dados !== "object"){
           alert("Arquivo de backup inválido.");
           return;
         }
         var count = 0;
         for(var k in json.dados){
-          if(json.dados.hasOwnProperty(k)){
-            localStorage.setItem(k, json.dados[k]);
-            count++;
+          if(Object.prototype.hasOwnProperty.call(json.dados, k)){
+            // Blindagem contra Prototype Pollution e injeção de credenciais
+            if(k === "__proto__" || k === "constructor" || k === "prototype") continue;
+            if(/api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+            // Validação de escopo de chaves e tipo primitivo seguro
+            if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
+              if(typeof json.dados[k] === "string"){
+                localStorage.setItem(k, json.dados[k]);
+                count++;
+              }
+            }
           }
         }
         var msg = q("backupMsg");
         if(msg){
-          msg.textContent = "✓ " + count + " chaves restauradas! Atualizando...";
+          msg.textContent = "✓ " + count + " chaves restauradas com validação! Atualizando...";
           msg.style.display = "block";
         }
         atualizarProgressoGlobal();
@@ -851,49 +869,42 @@ if(btnRestaurar && fileInput){
 
 /* ================= UNIVERSAL COMMAND PALETTE (Ctrl+K) ================= */
 var PALETTE_DATA = [
-  {t:"Java completo (V1)",sub:"Plataforma, JMM, concorrência, JDBC sem ORM e JVM (Vault)",cat:"DOC",url:"java.html",cor:"var(--cyan)"},
-  {t:"Java completo (V2 - 7 Pilares)",sub:"Java 21, JMM, Virtual Threads, HikariCP, GC e simulador de concorrência",cat:"DOC V2",url:"java_v2.html",cor:"var(--cyan)"},
-  {t:"Spring completo (V1)",sub:"IoC, proxies CGLIB, @Transactional, MVC e Actuator (Vault)",cat:"DOC",url:"spring.html",cor:"var(--purple)"},
-  {t:"Spring completo (V2 - 7 Pilares)",sub:"Spring Boot 3, arquitetura interna, Testcontainers e observabilidade",cat:"DOC V2",url:"spring_v2.html",cor:"var(--purple)"},
-  {t:"Mensageria e RabbitMQ (V1)",sub:"AMQP, confirms, ack, prefetch, DLQ, outbox e Kafka (Vault)",cat:"DOC",url:"mensageria.html",cor:"var(--pink)"},
-  {t:"Mensageria e RabbitMQ (V2 - 7 Pilares)",sub:"Topologia AMQP, Dead Letter Queue, Outbox Pattern e resiliência",cat:"DOC V2",url:"mensageria_v2.html",cor:"var(--pink)"},
-  {t:"Nuvem completo (V1)",sub:"Nuvem agnóstica: AWS, Azure, GCP, FinOps e redes (Vault)",cat:"DOC",url:"nuvem.html",cor:"var(--orange)"},
-  {t:"Nuvem completo (V2 - 7 Pilares)",sub:"VPC CIDR Simulator, AWS/Azure/GCP matrix, IAM Least Privilege e FinOps",cat:"DOC V2",url:"nuvem_v2.html",cor:"var(--orange)"},
-  {t:"Docker e Kubernetes (V1)",sub:"Namespaces, cgroups, PID 1, probes, rollout e HPA (Vault)",cat:"DOC",url:"docker-kubernetes.html",cor:"var(--lime)"},
-  {t:"Docker e Kubernetes (V2 - 7 Pilares)",sub:"Probe Simulator (Liveness/Readiness), multi-stage builds e cgroups",cat:"DOC V2",url:"docker_kubernetes_v2.html",cor:"var(--lime)"},
-  {t:"Arquitetura completa (V1)",sub:"SOLID, Conway, DDD, Saga, consistência e ADRs (Vault)",cat:"DOC",url:"arquitetura.html",cor:"var(--gold)"},
-  {t:"Arquitetura completa (V2 - 7 Pilares)",sub:"Circuit Breaker Simulator, Saga, Outbox, C4 Model e consistência",cat:"DOC V2",url:"arquitetura_v2.html",cor:"var(--gold)"},
-  {t:"Conceitos de Backend completo",sub:"Locks, race conditions, índices, JWT e War Room",cat:"DOC",url:"conceitos-backend.html",cor:"var(--gold)"},
-  {t:"Biblioteca completa",sub:"5 livros fundamentais de arquitetura e algoritmos",cat:"DOC",url:"biblioteca.html",cor:"var(--purple)"},
-  {t:"System Design completo",sub:"Little's Law, sharding, chaves, Bloom filter e SLAs",cat:"DOC",url:"system-design.html",cor:"var(--lime)"},
-  {t:"Linux e terminal completo",sub:"Processos, sinais, descritores, pipes e systemd",cat:"DOC",url:"linux.html",cor:"var(--orange)"},
-  {t:"Git completo",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"DOC",url:"git.html",cor:"var(--pink)"},
-  {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"DOC",url:"ingles.html",cor:"var(--cyan)"},
-  {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"DOC",url:"oratoria.html",cor:"var(--gold)"},
-  {t:"Inteligência Artificial completo (V1)",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals (Vault)",cat:"DOC",url:"ia.html",cor:"var(--purple)"},
-  {t:"AI Engineering completo (V4 - Didática & Visual)",sub:"Os 6 Grandes Níveis com mapas conceituais: tokens, SDD, pgvector, agentes e Test Harness",cat:"DOC V4",url:"ia_v4.html",cor:"var(--teal)"},
-  {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"DOC",url:"projetos.html",cor:"var(--lime)"},
-  {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"mensageria.html#g2",cor:"var(--pink)"},
-  {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"conceitos-backend.html#j2",cor:"var(--rose)"},
-  {t:"OOMKilled Fantasma (Exit 137)",sub:"Limite do container cgroup vs memória Off-Heap JVM",cat:"WAR ROOM",url:"conceitos-backend.html#j1",cor:"var(--rose)"},
-  {t:"Avalanche e Poison Pill no RabbitMQ",sub:"Requeue infinito, prefetch e Dead Letter Queue",cat:"WAR ROOM",url:"conceitos-backend.html#j3",cor:"var(--rose)"},
-  {t:"Pool de Conexões e HPA no K8s",sub:"Multiplicação perigosa de conexões sob autoescalonamento",cat:"PONTE",url:"java.html#g2",cor:"var(--orange)"},
-  {t:"PID 1, Sinais POSIX e Graceful Shutdown",sub:"Forma shell vs exec e terminação limpa no Kubernetes",cat:"PONTE",url:"docker-kubernetes.html#b3",cor:"var(--orange)"},
-  {t:"Java Memory Model & Concorrência",sub:"Volatile, happens-before, atomics e Virtual Threads",cat:"TEMA",url:"java.html#p9",cor:"var(--cyan)"},
-  {t:"Proxies Spring, CGLIB e Self-Invocation",sub:"Por que @Transactional falha quando chamado internamente",cat:"TEMA",url:"spring.html#c4",cor:"var(--purple)"},
-  {t:"Locks Pessimista, Otimista e Distribuído",sub:"SELECT FOR UPDATE, @Version e Redis Redlock",cat:"TEMA",url:"conceitos-backend.html#p3",cor:"var(--gold)"},
-  {t:"Saga e Transações Compensatórias",sub:"Orquestração vs Coreografia e consistência eventual",cat:"TEMA",url:"arquitetura.html#f3",cor:"var(--gold)"},
-  {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"ia.html#c1",cor:"var(--purple)"},
-  {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"ia.html#d1",cor:"var(--purple)"},
-  {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"ia.html#d2",cor:"var(--purple)"},
-  {t:"Test Harness & Evals para Agentes (V4)",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA V4",url:"ia_v4.html#n6",cor:"var(--teal)"},
-  {t:"SDD (Spec-Driven Development) & Prompts (V4)",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA V4",url:"ia_v4.html#n3",cor:"var(--teal)"},
-  {t:"Agentes Autônomos & Loop ReAct (V4)",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA V4",url:"ia_v4.html#n5",cor:"var(--teal)"},
-  {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
-  {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
-  {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
-  {t:"Projeto P05 · Checkout com Idempotência e Outbox",sub:"Spring Boot, PostgreSQL e RabbitMQ",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"},
-  {t:"Projeto P16 · Agente RAG com Tool Calling",sub:"Spring AI / LangChain4j e banco vetorial",cat:"PROJETO",url:"projetos.html",cor:"var(--lime)"}
+  {t:"Java completo (7 Pilares)",sub:"Java 21, JMM, Virtual Threads, HikariCP, GC e simulador de concorrência",cat:"TRILHA",url:"trilhas/java.html",cor:"var(--cyan)"},
+  {t:"Spring Boot 3 (7 Pilares)",sub:"Spring Boot 3, arquitetura interna, Testcontainers e observabilidade",cat:"TRILHA",url:"trilhas/spring.html",cor:"var(--purple)"},
+  {t:"Mensageria e RabbitMQ (7 Pilares)",sub:"Topologia AMQP, Dead Letter Queue, Outbox Pattern e resiliência",cat:"TRILHA",url:"trilhas/mensageria.html",cor:"var(--pink)"},
+  {t:"Nuvem Multicloud (7 Pilares)",sub:"VPC CIDR Simulator, AWS/Azure/GCP matrix, IAM Least Privilege e FinOps",cat:"TRILHA",url:"trilhas/nuvem.html",cor:"var(--orange)"},
+  {t:"Docker e Kubernetes (7 Pilares)",sub:"Probe Simulator (Liveness/Readiness), multi-stage builds e cgroups",cat:"TRILHA",url:"trilhas/docker-kubernetes.html",cor:"var(--lime)"},
+  {t:"Arquitetura de Software (7 Pilares)",sub:"Circuit Breaker Simulator, Saga, Outbox, C4 Model e consistência",cat:"TRILHA",url:"trilhas/arquitetura.html",cor:"var(--gold)"},
+  {t:"System Design completo",sub:"17 Sistemas reais, Little's Law, sharding, chaves, Bloom filter e SLAs",cat:"TRILHA",url:"trilhas/system-design.html",cor:"var(--lime)"},
+  {t:"AI Engineering completo",sub:"Os 6 Grandes Níveis com mapas conceituais: Transformers, RoPE, Speculative Decoding, pgvector, agentes e Test Harness",cat:"TRILHA",url:"trilhas/ia.html",cor:"var(--teal)"},
+  {t:"Conceitos de Backend completo",sub:"Locks, race conditions, índices, JWT e War Room",cat:"CADERNO",url:"cadernos/conceitos-backend.html",cor:"var(--gold)"},
+  {t:"Biblioteca clássica",sub:"5 livros fundamentais de arquitetura e algoritmos",cat:"CADERNO",url:"cadernos/biblioteca.html",cor:"var(--purple)"},
+  {t:"Linux e terminal completo",sub:"Processos, sinais, descritores, pipes e systemd",cat:"CADERNO",url:"cadernos/linux.html",cor:"var(--orange)"},
+  {t:"Git em profundidade",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"CADERNO",url:"cadernos/git.html",cor:"var(--pink)"},
+  {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"CADERNO",url:"cadernos/ingles.html",cor:"var(--cyan)"},
+  {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"CADERNO",url:"cadernos/oratoria.html",cor:"var(--gold)"},
+  {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"trilhas/mensageria.html#g2",cor:"var(--pink)"},
+  {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j2",cor:"var(--rose)"},
+  {t:"OOMKilled Fantasma (Exit 137)",sub:"Limite do container cgroup vs memória Off-Heap JVM",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j1",cor:"var(--rose)"},
+  {t:"Avalanche e Poison Pill no RabbitMQ",sub:"Requeue infinito, prefetch e Dead Letter Queue",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j3",cor:"var(--rose)"},
+  {t:"Pool de Conexões e HPA no K8s",sub:"Multiplicação perigosa de conexões sob autoescalonamento",cat:"PONTE",url:"trilhas/java.html#g2",cor:"var(--orange)"},
+  {t:"PID 1, Sinais POSIX e Graceful Shutdown",sub:"Forma shell vs exec e terminação limpa no Kubernetes",cat:"PONTE",url:"trilhas/docker-kubernetes.html#b3",cor:"var(--orange)"},
+  {t:"Java Memory Model & Concorrência",sub:"Volatile, happens-before, atomics e Virtual Threads",cat:"TEMA",url:"trilhas/java.html#p9",cor:"var(--cyan)"},
+  {t:"Proxies Spring, CGLIB e Self-Invocation",sub:"Por que @Transactional falha quando chamado internamente",cat:"TEMA",url:"trilhas/spring.html#c4",cor:"var(--purple)"},
+  {t:"Locks Pessimista, Otimista e Distribuído",sub:"SELECT FOR UPDATE, @Version e Redis Redlock",cat:"TEMA",url:"cadernos/conceitos-backend.html#p3",cor:"var(--gold)"},
+  {t:"Saga e Transações Compensatórias",sub:"Orquestração vs Coreografia e consistência eventual",cat:"TEMA",url:"trilhas/arquitetura.html#f3",cor:"var(--gold)"},
+  {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"trilhas/ia.html#c1",cor:"var(--purple)"},
+  {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"trilhas/ia.html#d1",cor:"var(--purple)"},
+  {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"trilhas/ia.html#d2",cor:"var(--purple)"},
+  {t:"Test Harness & Evals para Agentes",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA",url:"trilhas/ia.html#n6",cor:"var(--teal)"},
+  {t:"SDD (Spec-Driven Development) & Prompts",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA",url:"trilhas/ia.html#n3",cor:"var(--teal)"},
+  {t:"Agentes Autônomos & Loop ReAct",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA",url:"trilhas/ia.html#n5",cor:"var(--teal)"},
+  {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P05 · Checkout com Idempotência e Outbox",sub:"Spring Boot, PostgreSQL e RabbitMQ",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P16 · Agente RAG com Tool Calling",sub:"Spring AI / LangChain4j e banco vetorial",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"}
 ];
 
 var PALETTE_MODAL = q("paletteScrim");
@@ -1015,6 +1026,9 @@ document.addEventListener("keydown", function(e){
     <div id="backupMsg" style="margin-top:14px;font-size:.8rem;color:var(--teal);display:none"></div>
   </div>
 </div>
+
+<script src="assets/js/microlearning-data.js"></script>
+<script src="assets/js/microlearning-widget.js"></script>
 
 </body>
 </html>

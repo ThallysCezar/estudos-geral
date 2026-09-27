@@ -1,46 +1,59 @@
-# Estudos · backend em profundidade
+# Estudos · Backend & AI Engineering em Profundidade
 
-Quinze documentos — catorze de estudo e uma bancada prática — que escrevo e uso. Cada documento tem duas metades: uma **trilha visual** no estilo roadmap.sh, com modo teste e fila de revisão, e o **conteúdo em profundidade**, em que cada tópico traz a origem do mecanismo, o que ele veio substituir, diagramas vetoriais animados, as armadilhas reais de produção e uma prova de domínio.
+Quinze documentos de estudo e bancada prática organizados em trilhas especializadas, cadernos de fundamentos e laboratório. Cada documento reúne uma **trilha visual** interativa com modo teste e fila de revisão, e o **conteúdo em profundidade**, com a origem de cada mecanismo, o que veio substituir, diagramas vetoriais animados, armadilhas reais de produção, pontos de atenção e **exercícios interativos com feedback imediato**.
 
 **→ [thallyscezar.github.io/estudos](https://thallyscezar.github.io/estudos)**
 
-| # | Documento | Trilha | Conteúdo | Foco |
+---
+
+## 🗺️ Mapa de Conteúdo Modular
+
+### 🚀 Trilhas Principais (`trilhas/`)
+| # | Documento | Trilha | Conteúdo | Foco Central |
 |---|---|---|---|---|
-| 01 | [Java completo](java.html) | 134 nós | 49 tópicos | Plataforma, JMM, concorrência e JDBC puro |
-| 02 | [Spring completo](spring.html) | 85 nós | 52 tópicos | IoC, ciclo do bean, AOP, transações e MVC |
-| 03 | [Arquitetura completa](arquitetura.html) | 101 nós | 51 tópicos | SOLID, Conway, estilos, DDD e ADRs |
-| 04 | [Docker e Kubernetes completo](docker-kubernetes.html) | 74 nós | 36 tópicos | Namespaces, PID 1, probes e HPA |
-| 05 | [Nuvem completo](nuvem.html) | 51 nós | 48 tópicos | Nuvem agnóstica (AWS/Azure/GCP), IAM e FinOps |
-| 06 | [Mensageria e RabbitMQ completo](mensageria.html) | 76 nós | 35 tópicos | AMQP, ack manual, DLQ, outbox e saga |
-| 07 | [Conceitos de Backend completo](conceitos-backend.html) | 60 nós | 28 tópicos | O caderno de dúvidas: locks, JWT, race conditions e War Room |
-| 08 | [Biblioteca completa](biblioteca.html) | 38 nós | 17 tópicos | 5 livros clássicos e onde os autores divergem |
-| 09 | [System Design completo](system-design.html) | 42 nós | 23 tópicos | Escala sob restrição, Lei de Little e sharding |
-| 10 | [Linux e terminal completo](linux.html) | 35 nós | 16 tópicos | O térreo: processos, sinais, pipes e descritores |
-| 11 | [Git completo](git.html) | 30 nós | 15 tópicos | Grafo de snapshots imutáveis, reflog e bisect |
-| 12 | [Inglês técnico completo](ingles.html) | 32 nós | 14 tópicos | Input compreensível, shadowing e code review |
-| 13 | [Oratória e comunicação](oratoria.html) | 33 nós | 12 tópicos | Defesa de ADR, reuniões e modelo SBI |
-| 14 | [Inteligência Artificial completo](ia.html) | 61 nós | 29 tópicos | Previsão de tokens, RAG, MCP, agentes e evals |
-| 15 | [Laboratório de projetos](projetos.html) | 18 missões | 18 aquecimentos | A bancada: 6 oficinas com falhas injetadas |
+| 01 | [Java Completo](trilhas/java.html) | 134 nós | 49 tópicos | Java 21, JMM, concorrência, Virtual Threads e HikariCP |
+| 02 | [Spring Boot 3](trilhas/spring.html) | 85 nós | 52 tópicos | IoC, ciclo de vida do bean, AOP, CGLIB, transações e MVC |
+| 03 | [Arquitetura de Software](trilhas/arquitetura.html) | 101 nós | 51 tópicos | SOLID, Conway, DDD, Circuit Breaker, Saga e ADRs |
+| 04 | [Docker & Kubernetes](trilhas/docker-kubernetes.html) | 74 nós | 36 tópicos | Namespaces, cgroups, PID 1, probes, rollout e HPA |
+| 05 | [Nuvem Multicloud](trilhas/nuvem.html) | 51 nós | 48 tópicos | Nuvem agnóstica (AWS/Azure/GCP), VPC/CIDR, IAM e FinOps |
+| 06 | [Mensageria & RabbitMQ](trilhas/mensageria.html) | 76 nós | 35 tópicos | AMQP, ack manual, DLQ, Outbox Pattern e Kafka |
+| 07 | [System Design](trilhas/system-design.html) | 67 nós | 45 tópicos | 17 Sistemas reais (YouTube, Spotify, Uber, etc.), sharding e LLM serving |
+| 08 | [Inteligência Artificial & AI Eng](trilhas/ia.html) | 28 nós | 33 tópicos | Transformers, RoPE, Speculative Decoding, RAG Híbrido, Multi-Agente e Evals |
 
-A navegação e a rotina semanal partem de **[index.html](index.html)**, que identifica o dia corrente, o foco de estudo e organiza as alternâncias semanais.
+### 📚 Cadernos de Apoio & Fundamentos (`cadernos/`)
+| # | Documento | Foco |
+|---|---|---|
+| 09 | [Conceitos de Backend](cadernos/conceitos-backend.html) | O caderno de dúvidas: locks, JWT, race conditions, índices e War Room |
+| 10 | [Biblioteca Clássica](cadernos/biblioteca.html) | 5 livros clássicos (Khononov, Richards, Ford, Xu, Bhargava) e divergências |
+| 11 | [Linux & Terminal](cadernos/linux.html) | O térreo: processos, sinais, pipes, descritores e systemd |
+| 12 | [Git em Profundidade](cadernos/git.html) | Grafo DAG de snapshots imutáveis, reflog, rebase e recuperação |
+| 13 | [Inglês Técnico](cadernos/ingles.html) | Input compreensível, shadowing e code review sem atrito |
+| 14 | [Oratória & Comunicação](cadernos/oratoria.html) | Defesa técnica de decisões, postmortems blameless e modelo SBI |
 
-## Como funciona
+### 🛠️ Laboratório & Prática (`lab/`)
+| # | Documento | Foco |
+|---|---|---|
+| 15 | [Laboratório de Projetos](lab/projetos.html) | 18 missões e aquecimentos: OrderFlow, Saga, Outbox, Toxiproxy e K8s |
 
-- **HTML autocontido.** Sem framework, sem build, sem dependência externa além das fontes.
-  Cada arquivo abre sozinho, inclusive offline depois do primeiro acesso.
-- **Modo teste.** Na trilha, ele esconde a resposta e monta uma fila com o que você errou.
-- **Progresso local.** O "marcar dominado" fica no `localStorage` do seu navegador.
-  Totalmente privado e offline.
-- **Tema Dracula**, uniforme em todo o ecossistema.
+### 🧰 Ferramentas de Produtividade & IA (`ferramentas/`)
+| Ferramenta | Descrição |
+|---|---|
+| [Prompt Studio](ferramentas/prompt-studio.html) | Engenharia de prompt em 5 princípios e compactação de contexto para LLMs |
+| [Formatador de Texto](ferramentas/refinador.html) | Refinador multi-provedor (Gemini, Groq, OpenRouter) para tasks, PRs e e-mails |
+| [Guia de APIs](ferramentas/tutorial-api.html) | Passo a passo para obter chaves gratuitas sem necessidade de cartão de crédito |
 
-## O fio condutor
+---
 
-O mesmo sistema — **OrderFlow** — atravessa os seis primeiros documentos: implementado em Java, migrado para Spring, projetado em Arquitetura, empacotado em Docker e Kubernetes, implantado numa nuvem e desacoplado com mensageria. As restrições se repetem entre eles: a conta do pool de conexões que limita o autoescalonamento aparece em três deles, vista de ângulos diferentes.
+## ⚡ Recursos & Inovações da Plataforma
 
-## Publicar
-
-Repositório público com GitHub Pages servindo a raiz do branch `main`.
-O arquivo `.nojekyll` existe para o Pages servir os arquivos como estão, sem processar com Jekyll.
+- **⚡ Pílula de MicroLearning Diário (3 Minutos)**: Desafio prático no dashboard (`index.html`) sincronizado com o cronograma semanal de estudos e contador de streak (dias seguidos).
+- **📱 Responsividade Mobile-First com Drawer Navigation**: Menu off-canvas deslizante (`☰ Tópicos`), tabelas adaptativas e rolagem horizontal suave em snippets de código para celulares e tablets.
+- **🎯 Fixação Ativa & Exercícios**:
+  - *Pontos Críticos & Recapitulando*: Síntese com pegadinhas de entrevista e modelos mentais de produção.
+  - *Quizzes Interativos*: Perguntas situacionais com feedback explicativo imediato (verde/vermelho).
+  - *Flashcards 3D*: Active Recall com giro de cartas para autoverificação.
+- **✨ 100% Autocontido e Offline**: Funciona sem necessidade de servidor local ou backend; progresso e respostas persistidos privadamente no `localStorage`.
+- **🎨 Tema Dracula Unificado**: Cores oficiais Dracula em todos os componentes, diagramas e mapas mentais.
 
 ---
 

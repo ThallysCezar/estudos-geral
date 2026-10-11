@@ -24,7 +24,7 @@ window.MICROLEARNING_QUESTIONS = [
     cor: "var(--cyan)",
     icon: "☕",
     topicoNome: "Volatile e o Java Memory Model (JMM)",
-    url: "java.html#b1",
+    url: "trilhas/java.html#i2",
     pergunta: "Dois threads executam `contador++` simultaneamente 10.000 vezes em uma variável declarada como `public volatile int contador = 0`. Qual será o comportamento do valor final?",
     code: "public volatile int contador = 0;\n// 2 threads executando 10.000x:\ncontador++;",
     opcoes: [
@@ -42,7 +42,7 @@ window.MICROLEARNING_QUESTIONS = [
     cor: "var(--cyan)",
     icon: "☕",
     topicoNome: "Virtual Threads e o Problema de Pinning no Java 21",
-    url: "java.html#e1",
+    url: "trilhas/java.html#i6",
     pergunta: "Uma aplicação migrada para Virtual Threads (Project Loom) no Java 21 sofre degradação severa de throughput quando threads virtuais realizam I/O bloqueante dentro de blocos `synchronized`. Por que isso ocorre?",
     code: "synchronized (lock) {\n    // Chamada de rede I/O bloqueante (ex: HTTP ou JDBC legado)\n    var resp = httpClient.send(req, handler);\n}",
     opcoes: [
@@ -268,7 +268,7 @@ window.MICROLEARNING_QUESTIONS = [
     cor: "var(--purple)",
     icon: "🧠",
     topicoNome: "RAG Híbrido: Vetorial (Denso) + BM25 (Esparso)",
-    url: "trilhas/ia.html#b2",
+    url: "trilhas/ia.html#t4-rag",
     pergunta: "Em um sistema RAG (Retrieval-Augmented Generation), por que combinar busca vetorial densa (Embeddings) com busca esparsa tradicional por palavras-chave (BM25 / Full-Text) supera o uso de embeddings puros?",
     opcoes: [
       { letter: "A", text: "Embeddings capturam similaridade semântica e intenção, mas costumam falhar ao buscar identificadores exatos (códigos de produto, CPFs, nomes de funções e termos técnicos raros), onde o BM25 é cirúrgico.", correct: true },
@@ -285,7 +285,7 @@ window.MICROLEARNING_QUESTIONS = [
     cor: "var(--purple)",
     icon: "🧠",
     topicoNome: "KV Cache e a Fase de Geração de Tokens",
-    url: "trilhas/ia.html#a3",
+    url: "trilhas/ia.html#t1-transformer-math",
     pergunta: "No serving de Grandes Modelos de Linguagem (LLMs com arquitetura Transformer), qual é a função essencial do 'KV Cache' (Key-Value Cache)?",
     opcoes: [
       { letter: "A", text: "Armazenar o histórico de conversas dos usuários em um cluster Redis distribuído.", correct: false },

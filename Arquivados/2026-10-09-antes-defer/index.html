@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="O tema de hoje e a semana de estudos de backend: Java, Spring, Mensageria, Nuvem, Docker e Kubernetes, Arquitetura.">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Estudos · hoje</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+button:active,.act:active,.island button:active,.btn-sim:active{transform:scale(.97)}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);background:var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh;overflow-x:hidden}
+
+/* aura que deriva devagar, na cor do dia (GPU acelerada, sem layout reflow) */
+.aura-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;will-change:transform}
+.aura{position:absolute;inset:-20% -10%;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 18% 22%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 70%),
+    radial-gradient(34% 38% at 82% 12%,color-mix(in srgb,var(--accent) 17%,transparent),transparent 72%),
+    radial-gradient(46% 46% at 62% 88%,#bd93f91f,transparent 72%);
+  filter:blur(12px);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{
+  0%{transform:translate3d(-2%,-1%,0) scale(1)}
+  50%{transform:translate3d(2%,2%,0) scale(1.07)}
+  100%{transform:translate3d(-1%,1.5%,0) scale(1.02)}
+}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(#f8f8f21f 1px,transparent 1px);background-size:22px 22px;
+  mask-image:radial-gradient(80% 65% at 50% 28%,#000 0%,transparent 78%)}
+
+.wrap{position:relative;z-index:1;width:min(1120px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+.mono{font-family:"Cascadia Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.kick{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- topo ---------- */
+.island{position:sticky;top:16px;z-index:6;width:min(1120px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;gap:9px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em;margin-right:auto;white-space:nowrap}
+.brand i{font-style:normal;color:var(--accent);transition:color .8s var(--ease)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;white-space:nowrap;
+  transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+.island a.on{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 48%,transparent)}
+
+/* ---------- hoje ---------- */
+.hero{padding:clamp(34px,7vh,86px) 0 0}
+.stamp{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.stamp .dt{font:700 .68rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--accent)}
+.stamp .ln{flex:1;min-width:30px;height:1px;background:linear-gradient(to right,color-mix(in srgb,var(--accent) 55%,transparent),transparent)}
+.stamp .clk{font:700 .68rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
+
+h1{margin:18px 0 0;font:500 clamp(3rem,10.5vw,7.6rem)/1.02 Georgia,serif;letter-spacing:-.055em}
+h1 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.06em .05em .12em;margin:-.06em -.05em -.12em}
+h1 .w>span{display:inline-block;transform:translateY(115%);animation:up 1s var(--ease) forwards;animation-delay:var(--d)}
+@keyframes up{to{transform:none}}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{margin:22px 0 0;max-width:58ch;color:var(--ink2);font-size:clamp(.95rem,1.5vw,1.1rem);line-height:1.62;
+  opacity:0;animation:fade 1s .55s var(--ease) forwards}
+@keyframes fade{to{opacity:1}}
+
+/* amanhã */
+.morrow{margin:30px 0 0;display:flex;align-items:center;gap:12px;opacity:0;animation:fade 1s .75s var(--ease) forwards}
+.morrow .dot{width:7px;height:7px;border-radius:50%;background:var(--nx);flex:none;
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--nx) 60%,transparent);animation:ping 3.4s var(--ease) infinite}
+@keyframes ping{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--nx) 55%,transparent)}
+  70%{box-shadow:0 0 0 11px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+.morrow span{font-size:.86rem;color:var(--muted)}
+.morrow b{color:var(--nx);font-weight:500}
+
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;opacity:0;animation:fade 1s .95s var(--ease) forwards}
+.act{position:relative;text-decoration:none;font-size:.85rem;padding:12px 20px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--accent) 52%,transparent);color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 12%,transparent);
+  transition:background .35s var(--ease)}
+.act:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+button.act{font-family:inherit;font-size:.85rem;cursor:pointer}
+.act.ghost{border-color:var(--line2);color:var(--ink);background:transparent}
+.act.ghost:hover{background:#ffffff0a}
+
+/* ---------- a semana ---------- */
+.wk{margin:clamp(56px,9vh,104px) 0 0}
+.wk .hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:13px;
+  border-bottom:1px solid var(--line)}
+.wk .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
+.day{position:relative;overflow:hidden;display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:22px;align-items:center;
+  padding:19px 16px 19px 18px;border-bottom:1px solid var(--line);text-decoration:none;
+  opacity:0;transform:translateY(12px);
+  animation:dayIn .8s var(--ease) forwards;animation-delay:var(--d);
+  transition:background .4s var(--ease)}
+@keyframes dayIn{to{opacity:1;transform:none}}
+.day:before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;border-radius:2px;
+  background:var(--c);transform:scaleY(0);transform-origin:top;transition:transform .5s var(--ease)}
+.day:hover:before{transform:scaleY(1)}
+.day:not(.sem):hover{background:color-mix(in srgb,var(--c) 8%,transparent);transform:translateX(5px)}
+.day .sig{font:700 .72rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+.day .mid{min-width:0}
+.day .tm{display:block;font:500 clamp(1.15rem,2.4vw,1.7rem)/1.2 Georgia,serif;letter-spacing:-.035em;color:var(--ink2);
+  transition:color .4s var(--ease)}
+.day:hover .tm{color:var(--ink)}
+.day .sub{display:block;margin-top:10px;color:var(--muted);font-size:.82rem;line-height:1.55;max-width:62ch}
+.day .rt{display:flex;align-items:center;gap:12px;flex:none}
+.day .ar{font:500 1.05rem Georgia,serif;color:var(--c);opacity:.5;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.day:hover .ar{opacity:1;transform:translateX(4px)}
+.day.now{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 13%,transparent),transparent 72%)}
+.day.now:before{transform:scaleY(1)}
+.day.now .tm{color:var(--ink)}
+.day.now .tag{display:inline-block;margin-left:12px;font:700 .58rem "Cascadia Code",monospace;letter-spacing:.1em;
+  background:var(--c);color:#282a36;border-radius:999px;padding:3px 8px;vertical-align:.28em}
+/* varredura lenta na linha de hoje */
+.day.now:after{content:"";position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--c) 13%,transparent),transparent);
+  animation:sweep 7s var(--ease) infinite}
+@keyframes sweep{0%{left:-42%}60%,100%{left:104%}}
+.day.rest{opacity:.62}
+.day.rest:hover{opacity:1}
+/* dia sem documento: informa, não convida ao clique */
+.day.sem{cursor:default}
+.day.sem:hover{background:transparent}
+.day.sem:hover:before{transform:scaleY(0)}
+.day.sem:hover .tm{color:var(--ink2)}
+.day .sel{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--c);opacity:.7;border:1px solid color-mix(in srgb,var(--c) 32%,transparent);
+  border-radius:999px;padding:6px 12px;white-space:nowrap}
+
+/* selo do dia de dois documentos */
+.day .sel.dois{color:var(--c);opacity:1;background:color-mix(in srgb,var(--c) 12%,transparent)}
+.day .horario{display:inline-block;margin-left:10px;font:600 .62rem "Cascadia Code",monospace;color:var(--muted);background:#ffffff0a;border:1px solid var(--line);border-radius:999px;padding:3px 9px;vertical-align:.22em}
+
+/* ---------- o modal da escolha ---------- */
+.mdl{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,#15161e 78%,transparent);backdrop-filter:blur(7px);
+  opacity:0;animation:mdlIn .32s var(--ease) forwards}
+.mdl[hidden]{display:none}
+@keyframes mdlIn{to{opacity:1}}
+.mdl .box{--c:var(--purple);position:relative;width:min(720px,100%);max-height:calc(100dvh - 40px);overflow:auto;
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);border-radius:26px;padding:30px 30px 22px;
+  background:radial-gradient(120% 130% at 0% 0%,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  box-shadow:0 30px 90px #00000099;
+  transform:translateY(14px) scale(.985);animation:boxIn .42s .04s var(--ease) forwards}
+@keyframes boxIn{to{transform:none}}
+.mdl .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--c)}
+.mdl h3{margin:11px 0 0;font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.mdl .hist{margin:14px 0 0;color:var(--muted);font-size:.86rem;line-height:1.62;max-width:56ch}
+.mdl .hist b{color:var(--ink);font-weight:500}
+.mdl .x{position:absolute;top:14px;right:17px;cursor:pointer;background:none;border:0;line-height:1;
+  color:var(--soft);font:400 1.5rem Georgia,serif}
+.mdl .x:hover{color:var(--ink)}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opts.opts-4{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+@media(max-width:680px){
+  .opts.opts-4{grid-template-columns:1fr}
+}
+.opt{--o:var(--c);display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  border:1px solid color-mix(in srgb,var(--o) 26%,transparent);border-radius:19px;padding:17px 18px 15px;
+  background:color-mix(in srgb,var(--o) 6%,transparent);
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.opt:hover,.opt:focus-visible{border-color:color-mix(in srgb,var(--o) 62%,transparent);
+  background:color-mix(in srgb,var(--o) 13%,transparent);transform:translateY(-2px);outline:none}
+.opt .bg{display:inline-block;margin-bottom:11px;padding:4px 9px;border-radius:999px;
+  font:700 .55rem "Cascadia Code",monospace;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid color-mix(in srgb,var(--o) 40%,transparent);color:var(--o)}
+.opt .bg.mudo{color:var(--soft);border-color:var(--line2)}
+.opt strong{display:block;font:500 1.26rem Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.opt em{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:.79rem;line-height:1.5}
+.opt .qd{display:block;margin-top:11px;font:.67rem "Cascadia Code",monospace;color:var(--soft)}
+
+.mdl .tally{margin:18px 0 0;font:.69rem "Cascadia Code",monospace;color:var(--soft);letter-spacing:.05em}
+.mdl .pe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.mdl .pe button,.mdl .pe a{cursor:pointer;font:inherit;font-size:.76rem;color:var(--muted);background:none;
+  border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.mdl .pe button:hover,.mdl .pe a:hover{color:var(--ink)}
+.mdl .pe .nb{margin-left:auto;text-decoration:none;cursor:default;color:var(--soft);font-size:.68rem;
+  font-family:"Cascadia Code",monospace}
+@media(max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .mdl .box{padding:24px 20px 18px;border-radius:22px}
+  .mdl .pe .nb{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.mdl,.mdl .box{animation:none;opacity:1;transform:none}}
+
+/* ---------- outros ---------- */
+.outros{margin:clamp(50px,8vh,84px) 0 0}
+.outros .hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:16px;
+  border-bottom:1px solid var(--line)}
+.outros .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
+
+.duv{--dv:var(--gold);
+  position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:26px;
+  align-items:center;margin-top:20px;padding:28px 30px;border-radius:26px;text-decoration:none;
+  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);
+  background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--dv) 11%,transparent),transparent 58%),var(--panel);
+  transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
+.duv:hover{border-color:color-mix(in srgb,var(--dv) 56%,transparent);transform:translateY(-4px);box-shadow:0 20px 45px #00000066,0 0 26px color-mix(in srgb,var(--dv) 16%,transparent)}
+
+.duv .mk{position:relative;flex:none;display:grid;place-items:center;width:82px;height:82px;border-radius:26px;
+  border:1px solid color-mix(in srgb,var(--dv) 42%,transparent);background:color-mix(in srgb,var(--dv) 8%,transparent);
+  font:500 2.5rem Georgia,serif;color:var(--dv);
+  animation:bob 5.5s var(--ease) infinite}
+.duv .mk:before{content:"";position:absolute;inset:-1px;border-radius:26px;
+  background:conic-gradient(from 0deg,transparent 0 68%,color-mix(in srgb,var(--dv) 52%,transparent) 82%,transparent 96%);
+  animation:spin 7s linear infinite;opacity:.75;
+  mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px))}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-2.5deg)}}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+.duv .bd{position:relative;z-index:1;min-width:0}
+.duv .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--dv)}
+.duv h3{margin:9px 0 9px;font:500 clamp(1.5rem,3vw,2rem)/1.08 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.duv p{margin:0;color:var(--muted);font-size:.87rem;line-height:1.6;max-width:64ch}
+.duv .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.duv .chips i{font-style:normal;font:.66rem "Cascadia Code",monospace;color:color-mix(in srgb,var(--dv) 84%,transparent);
+  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);border-radius:999px;padding:5px 11px}
+.duv .go{position:relative;z-index:1;flex:none;font:500 1.5rem Georgia,serif;color:var(--dv);opacity:.6;transition:transform .4s var(--ease),opacity .4s var(--ease)}
+.duv:hover .go{transform:translateX(5px);opacity:1}
+
+@media(max-width:680px){
+  .duv{grid-template-columns:auto minmax(0,1fr);gap:18px;padding:22px 20px}
+  .duv .go{display:none}
+  .duv .mk{width:62px;height:62px;border-radius:20px;font-size:1.9rem}
+}
+
+footer{margin:clamp(56px,9vh,96px) 0 44px;padding-top:24px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.77rem;line-height:1.7}
+footer a{color:var(--accent)}
+
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}
+  .island{width:calc(100% - 24px);flex-wrap:wrap;border-radius:22px;padding:10px 13px;gap:7px}
+  .island .brand{margin-right:0;width:100%;margin-bottom:2px;font-size:.72rem}
+  .island a,.island button.btn-act{font-size:.71rem;padding:6px 10px}
+  .island a.hide{display:none}
+  .day{grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 10px 16px 12px}
+  .day .rt{grid-column:2;margin-top:9px}
+  pre{overflow-x:auto;max-width:100%}
+  code{overflow-wrap:anywhere}
+  pre code{overflow-wrap:normal}
+  table{display:block;overflow-x:auto;max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .day.now:after{display:none}
+  .duv .mk:before{display:none}
+  h1 .w>span{transform:none}.lede,.morrow,.acts,.day{opacity:1;transform:none}
+}
+
+/* ---------- Command Palette & Backup Modals ---------- */
+.palette-scrim{position:fixed;inset:0;z-index:100;background:#0d0e14d9;backdrop-filter:blur(8px);display:grid;place-items:start center;padding:clamp(20px,10vh,80px) 16px 20px;opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.palette-scrim.open{opacity:1;pointer-events:auto}
+.palette-box{width:min(660px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:20px;box-shadow:0 24px 60px #000000a6;overflow:hidden;transform:translateY(-10px) scale(.98);transition:transform .24s var(--ease)}
+.palette-scrim.open .palette-box{transform:none}
+.palette-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);background:#1e1f29}
+.palette-head i{font-style:normal;color:var(--purple);font-size:1.1rem}
+.palette-input{flex:1;background:transparent;border:0;outline:none;color:var(--ink);font:500 1rem "Inter",sans-serif}
+.palette-input::placeholder{color:var(--soft)}
+.palette-kbd{font:700 .65rem "Cascadia Code",monospace;color:var(--muted);background:#282a36;padding:4px 8px;border-radius:6px;border:1px solid var(--line2)}
+.palette-results{max-height:min(420px,60vh);overflow-y:auto;padding:8px 0}
+.palette-item{display:flex;align-items:center;gap:12px;padding:11px 20px;text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
+.palette-item:hover,.palette-item.active{background:#ffffff0f;border-left-color:var(--purple)}
+.palette-item .p-tag{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.palette-item .p-text{flex:1;min-width:0}
+.palette-item .p-title{font:600 .86rem "Inter",sans-serif;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-item .p-sub{font:400 .74rem Georgia,serif;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-empty{padding:28px 20px;text-align:center;color:var(--soft);font-style:italic;font-size:.88rem}
+
+/* Botões do island */
+.island button.btn-act{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 13px;font:600 .74rem "Inter",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease)}
+.island button.btn-act:hover{background:#ffffff0f;color:var(--ink);border-color:var(--purple)}
+.island button.btn-act kbd{font:700 .6rem "Cascadia Code",monospace;background:#ffffff14;padding:2px 5px;border-radius:4px;border:1px solid var(--line2)}
+
+/* Backup card/modal */
+.backup-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(500px,100%)}
+.backup-card h3{margin:0 0 8px;font:600 1.25rem Georgia,serif;color:var(--ink)}
+.backup-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);line-height:1.55}
+.backup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.backup-actions button{flex:1 1 140px;border-radius:12px;padding:12px 14px;border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.backup-actions button.primary{border-color:var(--purple);background:color-mix(in srgb,var(--purple) 18%,transparent);color:var(--purple)}
+.backup-actions button:hover{filter:brightness(1.2)}
+
+</style>
+<link rel="stylesheet" href="assets/css/pratica.css">
+</head>
+<body style="--accent:var(--cyan)">
+
+<div class="aura-wrap" id="auraWrap"><div class="aura" id="aura"></div></div>
+<div class="grain"></div>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <button type="button" class="btn-act" id="btnPalette" title="Buscar no acervo completo (Ctrl+K)">🔍 Buscar <kbd>Ctrl+K</kbd></button>
+  <button type="button" class="btn-act" id="btnBackup" title="Fazer backup ou restaurar dados">💾 Backup</button>
+  <a href="acervo.html">o acervo completo</a>
+  <a href="lab/projetos.html">projetos</a>
+  <a href="ferramentas/prompt-studio.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">🧠 prompt studio</a>
+  <a href="ferramentas/refinador.html" style="color:var(--purple);font-weight:700;border-color:color-mix(in srgb,var(--purple) 45%,transparent);background:color-mix(in srgb,var(--purple) 10%,transparent)">✨ formatador</a>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="stamp">
+      <span class="dt" id="dt">—</span>
+      <span class="ln"></span>
+      <span class="clk" id="clk">--:--</span>
+    </div>
+
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+
+    <div class="morrow" id="morrow"><span class="dot"></span><span id="mtxt"></span></div>
+
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <!-- MicroLearning Diário -->
+  <section class="ml-section" id="microlearningMount"></section>
+
+  <section class="wk">
+    <div class="hd">
+      <h2>A semana</h2>
+      <span class="kick" style="color:var(--muted)">19:30 — 22:30 nos dias úteis</span>
+    </div>
+    <div id="wk"></div>
+  </section>
+
+  <section class="outros">
+    <div class="hd"><h2>Outros</h2></div>
+
+    <a class="duv" href="cadernos/conceitos-backend.html">
+      <span class="mk">?</span>
+      <span class="bd">
+        <span class="kk">fora da sequência</span>
+        <h3>Caderno de dúvidas</h3>
+        <p>Conceitos de Backend completo: o documento que não tem dia marcado. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa, em vez de criar um arquivo novo solto.</p>
+        <span class="chips"><i>gargalos e escala</i><i>race condition</i><i>locks</i><i>idempotência</i><i>rate limit</i><i>índices e JOINs</i><i>sessão vs JWT</i><i>OAuth2 e PKCE</i><i>observabilidade</i><i>deploy e rollback</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/biblioteca.html" style="--dv:var(--purple)">
+      <span class="mk">▤</span>
+      <span class="bd">
+        <span class="kk">a estante</span>
+        <h3>Biblioteca</h3>
+        <p>Os cinco livros que formaram o critério, num documento só — com a síntese de cada um e, principalmente, <b>onde os autores discordam</b>: é ali que mora o trade-off, e era invisível quando cada livro vivia no seu arquivo.</p>
+        <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i><i>ordem de leitura</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/git.html" style="--dv:var(--pink)">
+      <span class="mk">⑂</span>
+      <span class="bd">
+        <span class="kk">o histórico</span>
+        <h3>Git</h3>
+        <p>Um <b>grafo de snapshots imutáveis</b>, não uma pilha de versões — e é dessa confusão que quase todo problema nasce. Unifica os quatro roadmaps que estavam concorrendo no vault. Comece pelo marco 04: saber recuperar é o que dá coragem para usar o resto da ferramenta.</p>
+        <span class="chips"><i>cherry-pick -x</i><i>bisect</i><i>reflog</i><i>rebase -i --autosquash</i><i>--force-with-lease</i><i>worktree</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/linux.html" style="--dv:var(--orange)">
+      <span class="mk">$_</span>
+      <span class="bd">
+        <span class="kk">o térreo</span>
+        <h3>Linux e terminal</h3>
+        <p>O que estava faltando <b>embaixo</b> de todos os outros. Todo laboratório roda em container, o Docker fala em PID 1 e SIGTERM, a Nuvem exige teardown por comando — e nenhum documento explicava o terminal. Cada conceito aqui vem com o sintoma real: o container que ignora o Ctrl+C, o disco que encheu sem arquivo grande, o 137 sem exceção no log.</p>
+        <span class="chips"><i>SIGTERM × SIGKILL</i><i>PID 1</i><i>2&gt;&amp;1</i><i>grep sed awk</i><i>df × du</i><i>cgroup</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="trilhas/system-design.html" style="--dv:var(--cyan)">
+      <span class="mk">⧉</span>
+      <span class="bd">
+        <span class="kk">o projeto inteiro</span>
+        <h3>System Design</h3>
+        <p>O nono não explica mecanismo — ensina a <b>escolher entre eles sob restrição</b>. Nenhum conceito aparece sozinho: cada um chega com o caso que o obriga a existir, e com a conta que decide. 10 mil requisições por segundo, 1 milhão de eventos, dois bilhões de usernames, um milhão de pedidos para paginar.</p>
+        <span class="chips"><i>L = λ × W</i><i>a escada de leitura</i><i>partition key</i><i>Bloom filter</i><i>keyset</i><i>falha parcial</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="trilhas/ia.html" style="--dv:var(--purple)" id="cardIA">
+      <span class="mk">◈</span>
+      <span class="bd">
+        <span class="kk">o que prevê · dois caminhos</span>
+        <h3>Inteligência Artificial</h3>
+        <p>Toda a área de IA do vault e a engenharia moderna: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir no modal.</p>
+        <span class="chips"><i>dois · escolher</i><i>V1 (Vault &amp; Fundações)</i><i>V2/V3 (6 Grandes Níveis)</i><i>tokens</i><i>RAG</i><i>pgvector</i><i>agentes</i><i>Test Harness</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="lab/projetos.html" style="--dv:var(--lime)">
+      <span class="mk">⌘</span>
+      <span class="bd">
+        <span class="kk">a bancada</span>
+        <h3>Laboratório de projetos</h3>
+        <p>Os catorze documentos explicam; aqui você constrói. <b>18 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
+        <span class="chips"><i>18 projetos</i><i>18 aquecimentos</i><i>tudo local primeiro</i><i>R$ 0 obrigatório</i><i>OrderFlow como capstone</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+  </section>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a>.
+  </footer>
+
+</main>
+
+<div class="mdl" id="mdl" hidden role="dialog" aria-modal="true" aria-labelledby="mdlT">
+  <div class="box" id="mdlBox"></div>
+</div>
+
+<script>
+var SEM=[
+ {sig:"seg",tema:"Java",cor:"var(--cyan)",doc:"trilhas/java.html",label:"Java (7 Pilares)",ini:"19:30",fim:"22:30",
+  slot:"seg",passado:"na segunda passada",
+  n1:"Plataforma e runtime: valores, referências, generics, coleções, falhas, JDBC sem ORM, concorrência e JVM.",
+  n2:"Java 21 Moderno em 7 Pilares: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência.",
+  nota:"Da plataforma ao runtime em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Lab Interativo)."},
+ {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"trilhas/spring.html",label:"Spring Boot 3 (7 Pilares)",ini:"19:30",fim:"22:30",
+  slot:"ter",passado:"na terça passada",
+  opcoes:[{f:"trilhas/spring.html",nome:"Spring Boot 3 (7 Pilares)",nota:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade."},{f:"trilhas/mensageria.html",nome:"Mensageria & RabbitMQ (7 Pilares)",nota:"Mensageria & RabbitMQ em 7 Pilares: topologia AMQP, Dead Letter Queue, Outbox Pattern e Kafka."}],
+  n1:"O container de IoC até a produção: ciclo de vida do bean, AOP e proxies, transação, Boot e configuração.",
+  n2:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade.",
+  nota:"Do container de IoC à mensageria resiliente: escolha entre as versões V1 e V2 de Spring e Mensageria."},
+ {sig:"qua",tema:"Nuvem",cor:"var(--orange)",doc:"trilhas/nuvem.html",label:"Nuvem (7 Pilares)",ini:"19:30",fim:"22:30",
+  slot:"qua",passado:"na quarta passada",
+  n1:"Conceitual e sem vendor: mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage e IaC.",
+  n2:"Nuvem Multicloud em 7 Pilares: simulador interativo de VPC/CIDR, matriz comparativa AWS/Azure/GCP, IAM Least Privilege, S3 storage tiers e FinOps.",
+  nota:"Arquitetura de nuvem agnóstica: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Simulador VPC)."},
+ {sig:"qui",tema:"Docker e Kubernetes",cor:"var(--lime)",doc:"trilhas/docker-kubernetes.html",label:"Docker & K8s (7 Pilares)",ini:"19:30",fim:"22:30",
+  slot:"qui",passado:"na quinta passada",
+  n1:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Pod, Service, Ingress e HPA.",
+  n2:"Containers e Kubernetes em 7 Pilares: simulador interativo de Probes (Liveness/Readiness/Startup), multi-stage builds, isolamento cgroups e autoescalonamento.",
+  nota:"Do processo isolado ao cluster em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador de Probes)."},
+ {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",doc:"trilhas/arquitetura.html",label:"Arquitetura (7 Pilares)",ini:"19:30",fim:"21:00",
+  slot:"sex",passado:"na sexta passada",
+  n1:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, e como decidir, documentar e influenciar.",
+  n2:"Arquitetura de Software em 7 Pilares: simulador interativo de Circuit Breaker com estados CLOSED/OPEN/HALF-OPEN, Saga, Outbox, C4 Model e consistência eventual.",
+  nota:"Arquitetura de sistemas em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador Circuit Breaker)."},
+ {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",doc:"cadernos/ingles.html",doc2:"cadernos/oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
+  slot:"sab",passado:"no sábado passado",
+  n1:"Entrada antes de saída: escuta, leitura, shadowing e a reunião ao vivo em inglês.",
+  n2:"Gravar a própria voz, estruturar antes do slide e defender uma decisão técnica.",
+  nota:"Sábado sai da sequência técnica: inglês e oratória. O inglês pede 20 min por dia; o sábado é para a parte que precisa de bloco — shadowing, gravação da própria voz e as falas do laboratório."},
+ {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"trilhas/ia.html",label:"AI Engineering (Didática & Visual)",livre:"projeto próprio e IA",
+  slot:"dom",passado:"no domingo passado",
+  n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector, MCP e guardrails.",
+  n2:"AI Engineering V4 em 6 Níveis com Mapas Conceituais e Didática Visual: Fundamentos, Tokens, SDD, Spring AI, Agentes e Test Harness.",
+  nota:"Domingo é para IA e projeto próprio: escolha entre a versão V1 (Fundações & Vault) ou a versão V4 (Didática, Visual & 6 Níveis de Engenharia)."}
+];
+
+function q(id){return document.getElementById(id)}
+function min(h){var p=h.split(":");return +p[0]*60+ +p[1]}
+function dur(m){var h=Math.floor(m/60),r=m%60;return h?(h+" h"+(r?" "+r+" min":"")):(r+" min")}
+
+var dow=(new Date().getDay()+6)%7,d=SEM[dow];
+document.body.style.setProperty("--accent",d.cor);
+
+q("dt").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"});
+q("clk").textContent=d.descanso?"sem pauta":(d.livre?"livre":"à noite");
+
+/* título, palavra por palavra */
+var frase=d.descanso?["Hoje","é","<em>descanso</em>."]:["Hoje","é","<em>"+d.tema+"</em>."];
+q("h1").innerHTML=frase.map(function(w,i){
+  return '<span class="w"><span style="--d:'+(.12+i*.11).toFixed(2)+'s">'+w+'</span></span>';
+}).join(" ");
+q("lede").textContent=d.nota;
+
+/* amanhã */
+var nx=SEM[(dow+1)%7];
+q("morrow").style.setProperty("--nx",nx.cor);
+q("mtxt").innerHTML=(nx.descanso?"Amanhã é <b>descanso</b>.":"Amanhã é <b>"+nx.tema+"</b>.");
+
+/* ações — dia de documentos alternativos abre a escolha */
+function pintarActs(dia){
+  var acts=[];
+  if(dia.opcoes)acts.push('<button class="act" type="button" id="btEscolher">escolher: spring ou mensageria (v1 / v2) →</button>');
+  else if(dia.doc2)acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.label.toLowerCase()+' ou '+dia.label2.toLowerCase()+' →</button>');
+  else if(dia.doc)acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
+  acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
+  acts.push('<a class="act ghost" href="cadernos/conceitos-backend.html">caderno de dúvidas</a>');
+  q("acts").innerHTML=acts.join("");
+  var bt=q("btEscolher");
+  if(bt)bt.addEventListener("click",function(){abrirModal(dia,bt)});
+}
+pintarActs(d);
+
+/* a aura segue o ponteiro, devagar (acelerado por GPU, sem reflow) */
+if(!window.matchMedia("(prefers-reduced-motion:reduce)").matches){
+  var auWrap=q("auraWrap"),ax=0,ay=0,tx=0,ty=0,raf=null;
+  window.addEventListener("pointermove",function(e){
+    tx=(e.clientX/window.innerWidth-.5)*34;
+    ty=(e.clientY/window.innerHeight-.5)*24;
+    if(!raf)raf=requestAnimationFrame(seguir);
+  },{passive:true});
+  function seguir(){
+    ax+=(tx-ax)*.045;ay+=(ty-ay)*.045;
+    if(auWrap) auWrap.style.transform="translate3d("+ax.toFixed(2)+"px,"+ay.toFixed(2)+"px,0)";
+    raf=(Math.abs(tx-ax)>.2||Math.abs(ty-ay)>.2)?requestAnimationFrame(seguir):null;
+  }
+}
+
+/* a semana */
+q("wk").innerHTML=SEM.map(function(x,i){
+  var cls="day"+(i===dow?" now":"")+((x.descanso||x.livre)?" rest":"");
+  var estilo='style="--c:'+x.cor+';--d:'+(.35+i*.07).toFixed(2)+'s"';
+  var htxt=x.descanso?"sem pauta":(x.livre?x.livre:(x.ini+" — "+x.fim));
+  var miolo='<span class="sig">'+x.sig+'</span>'
+    +'<span class="mid"><span class="tm">'+x.tema+(i===dow?'<span class="tag">hoje</span>':'')+'<span class="horario">'+htxt+'</span></span>'
+    +'<span class="sub">'+x.nota+'</span></span>';
+
+  /* dia sem documento não é link */
+  if(!x.doc) return '<div class="'+cls+' sem" '+estilo+'>'+miolo
+    +'<span class="rt"><span class="sel">'+(x.descanso?"sem pauta":x.livre)+'</span></span></div>';
+
+  /* dia com versões v1/v2: o href existe para o ctrl+clique, mas o clique normal abre o modal */
+  var tagTexto = x.sig==="sáb" ? "dois · escolher" : "v1 / v2 · escolher";
+  var rt='<span class="rt">'
+    +(x.doc2?'<span class="sel dois">'+tagTexto+'</span>':'')
+    +'<span class="ar">↗</span></span>';
+  return '<a class="'+cls+(x.doc2?" duplo":"")+'" href="'+x.doc+'" data-dia="'+i+'" '+estilo+'>'+miolo+rt+'</a>';
+}).join("");
+
+/* ---------- a escolha dos dias com múltiplos documentos ---------- */
+var RK="site.index.alternancia.v1";
+function lerReg(){try{return JSON.parse(localStorage.getItem(RK))||{}}catch(e){return {}}}
+function gravar(slot,file){
+  try{
+    var r=lerReg(),a=r[slot]||[];
+    a.unshift({f:file,t:Date.now()});
+    r[slot]=a.slice(0,12);
+    localStorage.setItem(RK,JSON.stringify(r));
+  }catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* "há quanto tempo" em palavras, sem nunca chutar a data */
+function quando(ts,pass){
+  var a=new Date(ts);a.setHours(0,0,0,0);
+  var b=new Date();b.setHours(0,0,0,0);
+  var n=Math.round((b-a)/864e5);
+  var dt=new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+  if(n<=0)return "hoje mesmo";
+  if(n===1)return "ontem";
+  if(n<6)return "há "+n+" dias, em "+dt;
+  if(n<=10)return pass+", em "+dt;
+  return "há "+Math.round(n/7)+" semanas, em "+dt;
+}
+function doDoc(x,f){
+  if(x.opcoes){
+    for(var i=0;i<x.opcoes.length;i++){
+      if(x.opcoes[i].f===f) return {f:x.opcoes[i].f,nome:x.opcoes[i].nome,nota:x.opcoes[i].nota};
+    }
+  }
+  return f===x.doc?{f:x.doc,nome:x.label,nota:x.n1}:{f:x.doc2,nome:x.label2,nota:x.n2};
+}
+function ultimaDe(h,f){for(var i=0;i<h.length;i++)if(h[i].f===f)return h[i];return null}
+
+var MD=q("mdl"),BOX=q("mdlBox"),voltarFoco=null;
+
+function abrirModal(x,el){
+  voltarFoco=el||null;
+  BOX.style.setProperty("--c",x.cor);
+  MD.hidden=false;
+  document.documentElement.style.overflow="hidden";
+  telaEscolha(x);
+}
+function fecharModal(){
+  MD.hidden=true;
+  document.documentElement.style.overflow="";
+  BOX.innerHTML="";
+  if(voltarFoco&&voltarFoco.focus)voltarFoco.focus();
+  voltarFoco=null;
+}
+function irPara(x,f){gravar(x.slot,f);location.href=f;}
+
+function cartao(x,f,h,selo,mudo){
+  var o=doDoc(x,f),u=ultimaDe(h,f);
+  var badgeTexto = selo;
+  if(x.sig !== "sáb"){
+    var ver = (f === x.doc2 || f.includes("_v2") || f.includes("-v2") || (o.nome && o.nome.includes("V2"))) ? "V2" : "V1";
+    badgeTexto = (selo && (selo.includes("V1") || selo.includes("V2"))) ? selo : (ver + " · " + selo);
+  }
+  return '<button class="opt" type="button" data-f="'+o.f+'">'
+    +'<span class="bg'+(mudo?" mudo":"")+'">'+esc(badgeTexto)+'</span>'
+    +'<strong>'+esc(o.nome)+'</strong>'
+    +'<em>'+esc(o.nota)+'</em>'
+    +'<span class="qd">'+(u?"última vez: "+esc(quando(u.t,x.passado)):"nunca aberto por aqui")+'</span>'
+    +'</button>';
+}
+
+function telaEscolha(x){
+  var h=lerReg()[x.slot]||[],ult=h[0]||null;
+
+  if(x.opcoes){
+    var cardsHtml = x.opcoes.map(function(op){
+      var u = ultimaDe(h, op.f);
+      var selo = (ult && ult.f === op.f) ? (op.versao + " · foi o último") : (op.versao + " · escolher");
+      var mudo = !(ult && ult.f === op.f);
+      return '<button class="opt" type="button" data-f="'+op.f+'">'
+        +'<span class="bg'+(mudo?" mudo":"")+'">'+esc(selo)+'</span>'
+        +'<strong>'+esc(op.nome)+'</strong>'
+        +'<em>'+esc(op.nota)+'</em>'
+        +'<span class="qd">'+(u?"última vez: "+esc(quando(u.t,x.passado)):"nunca aberto por aqui")+'</span>'
+        +'</button>';
+    }).join("");
+
+    var histOp = ult
+      ? "Você abriu <b>"+esc(doDoc(x,ult.f).nome)+"</b> "+esc(quando(ult.t,x.passado))
+        +". Escolha qual versão deseja estudar agora:"
+      : "Nada registrado ainda para este dia. Escolha entre as versões V1 e V2 de Spring e Mensageria:";
+
+    BOX.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+      +'<span class="kk">'+esc(x.sig)+' · quatro opções (V1 / V2)</span>'
+      +'<h3 id="mdlT">Qual versão estudar hoje?</h3>'
+      +'<p class="hist">'+histOp+'</p>'
+      +'<div class="opts opts-4">'+cardsHtml+'</div>'
+      +'<div class="pe"><button type="button" data-fechar>fechar</button>'
+      +'<a href="acervo.html">ver o acervo completo</a>'
+      +'<span class="nb">fica só neste navegador</span></div>';
+
+    BOX.querySelectorAll(".opt").forEach(function(b){
+      b.addEventListener("click",function(){
+        irPara(x,this.dataset.f);
+      });
+    });
+    var pri=BOX.querySelector(".opt");if(pri)pri.focus();
+    return;
+  }
+
+  var sug=ult?(ult.f===x.doc?x.doc2:x.doc):x.doc;
+  var outro=sug===x.doc?x.doc2:x.doc;
+
+  var hist=ult
+    ? "Você abriu <b>"+esc(doDoc(x,ult.f).nome)+"</b> "+esc(quando(ult.t,x.passado))
+      +". Pela alternância, a vez é de <b>"+esc(doDoc(x,sug).nome)+"</b> — mas quem decide é você."
+    : "Nada registrado ainda para este dia. Escolha qual versão deseja abrir:";
+
+  var c1=0,c2=0;
+  h.forEach(function(e){e.f===x.doc?c1++:c2++});
+  var tally=h.length
+    ? esc(x.label)+" "+c1+" × "+esc(x.label2)+" "+c2+" · últimas "+h.length+" vez"+(h.length>1?"es":"")
+    : "";
+
+  var verTag = (x.doc2 && x.doc2.includes("v4")) ? "Versão V1 ou V4" : ((x.label2 && x.label2.includes("V2")) ? "Versão V1 ou V2" : "Escolha de Versão");
+
+  BOX.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+    +'<span class="kk">'+esc(x.sig)+' · '+verTag+'</span>'
+    +'<h3 id="mdlT">Qual versão estudar hoje?</h3>'
+    +'<p class="hist">'+hist+'</p>'
+    +'<div class="opts">'+cartao(x,sug,h,"a vez é deste")+cartao(x,outro,h,ult&&ult.f===outro?"foi o último":"também dá",true)+'</div>'
+    +(tally?'<p class="tally">'+tally+'</p>':'')
+    +'<div class="pe"><button type="button" data-fechar>fechar</button>'
+    +'<a href="acervo.html">ver os dois no acervo</a>'
+    +'<span class="nb">fica só neste navegador</span></div>';
+
+  BOX.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){
+      irPara(x,this.dataset.f);
+    });
+  });
+  var pri=BOX.querySelector(".opt");if(pri)pri.focus();
+}
+
+/* escolheu o mesmo da última vez: confirma antes, sem impedir */
+function telaRepetir(x,f,ult){
+  var o=doDoc(x,f);
+  var altDoc = null;
+  if(x.opcoes){
+    if(f === "spring.html") altDoc = "spring_v2.html";
+    else if(f === "spring_v2.html") altDoc = "spring.html";
+    else if(f === "mensageria.html") altDoc = "mensageria_v2.html";
+    else if(f === "mensageria_v2.html") altDoc = "mensageria.html";
+    else {
+      for(var i=0; i<x.opcoes.length; i++){
+        if(x.opcoes[i].f !== f){ altDoc = x.opcoes[i].f; break; }
+      }
+    }
+  } else {
+    altDoc = (f === x.doc ? x.doc2 : x.doc);
+  }
+  var alt = doDoc(x, altDoc);
+
+  BOX.innerHTML='<button class="x" type="button" data-fechar aria-label="fechar">×</button>'
+    +'<span class="kk">'+esc(x.sig)+' · confirmação</span>'
+    +'<h3>Repetir '+esc(o.nome)+'?</h3>'
+    +'<p class="hist">Foi exatamente isso que você abriu '+esc(quando(ult.t,x.passado))
+    +'. Repetir é legítimo quando o assunto ficou pela metade — mas se foi só o caminho mais curto, '
+    +'<b>'+esc(alt.nome)+'</b> está parado desde então.</p>'
+    +'<div class="opts">'
+    +'<button class="opt" type="button" data-f="'+alt.f+'"><span class="bg">trocar</span>'
+      +'<strong>'+esc(alt.nome)+'</strong><em>'+esc(alt.nota)+'</em>'
+      +'<span class="qd">mantém as duas trilhas andando</span></button>'
+    +'<button class="opt" type="button" data-f="'+o.f+'"><span class="bg mudo">repetir</span>'
+      +'<strong>'+esc(o.nome)+'</strong><em>'+esc(o.nota)+'</em>'
+      +'<span class="qd">sim, quero o mesmo de novo</span></button>'
+    +'</div>'
+    +'<div class="pe"><button type="button" data-voltar>voltar</button>'
+    +'<button type="button" data-fechar>fechar</button></div>';
+
+  BOX.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){irPara(x,this.dataset.f)});
+  });
+  BOX.querySelector("[data-voltar]").addEventListener("click",function(){telaEscolha(x)});
+  BOX.querySelector(".opt").focus();
+}
+
+/* o clique normal na terça, sábado ou domingo abre a escolha; ctrl/cmd+clique segue o href */
+q("wk").addEventListener("click",function(e){
+  var a=e.target.closest?e.target.closest("a.duplo"):null;
+  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+  e.preventDefault();
+  abrirModal(SEM[+a.getAttribute("data-dia")],a);
+});
+
+var cIA=q("cardIA");
+if(cIA){
+  cIA.addEventListener("click",function(e){
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    e.preventDefault();
+    abrirModal(SEM[6],cIA);
+  });
+}
+MD.addEventListener("click",function(e){
+  if(e.target===MD||(e.target.closest&&e.target.closest("[data-fechar]")))fecharModal();
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&!MD.hidden)fecharModal();
+});
+
+/* ================= BACKUP & RESTAURAÇÃO JSON ================= */
+var BKP_MODAL = q("backupModal");
+function abrirBackup(){
+  if(!BKP_MODAL) return;
+  BKP_MODAL.hidden = false;
+  BKP_MODAL.classList.add("open");
+  document.documentElement.style.overflow = "hidden";
+}
+function fecharBackup(){
+  if(!BKP_MODAL) return;
+  BKP_MODAL.classList.remove("open");
+  BKP_MODAL.hidden = true;
+  document.documentElement.style.overflow = "";
+}
+
+var btnBackup = q("btnBackup");
+if(btnBackup) btnBackup.addEventListener("click", abrirBackup);
+var btnFecharBkp = q("btnFecharBackup");
+if(btnFecharBkp) btnFecharBkp.addEventListener("click", fecharBackup);
+if(BKP_MODAL){
+  BKP_MODAL.addEventListener("click", function(e){
+    if(e.target === BKP_MODAL) fecharBackup();
+  });
+}
+
+var btnExportar = q("btnExportarJson");
+if(btnExportar){
+  btnExportar.addEventListener("click", function(){
+    var backup = {
+      versao: 1,
+      exportadoEm: new Date().toISOString(),
+      dados: {}
+    };
+    try {
+      for(var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        // Proteção estrita: NUNCA exportar chaves de API, senhas ou tokens
+        if(!k || /api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+        if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
+          backup.dados[k] = localStorage.getItem(k);
+        }
+      }
+    } catch(err){
+      var em = q("backupMsg");
+      if(em){ em.textContent = "Não foi possível acessar o armazenamento local (navegação privativa?)."; em.style.display = "block"; }
+      return;
+    }
+    var blob = new Blob([JSON.stringify(backup, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    var d = new Date();
+    a.download = "estudos-backup-" + d.toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    var msg = q("backupMsg");
+    if(msg){
+      msg.textContent = "✓ Backup exportado com sucesso (sem credenciais)!";
+      msg.style.display = "block";
+      setTimeout(function(){ msg.style.display = "none"; }, 4000);
+    }
+  });
+}
+
+var btnRestaurar = q("btnRestaurarJson");
+var fileInput = q("backupFileInput");
+if(btnRestaurar && fileInput){
+  btnRestaurar.addEventListener("click", function(){ fileInput.click(); });
+  fileInput.addEventListener("change", function(){
+    if(!fileInput.files || !fileInput.files[0]) return;
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        var json = JSON.parse(e.target.result);
+        if(!json || !json.dados || typeof json.dados !== "object"){
+          alert("Arquivo de backup inválido.");
+          return;
+        }
+        var count = 0;
+        for(var k in json.dados){
+          if(Object.prototype.hasOwnProperty.call(json.dados, k)){
+            // Blindagem contra Prototype Pollution e injeção de credenciais
+            if(k === "__proto__" || k === "constructor" || k === "prototype") continue;
+            if(/api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+            // Validação de escopo de chaves e tipo primitivo seguro
+            if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
+              if(typeof json.dados[k] === "string"){
+                localStorage.setItem(k, json.dados[k]);
+                count++;
+              }
+            }
+          }
+        }
+        var msg = q("backupMsg");
+        if(msg){
+          msg.textContent = "✓ " + count + " chaves restauradas com validação! Atualizando...";
+          msg.style.display = "block";
+        }
+        atualizarProgressoGlobal();
+        setTimeout(function(){ location.reload(); }, 1200);
+      } catch(err){
+        alert("Erro ao ler arquivo JSON: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+/* ================= UNIVERSAL COMMAND PALETTE (Ctrl+K) ================= */
+var PALETTE_DATA = [
+  {t:"Java completo (7 Pilares)",sub:"Java 21, JMM, Virtual Threads, HikariCP, GC e simulador de concorrência",cat:"TRILHA",url:"trilhas/java.html",cor:"var(--cyan)"},
+  {t:"Spring Boot 3 (7 Pilares)",sub:"Spring Boot 3, arquitetura interna, Testcontainers e observabilidade",cat:"TRILHA",url:"trilhas/spring.html",cor:"var(--purple)"},
+  {t:"Mensageria e RabbitMQ (7 Pilares)",sub:"Topologia AMQP, Dead Letter Queue, Outbox Pattern e resiliência",cat:"TRILHA",url:"trilhas/mensageria.html",cor:"var(--pink)"},
+  {t:"Nuvem Multicloud (7 Pilares)",sub:"VPC CIDR Simulator, AWS/Azure/GCP matrix, IAM Least Privilege e FinOps",cat:"TRILHA",url:"trilhas/nuvem.html",cor:"var(--orange)"},
+  {t:"Docker e Kubernetes (7 Pilares)",sub:"Probe Simulator (Liveness/Readiness), multi-stage builds e cgroups",cat:"TRILHA",url:"trilhas/docker-kubernetes.html",cor:"var(--lime)"},
+  {t:"Arquitetura de Software (7 Pilares)",sub:"Circuit Breaker Simulator, Saga, Outbox, C4 Model e consistência",cat:"TRILHA",url:"trilhas/arquitetura.html",cor:"var(--gold)"},
+  {t:"System Design completo",sub:"17 Sistemas reais, Little's Law, sharding, chaves, Bloom filter e SLAs",cat:"TRILHA",url:"trilhas/system-design.html",cor:"var(--lime)"},
+  {t:"AI Engineering completo",sub:"Os 6 Grandes Níveis com mapas conceituais: Transformers, RoPE, Speculative Decoding, pgvector, agentes e Test Harness",cat:"TRILHA",url:"trilhas/ia.html",cor:"var(--teal)"},
+  {t:"Conceitos de Backend completo",sub:"Locks, race conditions, índices, JWT e War Room",cat:"CADERNO",url:"cadernos/conceitos-backend.html",cor:"var(--gold)"},
+  {t:"Biblioteca clássica",sub:"5 livros fundamentais de arquitetura e algoritmos",cat:"CADERNO",url:"cadernos/biblioteca.html",cor:"var(--purple)"},
+  {t:"Linux e terminal completo",sub:"Processos, sinais, descritores, pipes e systemd",cat:"CADERNO",url:"cadernos/linux.html",cor:"var(--orange)"},
+  {t:"Git em profundidade",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"CADERNO",url:"cadernos/git.html",cor:"var(--pink)"},
+  {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"CADERNO",url:"cadernos/ingles.html",cor:"var(--cyan)"},
+  {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"CADERNO",url:"cadernos/oratoria.html",cor:"var(--gold)"},
+  {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"trilhas/mensageria.html#g2",cor:"var(--pink)"},
+  {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j2",cor:"var(--rose)"},
+  {t:"OOMKilled Fantasma (Exit 137)",sub:"Limite do container cgroup vs memória Off-Heap JVM",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j1",cor:"var(--rose)"},
+  {t:"Avalanche e Poison Pill no RabbitMQ",sub:"Requeue infinito, prefetch e Dead Letter Queue",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j3",cor:"var(--rose)"},
+  {t:"Pool de Conexões e HPA no K8s",sub:"Multiplicação perigosa de conexões sob autoescalonamento",cat:"PONTE",url:"trilhas/java.html#g2",cor:"var(--orange)"},
+  {t:"PID 1, Sinais POSIX e Graceful Shutdown",sub:"Forma shell vs exec e terminação limpa no Kubernetes",cat:"PONTE",url:"trilhas/docker-kubernetes.html#b3",cor:"var(--orange)"},
+  {t:"Java Memory Model & Concorrência",sub:"Volatile, happens-before, atomics e Virtual Threads",cat:"TEMA",url:"trilhas/java.html#p9",cor:"var(--cyan)"},
+  {t:"Proxies Spring, CGLIB e Self-Invocation",sub:"Por que @Transactional falha quando chamado internamente",cat:"TEMA",url:"trilhas/spring.html#c4",cor:"var(--purple)"},
+  {t:"Locks Pessimista, Otimista e Distribuído",sub:"SELECT FOR UPDATE, @Version e Redis Redlock",cat:"TEMA",url:"cadernos/conceitos-backend.html#p3",cor:"var(--gold)"},
+  {t:"Saga e Transações Compensatórias",sub:"Orquestração vs Coreografia e consistência eventual",cat:"TEMA",url:"trilhas/arquitetura.html#f3",cor:"var(--gold)"},
+  {t:"RAG, Embeddings e Bancos Vetoriais",sub:"Busca semântica híbrida com pgvector / Qdrant",cat:"IA",url:"trilhas/ia.html#t4-rag",cor:"var(--purple)"},
+  {t:"Constrained Decoding e Gramáticas BNF",sub:"Saída JSON estruturada estrita contra alucinações",cat:"IA",url:"trilhas/ia.html#t4-structured",cor:"var(--purple)"},
+  {t:"Protocolo MCP (Model Context Protocol)",sub:"Arquitetura de servidores de ferramentas stdio/SSE",cat:"IA",url:"trilhas/ia.html#t5-mcp",cor:"var(--purple)"},
+  {t:"Test Harness & Evals para Agentes",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA",url:"trilhas/ia.html#t6-harness",cor:"var(--teal)"},
+  {t:"SDD (Spec-Driven Development) & Prompts",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA",url:"trilhas/ia.html#t3-sdd",cor:"var(--teal)"},
+  {t:"Agentes Autônomos & Loop ReAct",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA",url:"trilhas/ia.html#t5-react",cor:"var(--teal)"},
+  {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P05 · Checkout com Idempotência e Outbox",sub:"Spring Boot, PostgreSQL e RabbitMQ",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Projeto P16 · Agente RAG com Tool Calling",sub:"Spring AI / LangChain4j e banco vetorial",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"}
+];
+
+var PALETTE_MODAL = q("paletteScrim");
+var PALETTE_INP = q("paletteInput");
+var PALETTE_RES = q("paletteResults");
+var palSelectedIndex = 0;
+var palFiltered = [];
+
+function abrirPaleta(){
+  if(!PALETTE_MODAL) return;
+  PALETTE_MODAL.hidden = false;
+  PALETTE_MODAL.classList.add("open");
+  document.documentElement.style.overflow = "hidden";
+  PALETTE_INP.value = "";
+  renderPaletaResults("");
+  setTimeout(function(){ PALETTE_INP.focus(); }, 50);
+}
+function fecharPaleta(){
+  if(!PALETTE_MODAL) return;
+  PALETTE_MODAL.classList.remove("open");
+  PALETTE_MODAL.hidden = true;
+  document.documentElement.style.overflow = "";
+}
+
+function renderPaletaResults(query){
+  var qNorm = query.toLowerCase().trim();
+  palFiltered = PALETTE_DATA.filter(function(item){
+    if(!qNorm) return true;
+    return item.t.toLowerCase().includes(qNorm) || item.sub.toLowerCase().includes(qNorm) || item.cat.toLowerCase().includes(qNorm);
+  });
+  palSelectedIndex = 0;
+  if(palFiltered.length === 0){
+    PALETTE_RES.innerHTML = '<div class="palette-empty">Nenhum resultado encontrado para "' + esc(query) + '".</div>';
+    return;
+  }
+  var html = "";
+  palFiltered.forEach(function(item, idx){
+    var activeClass = idx === 0 ? " active" : "";
+    html += '<a href="' + item.url + '" class="palette-item' + activeClass + '" data-idx="' + idx + '">'
+      + '<span class="p-tag" style="background:color-mix(in srgb,' + item.cor + ' 16%,transparent);color:' + item.cor + ';border:1px solid color-mix(in srgb,' + item.cor + ' 36%,transparent)">' + item.cat + '</span>'
+      + '<div class="p-text"><span class="p-title">' + esc(item.t) + '</span><span class="p-sub">' + esc(item.sub) + '</span></div>'
+      + '<span class="palette-kbd" style="font-size:.6rem">↵</span>'
+      + '</a>';
+  });
+  PALETTE_RES.innerHTML = html;
+}
+
+if(PALETTE_INP){
+  PALETTE_INP.addEventListener("input", function(){
+    renderPaletaResults(this.value);
+  });
+  PALETTE_INP.addEventListener("keydown", function(e){
+    if(!palFiltered.length) return;
+    var items = PALETTE_RES.querySelectorAll(".palette-item");
+    if(e.key === "ArrowDown"){
+      e.preventDefault();
+      palSelectedIndex = (palSelectedIndex + 1) % palFiltered.length;
+      items.forEach(function(el, i){ el.classList.toggle("active", i === palSelectedIndex); });
+      if(items[palSelectedIndex]) items[palSelectedIndex].scrollIntoView({block:"nearest"});
+    } else if(e.key === "ArrowUp"){
+      e.preventDefault();
+      palSelectedIndex = (palSelectedIndex - 1 + palFiltered.length) % palFiltered.length;
+      items.forEach(function(el, i){ el.classList.toggle("active", i === palSelectedIndex); });
+      if(items[palSelectedIndex]) items[palSelectedIndex].scrollIntoView({block:"nearest"});
+    } else if(e.key === "Enter"){
+      e.preventDefault();
+      if(palFiltered[palSelectedIndex]){
+        location.href = palFiltered[palSelectedIndex].url;
+      }
+    }
+  });
+}
+
+var btnPal = q("btnPalette");
+if(btnPal) btnPal.addEventListener("click", abrirPaleta);
+if(PALETTE_MODAL){
+  PALETTE_MODAL.addEventListener("click", function(e){
+    if(e.target === PALETTE_MODAL) fecharPaleta();
+  });
+}
+
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+    e.preventDefault();
+    if(PALETTE_MODAL && !PALETTE_MODAL.hidden) fecharPaleta();
+    else abrirPaleta();
+  } else if(e.key === "Escape"){
+    if(PALETTE_MODAL && !PALETTE_MODAL.hidden) fecharPaleta();
+    if(BKP_MODAL && !BKP_MODAL.hidden) fecharBackup();
+  }
+});
+</script>
+
+<!-- Modal da Paleta de Comandos -->
+<div class="palette-scrim" id="paletteScrim" hidden>
+  <div class="palette-box">
+    <div class="palette-head">
+      <i>⌘</i>
+      <input type="search" id="paletteInput" class="palette-input" placeholder="Buscar tópicos, arquivos ou projetos... (ex: outbox, hikari, kafka, jwt, r03)" autocomplete="off">
+      <span class="palette-kbd"><kbd>Esc</kbd> fechar</span>
+    </div>
+    <div class="palette-results" id="paletteResults"></div>
+  </div>
+</div>
+
+<!-- Modal de Backup e Restauração -->
+<div class="palette-scrim" id="backupModal" hidden>
+  <div class="backup-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <h3 style="margin:0 0 6px">Backup de Dados Locais</h3>
+      <button type="button" id="btnFecharBackup" style="background:none;border:0;color:var(--soft);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <p>Suas anotações, escolhas e dados ficam salvos localmente no navegador (<code class="mono" style="color:var(--teal)">localStorage</code>). Exporte um arquivo JSON para segurança ao limpar o cache ou trocar de máquina.</p>
+    <div class="backup-actions">
+      <button type="button" class="primary" id="btnExportarJson">⬇ Exportar JSON</button>
+      <button type="button" id="btnRestaurarJson">⬆ Restaurar JSON</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none">
+    </div>
+    <div id="backupMsg" style="margin-top:14px;font-size:.8rem;color:var(--teal);display:none"></div>
+  </div>
+</div>
+
+<script src="assets/js/microlearning-data.js"></script>
+<script src="assets/js/microlearning-widget.js"></script>
+
+</body>
+</html>

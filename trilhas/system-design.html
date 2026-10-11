@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>System Design Completo — Trilha Visual + Matriz dos 8 Passos, 17 Sistemas Reais & IA 2026</title>
-<meta name="description" content="O nono documento: como projetar um sistema sob número, não sob palpite. Trilha visual em 12 marcos (67 nós), mais 45 tópicos em 12 partes — incluindo o framework de 8 passos, 17 sistemas do mundo real e arquitetura para IA e LLM Engineering (2026) — o método (contrato, workload, gargalo), contas de guardanapo e a lei de Little, a escada de escalar leitura, sharding e partition key, fila como amortecedor, Bloom filter, paginação keyset, arquivos grandes, tempo real e sobrevivência à falha. Cada conceito com o caso que o obriga a existir. Tema Dracula.">
+<title>System Design completo — trilha visual, 8 passos, 17 sistemas reais e IA</title>
+<meta name="description" content="System Design: como projetar um sistema sob número, não sob palpite. Trilha visual em 12 marcos (67 nós), mais 45 tópicos em 12 partes — incluindo o framework de 8 passos, 17 sistemas do mundo real e arquitetura para IA e LLM Engineering (2026) — o método (contrato, workload, gargalo), contas de guardanapo e a lei de Little, a escada de escalar leitura, sharding e partition key, fila como amortecedor, Bloom filter, paginação keyset, arquivos grandes, tempo real e sobrevivência à falha. Cada conceito com o caso que o obriga a existir. Tema Dracula.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -338,6 +338,25 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
   <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="alem-css">
+/* "Para ir alem": formula e detalhe interno profundo ficam recolhidos, para o
+   corpo do topico manter 2 a 4 frases visiveis (Spec.md, secao 4). */
+details.alem{margin:18px 0 0;border:1px dashed var(--line2);border-radius:12px;background:var(--card);overflow:hidden}
+details.alem>summary{list-style:none;cursor:pointer;padding:12px 17px;display:flex;flex-wrap:wrap;gap:9px;align-items:baseline}
+details.alem>summary::-webkit-details-marker{display:none}
+details.alem>summary::after{content:"+";margin-left:auto;color:var(--soft);font:700 1rem/1 "Inter",sans-serif}
+details.alem[open]>summary::after{content:"–"}
+details.alem>summary:hover{background:var(--bg2)}
+.alem-tag{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.alem-opt{color:var(--soft);font:400 .78rem/1.4 Georgia,serif}
+.alem-body{padding:2px 17px 15px;font-size:.9rem;color:var(--muted);min-width:0}
+.alem-body>p{margin:0 0 10px}
+.alem-f{display:block;margin:0 0 10px;padding:11px 14px;border-radius:10px;background:var(--code);border:1px solid var(--line2);font:600 .88rem/1.6 "Cascadia Code",monospace;color:var(--teal);white-space:pre-wrap;overflow-x:auto}
+.alem-src{display:block;margin-top:4px;font:400 .78rem/1.5 Georgia,serif;color:var(--soft)}
+/* Em impressao o navegador nao revela details fechado; o script de impressao
+   abre todos antes de imprimir (ver o listener de beforeprint). */
+@media print{details.alem{break-inside:avoid}details.alem>summary::after{content:""}}
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -379,7 +398,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
         <a href="#p1"><b>↓ O conteúdo</b>o método, os casos e as contas</a>
         <a href="#p10"><b>↓ 8 Passos &amp; Guardanapo</b>framework e fórmulas</a>
         <a href="#p11"><b>↓ 17 Sistemas Reais</b>catálogo de entrevistas</a>
-        <a href="#p12"><b>↓ IA &amp; LLMs (2026)</b>serving, RAG e MCP</a>
+        <a href="#p12"><b>↓ IA e LLMs</b>serving, RAG e MCP</a>
       </div>
       <div class="legenda">
         <div><b>Sempre com caso</b><span>Todo tópico abre com o problema concreto e os números dele.</span></div>
@@ -413,7 +432,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
         <div class="duo o">
           <div><h4>Como esse método surgiu</h4><p>Ele vem da prática de engenharia de confiabilidade: a disciplina de definir <i>objetivos de nível de serviço</i> antes de mexer em qualquer coisa, popularizada pelo trabalho de SRE do Google e depois absorvida pelas entrevistas de design.</p>
-            <div class="repl"><b>Veio substituir:</b> o dimensionamento por analogia — “a empresa X usa Cassandra, então vamos usar Cassandra” — e o ajuste por tentativa, em que se aumenta o pool, depois o cache, depois a máquina, até o sintoma sumir sem ninguém saber qual mudança resolveu.</p></div>
+            <div class="repl"><b>Veio substituir:</b> o dimensionamento por analogia — “a empresa X usa Cassandra, então vamos usar Cassandra” — e o ajuste por tentativa, em que se aumenta o pool, depois o cache, depois a máquina, até o sintoma sumir sem ninguém saber qual mudança resolveu.</div>
           </div>
           <div><h4>Onde você usa no dia a dia</h4><p>Fora da entrevista, é o mesmo roteiro para todo chamado de lentidão. “A tela está devagar” é a frase vaga; o contrato é o SLO que vocês combinaram (ou a falta dele, que já é uma descoberta); o workload são os números do painel; o gargalo é o que o plano de execução e as métricas de pool mostram.</p></div>
         </div>
@@ -565,7 +584,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
         <div class="duo o">
           <div><h4>Como surgiu</h4><p>É um teorema de teoria de filas, provado por John Little em 1961. A força dele é a generalidade: vale para qualquer sistema estável, independentemente da distribuição de chegadas ou do tempo de serviço. Não é uma aproximação — é uma identidade.</p>
-            <div class="repl"><b>Veio substituir:</b> o dimensionamento por tentativa. Antes dele, a resposta para fila era aumentar o pool até parar de doer — o que costuma transferir a saturação da aplicação para o banco, onde ela é muito pior.</p></div>
+            <div class="repl"><b>Veio substituir:</b> o dimensionamento por tentativa. Antes dele, a resposta para fila era aumentar o pool até parar de doer — o que costuma transferir a saturação da aplicação para o banco, onde ela é muito pior.</div>
           </div>
           <div><h4>Onde você usa</h4><p>Em toda decisão de pool, de número de consumidores de fila e de tamanho de thread pool. Também no caminho inverso: sabendo quantas conexões o banco sustenta, a conta diz qual tempo de permanência você precisa atingir para caber nelas.</p></div>
         </div>
@@ -978,7 +997,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
         <div class="duo o">
           <div><h4>Como funciona por dentro</h4><p>A B-tree mantém as chaves <b>ordenadas</b>. Essa ordenação é a fonte de tudo: ela serve para igualdade, para faixa, para prefixo e para <code class="i">ORDER BY</code> — mas só na ordem em que as colunas foram declaradas. Um índice <code class="i">(a, b)</code> atende filtro por <code class="i">a</code> e por <code class="i">a, b</code>; não atende filtro só por <code class="i">b</code>, porque dentro da árvore os valores de <code class="i">b</code> estão espalhados.</p>
-            <div class="repl"><b>Veio substituir:</b> a varredura sequencial, que era a única forma de busca antes dos índices — e continua sendo o que o banco faz quando o índice não serve.</p></div>
+            <div class="repl"><b>Veio substituir:</b> a varredura sequencial, que era a única forma de busca antes dos índices — e continua sendo o que o banco faz quando o índice não serve.</div>
           </div>
           <div><h4>Índice covering</h4><p>Se todas as colunas que a consulta devolve estiverem no índice, o banco responde sem tocar na tabela. É a diferença entre ler algumas páginas do índice e ler o índice mais uma página da tabela por linha retornada. Em listagens grandes, esse é o ganho que mais aparece.</p></div>
         </div>
@@ -1421,7 +1440,7 @@ SELECT id, criado_em, total FROM pedido
 
         <div class="duo o">
           <div><h4>Como funciona</h4><p>Cada escrita vai para <b>um</b> shard, escolhido aplicando uma função sobre a partition key. Com <code class="i">hash(user_id)</code>, usuários caem espalhados e a carga divide por N. Com <code class="i">país</code> numa base 90% brasileira, um shard recebe 90% e os outros dormem — o <i>hot shard</i>.</p>
-            <div class="repl"><b>Veio substituir:</b> a escala vertical pura, que tem teto físico, e a replicação, que não ajuda em escrita. Sharding é a resposta quando um nó bem projetado realmente não cabe mais.</p></div>
+            <div class="repl"><b>Veio substituir:</b> a escala vertical pura, que tem teto físico, e a replicação, que não ajuda em escrita. Sharding é a resposta quando um nó bem projetado realmente não cabe mais.</div>
           </div>
           <div><h4>Qual banco escolher</h4><p>Cassandra, DynamoDB e ClickHouse nasceram distribuídos: você declara a chave e eles cuidam de roteamento, rebalanceamento e replicação. PostgreSQL shardado é possível, mas o trabalho é seu — roteamento na aplicação ou extensão, e rebalanceamento na mão. Para escrita massiva, escolher um banco que já resolveu isso costuma sair muito mais barato em complexidade do que em licença.</p></div>
         </div>
@@ -1732,7 +1751,7 @@ if (buffer.size() >= 1000 || decorreu(200)) {
 
         <div class="duo o">
           <div><h4>Por que a B-tree já é rápida</h4><p>O <i>fan-out</i> é alto: cada nó guarda centenas de chaves. Dois bilhões de chaves cabem em cerca de cinco níveis. Como o custo é o número de níveis, e não o número de linhas, <b>o tamanho da tabela quase não muda a latência do lookup por chave</b> — e essa propriedade sustenta boa parte dos sistemas grandes que existem.</p>
-            <div class="repl"><b>O que a alternativa seria:</b> varredura sequencial. Em 2 bilhões de linhas, segundos a minutos. Inviável por requisição — e é exatamente o que acontece quando o índice não existe ou a consulta não consegue usá-lo.</p></div>
+            <div class="repl"><b>O que a alternativa seria:</b> varredura sequencial. Em 2 bilhões de linhas, segundos a minutos. Inviável por requisição — e é exatamente o que acontece quando o índice não existe ou a consulta não consegue usá-lo.</div>
           </div>
           <div><h4>O que o Bloom filter é</h4><p>Um vetor de bits mais <i>k</i> funções de hash. Inserir liga <i>k</i> bits; consultar olha esses <i>k</i> bits. Algum deles 0 significa que o valor <b>nunca</b> foi inserido — resposta definitiva, em memória, sem tocar no banco. Todos 1 significa “provavelmente existe”, e pode ser falso positivo.</p></div>
         </div>
@@ -2035,7 +2054,7 @@ try {
 
         <div class="duo o">
           <div><h4>Por que o banco não consegue “pular”</h4><p>Para saber qual é a 500.001ª linha <b>naquela ordem</b>, o banco precisa ter produzido as 500.000 anteriores. Não existe atalho: a ordenação é o que define a posição, e a posição só existe depois de ordenar. Ele lê, ordena, conta e descarta.</p>
-            <div class="repl"><b>Por que continua sendo usado:</b> porque é a única forma de oferecer “ir para a página 47” e mostrar o total de páginas. Quando a interface exige isso e a profundidade é pequena, offset é a escolha certa — o erro é usá-lo onde a profundidade é ilimitada.</p></div>
+            <div class="repl"><b>Por que continua sendo usado:</b> porque é a única forma de oferecer “ir para a página 47” e mostrar o total de páginas. Quando a interface exige isso e a profundidade é pequena, offset é a escolha certa — o erro é usá-lo onde a profundidade é ilimitada.</div>
           </div>
           <div><h4>Keyset: a fronteira vira consulta</h4><p>Em vez de dizer <i>quantas pular</i>, você diz <i>depois de qual item continuar</i>. Como o índice está ordenado, o banco salta direto para aquele ponto da árvore e lê as 50 linhas seguintes. O custo é o mesmo na página 1 e na página 5.000.</p></div>
         </div>
@@ -2478,7 +2497,7 @@ try {
 
         <div class="duo o">
           <div><h4>Como funciona</h4><p>A aplicação gera uma URL assinada com prazo curto, amarrada a uma chave que <b>ela</b> definiu, com limite de tamanho e tipo. O cliente envia direto ao storage. Depois, a aplicação confirma por uma chamada de metadados (HEAD) e só então marca o documento como disponível.</p>
-            <div class="repl"><b>Veio substituir:</b> o upload através da API, em que o backend virava proxy de bytes — pagando memória, banda e tempo de thread por algo que não exigia lógica de negócio nenhuma.</p></div>
+            <div class="repl"><b>Veio substituir:</b> o upload através da API, em que o backend virava proxy de bytes — pagando memória, banda e tempo de thread por algo que não exigia lógica de negócio nenhuma.</div>
           </div>
           <div><h4>A régua por tamanho</h4><ul><li><b>Até poucos MB:</b> upload direto pela API é aceitável e mais simples.</li><li><b>Alguns MB a centenas:</b> URL pré-assinada.</li><li><b>Acima disso:</b> multipart, com retomada por parte e envio paralelo.</li></ul><p>A régua não é dogma — é o ponto em que o custo da complexidade passa a valer a pena.</p></div>
         </div>
@@ -3423,297 +3442,8 @@ try {
     </section>
 
     <!-- ===================== PARTE 09 ===================== -->
-    <section class="part" id="p9">
-      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>System Design é a área em que é mais fácil confundir reconhecer com saber. O desenho parece claro — e você não conseguiria defendê-lo sob pergunta.</p></div></div>
-
-      <article class="topic" id="i1">
-        <div class="th"><h3>O ciclo, as fontes e como pesquisar</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
-        <p class="direto"><b>Direto:</b> vídeo dá o mapa, documentação dá a precisão, laboratório fixa. <b>Nunca pare no vídeo</b> — ele mostra o desenho pronto e esconde as dez decisões que levaram até ele.</p>
-
-        <figure class="dg"><svg viewBox="0 0 700 170" xmlns="http://www.w3.org/2000/svg">
-          <text x="350" y="18" class="bt">o ciclo — e a volta que quase ninguém faz</text>
-          <rect x="20" y="46" width="110" height="40" rx="10" class="b2"/><text x="75" y="70" class="bs">ler este documento</text>
-          <path d="M132,66 L160,66" class="l"/><path d="M160,66 L152,62 L152,70 Z" class="h"/>
-          <rect x="162" y="46" width="110" height="40" rx="10" class="b2"/><text x="217" y="70" class="bs">ver o vídeo</text>
-          <path d="M274,66 L302,66" class="l"/><path d="M302,66 L294,62 L294,70 Z" class="h"/>
-          <rect x="304" y="46" width="120" height="40" rx="10" class="b2"/><text x="364" y="63" class="bs">ler a doc oficial</text><text x="364" y="77" class="bs">conferir os números</text>
-          <path d="M426,66 L454,66" class="l"/><path d="M454,66 L446,62 L446,70 Z" class="h"/>
-          <rect x="456" y="46" width="110" height="40" rx="10" class="b1"/><text x="511" y="63" class="bs">fazer o lab</text><text x="511" y="77" class="bs">medir a curva</text>
-          <path d="M568,66 L596,66" class="lt"/><path d="M596,66 L588,62 L588,70 Z" class="ht"/>
-          <rect x="598" y="46" width="84" height="40" rx="10" class="b1"/><text x="640" y="63" class="bs">escrever</text><text x="640" y="77" class="bs">o que quebrou</text>
-          <path d="M640,90 L640,124 L75,124 L75,90" class="lt d"/><path d="M75,90 L71,98 L79,98 Z" class="ht"/>
-          <text x="350" y="142" class="bs">a volta é a parte que fixa: a nota do que quebrou, com as suas palavras</text>
-          <text x="350" y="162" class="bt">vídeo dá o mapa · doc dá a precisão · lab fixa</text>
-        </svg><figcaption>O ciclo sem a volta é consumo. Com a volta, vira conhecimento que sobrevive a seis meses.</figcaption></figure>
-
-        <p><b>Canais e cursos em português.</b> <b>Rodrigo Branas</b> e <b>Fabio Akita</b> tratam arquitetura e sistemas com uma profundidade incomum em português — o segundo especialmente bom em desmontar hype. <b>Full Cycle</b> tem material denso de sistemas distribuídos e mensageria. <b>Código Fonte TV</b> serve como panorama inicial de conceitos. Em inglês, o canal <b>ByteByteGo</b>, do autor do <i>System Design Interview</i>, é o complemento visual mais direto para os casos clássicos.</p>
-        <p><b>A regra que acompanha:</b> nunca cite um número visto em vídeo sem conferir na documentação. Boa parte dos números que circulam nesse assunto — limites de serviço, latências, capacidades — está desatualizada por anos.</p>
-
-        <p><b>Como pesquisar.</b> Busque pelo <b>nome do mecanismo</b>, não pelo sintoma. “API lenta” não devolve nada útil; <i>keyset pagination</i>, <i>hot partition</i>, <i>cache stampede</i> e <i>connection pool saturation</i> devolvem a discussão exata. Metade da competência técnica é saber o nome da coisa — com ele, a resposta vem em minutos.</p>
-
-        <pre><code>site:postgresql.org index-only scan covering
-"keyset pagination" tuple comparison postgres
-"hot partition" dynamodb partition key design
-cache stampede thundering herd mitigation
-"little's law" capacity connection pool sizing</code></pre>
-
-        <div class="cs"><b>Para banco, o atalho é outro:</b> rode <code class="i">EXPLAIN ANALYZE</code> antes de pesquisar. O plano de execução costuma dizer o nome do problema — <i>Seq Scan</i>, <i>Sort</i>, <i>rows removed by filter</i> — e aí a busca já começa certa.</div>
-
-        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
-          <div class="topico-fechamento">
-
-            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
-            <div class="topico-revisao">
-              <div class="tr-header">
-                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Fontes, Hipóteses e Como Pesquisar em System Design</h4>
-              </div>
-              
-              <div class="tr-grid">
-                <div class="tr-item">
-                  <span class="tr-dot teal"></span>
-                  <div class="tr-corpo">
-                    <b>O Vício da Tentativa e Erro às Cegas</b>
-                    <p>Tentar resolver gargalos de performance alterando códigos aleatoriamente sem formular uma hipótese clara e sem medir o plano de execução (`EXPLAIN ANALYZE`) é o oposto de engenharia de software.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot purple"></span>
-                  <div class="tr-corpo">
-                    <b>A Estrutura de uma Hipótese de Engenharia</b>
-                    <p>'Acredito que a latência no endpoint `/pedidos` está alta porque a busca faz um Sequential Scan na tabela de 10 milhões de linhas. Se eu adicionar um índice B-Tree composto em `(cliente_id, criado_em)`, o custo de buffer diminuirá e a latência p99 cairá de 800ms para 15ms'.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot rose"></span>
-                  <div class="tr-corpo">
-                    <b>Fontes Confiáveis de Alta Escala</b>
-                    <p>Estude relatórios de incidentes reais (Post-Mortems), blogs de engenharia consolidados (Uber Engineering, Netflix Tech Blog, Discord Blog, AWS Architecture Center) e a documentação interna dos SGBDs.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tr-takeaway">
-                <div class="tr-takeaway-item alert">
-                  <span class="tr-icon">⚠️</span>
-                  <div>
-                    <b>Confiar em Números Teóricos Sem Validar o Plano de Execução:</b>
-                    <p>Adicionar um índice e achar que o problema foi resolvido sem rodar `EXPLAIN (ANALYZE, BUFFERS)` pode ser ilusório. O banco pode continuar ignorando o índice por conta de conversão implícita de tipos (ex: comparar campo VARCHAR com inteiro numérico)!</p>
-                  </div>
-                </div>
-                <div class="tr-takeaway-item tip">
-                  <span class="tr-icon">💡</span>
-                  <div>
-                    <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Antes de escrever código de otimização: 1. Meça o estado atual com evidências numéricas; 2. Escreva sua hipótese do que vai mudar; 3. Aplique a mudança; 4. Meça de novo e compare com a hipótese.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
-            <div class="topico-exercicio" data-exercise-id="ex-sd-i1">
-              <div class="te-header">
-                <div class="te-badge">
-                  <span class="te-icon">🎮</span>
-                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #i1</span>
-                </div>
-                <div class="te-reward">
-                  <span class="te-xp-badge">⭐ +50 XP</span>
-                  <span class="te-status">Aguardando resposta</span>
-                </div>
-              </div>
-
-              <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Um engenheiro percebe que a API de relatórios está demorando 4 segundos para responder. Antes de mexer em qualquer configuração, ele decide coletar evidências técnicas conclusivas.</p>
-                
-                <p class="te-instrucao">Qual é o primeiro comando que ele deve executar no banco de dados para diagnosticar a causa raiz da lentidão da consulta SQL?</p>
-
-                <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O EXPLAIN ANALYZE é a ferramenta primária e definitiva para inspecionar o custo real, varreduras de disco e comportamento do otimizador de consultas.">
-                    <span class="te-letter">A</span> EXPLAIN (ANALYZE, BUFFERS) na consulta SQL: ele revelará o plano de execução real, exibindo se o banco fez Seq Scan ou Index Scan, o tempo gasto em cada nó do operador e quantas páginas de disco e memória foram lidas.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria os dados da organização.">
-                    <span class="te-letter">B</span> DROP DATABASE para recomeçar o projeto do zero.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações cegas não diagnosticam a ineficiência algorítmica da consulta.">
-                    <span class="te-letter">C</span> Reiniciar o servidor físico 10 vezes consecutivas.
-                  </button>
-                </div>
-
-                <div class="te-feedback" hidden></div>
-              </div>
-            </div>
-
-            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
-            <div class="topico-flashcard">
-              <div class="tf-card">
-                <div class="tf-face tf-front">
-                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">O que o comando 'EXPLAIN (ANALYZE, BUFFERS)' revela em um banco de dados relacional e por que ele é superior a benchmarks ingênuos?</p>
-                  <span class="tf-hint">Dica: Pense em custos estimados versus execução real com leitura física de disco e buffer pool de memória →</span>
-                </div>
-                <div class="tf-face tf-back">
-                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">O comando <strong>EXPLAIN ANALYZE</strong> executa a query real e exibe: <strong>1. O plano de execução passo a passo</strong> (Seq Scan, Index Scan, Nested Loop, Hash Join); <strong>2. O tempo real gasto</strong> em cada etapa; <strong>3. O número exato de linhas processadas vs estimadas</strong>.<br>A flag <strong>BUFFERS</strong> revela se os dados foram lidos da memória RAM (Shared Hit) ou do disco físico (Read), identificando exatamente onde reside o gargalo de I/O.</p>
-                  <span class="tf-hint">← Toque para voltar à pergunta</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        <button class="done" type="button" data-k="i1">marcar dominado</button>
-      </article>
-
-      <article class="topic" id="i2">
-        <div class="th"><h3>O laboratório dos quatro casos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fecha o documento</span></div></div>
-        <p class="direto"><b>Direto:</b> você não precisa de 10 mil requisições por segundo reais para aprender. Precisa de uma <b>curva que mude</b> quando você muda o desenho — e isso cabe num container na sua máquina.</p>
-
-        <p>Os quatro casos deste documento viram quatro experimentos, todos em um PostgreSQL local, todos com dados sintéticos, todos medindo antes e depois.</p>
-
-        <div class="duo">
-          <div><h4>1 · A curva da paginação</h4><p>Gere 1 milhão de pedidos. Rode <code class="i">EXPLAIN ANALYZE</code> com offset 10, 1.000, 100.000 e 500.000, anotando os tempos. Depois refaça com keyset. Você vai ter duas curvas: uma que sobe e uma que é reta.</p></div>
-          <div><h4>2 · A fila do pool</h4><p>Dispare carga concorrente contra um endpoint que faz três consultas. Observe a fila de espera do pool. Reduza para uma consulta e repita. Compare com o número que a lei de Little previu.</p></div>
-        </div>
-        <div class="duo">
-          <div><h4>3 · O Bloom na frente do índice</h4><p>Popule um índice único com 1 milhão de usernames e um Bloom filter com os mesmos dados. Consulte 10 mil nomes aleatórios e conte quantas idas ao banco desapareceram. Depois meça a taxa de falso positivo real e compare com a teórica.</p></div>
-          <div><h4>4 · O lote contra a linha</h4><p>Insira 100 mil linhas uma a uma e depois em lotes de mil. Meça os dois. A diferença costuma ser de uma ordem de grandeza — e ver isso com os próprios olhos fixa mais que qualquer explicação.</p></div>
-        </div>
-
-        <pre><code># a curva que prova a paginacao
-for p in 1 10 100 1000 5000; do
-  psql -c "EXPLAIN ANALYZE
-           SELECT id, criado_em, total FROM pedido
-            ORDER BY criado_em DESC, id DESC
-            LIMIT 10 OFFSET $((p*10));"
-done
-# offset: o tempo cresce com a profundidade
-# keyset: o tempo nao muda
-
-# e a versao keyset, para comparar
-psql -c "EXPLAIN ANALYZE
-         SELECT id, criado_em, total FROM pedido
-          WHERE (criado_em, id) < ('2026-03-14 10:22:00', 8812)
-          ORDER BY criado_em DESC, id DESC
-          LIMIT 10;"</code></pre>
-
-        <div class="cs"><b>O que registrar em cada experimento:</b> o número antes, o número depois, e — a parte que quase todo mundo pula — <b>a hipótese que você tinha antes de medir</b>. Quando a medição contraria a hipótese, é exatamente ali que existe aprendizado; quando confirma, você ganhou confiança calibrada. Sem escrever a hipótese antes, os dois casos viram a mesma coisa.</div>
-
-        <div class="ver"><b>a bancada correspondente</b>Os projetos <code class="ic">J03</code> (ledger JDBC), <code class="ic">S01</code> (API com SQL visível), <code class="ic">S03</code> (sala de incidente) e <code class="ic">A02</code> (eventos e idempotência) no <a href="../lab/projetos.html">Laboratório de projetos</a> constroem versões maiores destes mesmos experimentos, com critério de aceite e evidência no repositório.</div>
-
-        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
-          <div class="topico-fechamento">
-
-            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
-            <div class="topico-revisao">
-              <div class="tr-header">
-                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: O Laboratório dos Quatro Casos Práticos</h4>
-              </div>
-              
-              <div class="tr-grid">
-                <div class="tr-item">
-                  <span class="tr-dot teal"></span>
-                  <div class="tr-corpo">
-                    <b>Laboratório 1: A Curva da Paginação</b>
-                    <p>Comprove empiricamente em um PostgreSQL local a degradação de `OFFSET 10` até `OFFSET 500000` versus a curva perfeitamente plana de `Keyset Pagination`.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot purple"></span>
-                  <div class="tr-corpo">
-                    <b>Laboratório 2: A Fila do Pool de Conexões</b>
-                    <p>Dispare carga concorrente em um endpoint com 3 queries lentas. Observe a fila de espera e o esgotamento do HikariCP, confirmando as previsões matemáticas da Lei de Little.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot rose"></span>
-                  <div class="tr-corpo">
-                    <b>Laboratórios 3 e 4: Bloom Filters e Batching</b>
-                    <p>Meça a redução drástica de I/O colocando um Bloom filter na frente de buscas inexistentes, e compare a inserção de 100 mil linhas uma a uma versus em lote (Batching), comprovando ganho de 50x em throughput.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tr-takeaway">
-                <div class="tr-takeaway-item alert">
-                  <span class="tr-icon">⚠️</span>
-                  <div>
-                    <b>Aprender System Design Apenas Lendo Teoria Sem Rodar Experimentos:</b>
-                    <p>Apenas ler livros de System Design dá uma falsa sensação de domínio. Ver com os próprios olhos uma query travar pelo OFFSET ou um pool esgotar com a Lei de Little em um container Docker fixa o modelo mental na mente do engenheiro para sempre!</p>
-                  </div>
-                </div>
-                <div class="tr-takeaway-item tip">
-                  <span class="tr-icon">💡</span>
-                  <div>
-                    <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Monte sua bancada local com Docker Compose (App + Postgres + Redis + Prometheus). Todo conceito abstrato pode ser provado em menos de 10 minutos de experimento prático.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
-            <div class="topico-exercicio" data-exercise-id="ex-sd-i2">
-              <div class="te-header">
-                <div class="te-badge">
-                  <span class="te-icon">🎮</span>
-                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #i2</span>
-                </div>
-                <div class="te-reward">
-                  <span class="te-xp-badge">⭐ +50 XP</span>
-                  <span class="te-status">Aguardando resposta</span>
-                </div>
-              </div>
-
-              <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em um laboratório prático local com banco de dados populado com 1 milhão de registros, um estudante compara a inserção de 10.000 linhas de duas maneiras: Método 1: um loop com 10.000 chamadas de `INSERT INTO pedido VALUES (...)`. Método 2: um único comando agrupado com batch de 10.000 linhas em uma única transação.</p>
-                
-                <p class="te-instrucao">O que o estudante observará nos resultados de tempo de execução e por quê?</p>
-
-                <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A eliminação de round-trips de rede e a consolidação de I/O em disco no WAL tornam o processamento em lote ordens de grandeza superior à inserção linha a linha.">
-                    <span class="te-letter">A</span> O Método 2 será dezenas de vezes mais rápido (ex: 200ms vs 12 segundos): o lote evita 9.999 viagens de ida e volta de rede (round-trips) e consolida todas as alterações em uma única escrita no Write-Ahead Log (WAL) com um único fsync de disco.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O overhead de commits e conexões individuais é massivo.">
-                    <span class="te-letter">B</span> Ambos levarão exatamente o mesmo milissegundo de tempo.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos modernos são projetados para suportar lotes massivos de dados.">
-                    <span class="te-letter">C</span> O Método 2 travará o computador porque bancos não suportam mais de 5 linhas por comando.
-                  </button>
-                </div>
-
-                <div class="te-feedback" hidden></div>
-              </div>
-            </div>
-
-            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
-            <div class="topico-flashcard">
-              <div class="tf-card">
-                <div class="tf-face tf-front">
-                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">O que os experimentos práticos do Laboratório dos Quatro Casos provam de forma definitiva para um engenheiro de software?</p>
-                  <span class="tf-hint">Dica: Pense no comportamento das curvas de paginação, contenção de pools, filtragem probabilística e agrupamento de I/O →</span>
-                </div>
-                <div class="tf-face tf-back">
-                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Eles provam que <strong>decisões arquiteturais mudam curvas de complexidade</strong>:<br>1. Keyset transforma curvas de paginação inclinadas em retas planas O(1).<br>2. A Lei de Little prevê a exaustão matemática exata de pools de threads.<br>3. Bloom filters poupam 95%+ de I/O de disco para dados ausentes.<br>4. Batching multiplica a vazão de escrita em dezenas de vezes ao eliminar round-trips e consolidar commits no WAL.</p>
-                  <span class="tf-hint">← Toque para voltar à pergunta</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        <button class="done" type="button" data-k="i2">marcar dominado</button>
-      </article>
-    </section>
-
-
-
-    
-    <!-- ===================== PARTE 10 ===================== -->
     <section class="part" id="p10">
-      <div class="ph"><span class="num">10</span><div><h2>O Framework de 8 Passos &amp; As Fórmulas de Guardanapo</h2><p>Da pergunta em aberto à arquitetura aprovada: o roteiro metódico de entrevista e a matemática de restrições.</p></div></div>
+      <div class="ph"><span class="num">09</span><div><h2>O Framework de 8 Passos &amp; As Fórmulas de Guardanapo</h2><p>Da pergunta em aberto à arquitetura aprovada: o roteiro metódico de entrevista e a matemática de restrições.</p></div></div>
 
       <article class="topic" id="j1">
         <div class="th"><h3>O Framework de 8 Passos de System Design: da Pergunta ao Sistema em Produção</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">entrevista &amp; liderança</span><span class="badge b-caso">roteiro mestre</span></div></div>
@@ -4014,33 +3744,221 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
     </section>
 
 
-    <!-- ===================== PARTE 11 ===================== -->
+    <!-- ===================== PARTE 10 ===================== -->
     <section class="part" id="p11">
-      <div class="ph"><span class="num">11</span><div><h2>O Catálogo dos 17 Sistemas do Mundo Real (Deep-Dive Prático)</h2><p>Os 17 projetos canônicos de arquitetura de larga escala dissecados por fluxo, gargalo e trade-offs de entrevista.</p></div></div>
+      <div class="ph"><span class="num">10</span><div><h2>O Catálogo dos 17 Sistemas do Mundo Real (Deep-Dive Prático)</h2><p>Os 17 projetos canônicos de arquitetura de larga escala dissecados por fluxo, gargalo e trade-offs de entrevista.</p></div></div>
 
       <!-- 1. URL SHORTENER -->
       <article class="topic" id="k1">
-        <div class="th"><h3>01 · URL Shortener (TinyURL / Bitly)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso canônico</span></div></div>
-        <p class="direto"><b>Direto:</b> converter URLs longas em chaves curtas de 7 caracteres (Base62) com latência de redirecionamento sub-10ms e alta taxa de leitura (100:1).</p>
+        <div class="th"><h3>01 · Encurtador de URL (TinyURL, Bitly)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso canônico</span></div></div>
+        <p class="direto"><b>Direto:</b> um encurtador troca uma URL longa por uma chave curta e, no acesso, devolve um redirecionamento HTTP para o endereço original. É um dicionário distribuído de chave para valor com uma assimetria extrema: escreve pouco, lê muito, e a leitura precisa responder em poucos milissegundos porque fica no caminho de um clique humano.</p>
+
         <div class="caso"><b>o caso e os números</b>
-          <p>100 milhões de novas URLs por mês; 10 bilhões de acessos mensais (proporção 100:1 de leitura). Armazenamento de 5 anos: 100M × 12 × 5 = 6 bilhões de URLs. Com 500 bytes por registro, temos ~3 TB de dados.</p>
-          <p>Com <b>Base62</b> ([a-z, A-Z, 0-9]), uma chave de 7 caracteres produz <b>62^7 ≈ 3,5 trilhões de combinações</b> — espaço de sobra para séculos de operação sem colisão.</p>
+          <p>100 milhões de novas URLs por mês; 10 bilhões de acessos mensais — proporção de 100 leituras por escrita. Guardando 5 anos: 100M × 12 × 5 = 6 bilhões de registros. A 500 bytes cada, cerca de 3 TB.</p>
+          <p>Em média são 3.800 leituras e 38 escritas por segundo. O pico importa mais que a média: uma única URL em campanha de televisão concentra milhões de acessos em minutos — e é esse minuto que decide o desenho, não a média mensal.</p>
         </div>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o guarda-volumes de um teatro. Você entrega o casaco e recebe uma ficha com um número curto; na saída, devolve a ficha e recebe o casaco. A ficha não descreve o casaco, não tem relação com ele — é só um endereço arbitrário que a bilheteria sabe resolver. Duas consequências vêm de graça: a ficha pode ser minúscula, e <b>quem adivinhar um número lê o casaco de outra pessoa</b>.</p></div>
+
         <div class="duo">
-          <div><h4>Geração de Chave: Hash vs KGS</h4>
-            <p>Fazer MD5/SHA-256 da URL e pegar os primeiros 7 caracteres gera <i>colisões</i> que exigem re-hash e checagem no banco. A solução de alto desempenho é o <b>KGS (Key Generation Service)</b>: um serviço standalone que gera previamente milhões de strings Base62 únicas e as mantém prontas no Redis. A gravação vira um simples pop O(1).</p>
+          <div><h4>Como surgiu</h4>
+            <p>Nasceu de uma limitação de transporte, não de armazenamento. No começo dos anos 2000, URLs longas quebravam ao passar por e-mail: clientes de texto cortavam a linha em 70 ou 80 colunas e o link chegava partido e inutilizável. Depois o Twitter, com limite de 140 caracteres, transformou o encurtador em infraestrutura obrigatória.</p>
           </div>
-          <div><h4>HTTP 301 vs 302: O Grande Trade-off</h4>
-            <p><b>301 Moved Permanently:</b> o navegador faz cache do redirecionamento localmente. As próximas visitas não batem no servidor (ótimo para aliviar infra), mas <b>destrói a capacidade de métricas</b> e contagem de cliques.</p>
-            <p><b>302 Found / 307 Temporary:</b> toda requisição passa pelo servidor, permitindo coletar analytics, geolocalização e cliques em tempo real.</p>
+          <div><h4>O que veio substituir</h4>
+            <div class="repl"><b>Veio substituir:</b> colar a URL inteira e torcer para o cliente não quebrá-la, e os <i>redirecionadores</i> por parâmetro de consulta (<code class="i">site.com/go?url=…</code>), que não encurtavam nada e viraram porta de <i>open redirect</i> para golpe. A chave opaca resolveu o tamanho e, de passagem, deu um ponto único onde dá para revogar um destino e medir o clique.</div>
           </div>
         </div>
+
+        <div class="duo">
+          <div><h4>Gerar a chave: hash ou serviço de chaves</h4>
+            <p>Hash da URL (MD5, SHA-256) truncado em 7 caracteres parece óbvio e traz dois problemas: colide, obrigando a checar o banco e re-hashear num laço; e é determinístico, então a mesma URL dá sempre a mesma chave — o que impede dois donos de terem links distintos com estatísticas separadas.</p>
+            <p>A alternativa é um <b>serviço de geração de chaves</b>: um processo gera chaves Base62 únicas de antemão e as mantém numa fila. Gravar vira tirar uma chave pronta da fila, sem checagem e sem laço de colisão. O contador que alimenta esse serviço precisa ser distribuído (faixas de números por instância, ou um Snowflake), senão ele próprio vira o gargalo de escrita.</p>
+          </div>
+          <div><h4>O redirecionamento: 301 ou 302</h4>
+            <p><b>301 permanente:</b> o navegador guarda o redirecionamento e, nas próximas vezes, vai direto ao destino sem passar pelo seu servidor. Alivia a infraestrutura e, pelo mesmo motivo, faz você perder a contagem de cliques e a capacidade de trocar o destino depois.</p>
+            <p><b>302 temporário:</b> toda visita passa pelo servidor. Você paga a requisição e ganha métrica, geolocalização e o direito de mudar ou revogar o destino. Para um encurtador comercial, em que o clique é o produto, 302 é quase sempre a escolha certa.</p>
+          </div>
+        </div>
+
+        <div class="conta">
+          <div><code>espaço de chaves Base62
+62^7 = 3,5 trilhoes</code><small>Para 6 bilhões de chaves em 5 anos, a ocupação é de 0,17% do espaço. Sete caracteres não vão acabar; o risco nunca foi esgotamento.</small></div>
+          <div><code>leitura média
+10.000.000.000 / 30 / 86.400 = 3.858 /s</code><small>Média mensal. Não dimensione por ela: o pico de uma URL viral é ordens de grandeza acima e dura minutos.</small></div>
+          <div><code>cache das chaves quentes
+20% das chaves = 80% dos acessos</code><small>Com Zipf 80/20, cachear os 20% mais acessados já tira a maior parte da carga do banco. O resto vai ao disco e está tudo bem.</small></div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 700 212" xmlns="http://www.w3.org/2000/svg">
+          <text x="350" y="18" class="bt">escrita rara, leitura quente: dois caminhos no mesmo sistema</text>
+          <rect x="10" y="36" width="126" height="44" rx="10" class="b5"/><text x="73" y="56" class="bs">POST /urls</text><text x="73" y="70" class="bs">url longa</text>
+          <path d="M138,58 L168,58" class="l"/><path d="M168,58 L160,54 L160,62 Z" class="h"/>
+          <rect x="170" y="32" width="150" height="52" rx="10" class="b2"/><text x="245" y="52" class="bs">serviço de chaves</text><text x="245" y="68" class="bs">tira 1 pronta da fila</text>
+          <path d="M322,58 L352,58" class="l"/><path d="M352,58 L344,54 L344,62 Z" class="h"/>
+          <rect x="354" y="32" width="150" height="52" rx="10" class="b3"/><text x="429" y="52" class="bs">grava o par</text><text x="429" y="68" class="bs">chave  &#8594;  url</text>
+          <path d="M506,58 L536,58" class="l"/><path d="M536,58 L528,54 L528,62 Z" class="h"/>
+          <rect x="538" y="36" width="152" height="44" rx="10" class="b5"/><text x="614" y="56" class="bs">devolve</text><text x="614" y="70" class="bs">site.com/aB3xK9z</text>
+          <text x="350" y="104" class="bs">38 escritas por segundo — este caminho nunca foi o problema</text>
+          <line x1="20" y1="118" x2="680" y2="118" class="l dash"/>
+          <rect x="10" y="134" width="126" height="44" rx="10" class="b5"/><text x="73" y="154" class="bs">GET /aB3xK9z</text><text x="73" y="168" class="bs">o clique</text>
+          <path d="M138,156 L168,156" class="l"/><path d="M168,156 L160,152 L160,160 Z" class="h"/>
+          <rect x="170" y="130" width="150" height="52" rx="10" class="b1"/><text x="245" y="150" class="bs">cache das quentes</text><text x="245" y="166" class="bs">acerta em ~80%</text>
+          <path d="M322,156 L352,156" class="l"/><path d="M352,156 L344,152 L344,160 Z" class="h"/>
+          <rect x="354" y="130" width="150" height="52" rx="10" class="b3"/><text x="429" y="150" class="bs">só no erro de cache</text><text x="429" y="166" class="bs">busca a chave</text>
+          <path d="M506,156 L536,156" class="l"/><path d="M536,156 L528,152 L528,160 Z" class="h"/>
+          <rect x="538" y="134" width="152" height="44" rx="10" class="b2"/><text x="614" y="154" class="bs">302 + Location</text><text x="614" y="168" class="bs">destino original</text>
+          <text x="350" y="202" class="bs">3.858 leituras por segundo em média, muito mais no pico — e aqui mora o SLO</text>
+        </svg><figcaption>Os dois caminhos têm volumes que diferem por cem vezes. Dimensionar o sistema inteiro pelo caminho de escrita, ou proteger a escrita com o cuidado que a leitura exige, é errar de lado.</figcaption></figure>
+
+        <div class="duo">
+          <div><h4>Para que serve</h4>
+            <p>Encurtar é o pretexto. O que o sistema entrega de fato é <b>indireção</b>: um endereço estável que você controla, apontando para um destino que pode mudar. Daí vêm os usos que sustentam o produto — medir quem clicou, de onde e quando; trocar o destino de um link já impresso num cartaz; revogar um link que virou golpe; e fazer caber um endereço em SMS, QR code ou legenda com limite de caracteres.</p>
+          </div>
+          <div><h4>Por que é importante</h4>
+            <p>É o caso canônico de entrevista porque expõe, num problema que cabe em cinco minutos, quase toda a escada deste documento: assimetria entre leitura e escrita, escolha de chave e distribuição, cache do que é quente, o custo de um redirecionamento cacheado pelo cliente e a aritmética de espaço de chaves. Em produção, é o lembrete de que um sistema simples pode ter um modo de falha sério — a chave adivinhável — que nenhuma conta de capacidade revela.</p>
+          </div>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">a conta da colisão, e por que sete caracteres</span></summary>
+          <div class="alem-body">
+            <p>Com chave aleatória em vez de sequencial, a pergunta deixa de ser "quando acaba" e passa a ser "quando colide". Vale o paradoxo do aniversário: com <i>N</i> chaves possíveis, a primeira colisão aparece por volta de <i>√N</i> sorteios.</p>
+            <code class="alem-f">N = 62^7 = 3,52 × 10^12
+√N ≈ 1,9 milhão de chaves
+
+probabilidade de alguma colisão em k sorteios
+p ≈ 1 − e^(−k² / 2N)
+
+k = 6 bilhões (5 anos):
+k² / 2N = (3,6 × 10^19) / (7,04 × 10^12) ≈ 5,1 milhoes
+p ≈ 1</code>
+            <p>A leitura correta é esta: com chave aleatória de 7 caracteres e 6 bilhões de registros, a colisão não é improvável — é <b>certa</b>, e muitas vezes. Por isso o desenho sério não sorteia e reza: ou usa contador (chave sequencial codificada em Base62, colisão impossível por construção), ou sorteia e aceita uma checagem de unicidade no banco, que é a ida ao disco que o serviço de chaves existe para evitar.</p>
+            <p>Sequencial resolve a colisão e cria outro problema: a chave fica adivinhável e enumerável — <code class="i">aB3xK9z</code> e o próximo vizinho revelam links de outras pessoas. A saída usual é embaralhar o contador com uma permutação reversível antes de codificar, mantendo unicidade sem deixar a ordem à vista.</p>
+            <small class="alem-src">A aproximação do aniversário vale para distribuição uniforme; qualquer viés no gerador piora o resultado, nunca melhora.</small>
+          </div>
+        </details>
+
+        <div class="ver"><b>onde a teoria mora</b>O padrão de cache, a invalidação e o <i>stampede</i> da chave quente estão detalhados em <a href="../cadernos/conceitos-backend.html">Conceitos de Backend completo</a>; o particionamento por chave e a escada de leitura estão nas partes 02 e 03 deste documento. Aqui interessa só como eles se combinam neste caso.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>301 mata o produto.</b> O navegador passa a resolver o link sozinho: a contagem de cliques congela e, se o destino precisar mudar ou for derrubado por abuso, parte dos usuários continua indo ao endereço antigo por tempo indeterminado. Quem usa 301 para economizar infraestrutura costuma descobrir isso depois do primeiro link malicioso.</li>
+            <li><b>Chave sequencial crua é enumerável.</b> Encurtador é frequentemente usado para link que não deveria ser público — convite, fatura, documento. Chave previsível transforma "não indexado" em "exposto".</li>
+            <li><b>Dimensionar pela média.</b> 3.858 leituras por segundo é um número confortável que não descreve o sistema. O que derruba é a URL única em campanha, que concentra acessos numa só chave — e aí o problema não é vazão total, é <i>hot key</i> num único nó.</li>
+            <li><b>Tratar expiração como detalhe.</b> Sem política de retenção, os 3 TB de 5 anos crescem para sempre guardando chaves que ninguém acessa há anos. Com expiração, você precisa decidir o que acontece quando o link morre — e 404 silencioso é péssima resposta para quem clicou.</li>
+            <li><b>Esquecer o abuso.</b> Encurtador é lavanderia de link para phishing: a chave opaca esconde o destino. Sem verificação do destino e sem revogação, o seu domínio entra em lista de bloqueio e todos os links param, inclusive os legítimos.</li>
+          </ul>
+        </div>
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Estudo de Caso 01 · URL Shortener (TinyURL / Bitly)</h4>
+              </div>
+              
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O Desafio e a Matemática da Base62</b>
+                    <p>Encurtar URLs longas gerando uma chave alfanumérica curta de 7 caracteres. Usando Base62 ([a-z], [A-Z], [0-9]), 62^7 combinações produzem <strong>~3,5 trilhões de URLs únicas</strong>, suficientes para décadas de uso global.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>A Armadilha do Hash MD5/SHA-256</b>
+                    <p>Calcular MD5 da URL e truncar nos primeiros 7 caracteres gera <strong>colisões de hash frequentes</strong>, exigindo loops de verificação e re-hashing caros no banco de dados.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Key Generation Service (KGS) Pré-Gerado</b>
+                    <p>A melhor arquitetura gera chaves aleatórias exclusivas de 7 caracteres antecipadamente em background e as armazena em uma tabela de chaves não usadas. Ao encurtar, o serviço apenas 'pega' uma chave livre sem risco de colisão e sem concorrência.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Usar Redirecionamento HTTP 301 Permanente Sem Analisar Métricas:</b>
+                    <p>Retornar HTTP 301 (Moved Permanently) faz o navegador cachear a URL original para sempre, impedindo que o TinyURL contabilize os cliques posteriores de telemetria daquele usuário! Use <strong>HTTP 302 (Found) ou 307 (Temporary Redirect)</strong> se precisar de analytics em tempo real.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>URL Shortener é um sistema ultra <strong>Read-Heavy (100:1)</strong>. Armazene as 20% URLs mais acessadas no Redis (Princípio de Pareto) para responder 80%+ das leituras com latência sub-milissegundo sem tocar no banco NoSQL persistente.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
+            <div class="topico-exercicio" data-exercise-id="ex-sd-k1">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #k1</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em um projeto de encurtador de links que atende 50.000 redirecionamentos por segundo, a equipe precisa decidir entre retornar o código HTTP 301 (Moved Permanently) ou HTTP 302 (Found). O requisito de negócio exige relatórios em tempo real da quantidade de cliques e geolocalização dos visitantes em cada link.</p>
+                
+                <p class="te-instrucao">Qual código de status HTTP deve ser utilizado e qual o trade-off envolvido?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O status 302/307 impede que o cliente cacheie o redirecionamento localmente, garantindo que todo clique seja registrado na telemetria da aplicação.">
+                    <span class="te-letter">A</span> HTTP 302 (Temporary Redirect): força o navegador do usuário a bater no servidor do encurtador a cada clique, permitindo coletar métricas e geolocalização completas, ao custo de maior tráfego no backend comparado ao cache de cliente do HTTP 301.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O 301 é cacheado pelo browser, fazendo com que cliques subsequentes nunca cheguem aos servidores do encurtador.">
+                    <span class="te-letter">B</span> HTTP 301 (Moved Permanently), pois ele avisa o Google e envia o histórico por e-mail.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 404 quebraria o redirecionamento de links válidos.">
+                    <span class="te-letter">C</span> HTTP 404 (Not Found), para economizar internet dos usuários.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que um Key Generation Service (KGS) com Base62 é arquiteturalmente superior a fazer MD5 truncado em um URL Shortener?</p>
+                  <span class="tf-hint">Dica: Pense no custo de tratar colisões em tempo de inserção versus alocar chaves únicas garantidas previamente em memória →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Porque o MD5 truncado para 7 caracteres sofre com <strong>colisões frequentes</strong>, obrigando a aplicação a fazer consultas extras de verificação e re-hashing em loop durante a requisição do usuário.<br>O <strong>KGS (Key Generation Service)</strong> gera previamente sequências únicas de Base62 (62^7 = ~3,5 trilhões de combinações) em background, garantindo <strong>tempo constante O(1) sem colisões e sem contenção de locks</strong> na criação do link.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         <button class="done" type="button" data-k="k1">marcar dominado</button>
       </article>
 
       <!-- 2. WHATSAPP -->
       <article class="topic" id="k2">
-        <div class="th"><h3>02 · WhatsApp &amp; Chat Messenger em Tempo Real</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">tempo real</span></div></div>
+        <div class="th"><h3>02 · WhatsApp e chat messenger em tempo real</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">tempo real</span></div></div>
         <p class="direto"><b>Direto:</b> troca bidirecional de mensagens com latência sub-segundo, garantia de entrega ponta a ponta e indicador de presença em tempo real.</p>
         <div class="caso"><b>o caso e os números</b>
           <p>2 bilhões de usuários ativos enviando 100 bilhões de mensagens/dia. QPS médio = 1.000.000 msgs/s; pico = 2.500.000 msgs/s. Conexões TCP simultâneas: centenas de milhões.</p>
@@ -4053,12 +3971,116 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
             <p>Status de presença (online/offline) é mantido com <b>Heartbeat periódico</b> (ex.: ping a cada 25s) atualizando uma chave no Redis com TTL de 30s. Se o ping não chega, o Redis expira e o usuário fica offline automaticamente. Histórico persistido em banco Wide-Column (Cassandra) particionado por <code class="i">chat_id</code>.</p>
           </div>
         </div>
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Estudo de Caso 02 · WhatsApp & Chat Messenger em Tempo Real</h4>
+              </div>
+              
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Conexões Persistentes em Massa</b>
+                    <p>Milhões de aparelhos móveis mantêm conexões TCP/WebSocket de longa duração abertas com servidores de gateway (Chat Gateway/Connection Servers) com baixo consumo de bateria e heartbeats (Keep-Alive).</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>O Registro de Sessões Distribuído</b>
+                    <p>Um cluster de cache em memória (Redis / Memcached) mapeia onde cada usuário está conectado: `User_A → Server_14`. Ao enviar mensagem para B, o servidor consulta o Redis para saber em qual servidor a conexão de B está pendurada.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Armazenamento Efêmero e Offline Queue</b>
+                    <p>No WhatsApp, mensagens entregues são apagadas do servidor (arquitetura sem retenção central). Se o destinatário estiver offline, a mensagem é retida temporariamente em um banco NoSQL colunar (Cassandra/DynamoDB) até que o aparelho reconecte.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Abrir e Fechar Conexão HTTP REST a Cada Mensagem Enviada em Chat:</b>
+                    <p>Tentar fazer chat em tempo real com requisições HTTP REST síncronas a cada mensagem enviada esgota portas TCP, drena a bateria do smartphone com handshakes TLS contínuos e introduz latências inaceitáveis para conversa humana fluida. Use WebSockets!</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>Gerencie a máquina de estados das mensagens com confirmações (ACKs): 1. Servidor recebeu (1 tique cinza); 2. Destinatário recebeu no celular (2 tiques cinzas); 3. Destinatário visualizou a mensagem (2 tiques azuis).</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
+            <div class="topico-exercicio" data-exercise-id="ex-sd-k2">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #k2</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em um aplicativo de mensagens instantâneas com 50 milhões de usuários ativos simultâneos, o Usuário Alice (conectado ao Servidor Gateway 3) envia uma mensagem de texto para o Usuário Bob (conectado ao Servidor Gateway 8).</p>
+                
+                <p class="te-instrucao">Como o Servidor 3 descobre para onde rotear a mensagem em milissegundos?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Session Registry distribuído em memória é o componente central que mapeia o identificador do usuário ao servidor específico onde reside o socket TCP ativo.">
+                    <span class="te-letter">A</span> Consultando o Registro de Sessões do Usuário (Session Service em Redis): o Servidor 3 busca a chave 'session:Bob', descobre que Bob está conectado ao Servidor 8 e repassa a mensagem internamente via gRPC ou barramento Pub/Sub para que o Servidor 8 empurre no WebSocket de Bob.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causaria colapso catastrófico imediato na rede.">
+                    <span class="te-letter">B</span> Fazendo broadcast da mensagem para todos os 50 milhões de usuários para ver quem responde.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com software de mensageria.">
+                    <span class="te-letter">C</span> Pedindo para Alice ligar para Bob por telefone comum e falar o conteúdo.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Como funciona o ciclo de entrega de mensagens em tempo real no WhatsApp quando o destinatário está offline?</p>
+                  <span class="tf-hint">Dica: Pense em armazenamento temporário em banco colunar, notificação push e descarte pós-entrega →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">1. O servidor consulta o registro de sessões e constata que o destinatário está <strong>offline</strong>.<br>2. A mensagem é gravada em uma <strong>fila temporária de armazenamento offline</strong> (ex: Cassandra/DynamoDB).<br>3. Um gatilho dispara uma <strong>notificação push (APNs/FCM)</strong> acordando o sistema operacional do aparelho.<br>4. Quando o destinatário reconecta e estabelece o WebSocket, as mensagens pendentes são entregues e, após o <strong>ACK de confirmação</strong>, são <strong>deletadas permanentemente dos servidores</strong>.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         <button class="done" type="button" data-k="k2">marcar dominado</button>
       </article>
 
       <!-- 3. UBER -->
       <article class="topic" id="k3">
-        <div class="th"><h3>03 · Uber &amp; Rastreamento Geoespacial</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">geoespacial</span></div></div>
+        <div class="th"><h3>03 · Uber e rastreamento geoespacial</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">geoespacial</span></div></div>
         <p class="direto"><b>Direto:</b> ingerir telemetria de milhões de motoristas a cada 4 segundos e realizar matching com passageiros em raio de 3 km em milissegundos.</p>
         <div class="caso"><b>o caso e os números</b>
           <p>5 milhões de motoristas ativos enviando coordenadas (latitude, longitude) a cada 4 segundos = <b>1.250.000 QPS de escrita geoespacial</b>.</p>
@@ -4183,7 +4205,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 4. NETFLIX / YOUTUBE -->
       <article class="topic" id="k4">
-        <div class="th"><h3>04 · Netflix &amp; YouTube (Streaming de Vídeo em Escala Global)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">streaming &amp; cdn</span></div></div>
+        <div class="th"><h3>04 · Netflix e YouTube (streaming de vídeo em escala global)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">streaming &amp; cdn</span></div></div>
         <p class="direto"><b>Direto:</b> entregar petabytes de vídeo em 4K/1080p sem engasgos (buffering), adaptando-se instantaneamente à qualidade da rede do usuário.</p>
         <div class="duo">
           <div><h4>Pipeline de Transcodificação &amp; Chunking</h4>
@@ -4302,7 +4324,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 5. GOOGLE MAPS -->
       <article class="topic" id="k5">
-        <div class="th"><h3>05 · Google Maps &amp; Serviços de Proximidade (Yelp)</h3><div class="badges"><span class="badge b-prof">grafos &amp; mapas</span></div></div>
+        <div class="th"><h3>05 · Google Maps e serviços de proximidade (Yelp)</h3><div class="badges"><span class="badge b-prof">grafos &amp; mapas</span></div></div>
         <p class="direto"><b>Direto:</b> renderizar mapas globais com rolagem suave e calcular a rota de menor tempo em grafos com bilhões de interseções sob tráfego variável.</p>
         <div class="duo">
           <div><h4>Renderização em Map Tiles</h4>
@@ -4421,7 +4443,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 6. GOOGLE SEARCH / CRAWLER -->
       <article class="topic" id="k6">
-        <div class="th"><h3>06 · Google Search &amp; Web Crawler Distribuído</h3><div class="badges"><span class="badge b-prof">busca &amp; big data</span></div></div>
+        <div class="th"><h3>06 · Google Search e web crawler distribuído</h3><div class="badges"><span class="badge b-prof">busca &amp; big data</span></div></div>
         <p class="direto"><b>Direto:</b> varrer a web inteira, indexar centenas de bilhões de páginas em estruturas invertidas e devolver resultados relevantes em menos de 100ms.</p>
         <div class="duo">
           <div><h4>URL Frontier &amp; Deduplicação SimHash</h4>
@@ -4540,7 +4562,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 7. E-COMMERCE FLASH SALE -->
       <article class="topic" id="k7">
-        <div class="th"><h3>07 · Amazon E-Commerce &amp; Flash Sale (Black Friday / Ingressos)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">alta concorrência</span></div></div>
+        <div class="th"><h3>07 · Amazon e-commerce e flash sale (Black Friday / ingressos)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">alta concorrência</span></div></div>
         <p class="direto"><b>Direto:</b> vender 1.000 itens promocionais com 100.000 pessoas tentando comprar no mesmo milissegundo, garantindo <b>zero sobrevenda (overselling)</b>.</p>
         <div class="duo">
           <div><h4>Controle de Concorrência de Estoque</h4>
@@ -4659,7 +4681,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 8. TWITTER FEED -->
       <article class="topic" id="k8">
-        <div class="th"><h3>08 · Twitter / Instagram Social Feed</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fanout</span></div></div>
+        <div class="th"><h3>08 · Twitter e Instagram (feed social)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fanout</span></div></div>
         <p class="direto"><b>Direto:</b> gerar e exibir feeds cronológicos e algorítmicos para centenas de milhões de usuários com latência de carregamento sub-100ms.</p>
         <div class="duo">
           <div><h4>Fanout-on-Write (Push Model)</h4>
@@ -4778,7 +4800,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 9. NOTIFICAÇÕES -->
       <article class="topic" id="k9">
-        <div class="th"><h3>09 · Sistema de Notificações Distribuído em Grande Escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">resiliência</span></div></div>
+        <div class="th"><h3>09 · Sistema de notificações distribuído em grande escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">resiliência</span></div></div>
         <p class="direto"><b>Direto:</b> disparar bilhões de alertas push, SMS e e-mails garantindo prioridade crítica (2FA) e impedindo mensagens duplicadas.</p>
         <div class="duo">
           <div><h4>Gateway Multi-Canal &amp; Filas com Prioridade</h4>
@@ -4897,7 +4919,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 10. GOOGLE DRIVE / DROPBOX -->
       <article class="topic" id="k10">
-        <div class="th"><h3>10 · Google Drive / Dropbox (Armazenamento e Sincronização)</h3><div class="badges"><span class="badge b-prof">storage &amp; deduplicação</span></div></div>
+        <div class="th"><h3>10 · Google Drive e Dropbox (armazenamento e sincronização)</h3><div class="badges"><span class="badge b-prof">storage &amp; deduplicação</span></div></div>
         <p class="direto"><b>Direto:</b> sincronizar arquivos de gigabytes economizando banda e tempo quando apenas pequenos trechos sofrem alteração.</p>
         <div class="duo">
           <div><h4>Chunking de 4MB &amp; Deduplicação SHA-256</h4>
@@ -5016,7 +5038,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 11. RATE LIMITER -->
       <article class="topic" id="k11">
-        <div class="th"><h3>11 · Distributed Rate Limiter</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">proteção de api</span></div></div>
+        <div class="th"><h3>11 · Distributed rate limiter</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">proteção de api</span></div></div>
         <p class="direto"><b>Direto:</b> limitar chamadas por IP, API Key ou usuário em cluster distribuído sem criar race conditions nem sobrecarregar o Redis.</p>
         <div class="duo">
           <div><h4>Comparação dos 5 Algoritmos</h4>
@@ -5139,7 +5161,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 12. DISTRIBUTED CACHE -->
       <article class="topic" id="k12">
-        <div class="th"><h3>12 · Cache Distribuído de Alta Performance (Redis / Memcached)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
+        <div class="th"><h3>12 · Cache distribuído de alta performance (Redis / Memcached)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
         <p class="direto"><b>Direto:</b> manter dezenas de servidores de cache em memória sem perder chaves em caso de queda e sem sofrer catástrofes de saturação.</p>
         <div class="duo">
           <div><h4>Consistent Hashing com Nós Virtuais</h4>
@@ -5260,7 +5282,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 13. AUTOCOMPLETE / TYPEAHEAD -->
       <article class="topic" id="k13">
-        <div class="th"><h3>13 · Autocomplete &amp; Typeahead (Google Suggest)</h3><div class="badges"><span class="badge b-prof">estruturas de dados</span></div></div>
+        <div class="th"><h3>13 · Autocomplete e typeahead (Google Suggest)</h3><div class="badges"><span class="badge b-prof">estruturas de dados</span></div></div>
         <p class="direto"><b>Direto:</b> prever e sugerir os 5 termos mais buscados enquanto o usuário digita letras em um campo de busca em menos de 30ms.</p>
         <div class="duo">
           <div><h4>Estrutura de Dados Trie (Prefix Tree)</h4>
@@ -5379,7 +5401,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 14. MÉTRICAS E TSDB -->
       <article class="topic" id="k14">
-        <div class="th"><h3>14 · Métricas e Observabilidade em Tempo Real (Prometheus / Datadog)</h3><div class="badges"><span class="badge b-prof">observabilidade</span></div></div>
+        <div class="th"><h3>14 · Métricas e observabilidade em tempo real (Prometheus / Datadog)</h3><div class="badges"><span class="badge b-prof">observabilidade</span></div></div>
         <p class="direto"><b>Direto:</b> ingerir dezenas de milhões de pontos de métricas por segundo e responder consultas agregadas de monitoramento sem estourar o disco.</p>
         <div class="duo">
           <div><h4>Push vs Pull &amp; TSDB Architecture</h4>
@@ -5500,7 +5522,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 15. STRIPE / LEDGER FINANCEIRO -->
       <article class="topic" id="k15">
-        <div class="th"><h3>15 · Stripe &amp; Ledger Financeiro de Pagamentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">consistência crítica</span></div></div>
+        <div class="th"><h3>15 · Stripe e ledger financeiro de pagamentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">consistência crítica</span></div></div>
         <p class="direto"><b>Direto:</b> processar movimentações financeiras com garantia absoluta de que nenhum centavo será duplicado, criado ou perdido na rede.</p>
         <div class="duo">
           <div><h4>Princípio da Partida Dobrada (Double-Entry Bookkeeping)</h4>
@@ -5619,7 +5641,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 16. YOUTUBE / VIDEO UGC & DAG -->
       <article class="topic" id="k16">
-        <div class="th"><h3>16 · YouTube: Ingestão de Vídeo UGC, DAG de Transcodificação &amp; Sharding Vitess</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">video ugc &amp; dag</span></div></div>
+        <div class="th"><h3>16 · YouTube: ingestão de vídeo UGC, DAG de transcodificação e sharding Vitess</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">video ugc &amp; dag</span></div></div>
         <p class="direto"><b>Direto:</b> ingerir mais de 500 horas de vídeo por minuto enviadas por criadores do mundo todo (UGC), fatiar e transcodificar em paralelo via DAGs e gerenciar metadados massivos com Vitess sharding.</p>
         <div class="duo">
           <div><h4>Upload Resumível, Slicing GOP &amp; Transcoding DAG</h4>
@@ -5740,7 +5762,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
 
       <!-- 17. SPOTIFY / AUDIO STREAMING & REAL-TIME SYNC -->
       <article class="topic" id="k17">
-        <div class="th"><h3>17 · Spotify: Streaming de Áudio de Baixa Latência, Cache Local &amp; Spotify Connect</h3><div class="badges"><span class="badge b-prof">streaming &amp; sync</span><span class="badge b-caso">tempo real</span></div></div>
+        <div class="th"><h3>17 · Spotify: streaming de áudio de baixa latência, cache local e Spotify Connect</h3><div class="badges"><span class="badge b-prof">streaming &amp; sync</span><span class="badge b-caso">tempo real</span></div></div>
         <p class="direto"><b>Direto:</b> iniciar a reprodução de áudio em menos de 200ms após o clique, economizar banda e bateria com cache local criptografado e sincronizar múltiplos dispositivos em tempo real com Spotify Connect.</p>
         <div class="duo">
           <div><h4>Prefetch de 10s, Formato Ogg/AAC &amp; Cache Criptografado</h4>
@@ -5861,9 +5883,9 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
     </section>
 
 
-    <!-- ===================== PARTE 12 ===================== -->
+    <!-- ===================== PARTE 11 ===================== -->
     <section class="part" id="p12">
-      <div class="ph"><span class="num">12</span><div><h2>System Design para Inteligência Artificial &amp; LLM Engineering (2026)</h2><p>Como projetar sistemas de inferência, pipelines RAG e agentes autônomos sob restrição de hardware e custo.</p></div></div>
+      <div class="ph"><span class="num">11</span><div><h2>System Design para Inteligência Artificial e LLM Engineering</h2><p>Como projetar sistemas de inferência, pipelines RAG e agentes autônomos sob restrição de hardware e custo.</p></div></div>
 
       <!-- 12.1 MODEL SERVING -->
       <article class="topic" id="l1">
@@ -5886,109 +5908,6 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
           </div>
         </div>
 
-        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
-          <div class="topico-fechamento">
-
-            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
-            <div class="topico-revisao">
-              <div class="tr-header">
-                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Estudo de Caso 01 · URL Shortener (TinyURL / Bitly)</h4>
-              </div>
-              
-              <div class="tr-grid">
-                <div class="tr-item">
-                  <span class="tr-dot teal"></span>
-                  <div class="tr-corpo">
-                    <b>O Desafio e a Matemática da Base62</b>
-                    <p>Encurtar URLs longas gerando uma chave alfanumérica curta de 7 caracteres. Usando Base62 ([a-z], [A-Z], [0-9]), 62^7 combinações produzem <strong>~3,5 trilhões de URLs únicas</strong>, suficientes para décadas de uso global.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot purple"></span>
-                  <div class="tr-corpo">
-                    <b>A Armadilha do Hash MD5/SHA-256</b>
-                    <p>Calcular MD5 da URL e truncar nos primeiros 7 caracteres gera <strong>colisões de hash frequentes</strong>, exigindo loops de verificação e re-hashing caros no banco de dados.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot rose"></span>
-                  <div class="tr-corpo">
-                    <b>Key Generation Service (KGS) Pré-Gerado</b>
-                    <p>A melhor arquitetura gera chaves aleatórias exclusivas de 7 caracteres antecipadamente em background e as armazena em uma tabela de chaves não usadas. Ao encurtar, o serviço apenas 'pega' uma chave livre sem risco de colisão e sem concorrência.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tr-takeaway">
-                <div class="tr-takeaway-item alert">
-                  <span class="tr-icon">⚠️</span>
-                  <div>
-                    <b>Usar Redirecionamento HTTP 301 Permanente Sem Analisar Métricas:</b>
-                    <p>Retornar HTTP 301 (Moved Permanently) faz o navegador cachear a URL original para sempre, impedindo que o TinyURL contabilize os cliques posteriores de telemetria daquele usuário! Use <strong>HTTP 302 (Found) ou 307 (Temporary Redirect)</strong> se precisar de analytics em tempo real.</p>
-                  </div>
-                </div>
-                <div class="tr-takeaway-item tip">
-                  <span class="tr-icon">💡</span>
-                  <div>
-                    <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>URL Shortener é um sistema ultra <strong>Read-Heavy (100:1)</strong>. Armazene as 20% URLs mais acessadas no Redis (Princípio de Pareto) para responder 80%+ das leituras com latência sub-milissegundo sem tocar no banco NoSQL persistente.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
-            <div class="topico-exercicio" data-exercise-id="ex-sd-k1">
-              <div class="te-header">
-                <div class="te-badge">
-                  <span class="te-icon">🎮</span>
-                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #k1</span>
-                </div>
-                <div class="te-reward">
-                  <span class="te-xp-badge">⭐ +50 XP</span>
-                  <span class="te-status">Aguardando resposta</span>
-                </div>
-              </div>
-
-              <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em um projeto de encurtador de links que atende 50.000 redirecionamentos por segundo, a equipe precisa decidir entre retornar o código HTTP 301 (Moved Permanently) ou HTTP 302 (Found). O requisito de negócio exige relatórios em tempo real da quantidade de cliques e geolocalização dos visitantes em cada link.</p>
-                
-                <p class="te-instrucao">Qual código de status HTTP deve ser utilizado e qual o trade-off envolvido?</p>
-
-                <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O status 302/307 impede que o cliente cacheie o redirecionamento localmente, garantindo que todo clique seja registrado na telemetria da aplicação.">
-                    <span class="te-letter">A</span> HTTP 302 (Temporary Redirect): força o navegador do usuário a bater no servidor do encurtador a cada clique, permitindo coletar métricas e geolocalização completas, ao custo de maior tráfego no backend comparado ao cache de cliente do HTTP 301.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O 301 é cacheado pelo browser, fazendo com que cliques subsequentes nunca cheguem aos servidores do encurtador.">
-                    <span class="te-letter">B</span> HTTP 301 (Moved Permanently), pois ele avisa o Google e envia o histórico por e-mail.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 404 quebraria o redirecionamento de links válidos.">
-                    <span class="te-letter">C</span> HTTP 404 (Not Found), para economizar internet dos usuários.
-                  </button>
-                </div>
-
-                <div class="te-feedback" hidden></div>
-              </div>
-            </div>
-
-            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
-            <div class="topico-flashcard">
-              <div class="tf-card">
-                <div class="tf-face tf-front">
-                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">Por que um Key Generation Service (KGS) com Base62 é arquiteturalmente superior a fazer MD5 truncado em um URL Shortener?</p>
-                  <span class="tf-hint">Dica: Pense no custo de tratar colisões em tempo de inserção versus alocar chaves únicas garantidas previamente em memória →</span>
-                </div>
-                <div class="tf-face tf-back">
-                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Porque o MD5 truncado para 7 caracteres sofre com <strong>colisões frequentes</strong>, obrigando a aplicação a fazer consultas extras de verificação e re-hashing em loop durante a requisição do usuário.<br>O <strong>KGS (Key Generation Service)</strong> gera previamente sequências únicas de Base62 (62^7 = ~3,5 trilhões de combinações) em background, garantindo <strong>tempo constante O(1) sem colisões e sem contenção de locks</strong> na criação do link.</p>
-                  <span class="tf-hint">← Toque para voltar à pergunta</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
 <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -6237,16 +6156,16 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
         <div class="th"><h3>Protocolo MCP, Sistemas de Agentes &amp; Caching Semântico</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">mcp &amp; agentes</span><span class="badge b-caso">arquitetura moderna</span></div></div>
         <p class="direto"><b>Direto:</b> agentes de IA em produção exigem contratos formais de ferramentas via <b>MCP (Model Context Protocol)</b>, guardrails estritos e otimização radical de custo com <b>Prompt &amp; Semantic Caching</b>.</p>
 
+        <div class="ver"><b>onde a teoria mora</b>O que o MCP é, a arquitetura Client-Host-Server, o loop ReAct e os guardrails de validação e injeção de prompt estão detalhados em <a href="ia.html#t5-mcp">Inteligência Artificial completo</a> — o protocolo em <a href="ia.html#t5-mcp">MCP e guardrails</a>, o loop em <a href="ia.html#t5-react">o loop agêntico</a>. Aqui interessa só o que eles cobram do sistema: cada passo do loop é uma ida à rede e um contexto reenviado.</div>
+
         <div class="duo">
-          <div><h4>Protocolo MCP (Model Context Protocol)</h4>
-            <p>O <b>MCP</b> é o padrão aberto que substitui integrações proprietárias ponto a ponto. Funciona em arquitetura Client-Host-Server:<br>
-            • <b>MCP Server:</b> expõe <i>Resources</i> (arquivos, dados corporativos), <i>Prompts</i> e <i>Tools</i> (funções com schema JSON rigoroso).<br>
-            • <b>Host / Client:</b> gerencia autenticação, controle de permissões e entrega das ferramentas ao contexto do modelo de IA.<br>
-            Isso permite que qualquer agente utilize ferramentas de banco, Git, CI/CD e APIs corporativas sem reescrever código de integração.</p>
+          <div><h4>Cada passo do agente é uma requisição inteira</h4>
+            <p>O loop do agente não é uma chamada: é N chamadas em série, e cada uma reenvia o contexto acumulado. Um agente de 8 passos com 20 mil tokens de instruções e schemas paga esses 20 mil <b>oito vezes</b> na entrada, mais o que já conversou. A latência percebida é a soma dos TTFT, não a média — e o custo cresce com o quadrado da conversa, não com ela.</p>
+            <p>Daí as duas restrições de dimensionamento: <b>limite de passos</b> é controle de custo antes de ser controle de qualidade, e o schema das ferramentas é payload que você paga por passo — ferramenta a mais não é só confusão do modelo, é conta.</p>
           </div>
-          <div><h4>Arquitetura de Agentes (Loop ReAct &amp; Guardrails)</h4>
-            <p>Agentes autônomos operam no loop <b>ReAct (Reasoning → Action → Observation)</b>. O modelo pensa sobre o estado atual, seleciona uma ferramenta via tool call, a aplicação executa a ação e devolve a resposta observada para o próximo ciclo.<br>
-            <b>Guardrails Essenciais:</b> (1) Validação estruturada da saída com JSON Schema / Pydantic; (2) Detecção de injeção de prompt; (3) Limite de passos máximos no loop para evitar loops infinitos de custo.</p>
+          <div><h4>O que isso obriga no desenho</h4>
+            <p>Agente em produção é trabalho de longa duração, não request HTTP: passa de qualquer timeout razoável de borda. O desenho que sobrevive é fila mais worker com estado persistido por passo, e o cliente acompanhando por SSE — exatamente a escada da parte 07, aplicada a um caso em que o servidor demora minutos.</p>
+            <p>Falha parcial volta aqui com força: o passo 5 de 8 falhou depois de a ferramenta ter escrito no banco. Sem idempotência por passo, repetir o loop duplica o efeito. É a parte 08, com um executor que não lembra o que já fez.</p>
           </div>
         </div>
 
@@ -6259,109 +6178,6 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
           </div>
         </div>
 
-        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
-          <div class="topico-fechamento">
-
-            <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
-            <div class="topico-revisao">
-              <div class="tr-header">
-                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Estudo de Caso 02 · WhatsApp & Chat Messenger em Tempo Real</h4>
-              </div>
-              
-              <div class="tr-grid">
-                <div class="tr-item">
-                  <span class="tr-dot teal"></span>
-                  <div class="tr-corpo">
-                    <b>Conexões Persistentes em Massa</b>
-                    <p>Milhões de aparelhos móveis mantêm conexões TCP/WebSocket de longa duração abertas com servidores de gateway (Chat Gateway/Connection Servers) com baixo consumo de bateria e heartbeats (Keep-Alive).</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot purple"></span>
-                  <div class="tr-corpo">
-                    <b>O Registro de Sessões Distribuído</b>
-                    <p>Um cluster de cache em memória (Redis / Memcached) mapeia onde cada usuário está conectado: `User_A → Server_14`. Ao enviar mensagem para B, o servidor consulta o Redis para saber em qual servidor a conexão de B está pendurada.</p>
-                  </div>
-                </div>
-                <div class="tr-item">
-                  <span class="tr-dot rose"></span>
-                  <div class="tr-corpo">
-                    <b>Armazenamento Efêmero e Offline Queue</b>
-                    <p>No WhatsApp, mensagens entregues são apagadas do servidor (arquitetura sem retenção central). Se o destinatário estiver offline, a mensagem é retida temporariamente em um banco NoSQL colunar (Cassandra/DynamoDB) até que o aparelho reconecte.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tr-takeaway">
-                <div class="tr-takeaway-item alert">
-                  <span class="tr-icon">⚠️</span>
-                  <div>
-                    <b>Abrir e Fechar Conexão HTTP REST a Cada Mensagem Enviada em Chat:</b>
-                    <p>Tentar fazer chat em tempo real com requisições HTTP REST síncronas a cada mensagem enviada esgota portas TCP, drena a bateria do smartphone com handshakes TLS contínuos e introduz latências inaceitáveis para conversa humana fluida. Use WebSockets!</p>
-                  </div>
-                </div>
-                <div class="tr-takeaway-item tip">
-                  <span class="tr-icon">💡</span>
-                  <div>
-                    <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Gerencie a máquina de estados das mensagens com confirmações (ACKs): 1. Servidor recebeu (1 tique cinza); 2. Destinatário recebeu no celular (2 tiques cinzas); 3. Destinatário visualizou a mensagem (2 tiques azuis).</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
-            <div class="topico-exercicio" data-exercise-id="ex-sd-k2">
-              <div class="te-header">
-                <div class="te-badge">
-                  <span class="te-icon">🎮</span>
-                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #k2</span>
-                </div>
-                <div class="te-reward">
-                  <span class="te-xp-badge">⭐ +50 XP</span>
-                  <span class="te-status">Aguardando resposta</span>
-                </div>
-              </div>
-
-              <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em um aplicativo de mensagens instantâneas com 50 milhões de usuários ativos simultâneos, o Usuário Alice (conectado ao Servidor Gateway 3) envia uma mensagem de texto para o Usuário Bob (conectado ao Servidor Gateway 8).</p>
-                
-                <p class="te-instrucao">Como o Servidor 3 descobre para onde rotear a mensagem em milissegundos?</p>
-
-                <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Session Registry distribuído em memória é o componente central que mapeia o identificador do usuário ao servidor específico onde reside o socket TCP ativo.">
-                    <span class="te-letter">A</span> Consultando o Registro de Sessões do Usuário (Session Service em Redis): o Servidor 3 busca a chave 'session:Bob', descobre que Bob está conectado ao Servidor 8 e repassa a mensagem internamente via gRPC ou barramento Pub/Sub para que o Servidor 8 empurre no WebSocket de Bob.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causaria colapso catastrófico imediato na rede.">
-                    <span class="te-letter">B</span> Fazendo broadcast da mensagem para todos os 50 milhões de usuários para ver quem responde.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com software de mensageria.">
-                    <span class="te-letter">C</span> Pedindo para Alice ligar para Bob por telefone comum e falar o conteúdo.
-                  </button>
-                </div>
-
-                <div class="te-feedback" hidden></div>
-              </div>
-            </div>
-
-            <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
-            <div class="topico-flashcard">
-              <div class="tf-card">
-                <div class="tf-face tf-front">
-                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">Como funciona o ciclo de entrega de mensagens em tempo real no WhatsApp quando o destinatário está offline?</p>
-                  <span class="tf-hint">Dica: Pense em armazenamento temporário em banco colunar, notificação push e descarte pós-entrega →</span>
-                </div>
-                <div class="tf-face tf-back">
-                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">1. O servidor consulta o registro de sessões e constata que o destinatário está <strong>offline</strong>.<br>2. A mensagem é gravada em uma <strong>fila temporária de armazenamento offline</strong> (ex: Cassandra/DynamoDB).<br>3. Um gatilho dispara uma <strong>notificação push (APNs/FCM)</strong> acordando o sistema operacional do aparelho.<br>4. Quando o destinatário reconecta e estabelece o WebSocket, as mensagens pendentes são entregues e, após o <strong>ACK de confirmação</strong>, são <strong>deletadas permanentemente dos servidores</strong>.</p>
-                  <span class="tf-hint">← Toque para voltar à pergunta</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
 <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -6470,9 +6286,87 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
       </article>
     </section>
 
+    <!-- ===================== PARTE 12 ===================== -->
+    <section class="part" id="p9">
+      <div class="ph"><span class="num">12</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>System Design é a área em que é mais fácil confundir reconhecer com saber. O desenho parece claro — e você não conseguiria defendê-lo sob pergunta.</p></div></div>
+
+      <article class="topic" id="i1">
+        <div class="th"><h3>O ciclo, as fontes e como pesquisar</h3><div class="badges"><span class="badge b-ess">obrigatório</span></div></div>
+        <p class="direto"><b>Direto:</b> vídeo dá o mapa, documentação dá a precisão, laboratório fixa. <b>Nunca pare no vídeo</b> — ele mostra o desenho pronto e esconde as dez decisões que levaram até ele.</p>
+
+        <figure class="dg"><svg viewBox="0 0 700 170" xmlns="http://www.w3.org/2000/svg">
+          <text x="350" y="18" class="bt">o ciclo — e a volta que quase ninguém faz</text>
+          <rect x="20" y="46" width="110" height="40" rx="10" class="b2"/><text x="75" y="70" class="bs">ler este documento</text>
+          <path d="M132,66 L160,66" class="l"/><path d="M160,66 L152,62 L152,70 Z" class="h"/>
+          <rect x="162" y="46" width="110" height="40" rx="10" class="b2"/><text x="217" y="70" class="bs">ver o vídeo</text>
+          <path d="M274,66 L302,66" class="l"/><path d="M302,66 L294,62 L294,70 Z" class="h"/>
+          <rect x="304" y="46" width="120" height="40" rx="10" class="b2"/><text x="364" y="63" class="bs">ler a doc oficial</text><text x="364" y="77" class="bs">conferir os números</text>
+          <path d="M426,66 L454,66" class="l"/><path d="M454,66 L446,62 L446,70 Z" class="h"/>
+          <rect x="456" y="46" width="110" height="40" rx="10" class="b1"/><text x="511" y="63" class="bs">fazer o lab</text><text x="511" y="77" class="bs">medir a curva</text>
+          <path d="M568,66 L596,66" class="lt"/><path d="M596,66 L588,62 L588,70 Z" class="ht"/>
+          <rect x="598" y="46" width="84" height="40" rx="10" class="b1"/><text x="640" y="63" class="bs">escrever</text><text x="640" y="77" class="bs">o que quebrou</text>
+          <path d="M640,90 L640,124 L75,124 L75,90" class="lt d"/><path d="M75,90 L71,98 L79,98 Z" class="ht"/>
+          <text x="350" y="142" class="bs">a volta é a parte que fixa: a nota do que quebrou, com as suas palavras</text>
+          <text x="350" y="162" class="bt">vídeo dá o mapa · doc dá a precisão · lab fixa</text>
+        </svg><figcaption>O ciclo sem a volta é consumo. Com a volta, vira conhecimento que sobrevive a seis meses.</figcaption></figure>
+
+        <p><b>Canais e cursos em português.</b> <b>Rodrigo Branas</b> e <b>Fabio Akita</b> tratam arquitetura e sistemas com uma profundidade incomum em português — o segundo especialmente bom em desmontar hype. <b>Full Cycle</b> tem material denso de sistemas distribuídos e mensageria. <b>Código Fonte TV</b> serve como panorama inicial de conceitos. Em inglês, o canal <b>ByteByteGo</b>, do autor do <i>System Design Interview</i>, é o complemento visual mais direto para os casos clássicos.</p>
+        <p><b>A regra que acompanha:</b> nunca cite um número visto em vídeo sem conferir na documentação. Boa parte dos números que circulam nesse assunto — limites de serviço, latências, capacidades — está desatualizada por anos.</p>
+
+        <p><b>Como pesquisar.</b> Busque pelo <b>nome do mecanismo</b>, não pelo sintoma. “API lenta” não devolve nada útil; <i>keyset pagination</i>, <i>hot partition</i>, <i>cache stampede</i> e <i>connection pool saturation</i> devolvem a discussão exata. Metade da competência técnica é saber o nome da coisa — com ele, a resposta vem em minutos.</p>
+
+        <pre><code>site:postgresql.org index-only scan covering
+"keyset pagination" tuple comparison postgres
+"hot partition" dynamodb partition key design
+cache stampede thundering herd mitigation
+"little's law" capacity connection pool sizing</code></pre>
+
+        <div class="cs"><b>Para banco, o atalho é outro:</b> rode <code class="i">EXPLAIN ANALYZE</code> antes de pesquisar. O plano de execução costuma dizer o nome do problema — <i>Seq Scan</i>, <i>Sort</i>, <i>rows removed by filter</i> — e aí a busca já começa certa.</div>
+        <button class="done" type="button" data-k="i1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="i2">
+        <div class="th"><h3>O laboratório dos quatro casos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fecha o documento</span></div></div>
+        <p class="direto"><b>Direto:</b> você não precisa de 10 mil requisições por segundo reais para aprender. Precisa de uma <b>curva que mude</b> quando você muda o desenho — e isso cabe num container na sua máquina.</p>
+
+        <p>Os quatro casos deste documento viram quatro experimentos, todos em um PostgreSQL local, todos com dados sintéticos, todos medindo antes e depois.</p>
+
+        <div class="duo">
+          <div><h4>1 · A curva da paginação</h4><p>Gere 1 milhão de pedidos. Rode <code class="i">EXPLAIN ANALYZE</code> com offset 10, 1.000, 100.000 e 500.000, anotando os tempos. Depois refaça com keyset. Você vai ter duas curvas: uma que sobe e uma que é reta.</p></div>
+          <div><h4>2 · A fila do pool</h4><p>Dispare carga concorrente contra um endpoint que faz três consultas. Observe a fila de espera do pool. Reduza para uma consulta e repita. Compare com o número que a lei de Little previu.</p></div>
+        </div>
+        <div class="duo">
+          <div><h4>3 · O Bloom na frente do índice</h4><p>Popule um índice único com 1 milhão de usernames e um Bloom filter com os mesmos dados. Consulte 10 mil nomes aleatórios e conte quantas idas ao banco desapareceram. Depois meça a taxa de falso positivo real e compare com a teórica.</p></div>
+          <div><h4>4 · O lote contra a linha</h4><p>Insira 100 mil linhas uma a uma e depois em lotes de mil. Meça os dois. A diferença costuma ser de uma ordem de grandeza — e ver isso com os próprios olhos fixa mais que qualquer explicação.</p></div>
+        </div>
+
+        <pre><code># a curva que prova a paginacao
+for p in 1 10 100 1000 5000; do
+  psql -c "EXPLAIN ANALYZE
+           SELECT id, criado_em, total FROM pedido
+            ORDER BY criado_em DESC, id DESC
+            LIMIT 10 OFFSET $((p*10));"
+done
+# offset: o tempo cresce com a profundidade
+# keyset: o tempo nao muda
+
+# e a versao keyset, para comparar
+psql -c "EXPLAIN ANALYZE
+         SELECT id, criado_em, total FROM pedido
+          WHERE (criado_em, id) < ('2026-03-14 10:22:00', 8812)
+          ORDER BY criado_em DESC, id DESC
+          LIMIT 10;"</code></pre>
+
+        <div class="cs"><b>O que registrar em cada experimento:</b> o número antes, o número depois, e — a parte que quase todo mundo pula — <b>a hipótese que você tinha antes de medir</b>. Quando a medição contraria a hipótese, é exatamente ali que existe aprendizado; quando confirma, você ganhou confiança calibrada. Sem escrever a hipótese antes, os dois casos viram a mesma coisa.</div>
+
+        <div class="ver"><b>a bancada correspondente</b>Os projetos <code class="ic">J03</code> (ledger JDBC), <code class="ic">S01</code> (API com SQL visível), <code class="ic">S03</code> (sala de incidente) e <code class="ic">A02</code> (eventos e idempotência) no <a href="../lab/projetos.html">Laboratório de projetos</a> constroem versões maiores destes mesmos experimentos, com critério de aceite e evidência no repositório.</div>
+        <button class="done" type="button" data-k="i2">marcar dominado</button>
+      </article>
+    </section>
+
 
     <footer class="foot">
-      <p>System Design completo · setembro de 2026 · o nono documento do acervo, em tema Dracula. Nasceu das notas de System Design espalhadas pelo vault — os cadernos visuais de escala, o Pressure Lab de entrevistas e os atômicos de concorrência — reunidas sob uma regra: conceito sempre com o caso que o obriga a existir. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code>, <code class="i">Conceitos de Backend completo</code> e <code class="i">Biblioteca completa</code>. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
+      <p>System Design completo · setembro de 2026 · documento do acervo, em tema Dracula. Nasceu das notas de System Design espalhadas pelo vault — os cadernos visuais de escala, o Pressure Lab de entrevistas e os atômicos de concorrência — reunidas sob uma regra: conceito sempre com o caso que o obriga a existir. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code>, <code class="i">Conceitos de Backend completo</code> e <code class="i">Biblioteca completa</code>. A bancada correspondente é o <code class="ic">Laboratório de projetos</code>.</p>
     </footer>
   </main>
 </div>
@@ -6486,536 +6380,7 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
   <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
 </aside>
 
-<script>
-function W(h,inner){return '<figure class="dg"><svg viewBox="0 0 340 '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg></figure>';}
-var DG={
- contrato:W(158,'<text x="170" y="16" class="bt">"10k RPS" não é requisito — é sintoma</text><rect x="6" y="32" width="96" height="38" rx="8" class="b5"/><text x="54" y="50" class="bs">"o banco não</text><text x="54" y="62" class="bs">aguenta 10k RPS"</text><path d="M104,51 L128,51" class="l"/><path d="M128,51 L120,47 L120,55 Z" class="h"/><rect x="130" y="30" width="100" height="42" rx="8" class="b2"/><text x="180" y="46" class="bs">RPS de quê?</text><text x="180" y="58" class="bs">quantas queries</text><text x="180" y="68" class="bs">por request?</text><path d="M232,51 L256,51" class="l"/><path d="M256,51 L248,47 L248,55 Z" class="h"/><rect x="258" y="32" width="76" height="38" rx="8" class="b1"/><text x="296" y="50" class="bs">30k QPS</text><text x="296" y="62" class="bs">no banco</text><text x="170" y="92" class="bs">1 · contrato: p99 &lt; 100 ms · erro &lt; 0,5% · lê-o-que-escreveu</text><text x="170" y="108" class="bs">2 · workload: 95% leitura · Zipf 80/20 · 3 queries/request</text><text x="170" y="124" class="bs">3 · gargalo: query A = 62% do tempo · pool com fila · CPU 88%</text><text x="170" y="148" class="bt">só agora existe um problema para resolver</text>'),
- little:W(150,'<text x="170" y="16" class="bt">lei de Little: L = λ × W</text><rect x="14" y="34" width="92" height="34" rx="8" class="b2"/><text x="60" y="49" class="bs">λ = chegadas/s</text><text x="60" y="62" class="bs">30.000 queries/s</text><rect x="124" y="34" width="92" height="34" rx="8" class="b2"/><text x="170" y="49" class="bs">W = tempo dentro</text><text x="170" y="62" class="bs">0,008 s</text><rect x="234" y="34" width="92" height="34" rx="8" class="b1"/><text x="280" y="49" class="bs">L = em voo</text><text x="280" y="62" class="bs">240</text><path d="M108,51 L122,51" class="l"/><path d="M218,51 L232,51" class="lt"/><text x="170" y="90" class="bs">240 execuções concorrentes em média — e o pool tem 20</text><text x="170" y="112" class="bt">a conta não diz "pool = 240"</text><text x="170" y="128" class="bs">diz: ou o banco sustenta 240, ou você precisa reduzir W</text><text x="170" y="144" class="bs">reduzir W é quase sempre mais barato que abrir a comporta</text>'),
- escada:W(196,'<text x="170" y="16" class="bt">escada de leitura: cada degrau tem gate e prova</text><rect x="20" y="160" width="300" height="20" rx="5" class="b1"/><text x="170" y="174" class="bs">00 proteger e observar · 01 remover trabalho evitável</text><rect x="34" y="132" width="272" height="20" rx="5" class="b1"/><text x="170" y="146" class="bs">02 consulta e índice · 03 concorrência e transação</text><rect x="48" y="104" width="244" height="20" rx="5" class="b2"/><text x="170" y="118" class="bs">04 vertical ou especialização</text><rect x="62" y="76" width="216" height="20" rx="5" class="b2"/><text x="170" y="90" class="bs">05 cache onde há reuso</text><rect x="76" y="48" width="188" height="20" rx="5" class="b4"/><text x="170" y="62" class="bs">06 réplicas de leitura</text><rect x="90" y="24" width="160" height="20" rx="5" class="b5"/><text x="170" y="38" class="bs">07 particionar — só com evidência</text><text x="170" y="192" class="bs">de baixo para cima: mais barato → mais caro de operar</text>'),
- shard:W(170,'<text x="86" y="16" class="bt">✗ chave ruim</text><text x="254" y="16" class="bt">✓ chave boa</text><line x1="170" y1="24" x2="170" y2="150" class="l d"/><text x="86" y="32" class="bs">partition key = país (90% BR)</text><rect x="10" y="42" width="46" height="72" rx="7" class="b5"/><text x="33" y="74" class="bs">S1</text><text x="33" y="90" class="bs">90%</text><rect x="62" y="82" width="46" height="32" rx="7" class="bx"/><text x="85" y="102" class="bs">S2</text><rect x="114" y="82" width="46" height="32" rx="7" class="bx"/><text x="137" y="102" class="bs">S3</text><text x="86" y="132" class="bs">pagou 3, usa 1</text><text x="254" y="32" class="bs">partition key = hash(user_id)</text><rect x="182" y="56" width="46" height="58" rx="7" class="b1"/><text x="205" y="88" class="bs">~33%</text><rect x="234" y="56" width="46" height="58" rx="7" class="b1"/><text x="257" y="88" class="bs">~33%</text><rect x="286" y="56" width="46" height="58" rx="7" class="b1"/><text x="309" y="88" class="bs">~33%</text><text x="254" y="132" class="bs">capacidade × 3</text><text x="170" y="160" class="bs">a pergunta da entrevista: qual seria a sua partition key, e por quê?</text>'),
- fila:W(160,'<text x="170" y="16" class="bt">a fila achata o pico — ela não cria capacidade</text><path d="M12,74 L44,74 L52,40 L68,40 L76,74 L120,74" class="l"/><text x="66" y="90" class="bs">entrada com pico</text><path d="M126,62 L146,62" class="l"/><path d="M146,62 L138,58 L138,66 Z" class="h"/><rect x="148" y="44" width="56" height="34" rx="8" class="b1"/><text x="176" y="60" class="bs">fila</text><text x="176" y="72" class="bs">▯▯▯▯</text><path d="M206,62 L226,62" class="lt"/><path d="M226,62 L218,58 L218,66 Z" class="ht"/><path d="M230,74 L292,74" class="lt"/><text x="264" y="90" class="bs">saída constante</text><rect x="296" y="50" width="38" height="30" rx="7" class="bx"/><text x="315" y="69" class="bs">banco</text><text x="170" y="116" class="bs">se a MÉDIA de entrada já passa da vazão do banco,</text><text x="170" y="130" class="bs">a fila só cresce — você trocou "cair" por "atrasar para sempre"</text><text x="170" y="152" class="bt">fila resolve pico · carga constante se resolve com capacidade</text>'),
- bloom:W(168,'<text x="170" y="16" class="bt">Bloom: erra só para um lado</text><rect x="8" y="34" width="76" height="34" rx="8" class="b2"/><text x="46" y="50" class="bs">digitou</text><text x="46" y="63" class="bs">"thallys_dev"</text><path d="M86,51 L106,51" class="l"/><path d="M106,51 L98,47 L98,55 Z" class="h"/><rect x="108" y="30" width="88" height="42" rx="8" class="b4"/><text x="152" y="47" class="bs">Bloom filter</text><text x="152" y="60" class="bs">~2 GB · µs</text><path d="M198,42 L242,30" class="lt"/><text x="222" y="24" class="bs">bit 0</text><rect x="244" y="18" width="90" height="28" rx="7" class="b1"/><text x="289" y="30" class="bs">LIVRE ✓</text><text x="289" y="41" class="bs">sem tocar no banco</text><path d="M198,62 L242,78" class="lr"/><text x="220" y="82" class="bs">todos 1</text><rect x="244" y="62" width="90" height="32" rx="7" class="b5"/><text x="289" y="76" class="bs">talvez ocupado</text><text x="289" y="88" class="bs">confere no índice</text><text x="170" y="118" class="bs">nunca diz "ocupado" para um nome livre — o contrário pode acontecer</text><text x="170" y="140" class="bt">é barreira de economia, não de verdade</text><text x="170" y="156" class="bs">quem garante unicidade continua sendo o índice único no INSERT</text>'),
- keyset:W(164,'<text x="86" y="16" class="bt">OFFSET 500000</text><text x="254" y="16" class="bt">keyset</text><line x1="170" y1="24" x2="170" y2="140" class="l d"/><rect x="14" y="34" width="144" height="76" rx="8" class="b5"/><text x="86" y="52" class="bs">o banco lê 500.010 linhas</text><text x="86" y="66" class="bs">e joga 500.000 fora</text><text x="86" y="84" class="bs">custo cresce com a página</text><text x="86" y="98" class="bs">página 1: 8 ms · página 5000: 4 s</text><rect x="182" y="34" width="144" height="76" rx="8" class="b1"/><text x="254" y="52" class="bs">WHERE (dt,id) &lt; (?,?)</text><text x="254" y="66" class="bs">salta direto na árvore</text><text x="254" y="84" class="bs">custo constante</text><text x="254" y="98" class="bs">página 1: 8 ms · página 5000: 8 ms</text><text x="170" y="130" class="bs">o índice precisa ter as MESMAS colunas, na MESMA ordem</text><text x="170" y="152" class="bt">e o cursor precisa desempatar: (data, id), nunca só data</text>'),
- tempo:W(176,'<text x="170" y="16" class="bt">a escada do tempo real</text><rect x="8" y="30" width="76" height="46" rx="8" class="b3"/><text x="46" y="47" class="bs">polling</text><text x="46" y="60" class="bs">pergunta sempre</text><text x="46" y="71" class="bs">quase tudo "não"</text><rect x="92" y="30" width="76" height="46" rx="8" class="b2"/><text x="130" y="47" class="bs">long polling</text><text x="130" y="60" class="bs">segura até ter</text><text x="130" y="71" class="bs">ou estourar</text><rect x="176" y="30" width="76" height="46" rx="8" class="b1"/><text x="214" y="47" class="bs">SSE</text><text x="214" y="60" class="bs">só servidor→cliente</text><text x="214" y="71" class="bs">passa em proxy</text><rect x="260" y="30" width="74" height="46" rx="8" class="b4"/><text x="297" y="47" class="bs">WebSocket</text><text x="297" y="60" class="bs">bidirecional</text><text x="297" y="71" class="bs">conexão com estado</text><path d="M8,92 L334,92" class="l d"/><text x="46" y="108" class="bs">mais simples</text><text x="297" y="108" class="bs">mais capaz</text><text x="170" y="134" class="bs">notificação de progresso e feed: SSE resolve e custa menos</text><text x="170" y="150" class="bs">chat e colaboração: WebSocket, e você herda reconexão e estado</text><text x="170" y="170" class="bt">escolha pelo SENTIDO do tráfego, não pela moda</text>'),
- falha:W(172,'<text x="170" y="16" class="bt">falha parcial: o modo que só existe em rede</text><rect x="12" y="34" width="80" height="34" rx="8" class="b2"/><text x="52" y="50" class="bs">seu serviço</text><text x="52" y="63" class="bs">chamou</text><path d="M94,51 L134,51" class="l d"/><rect x="136" y="34" width="80" height="34" rx="8" class="b5"/><text x="176" y="50" class="bs">sem resposta</text><text x="176" y="63" class="bs">timeout</text><text x="252" y="42" class="bs">não chegou?</text><text x="252" y="56" class="bs">chegou e fez?</text><text x="252" y="70" class="bs">fez e a resposta sumiu?</text><text x="170" y="96" class="bs">os três casos são indistinguíveis do lado de fora</text><rect x="14" y="110" width="96" height="30" rx="7" class="b1"/><text x="62" y="129" class="bs">timeout em tudo</text><rect x="122" y="110" width="96" height="30" rx="7" class="b1"/><text x="170" y="124" class="bs">retry com jitter</text><text x="170" y="136" class="bs">só se idempotente</text><rect x="230" y="110" width="96" height="30" rx="7" class="b1"/><text x="278" y="129" class="bs">disjuntor</text><text x="170" y="164" class="bt">sem timeout, o disjuntor nunca conta falha — só acumula thread presa</text>'),
- ciclo:W(150,'<text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="66" height="30" rx="8" class="b2"/><text x="43" y="53" class="bs">ler aqui</text><path d="M78,49 L96,49" class="l"/><path d="M96,49 L88,45 L88,53 Z" class="h"/><rect x="98" y="34" width="66" height="30" rx="8" class="b2"/><text x="131" y="53" class="bs">ver vídeo</text><path d="M166,49 L184,49" class="l"/><path d="M184,49 L176,45 L176,53 Z" class="h"/><rect x="186" y="34" width="66" height="30" rx="8" class="b2"/><text x="219" y="53" class="bs">doc oficial</text><path d="M254,49 L272,49" class="l"/><path d="M272,49 L264,45 L264,53 Z" class="h"/><rect x="274" y="34" width="60" height="30" rx="8" class="b1"/><text x="304" y="53" class="bs">fazer o lab</text><path d="M304,66 L304,88 L43,88 L43,66" class="lt d"/><path d="M43,66 L39,74 L47,74 Z" class="ht"/><text x="170" y="104" class="bs">e a volta: escrever a nota atômica do que quebrou</text><text x="170" y="126" class="bt">vídeo dá o mapa · doc dá a precisão · lab fixa</text><text x="170" y="142" class="bs">nunca pare no vídeo</text>')
-};
-
-var T=[
-{g:"01",n:"O método",s:"antes de desenhar caixa, transformar a frase vaga em número",c:"var(--purple)",cs:"var(--purple-soft)",items:[
- {t:"A pergunta vaga não é requisito",x:"'10k RPS' é sintoma, não diagnóstico",dg:"contrato",oq:"A mesma taxa pode ser trivial ou impossível. 10.000 leituras por chave primária num índice em memória é fácil; 10.000 relatórios com junção e ordenação sobre bilhões de linhas não existe.",ps:"Impedir que você comece a desenhar arquitetura em cima de um número que não significa nada sozinho.",cf:"Converta a frase em três coisas, nesta ordem. <b>Contrato:</b> p99, taxa de erro tolerada, consistência exigida. <b>Workload:</b> mistura de leitura e escrita, quantas queries por request, distribuição das chaves, tamanho do payload. <b>Gargalo:</b> qual recurso satura e qual consulta domina. <b>Erro comum:</b> responder à pergunta antes de tê-la.",caso:"O entrevistador diz: 'o banco não aguenta 10 mil requisições por segundo'. A primeira resposta certa não é 'coloco cache' — é: RPS de quê? Requisições HTTP, operações lógicas ou statements SQL? Se cada request dispara três consultas, 10k HTTP já são 30k QPS no banco. O número mudou por três antes de você desenhar qualquer caixa.",ex:"# a frase vira hipótese testável\ncontrato : p99 < 100 ms · erro < 0,5% · lê o que escreveu\nworkload : 95% leitura · pico 10k · 3 queries/req · Zipf 80/20\ngargalo  : query A = 62% do tempo · pool com fila · DB CPU 88%"},
- {t:"As perguntas de carga",x:"seis que mudam tudo",oq:"Um bloco fixo de perguntas sobre a natureza do tráfego, feito antes de qualquer proposta.",ps:"Transformar 'muito acesso' em demanda de recurso mensurável.",cf:"RPS de quê · qual a mistura de leitura e escrita · média ou pico, e por quanto tempo · quantas queries por request · qual a distribuição das chaves (uniforme, Zipf, celebridade, inquilino gigante) · qual o tamanho do payload. <b>Erro comum:</b> assumir distribuição uniforme. Quase nunca é: 20% das chaves levam 80% dos acessos, e é isso que decide se cache funciona."},
- {t:"As perguntas de produto",x:"o que o negócio aceita perder",oq:"O segundo bloco: SLO, consistência exigida, tolerância a dado velho, orçamento e comportamento aceitável na falha.",ps:"Descobrir o grau de liberdade que você tem. Sem ele, toda decisão técnica vira chute.",cf:"Pode ficar stale por 100 ms, 30 s, 5 min ou nunca? Precisa de read-your-writes? Na falha, é melhor degradar, rejeitar, servir dado velho ou bloquear? <b>Erro comum:</b> tratar consistência eventual como detalhe técnico. É decisão de produto — precisa ser aprovada, não descoberta em produção."},
- {t:"Os erros que eliminam",x:"o que faz anotar 'não recomendo'",oq:"Padrões de resposta que derrubam o candidato independentemente do resto.",ps:"Reconhecer e evitar os quatro mais comuns.",cf:"(1) Propor solução antes de entender o problema. (2) Citar tecnologia como se fosse resposta — 'uso Kafka' não explica nada. (3) Não saber o preço do que propôs: todo mecanismo cobra em complexidade operacional. (4) Prometer garantia que o mecanismo não dá, como <i>exactly-once</i> sem escopo. <b>Erro comum:</b> o silêncio — pensar sem narrar. O entrevistador avalia o raciocínio, não só o desenho."}
-]},
-{g:"02",n:"A conta antes da caixa",s:"estimativa de guardanapo: ordens de grandeza, não previsão",c:"var(--cyan)",cs:"var(--arc-soft)",items:[
- {t:"Lei de Little",x:"L = λ × W",dg:"little",oq:"Concorrência média dentro de um sistema é igual à taxa de chegada multiplicada pelo tempo médio que cada item passa lá dentro.",ps:"É a conta mais útil de System Design: transforma taxa (que você sabe) em ocupação (que decide o dimensionamento).",cf:"Use unidades coerentes: λ em operações por segundo, W em segundos. O resultado é quantas operações estão em voo ao mesmo tempo, em média. <b>Erro comum:</b> ler o resultado como 'configure o pool com esse número'. A conta não autoriza nada — ela revela se o que você quer é possível.",caso:"10k RPS × 3 queries sequenciais de 8 ms = 30.000 QPS e W = 0,008 s. L = 240 execuções concorrentes no banco. O pool tem 20. A conta não diz 'aumente para 240': diz que ou o banco sustenta 240 execuções simultâneas (quase nunca sustenta), ou você precisa reduzir W — menos queries, consulta mais barata, transação mais curta.",ex:"L = λ × W\n30.000 × 0,008 = 240 em voo\n\n# teto ingênuo de um pool\nteto ≈ pool ÷ W\n20 ÷ 0,010 = 2.000 ciclos/s por instância"},
- {t:"A conta do cache",x:"o que sobra para o banco",oq:"Com cache-aside, o que chega ao banco é (leituras × taxa de miss) + todas as escritas.",ps:"Saber de antemão quanto o cache realmente alivia — e que ele não alivia escrita nenhuma.",cf:"Com 9.500 leituras/s e 80% de acerto, sobram 1.900 leituras. Somadas às escritas, dá o QPS real. <b>Erro comum:</b> celebrar 80% de hit rate sem notar que dobrar o tráfego dobra os 20% que passam — o alívio é proporcional, não absoluto.",ex:"leituras/s = RPS × %leitura\nno banco   = leituras × (1 − hit) + escritas\n\n10.000 × 0,95 = 9.500 leituras\n9.500 × 0,20  = 1.900 misses\n+ 500 escritas = 2.400 ops/s no banco"},
- {t:"Os números de latência",x:"as ordens de grandeza que decidem",oq:"Uma tabela mental de custos: memória em nanossegundos, SSD em microssegundos, rede no mesmo datacenter em centenas de microssegundos, entre continentes em centenas de milissegundos.",ps:"Detectar proposta absurda sem benchmark. Se o desenho exige três idas à Europa dentro de um p99 de 100 ms, ele já morreu.",cf:"Guarde as relações, não os valores exatos: RAM é ~100× mais rápida que SSD; rede local é ~100× mais lenta que RAM; travessia intercontinental é ~100× mais lenta que rede local. <b>Erro comum:</b> decorar a tabela e não usá-la — a utilidade é somar o caminho inteiro da requisição e comparar com o SLO."},
- {t:"O limite do modelo",x:"estimativa não é promessa",oq:"Toda conta de guardanapo usa médias estacionárias e ignora p99, locks, filas, variação de chave e contenção.",ps:"Usar a estimativa para o que ela serve — tornar suposições visíveis — e não como garantia de capacidade.",cf:"A conta detecta ordem de grandeza absurda e expõe premissas. Ela não substitui teste de carga com a mesma distribuição, os mesmos dados e a mesma concorrência. <b>Erro comum:</b> apresentar o número da estimativa como resultado. Diga 'essa conta sugere', nunca 'o sistema suporta'."}
-]},
-{g:"03",n:"Escalar leitura",s:"a escada — cada degrau com gate de entrada e prova de saída",c:"var(--green)",cs:"var(--green-soft)",items:[
- {t:"A escada, não o checklist",x:"do mais barato ao mais caro de operar",dg:"escada",oq:"Oito degraus em ordem de custo operacional crescente: proteger e observar, remover trabalho evitável, otimizar consulta e índice, controlar concorrência, escalar vertical, cachear, replicar, particionar.",ps:"Impedir que a resposta pule direto para a solução mais cara — que é o que quase todo mundo faz.",cf:"Cada degrau tem uma <b>condição de entrada</b> (só suba se…) e uma <b>prova de saída</b> (mediu o quê?). A ordem não é rígida: consistência, skew e custo podem trocar dois degraus de lugar. <b>Erro comum:</b> tratar como checklist e executar todos. A escada existe para você parar assim que o SLO for atendido.",caso:"Com 10k RPS, a resposta que impressiona não é 'coloco Redis'. É: primeiro ponho timeout e limite de concorrência para parar de aceitar trabalho ilimitado enquanto investigo; depois olho queries por request — se são três e dá para ser uma, acabei de dividir a carga por três sem infraestrutura nova."},
- {t:"Índice é estrutura de acesso",x:"desenhado para a consulta, não para a coluna",oq:"O índice serve a um padrão de acesso concreto: igualdade, faixa e ordenação — nessa ordem dentro da chave composta.",ps:"Parar de criar um índice por coluna e passar a criar o índice que a consulta real usa.",cf:"A ordem das colunas vem da consulta: primeiro as de igualdade, depois a de faixa, depois a de ordenação. Índice <i>covering</i> responde sem tocar na tabela. <b>Erro comum:</b> criar índice sem antes ler o plano — metade das vezes o problema é outro, e você acabou de deixar a escrita mais lenta de graça.",ex:"-- consulta real\nSELECT id, total FROM pedido\n WHERE cliente_id = ? AND criado_em > ?\n ORDER BY criado_em DESC LIMIT 50;\n\n-- o índice que ela pede\nCREATE INDEX ix ON pedido (cliente_id, criado_em DESC)\n  INCLUDE (total);"},
- {t:"Réplica compra escala com lag",x:"e o lag é visível para o usuário",oq:"Cópias que só respondem leitura, alimentadas por replicação assíncrona a partir do primário.",ps:"Tirar leitura do primário quando ele continua sendo o limite depois dos degraus anteriores.",cf:"A replicação atrasa. Leitura que precisa do dado recém-escrito vai ao primário — é o padrão <i>read-your-writes</i>. Trate também <i>monotonic reads</i>: o mesmo usuário não pode ver o dado sumir ao trocar de réplica. <b>Erro comum:</b> mandar tudo para a réplica e o usuário não encontrar o registro que acabou de criar.",map:[["Conceitos de Backend","O mecanismo da replicação e do pool está detalhado lá — aqui interessa quando pagar por ele."],["Arquitetura","Consistência forte ou eventual: o que o negócio aceita."]]},
- {t:"Cache é contrato de freshness",x:"hit rate não é a métrica difícil",oq:"Guardar resultado caro em memória, com uma promessa explícita de quão velho o dado pode estar.",ps:"O ganho mais barato em sistema de leitura intensa — desde que exista reuso.",cf:"Defina três coisas antes de implementar: fonte da verdade, janela de staleness tolerada e estratégia de invalidação (expiração, deleção ou atualização). Cuide do <i>stampede</i>: quando a chave quente expira, mil requisições vão ao banco juntas — resolva com bloqueio de repopulação ou expiração com jitter. <b>Erro comum:</b> cachear dado por usuário numa chave global."},
- {t:"CDN não é só para arquivo",x:"resposta pública também cacheia",oq:"A borda pode guardar resposta de API pública, não apenas imagem e JavaScript.",ps:"Tirar do seu datacenter o tráfego que é idêntico para todo mundo.",cf:"Precisa de cabeçalho de cache correto, chave de cache bem escolhida (cuidado com query string e cookie) e um jeito de invalidar. <b>Erro comum:</b> cachear na borda uma resposta que varia por usuário e vazar dado de um para outro — a falha mais cara desta lista."},
- {t:"Proteção faz parte da escala",x:"recusar cedo é escalar",oq:"Orçamento de concorrência, isolamento por tipo de trabalho, rejeição útil e interrupção de insistência.",ps:"Um sistema que aceita trabalho ilimitado não fica lento: ele cai, e leva junto o que não tinha relação.",cf:"Limite de concorrência por endpoint, <i>bulkhead</i> separando relatório de leitura simples, 429 com <code class=\"i\">Retry-After</code> em vez de fila infinita, e disjuntor para parar de bater na porta fechada. <b>Erro comum:</b> tratar proteção como assunto de segurança, e não de capacidade."}
-]},
-{g:"04",n:"Escalar escrita",s:"por que é mais difícil — e as quatro alavancas",c:"var(--orange)",cs:"var(--orange-soft)",items:[
- {t:"Escrita não tem réplica",x:"a assimetria que muda tudo",oq:"Leitura se resolve duplicando: réplica, cache, CDN. Escrita precisa ir ao dono do dado, virar durável e atualizar todo índice.",ps:"Entender por que a escada da leitura não serve aqui, e por que o teto chega muito mais cedo.",cf:"Cada escrita paga log de transação, atualização de índice, e — se houver replicação síncrona — a espera pela confirmação de outro nó. Duplicar o banco não multiplica a capacidade de escrita: multiplica o trabalho. <b>Erro comum:</b> propor réplica de leitura para um problema de escrita."},
- {t:"Sharding e partition key",x:"a chave é tudo",dg:"shard",oq:"Dividir os dados entre N bancos independentes; a partition key decide para qual deles cada escrita vai.",ps:"A única alavanca que realmente multiplica capacidade de escrita — se a chave distribuir bem.",cf:"Chave com valores concentrados (país, status, data de hoje) cria <i>hot shard</i>: um banco sufocado e os outros ociosos. <code class=\"i\">hash(user_id)</code> distribui; <code class=\"i\">país</code> não, quando 90% é Brasil. Bancos que nasceram distribuídos — Cassandra, DynamoDB, ClickHouse — fazem roteamento e rebalanceamento por você. <b>Erro comum:</b> shardar antes de esgotar índice, cache e réplica.",caso:"A pergunta que o entrevistador sempre faz é literalmente esta: 'qual seria a sua partition key, e por quê?'. Para analytics de eventos, <code class=\"i\">hash(user_id)</code> ou <code class=\"i\">hash(session_id)</code> distribuem; <code class=\"i\">timestamp</code> é a pior escolha possível — todo mundo escreve no shard de agora."},
- {t:"A fila é amortecedor",x:"absorve pico, não cria capacidade",dg:"fila",oq:"Um buffer entre quem produz e o banco: a aplicação publica e responde na hora, consumidores drenam no ritmo que o banco aguenta.",ps:"Sobreviver a pico sem dimensionar o sistema inteiro para o pior minuto do mês.",cf:"Funciona só se a <b>vazão média</b> do banco for maior que a <b>taxa média</b> de entrada. Se a média já não cabe, a fila cresce para sempre: o lag vira infinito e você trocou 'cair' por 'atrasar', que às vezes é pior. <b>Erro comum:</b> este exato — é onde mais candidato cai.",map:[["Mensageria","Confirms, ack, prefetch, DLQ e outbox estão detalhados lá — aqui a fila aparece só como alavanca de escala."]]},
- {t:"Batching",x:"troca latência por vazão",oq:"Agrupar N escritas numa transação só, pagando o pedágio de rede, parsing e log uma vez em vez de N.",ps:"A melhor relação custo-benefício em escrita massiva — ganho de ordem de grandeza com pouca complexidade.",cf:"Você espera juntar N registros ou X milissegundos antes de gravar. Para métrica, log e evento isso é irrelevante; para 'o usuário precisa ver agora', não serve. <b>Erro comum:</b> lote sem limite de tempo — em tráfego baixo o dado fica preso no buffer indefinidamente.",ex:"// 1.000 inserts isolados: overhead × 1.000\n// 1 batch de 1.000: overhead × 1\n\njdbc.batchUpdate(SQL, lote);  // flush por tamanho OU por tempo\n// sem o \"ou por tempo\", trafego baixo trava o dado no buffer"},
- {t:"Agregação na borda",x:"não mandar tudo para o centro",oq:"Servidores próximos ao usuário acumulam localmente e enviam apenas totais consolidados ao banco central.",ps:"Derrubar o volume que chega ao centro em ordens de grandeza, quando o evento bruto individual não precisa ser guardado.",cf:"Se a pergunta do negócio é 'quantas visualizações na última hora', não é preciso mandar 1 milhão de linhas — basta mandar o número. <b>Erro comum:</b> usar isso quando o evento bruto é necessário depois (auditoria, reprocessamento, análise nova). A agregação é irreversível: o que você jogou fora não volta.",caso:"1 milhão de eventos/s na entrada, soma local por segundo em cada borda, e o banco central recebe cerca de 100 escritas/s. É a diferença entre um cluster caríssimo e um banco comum."},
- {t:"A montagem do 1M/s",x:"as quatro alavancas juntas",oq:"Clientes → Kafka particionado (buffer e ordem por chave) → consumidores com batching de mil linhas → banco shardado ou colunar.",ps:"Ver que nenhuma alavanca sozinha resolve: cada uma ataca uma parte diferente do problema.",cf:"A fila absorve a irregularidade; o batching reduz o pedágio por linha; o sharding multiplica a capacidade; a agregação, quando aplicável, reduz o volume na origem. <b>Erro comum:</b> apresentar só uma delas e achar que respondeu."}
-]},
-{g:"05",n:"Existência em escala",s:"responder 'esse nome está livre?' para dois bilhões",c:"var(--pink)",cs:"var(--pink-soft)",items:[
- {t:"O ingênuo já é quase rápido",x:"o índice muda a ordem de grandeza",oq:"<code class=\"i\">SELECT 1 FROM users WHERE username = ? LIMIT 1</code> num índice único sobre 2 bilhões de linhas custa cerca de cinco saltos de árvore.",ps:"Desfazer a intuição errada de que 'procurar em 2 bilhões é lento'. Sem índice é varredura de minutos; com índice é sub-milissegundo.",cf:"A B-tree tem fan-out alto: 2 bilhões de chaves cabem em cerca de cinco níveis. O tamanho da tabela quase não muda a latência de um lookup por chave — é essa propriedade que sustenta quase todo sistema grande. <b>Erro comum:</b> propor arquitetura exótica para um problema que o índice resolve."},
- {t:"Bloom filter",x:"erra só para um lado",dg:"bloom",oq:"Vetor de bits mais k funções de hash. Responde 'com certeza não existe' ou 'talvez exista', usando uma fração da memória de um índice.",ps:"Evitar a ida ao banco no caso comum — um nome inventado qualquer está livre, e essa é a maioria das consultas.",cf:"Se algum dos k bits for 0, o valor nunca foi inserido: resposta definitiva, sem I/O. Se todos forem 1, pode ser falso positivo — aí sim consulta o índice. Para 2 bilhões de chaves a 1% de falso positivo, cerca de 2 a 3 GB de RAM, contra dezenas ou centenas de GB do índice. <b>Erro comum:</b> tratar o Bloom como fonte da verdade. Ele é barreira de economia; quem garante unicidade é o índice."},
- {t:"A verdade acontece no INSERT",x:"a checagem é só UX",oq:"Duas pessoas podem ver 'disponível' ao mesmo tempo. Quem desempata é a restrição única na gravação.",ps:"Não confundir a consulta otimista que alimenta a interface com a garantia de unicidade.",cf:"O <code class=\"i\">UNIQUE INDEX</code> deixa um passar e devolve violação ao outro, que vira a mensagem 'acabou de ser escolhido'. <b>Erro comum:</b> reservar o nome só pela checagem — a corrida deixa dois donos.",ex:"CREATE UNIQUE INDEX ix_users_username ON users (username);\n\nINSERT INTO users (username) VALUES (?);\n-- dois simultaneos: um passa, o outro leva violacao\n-- traduza a violacao em \"acabou de ser pego\", nao em 500"},
- {t:"Nomes quentes e sharding",x:"as duas camadas restantes",oq:"O cache guarda os usernames muito consultados; o sharding por <code class=\"i\">hash(username)</code> espalha os 2 bilhões entre nós.",ps:"Cobrir a repetição (cache) e o volume (shard) sem tocar na camada de verdade.",cf:"O roteador manda a consulta direto ao shard certo, e a busca continua sendo um lookup pequeno — agora paralelizável. <b>Erro comum:</b> cache sem invalidação no momento do INSERT: alguém registra o nome e o cache continua dizendo 'livre' por mais um TTL."}
-]},
-{g:"06",n:"Listar em escala",s:"paginar um milhão sem o custo crescer com a página",c:"var(--yellow)",cs:"var(--yellow-soft)",items:[
- {t:"OFFSET paga pelo que joga fora",x:"o custo cresce com a profundidade",dg:"keyset",oq:"<code class=\"i\">LIMIT 10 OFFSET 500000</code> faz o banco produzir 500.010 linhas ordenadas e descartar 500.000.",ps:"Entender por que a página 1 responde em milissegundos e a página 5.000 derruba o SLO.",cf:"O banco não tem como 'pular' sem gerar: ele precisa ordenar até chegar lá. O custo é linear na profundidade. <b>Erro comum:</b> medir a paginação só na primeira página e declarar que está rápida."},
- {t:"Keyset: a fronteira vira consulta",x:"custo constante em qualquer página",oq:"Em vez de dizer quantas linhas pular, você diz depois de qual item continuar — e o índice salta direto para lá.",ps:"Paginação com custo constante, independente de quão fundo o usuário está.",cf:"A comparação precisa ser em tupla, com desempate estável: <code class=\"i\">(criado_em, id) &lt; (?, ?)</code>. E o índice precisa ter as mesmas colunas na mesma ordem, senão o salto não acontece. Buscar N+1 linhas informa se existe próxima página sem um COUNT. <b>Erro comum:</b> ordenar só por data, que empata e faz item aparecer duas vezes ou sumir.",ex:"SELECT id, criado_em, total FROM pedido\n WHERE cliente_id = ?\n   AND (criado_em, id) < (?, ?)\n ORDER BY criado_em DESC, id DESC\n LIMIT 51;"},
- {t:"O cursor é contrato",x:"opaco, versionado, com erro nomeado",oq:"O cursor devolvido ao cliente é parte da API pública, com as mesmas obrigações de qualquer contrato.",ps:"Poder mudar a implementação depois sem quebrar quem já está paginando.",cf:"Opaco (base64 de um payload interno) para o cliente não construir cursor à mão; versionado para você evoluir o formato; com erros nomeados — cursor inválido, cursor expirado, ordenação incompatível. <b>Erro comum:</b> expor o valor cru da chave, o que congela a sua escolha de ordenação para sempre."},
- {t:"Enquanto você pagina, o mundo muda",x:"snapshot, watermark e export",oq:"Com inserções concorrentes, offset faz item pular ou repetir; keyset continua depois de uma identidade e não se perde.",ps:"Escolher a estratégia pela intenção: navegar, exportar ou reconciliar.",cf:"Quatro estratégias, quatro intenções: <b>offset</b> para telas com número de página e pouca profundidade; <b>keyset</b> para rolagem infinita e APIs; <b>snapshot ou watermark</b> quando a lista precisa ser estável durante toda a travessia; <b>export assíncrono</b> quando o volume não cabe numa requisição. <b>Erro comum:</b> usar paginação de tela para varrer a base inteira — isso é export, não paginação."}
-]},
-{g:"07",n:"Arquivos e tempo real",s:"tirar bytes da sua aplicação e escolher o canal certo",c:"var(--blue)",cs:"var(--blue-soft)",items:[
- {t:"O arquivo não passa pela sua API",x:"URL pré-assinada",oq:"A aplicação gera uma URL temporária e assinada; o cliente envia os bytes direto para o storage.",ps:"Tirar tráfego de arquivo do caminho da sua aplicação — ela deixa de ser gargalo de banda e de memória.",cf:"A aplicação só autoriza (chave gerada no servidor, tamanho máximo, tipo, prazo curto) e depois confirma por HEAD. Os bytes nunca a atravessam. <b>Erro comum:</b> validade longa demais, o que transforma a URL num acesso permanente para quem a copiar.",map:[["Conceitos de Backend","MinIO, multipart e o passo a passo do upload estão detalhados lá."],["Nuvem","Armazenamento de objetos sem depender de um provedor."]]},
- {t:"Multipart e a decisão por tamanho",x:"pedaço a pedaço, com retomada",oq:"O arquivo é dividido em partes enviadas separadamente e remontadas pelo storage no final.",ps:"Enviar arquivo grande com retomada por parte, paralelismo e sem segurar tudo em memória.",cf:"Uma régua honesta por tamanho: até alguns MB, upload direto resolve; acima disso, pré-assinada; acima de centenas de MB, multipart com retomada. Falhou uma parte, reenvia só ela. <b>Erro comum:</b> não abortar upload incompleto — as partes ficam ocupando espaço e sendo cobradas em silêncio."},
- {t:"Quarentena e evento do storage",x:"o que acontece depois do upload",oq:"O objeto chega num bucket de quarentena, dispara um evento, é verificado e só então promovido ao bucket de produção.",ps:"Não servir ao público um arquivo que ninguém olhou — e processar de forma assíncrona sem acoplar ao upload.",cf:"O evento de <i>object created</i> vira mensagem numa fila e o consumidor faz a verificação. <b>Erro comum:</b> supor que o evento chega exatamente uma vez — chega ao menos uma vez, então o consumidor precisa ser idempotente."},
- {t:"A escada do tempo real",x:"escolha pelo sentido do tráfego",dg:"tempo",oq:"Polling pergunta de novo; long polling segura a requisição; SSE é um canal do servidor para o cliente; WebSocket é bidirecional e persistente.",ps:"Escolher pelo sentido e pela frequência, não pela novidade.",cf:"Progresso, feed e notificação são só de ida: SSE resolve, é mais simples e passa em qualquer proxy HTTP. Chat e colaboração precisam de volta: WebSocket, e você herda reconexão, estado de conexão e um balanceador que entenda conexão longa. <b>Erro comum:</b> WebSocket para um caso que era notificação."},
- {t:"SOAP, REST, GraphQL e gRPC",x:"escolher pelo problema",oq:"Quatro estilos com contratos e custos diferentes: envelope XML com contrato rígido, recursos sobre HTTP, consulta moldada pelo cliente, e RPC binário sobre HTTP/2.",ps:"Ter um critério em vez de um gosto.",cf:"REST para API pública e cacheável; gRPC entre serviços internos com contrato forte e latência baixa; GraphQL quando clientes muito diferentes precisam de recortes diferentes do mesmo grafo — ao custo de cache e limite de profundidade. SOAP aparece em integração corporativa e bancária legada. <b>Erro comum:</b> GraphQL como padrão da casa e depois descobrir que perdeu o cache de borda.",map:[["Arquitetura","REST, gRPC e GraphQL pelo problema, e contratos com versionamento."]]}
-]},
-{g:"08",n:"Sobreviver à falha",s:"em rede, a única certeza é que uma parte vai cair",c:"var(--red)",cs:"var(--red-soft)",items:[
- {t:"Falha parcial",x:"os três casos indistinguíveis",dg:"falha",oq:"Quando uma chamada não responde, você não consegue saber se ela não chegou, se chegou e executou, ou se executou e a resposta se perdeu.",ps:"É o modo de falha que não existe em programa local e que define quase todo o resto do design distribuído.",cf:"Como os três são indistinguíveis de fora, o repetir precisa ser seguro — ou seja, idempotente. Sem isso, todo retry é uma aposta. <b>Erro comum:</b> tratar timeout como 'não aconteceu'. Timeout não é resposta: é ausência de resposta.",map:[["Arquitetura","Falha parcial, degradação graciosa e recuperação."],["Conceitos de Backend","Idempotency key: como tornar qualquer operação segura para repetir."]]},
- {t:"Timeout, retry e jitter",x:"e por que retry ingênuo piora",oq:"Todo I/O remoto precisa de prazo. Retry repete o que falhou, com espera crescente e um componente aleatório.",ps:"Absorver falha transitória sem transformar um soluço em avalanche.",cf:"Sem jitter, todos os clientes que falharam juntos voltam juntos — é a tempestade de retry que derruba o serviço que estava se recuperando. Limite o número de tentativas e só repita o que é idempotente. <b>Erro comum:</b> retry em cada camada: três camadas com três tentativas viram 27 chamadas.",ex:"espera = base × 2^tentativa × (0,5 + random()/2)\n// 100ms → ~200ms → ~400ms  (com jitter, espalhado)\n// teto de tentativas SEMPRE\n// e so repita operacao idempotente"},
- {t:"Disjuntor",x:"parar de bater na porta fechada",oq:"Depois de N falhas seguidas, o disjuntor abre e as chamadas falham imediatamente, sem nem tentar.",ps:"Impedir que uma dependência lenta consuma todas as suas threads e derrube o que não tinha relação com ela.",cf:"Três estados: fechado, aberto e meio-aberto — este último deixa uma chamada testar se o outro lado voltou. <b>Erro comum:</b> disjuntor sem timeout na chamada. Sem prazo, ele nunca conta falha: só acumula thread presa, que é exatamente o que ele deveria evitar."},
- {t:"Backpressure e degradação",x:"recusar cedo, responder pior",oq:"Backpressure é recusar trabalho quando não há capacidade. Degradação graciosa é entregar uma resposta pior em vez de nenhuma.",ps:"Escolher conscientemente o que sacrificar quando não dá para atender tudo.",cf:"Aceitar tudo e cair atende zero pessoas; recusar 10% atende 90%. Degradar é servir o dado do cache mesmo velho, esconder a seção de recomendações, desligar o relatório pesado. <b>Erro comum:</b> fila interna sem teto, que troca uma falha rápida e clara por uma lenta e confusa."},
- {t:"Balanceador e health check",x:"quem sai da rotação e quando",oq:"O balanceador distribui e, por saúde, tira de rotação quem não responde.",ps:"Entender que a saúde que importa é 'posso receber tráfego agora', não 'o processo está vivo'.",cf:"Separe as duas perguntas: <i>readiness</i> decide rotação e pode falhar temporariamente sem reiniciar nada; <i>liveness</i> decide reinício e deve testar só o próprio processo. <b>Erro comum:</b> liveness que testa o banco — o banco pisca, todas as instâncias reiniciam ao mesmo tempo e você derruba o sistema inteiro por conta própria.",map:[["Docker e Kubernetes","Probes, rollout e graceful shutdown no detalhe."]]}
-]},
-{g:"09",n:"Como aprender de verdade",s:"vídeo dá o mapa, doc dá a precisão, lab fixa",c:"var(--amber)",cs:"var(--amber-soft)",items:[
- {t:"O ciclo",x:"e a volta que quase ninguém faz",dg:"ciclo",oq:"Ler aqui → ver vídeo → ler a documentação oficial → fazer o laboratório → escrever a nota do que quebrou → repetir.",ps:"System Design é a área em que é mais fácil confundir reconhecer com saber: o desenho parece claro, e você não conseguiria defendê-lo sob pergunta.",cf:"A volta do ciclo é a parte que fixa: escrever, com as suas palavras, o que quebrou e por quê. <b>Erro comum:</b> parar no vídeo. Vídeo mostra o desenho pronto e esconde as dez decisões que levaram até ele."},
- {t:"Canais e cursos em português",x:"para este assunto",oq:"Fontes em PT-BR que tratam de escala, dados e sistemas distribuídos com profundidade.",ps:"Ter um mapa em português antes de atravessar a documentação em inglês.",cf:"<b>Rodrigo Branas</b> e <b>Fabio Akita</b> cobrem arquitetura e sistemas com profundidade incomum em português. <b>Full Cycle</b> e <b>Código Fonte TV</b> têm material de sistemas distribuídos e mensageria. Em inglês, o canal <b>ByteByteGo</b> (do autor do System Design Interview) é o complemento visual mais direto. <b>Regra:</b> nunca cite um número de vídeo sem conferir na documentação — a metade dos números que circulam está desatualizada."},
- {t:"Como pesquisar",x:"o nome exato, na fonte certa",oq:"Buscar pelo nome do mecanismo, restrito à documentação oficial, em vez de pelo sintoma.",ps:"Metade da competência é saber o nome da coisa. Com ele, a resposta vem em minutos.",cf:"Para banco, rode <code class=\"i\">EXPLAIN ANALYZE</code> antes de pesquisar — o plano diz o nome do problema. Para escala, procure pelo mecanismo (<i>keyset pagination</i>, <i>hot partition</i>, <i>cache stampede</i>), não pelo sintoma ('API lenta').",ex:"site:postgresql.org index-only scan covering\n\"keyset pagination\" tuple comparison postgres\n\"hot partition\" dynamodb partition key design\ncache stampede thundering herd mitigation"},
- {t:"Praticar: os quatro casos",x:"o laboratório que fecha o documento",oq:"Reproduzir localmente os quatro problemas deste documento, com dados sintéticos e medição.",ps:"Você não precisa de 10k RPS reais para aprender: precisa de uma curva que mude quando você muda o desenho.",cf:"(1) Gere 1 milhão de pedidos e compare OFFSET 500000 com keyset, medindo a diferença; (2) dispare carga concorrente e observe a fila do pool antes e depois de reduzir queries por request; (3) implemente o Bloom filter na frente de um índice único e meça quantas idas ao banco desapareceram; (4) monte o consumidor com batching e compare a vazão com inserts isolados. Todos rodam num PostgreSQL em container.",ex:"# a curva que prova a paginacao\nfor p in 1 10 100 1000 5000; do\n  psql -c \"EXPLAIN ANALYZE SELECT * FROM pedido\n           ORDER BY criado_em DESC, id DESC\n           LIMIT 10 OFFSET $((p*10));\"\ndone\n# offset: o tempo cresce. keyset: o tempo nao muda.",star:true}
-]}
-,
-{
-    g: "10",
-    n: "8 Passos & Contas",
-    s: "o framework das entrevistas e a matemática das restrições",
-    c: "var(--teal)",
-    cs: "var(--teal-soft)",
-    items: [
-      {
-        t: "Os 8 passos da entrevista",
-        x: "o roteiro metódico completo",
-        oq: "Roteiro sequencial de condução de System Design: escopo, estimativas, arquitetura HLD, trade-offs, dados, APIs, resiliência e observabilidade.",
-        ps: "Garantir que a solução ataque os requisitos reais e não caia na armadilha de desenhar caixas cedo demais.",
-        cf: "Gaste os primeiros 10 minutos exclusivamente em requisitos funcionais/não-funcionais e estimativas antes de desenhar qualquer componente."
-      },
-      {
-        t: "Teorema PACELC",
-        x: "latência vs consistência no dia a dia",
-        oq: "Extensão moderna do Teorema CAP: Se há Partição (P), escolha entre Disponibilidade (A) ou Consistência (C); Senão (Else), escolha entre Latência (L) ou Consistência (C).",
-        ps: "Decidir o comportamento do sistema durante 99.9% do tempo de operação normal sem partição de rede.",
-        cf: "Bancos como DynamoDB e Cassandra optam por PA/EL (baixa latência sob operação normal); MongoDB e Spanner priorizam consistência PC/EC."
-      },
-      {
-        t: "Latências de Jeff Dean",
-        x: "as ordens de grandeza da física",
-        oq: "Tabela referencial de latências: L1 (0.5ns), RAM (100ns), SSD (100µs), LAN Datacenter (0.5ms), HDD (10ms), WAN (120ms).",
-        ps: "Validar em segundos se um desenho arquitetural é fisicamente viável para o SLO exigido.",
-        cf: "RAM é ~1000x mais rápida que SSD e ~100.000x mais rápida que disco mecânico. Toda proposta arquitetural deve somar os saltos de rede e I/O."
-      },
-      {
-        t: "Fórmulas de guardanapo",
-        x: "o truque dos 100k segundos",
-        oq: "Regras de conversão rápida: 1 dia ≈ 100.000 segundos; QPS = requisições/dia ÷ 100.000; regra 80/20 de RAM para cache de dados diários.",
-        ps: "Calcular capacidade de tráfego, armazenamento de 5 anos e tamanho de cluster sem calculadora.",
-        cf: "100 milhões de requisições/dia equivalem a 1.000 QPS médios e 2.000 a 3.000 QPS de pico."
-      }
-    ]
-  },
-  {
-    g: "11",
-    n: "17 Sistemas do Mundo Real",
-    s: "arquitetura, fluxo e trade-offs dos casos canônicos",
-    c: "var(--violet)",
-    cs: "var(--violet-s)",
-    items: [
-      {
-        t: "URL Shortener & KGS",
-        x: "Base62 e pré-geração de chaves",
-        oq: "Encurtar URLs com chaves Base62 de 7 caracteres (3.5 trilhões de combinações) e Key Generation Service (KGS).",
-        ps: "Evitar colisões de hash e locks de escrita em alta concorrência.",
-        cf: "HTTP 301 cacheia no browser (alivia servidor); HTTP 302/307 força passagem pelo servidor (permite métricas e analytics)."
-      },
-      {
-        t: "WhatsApp & Presence",
-        x: "WebSockets e Heartbeat no Redis",
-        oq: "Mensageria bidirecional via WebSockets com roteamento entre servidores via Kafka/Redis e presença por heartbeat TTL.",
-        ps: "Manter milhões de conexões abertas com entrega sub-segundo e indicação de online/offline.",
-        cf: "Armazenamento local no SQLite do aparelho para fluidez imediata e Cassandra particionado por chat_id na nuvem."
-      },
-      {
-        t: "Uber & Geohash",
-        x: "telemetria e matching geoespacial",
-        oq: "Ingestão de GPS a cada 4s indexada via Geohash, QuadTree ou Google S2/H3 com Redis Geospatial.",
-        ps: "Localizar motoristas livres em raio de 3km em milissegundos sem esgotar banco relacional.",
-        cf: "Matching engine aplica lock distribuído temporário de 15 segundos para evitar corrida entre motoristas."
-      },
-      {
-        t: "Netflix & ABR Video",
-        x: "chunking e CDN descentralizada",
-        oq: "Transcoding em chunks de 4 a 10s em múltiplos formatos (HLS/DASH) servidos via Open Connect CDN nos ISPs.",
-        ps: "Evitar buffering em redes instáveis adaptando a resolução dinamicamente.",
-        cf: "Adaptive Bitrate (ABR) no player do usuário reduz de 1080p para 720p se a banda oscilar sem pausar a reprodução."
-      },
-      {
-        t: "Google Maps & Contraction",
-        x: "map tiles e grafos rodoviários",
-        oq: "Renderização por azulejos vetoriais (Map Tiles) em CDN e roteamento por Contraction Hierarchies em grafos de transporte.",
-        ps: "Calcular rotas de milhares de quilômetros em menos de 5 milissegundos.",
-        cf: "Contraction Hierarchies pré-calcula atalhos em rodovias principais; Flink ajusta pesos com tráfego em tempo real."
-      },
-      {
-        t: "Search & Inverted Index",
-        x: "URL frontier e busca invertida",
-        oq: "Crawler com filas de prioridade e politeness delay, deduplicação SimHash e Índice Invertido distribuído.",
-        ps: "Varrer a web sem derrubar alvos e buscar termos em milissegundos.",
-        cf: "BM25 avalia frequência de termos; PageRank avalia autoridade; busca por interseção de posting lists."
-      },
-      {
-        t: "Flash Sale & Redlock",
-        x: "estoque atômico e padrão Saga",
-        oq: "Prevenção de sobrevenda com scripts Lua atômicos no Redis, Redlock e filas virtuais de espera na borda.",
-        ps: "Vender 1.000 ingressos para 100.000 compradores simultâneos com zero inconsistência.",
-        cf: "Padrão Saga orquestrado com chaves de idempotência garante reserva temporária, cobrança e baixa segura."
-      },
-      {
-        t: "Twitter & Hybrid Fanout",
-        x: "push para comuns, pull para celebridades",
-        oq: "Arquitetura híbrida de feed: Fanout-on-Write (Push) para usuários normais e Fanout-on-Read (Pull) para perfis com mais de 25k seguidores.",
-        ps: "Evitar o Fanout Bomb de 100 milhões de escritas quando celebridades postam.",
-        cf: "Timeline cacheada em Redis Sorted Sets (ZSet) ordenada por timestamp do post."
-      },
-      {
-        t: "Notificações & Multi-Canal",
-        x: "prioridade e deduplicação",
-        oq: "Gateway multi-canal (APNs, FCM, SMS, Email) com filas de prioridade e deduplicação por sliding window.",
-        ps: "Garantir envio prioritário de 2FA sem que mensagens promocionais travem o sistema.",
-        cf: "Redis sliding window impede envio repetido do mesmo alerta em caso de retries."
-      },
-      {
-        t: "Drive & Block Deduplication",
-        x: "chunks de 4MB e delta-sync",
-        oq: "Divisão de arquivos em blocos de 4MB com hash SHA-256 e sincronização apenas de blocos modificados (Delta-Sync).",
-        ps: "Economizar petabytes de storage em arquivos compartilhados e gigabytes de tráfego de rede.",
-        cf: "Metadados (permissões, pastas) no banco relacional/Spanner; blocos brutos imutáveis no S3/Object Storage."
-      },
-      {
-        t: "Rate Limiter Distribuído",
-        x: "Token Bucket e Sliding Window",
-        oq: "Controle de taxa de requisições usando Token Bucket ou Sliding Window Counter implementado com scripts Lua no Redis.",
-        ps: "Proteger serviços contra abuso e sobrecarga com execução atômica sem race conditions.",
-        cf: "Retorna cabeçalhos padronizados X-RateLimit e código HTTP 429 Too Many Requests com Retry-After."
-      },
-      {
-        t: "Cache Distribuído & Anticatástrofe",
-        x: "consistent hashing e stampede",
-        oq: "Cluster de cache com Consistent Hashing (Vnodes) e proteção contra Cache Stampede, Avalanche e Penetration.",
-        ps: "Garantir resiliência máxima na camada de cache em memória.",
-        cf: "XFetch / Mutex lock impede thundering herd; Jitter no TTL previne avalanche; Bloom Filter barra penetration."
-      },
-      {
-        t: "Autocomplete & Trie Top-K",
-        x: "árvore de prefixos com Top-5 pré-salvo",
-        oq: "Estrutura Trie onde cada nó armazena pré-calculada a lista dos Top-5 termos mais frequentes, com consulta O(p).",
-        ps: "Devolver sugestões de pesquisa em menos de 30 milissegundos enquanto o usuário digita.",
-        cf: "Pipeline offline em Apache Spark/MapReduce recalcula as frequências e reconstrói o Trie periodicamente."
-      },
-      {
-        t: "Métricas & Gorilla TSDB",
-        x: "compressão delta-of-delta e rollup",
-        oq: "Ingestão massiva de telemetria em Time-Series Database com compressão Gorilla (1.37 bytes/amostra) e downsampling.",
-        ps: "Monitorar milhares de microsserviços sem explodir custos de armazenamento.",
-        cf: "Dados de 1s guardados por 7 dias; agregados de 5m por 30 dias; médias de 1h retidas por 1 ano."
-      },
-      {
-        t: "Stripe & Double-Entry Ledger",
-        x: "partida dobrada e idempotência",
-        oq: "Contabilidade de partida dobrada (débito + crédito = 0) em ledger append-only imutável com chaves de idempotência.",
-        ps: "Garantir integridade financeira absoluta: nenhum centavo duplicado ou perdido em quedas de rede.",
-        cf: "Chave de idempotência no header HTTP e reconciliação diária assíncrona com adquirentes e bancos."
-      },
-      {
-        t: "YouTube & Transcoding DAG",
-        x: "upload resumível, GOP slicing e Vitess",
-        oq: "Ingestão massiva de vídeo UGC com upload resumível HTTP PATCH, pipeline de transcodificação DAG em chunks GOP e sharding Vitess.",
-        ps: "Processar 500 horas de vídeo enviadas por minuto sem gargalo de transcodificação e tolerando instabilidades de rede.",
-        cf: "Fatiamento por GOP permite transcodificar centenas de chunks em paralelo; contagem de views via Redis HyperLogLog com flush em lote."
-      },
-      {
-        t: "Spotify & Audio Prefetch",
-        x: "start sub-200ms e Spotify Connect",
-        oq: "Streaming de música com prefetch dos primeiros 10s, cache local criptografado DRM, Cassandra para playlists e Spotify Connect via WebSockets.",
-        ps: "Iniciar áudio instantaneamente ao clicar e controlar playback sincronizado entre múltiplos dispositivos (celular, desktop, TV).",
-        cf: "Prefetching de 10 segundos mascara a latência de rede; WebSockets com backend de eventos garantem troca de dispositivo sem corte."
-      }
-    ]
-  },
-  {
-    g: "12",
-    n: "System Design para IA (2026)",
-    s: "model serving, RAG híbrido, MCP e agentes em escala",
-    c: "var(--cyan)",
-    cs: "var(--arc-soft)",
-    items: [
-      {
-        t: "Inference Serving & PagedAttention",
-        x: "continuous batching e gestão de VRAM",
-        oq: "Arquitetura de model serving para LLMs dominando o desbalanço entre fase Prefill (compute-bound) e Decode (memory-bound).",
-        ps: "Maximizar throughput de tokens e minimizar TTFT em clusters de GPU de alto custo.",
-        cf: "Continuous batching inclui novas requisições a cada token; PagedAttention divide KV-Cache em páginas virtuais não contíguas."
-      },
-      {
-        t: "Enterprise RAG & Hybrid Search",
-        x: "BM25 + Dense Vectors + Reranking",
-        oq: "Pipeline RAG combinando busca léxica exata (BM25) com busca vetorial densa (HNSW) via RRF e Cross-Encoder Reranking.",
-        ps: "Eliminar alucinações e permitir busca precisa de termos exatos (códigos, IDs, datas) e semântica.",
-        cf: "Reranker avalia os 100 melhores chunks e seleciona os 5 mais relevantes para o prompt final da LLM."
-      },
-      {
-        t: "Protocolo MCP (Model Context Protocol)",
-        x: "o padrão aberto de conexão com IA",
-        oq: "Protocolo aberto Client-Host-Server para conectar modelos de linguagem a ferramentas, dados corporativos e prompts.",
-        ps: "Desacoplar os modelos e agentes das integrações de sistemas de produção com schemas JSON padronizados.",
-        cf: "MCP Servers expõem recursos, ferramentas e prompts de forma segura com controle estrito de permissões pelo Host."
-      },
-      {
-        t: "Semantic Cache & AI Agents",
-        x: "ReAct loop e economia radical de tokens",
-        oq: "Agentes autônomos com loop ReAct e guardrails, acelerados por Prompt Caching na GPU e Semantic Caching no Redis Vector.",
-        ps: "Reduzir custos de API em 40% a 80% e responder perguntas repetidas com latência instantânea.",
-        cf: "Se uma pergunta tem similaridade de cosseno > 0.95 com uma anterior, responde direto do cache sem chamar a LLM."
-      }
-    ]
-  }
-];
-
-
-/* ---------- render ---------- */
-
-
-/* ---------- render ---------- */
-/* ================== NAVEGAÇÃO (trilha + conteúdo) ================== */
-var nav=document.getElementById("nav");
-var navMap={};
-function navHead(txt){var a=document.createElement("a");a.className="sec";a.style.color="var(--soft)";a.style.marginTop="18px";a.style.fontSize=".68rem";a.textContent=txt;nav.appendChild(a);}
-/* ================== TRILHA ================== */
-var flat=[];T.forEach(function(g){g.items.forEach(function(it){it._g=g;flat.push(it);});});
-flat.forEach(function(it,i){it._i=i;it._id=it.t.toLowerCase().replace(/[^a-z0-9]+/g,'-');});
-var KEYT="system-design-completo-CL-trilha-v1";
-var doneT={};try{doneT=JSON.parse(localStorage.getItem(KEYT)||"{}");}catch(e){}
-var track=document.getElementById("track"),lg=document.getElementById("lg");
-navHead("A trilha · 12 marcos");
-T.forEach(function(g,gi){
-  var sec=document.createElement("section");
-  sec.className="grp "+(gi%2===0?"l":"r");sec.id="g"+g.g;
-  sec.style.setProperty("--gc",g.c);sec.style.setProperty("--gs",g.cs);
-  var ms=document.createElement("div");ms.className="milestone";
-  ms.innerHTML='<span class="n">'+g.g+'</span><h2>'+g.n+'</h2><small>'+g.s+'</small>';
-  var box=document.createElement("div");box.className="cluster";
-  g.items.forEach(function(it){
-    var b=document.createElement("button");b.className="node";b.type="button";b.dataset.i=it._i;
-    b.innerHTML='<b>'+it.t+'</b><span>'+it.x+'</span>';
-    b.addEventListener("click",function(){open(it._i);});
-    box.appendChild(b);
-  });
-  sec.appendChild(box);sec.appendChild(ms);track.appendChild(sec);
-  var s=document.createElement("span");s.innerHTML='<b style="background:'+g.c+'"></b>'+g.n;lg.appendChild(s);
-  var a=document.createElement("a");a.className="sec";a.href="#g"+g.g;a.innerHTML="<b>"+g.g+"</b>"+g.n;nav.appendChild(a);
-  navMap["g"+g.g]=a;
-});
-var fim=document.createElement("div");fim.className="trail-end";
-fim.innerHTML='<span>fim da trilha ↓ agora o conteúdo</span>';
-track.appendChild(fim);
-/* ---------- painel ---------- */
-var panel=document.getElementById("panel"),scrim=document.getElementById("scrim"),cur=-1;
-function open(i){
-  cur=i;var it=flat[i];
-  panel.style.setProperty("--pc",it._g.c);
-  document.getElementById("pTag").textContent=it._g.g+" · "+it._g.n;
-  document.getElementById("pTitle").textContent=it.t;
-  document.getElementById("pSub").textContent=it.x;
-  var h='';
-  h+='<div class="blk"><h4>O que é</h4><p>'+it.oq+'</p></div>';
-  h+='<div class="blk"><h4>Para que serve</h4><p>'+it.ps+'</p></div>';
-  h+='<div class="blk"><h4>Como funciona</h4><p>'+it.cf+'</p></div>';
-  if(it.caso)h+='<div class="blk"><h4>No caso concreto</h4><p>'+it.caso+'</p></div>';
-  if(it.map)h+='<div class="blk"><h4>Onde a teoria mora</h4><table class="vmap"><tbody>'+it.map.map(function(r){return '<tr><td class="vp">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</tbody></table></div>';
-  if(it.dg&&DG[it.dg])h+='<div class="blk"><h4>Visual</h4>'+DG[it.dg]+'</div>';
-  if(it.ex)h+='<div class="blk"><h4>Exemplo</h4><pre><code>'+hlCode(it.ex)+'</code></pre></div>';
-  document.getElementById("pBody").innerHTML=h;
-  document.getElementById("pBody").scrollTop=0;
-  syncMark();
-  panel.classList.add("on");scrim.classList.add("on");
-  document.getElementById("pX").focus();
-}
-function hlCode(code){
-  var e=code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  e=e.replace(/(\/\/[^\n]*|#[^\n]*|--[^\n]*)/g,'<span class="c">$1</span>');
-  e=e.replace(/"([^"\n]*)"/g,'<span class="s">"$1"</span>');
-  e=e.replace(/\b(class|interface|record|enum|new|return|static|final|void|try|catch|finally|throw|throws|if|else|for|while|switch|case|public|private|protected|var|implements|extends|import|SELECT|FROM|WHERE|AND|OR|ORDER|BY|LIMIT|INSERT|INTO|VALUES|UPDATE|SET|CREATE|INDEX|UNIQUE|EXPLAIN|ANALYZE)\b/g,'<span class="k">$1</span>');
-  e=e.replace(/\b(int|long|double|boolean|String|List|Map|Set|Optional|BigDecimal|LocalDate|Duration|Instant|Page|Slice)\b/g,'<span class="t">$1</span>');
-  e=e.replace(/(@\w+)/g,'<span class="d">$1</span>');
-  return e;
-}
-function closeP(){panel.classList.remove("on");scrim.classList.remove("on");}
-document.getElementById("pX").addEventListener("click",closeP);
-scrim.addEventListener("click",closeP);
-document.addEventListener("keydown",function(e){
-  if(e.key==="Escape")closeP();
-  if(!panel.classList.contains("on"))return;
-  if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);
-});
-function go(d){var n=cur+d;if(n>=0&&n<flat.length)open(n);}
-document.getElementById("pNext").addEventListener("click",function(){go(1);});
-document.getElementById("pPrev").addEventListener("click",function(){go(-1);});
-var mark=document.getElementById("pMark");
-function syncMark(){
-  var on=!!doneT[flat[cur]._id];
-  mark.classList.toggle("is",on);
-  mark.textContent=on?"✓ estudado":"marcar estudado";
-}
-mark.addEventListener("click",function(){
-  var id=flat[cur]._id;
-  if(doneT[id])delete doneT[id];else doneT[id]=1;
-  localStorage.setItem(KEYT,JSON.stringify(doneT));
-  syncMark();paint();
-});
-/* ================== CONTEÚDO (tópicos profundos) ================== */
-var parts=[].slice.call(document.querySelectorAll("section.part"));
-var entries=[];
-navHead("O conteúdo · 12 partes");
-parts.forEach(function(sec){
-  var num=sec.querySelector(".ph .num").textContent.trim();
-  var h2=sec.querySelector(".ph h2").textContent;
-  var a=document.createElement("a");a.className="sec";a.href="#"+sec.id;a.innerHTML="<b>"+num+"</b>"+h2;
-  nav.appendChild(a);entries.push({a:a,el:sec,sec:true});
-  sec.querySelectorAll("article.topic").forEach(function(t){
-    var title=t.querySelector("h3").textContent.replace(/\s+/g," ").trim();
-    var la=document.createElement("a");la.className="top";la.href="#"+t.id;la.dataset.k=t.id;la.textContent=title;
-    nav.appendChild(la);entries.push({a:la,el:t,sec:false});
-  });
-});
-var KEYM="system-design-completo-CL-conteudo-v1";
-var doneM={};try{doneM=JSON.parse(localStorage.getItem(KEYM)||"{}");}catch(e){}
-var botoes=[].slice.call(document.querySelectorAll(".done"));
-botoes.forEach(function(b){
-  b.addEventListener("click",function(){
-    var k=b.dataset.k;
-    if(doneM[k])delete doneM[k];else doneM[k]=1;
-    localStorage.setItem(KEYM,JSON.stringify(doneM));paint();
-  });
-});
-/* ================== PROGRESSO COMBINADO ================== */
-function paint(){
-  var n=0;
-  document.querySelectorAll(".node").forEach(function(b){
-    var it=flat[+b.dataset.i];var on=!!doneT[it._id];
-    b.classList.toggle("done",on);if(on)n++;
-  });
-  var m=0;
-  botoes.forEach(function(b){
-    var k=b.dataset.k,on=!!doneM[k];
-    b.classList.toggle("is",on);
-    b.textContent=on?"✓ dominado":"marcar dominado";
-    var la=nav.querySelector('a[data-k="'+k+'"]');
-    if(la)la.classList.toggle("ok",on);
-    if(on)m++;
-  });
-  var tot=flat.length+botoes.length,fez=n+m;
-  var pct=tot?Math.round(fez/tot*100):0;
-  document.getElementById("rdone").textContent=fez+" de "+tot;
-  document.getElementById("rsub").textContent=n+" nós · "+m+" tópicos";
-  document.getElementById("rpct").textContent=pct+"%";
-  document.getElementById("ring").style.setProperty("--deg",(pct*3.6)+"deg");
-}
-document.getElementById("reset").addEventListener("click",function(){
-  if(!confirm("Zerar TODO o progresso (trilha e conteúdo)?"))return;
-  doneT={};doneM={};
-  localStorage.setItem(KEYT,"{}");localStorage.setItem(KEYM,"{}");
-  paint();if(cur>=0)syncMark();
-});
-/* ================== SCROLLSPY ================== */
-function onScroll(){
-  var y=window.scrollY+140,c=null,i;
-  for(i=0;i<entries.length;i++){ if(!entries[i].sec&&entries[i].el.offsetTop<=y) c=entries[i]; }
-  entries.forEach(function(e){ if(!e.sec) e.a.classList.toggle("active",e===c); });
-  var h=document.body.scrollHeight-window.innerHeight;
-  document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
-  document.getElementById("up").classList.toggle("on",window.scrollY>700);
-}
-document.addEventListener("scroll",onScroll,{passive:true});
-document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
-document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
-/* ================== BUSCA (nós + tópicos) ================== */
-var q=document.getElementById("q");
-q.addEventListener("input",function(){
-  var v=q.value.trim().toLowerCase(),vis=0;
-  document.querySelectorAll(".node").forEach(function(b){
-    var it=flat[+b.dataset.i];
-    var txt=(it.t+" "+it.x+" "+it.oq+" "+it.ps+" "+it.cf+" "+(it.caso||"")).toLowerCase();
-    var hit=v&&txt.indexOf(v)>-1;
-    b.classList.toggle("hit",!!hit);
-    b.classList.toggle("dim",!!v&&!hit);
-    if(hit)vis++;
-  });
-  document.querySelectorAll(".grp").forEach(function(g){
-    if(!v){g.classList.remove("hide");return;}
-    g.classList.toggle("hide",!g.querySelector(".node.hit"));
-  });
-  document.querySelectorAll("article.topic").forEach(function(t){
-    var hit=!v||t.textContent.toLowerCase().indexOf(v)>-1;
-    t.classList.toggle("hide",!hit);
-    var la=nav.querySelector('a[data-k="'+t.id+'"]');
-    if(la)la.classList.toggle("hide",!hit);
-    if(hit&&v)vis++;
-  });
-  parts.forEach(function(sec){
-    var algum=sec.querySelector("article.topic:not(.hide)");
-    sec.style.display=algum?"":"none";
-    var sa=nav.querySelector('a.sec[href="#'+sec.id+'"]');
-    if(sa)sa.classList.toggle("hide",!algum);
-  });
-  document.getElementById("nores").classList.toggle("on",!!v&&vis===0);
-});
-/* ================== REALCE DOS BLOCOS DE CÓDIGO ================== */
-function hl(el){
-  var e=el.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  var store=[];
-  function keep(cls,txt){store.push('<span class="'+cls+'">'+txt+'</span>');return "§"+(store.length-1)+"§";}
-  e=e.replace(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|--[^\n]*|#[^\n]*)/g,function(m){return keep("c",m);});
-  e=e.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g,function(m){return keep("s",m);});
-  e=e.replace(/(@[A-Za-z_]\w*)/g,function(m){return keep("a",m);});
-  e=e.replace(/\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|record|return|sealed|permits|short|static|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while|when|yield|true|false|null|SELECT|FROM|WHERE|AND|OR|INSERT|INTO|VALUES|UPDATE|SET|JOIN|ON|ORDER|BY|LIMIT|OFFSET|BEGIN|COMMIT|ROLLBACK|CREATE|INDEX|UNIQUE|EXPLAIN|ANALYZE|FOR|DESC|ASC|WITH|AS|GROUP|HAVING|PARTITION)\b/g,'<span class="k">$1</span>');
-  e=e.replace(/\b([A-Z][A-Za-z0-9_]*)\b/g,'<span class="t">$1</span>');
-  e=e.replace(/\b(\d[\d_]*)\b/g,'<span class="n">$1</span>');
-  e=e.replace(/§(\d+)§/g,function(_,i){return store[+i];});
-  el.innerHTML=e;
-}
-document.querySelectorAll("section.part pre code").forEach(hl);
-paint();onScroll();
-/* ================== MODO TESTE (retrieval practice) ================== */
-(function(){
- var RK="system-design-completo-CL-rev-v1";
- var rev={};try{rev=JSON.parse(localStorage.getItem(RK)||"{}");}catch(e){}
- var test=false,revealed=false;
- var P=document.getElementById("panel"),B=document.getElementById("pBody");
- var mB=document.getElementById("mode"),rB=document.getElementById("review");
- var ok=document.getElementById("gOk"),no=document.getElementById("gNo");
- var _open=open;
- open=function(i){_open(i);after(flat[i]);};
- function after(it){
-  revealed=false;P.classList.toggle("test",test);P.classList.remove("revealed");
-  if(test){
-   var g=document.createElement("div");g.className="gate";
-   g.innerHTML='<div class="gate-in"><span class="ghint">tente explicar antes de ver</span><h5></h5><em></em><button class="reveal-btn" type="button">revelar resposta &#9656;</button></div>';
-   g.querySelector("h5").textContent=it.t;g.querySelector("em").textContent=it.x||"";
-   g.querySelector(".reveal-btn").addEventListener("click",reveal);
-   B.insertBefore(g,B.firstChild);
-  }
-  grade();
- }
- function reveal(){revealed=true;P.classList.add("revealed");grade();B.scrollTop=0;}
- function grade(){var s=test&&revealed;ok.hidden=!s;no.hidden=!s;}
- function cid(){return(cur>=0)?flat[cur]._id:null;}
- function save(){localStorage.setItem(RK,JSON.stringify(rev));pr();}
- ok.addEventListener("click",function(){var id=cid();if(id){delete rev[id];save();}go(1);});
- no.addEventListener("click",function(){var id=cid();if(id){rev[id]=1;save();}go(1);});
- mB.addEventListener("click",function(){
-  test=!test;mB.textContent=test?"🎯 teste":"📖 estudo";mB.classList.toggle("on",test);
-  if(P.classList.contains("on")&&cur>=0)open(cur);
- });
- rB.addEventListener("click",function(){
-  var k=Object.keys(rev);if(!k.length)return;
-  if(!test){test=true;mB.textContent="🎯 teste";mB.classList.add("on");}
-  for(var i=0;i<flat.length;i++){if(rev[flat[i]._id]){open(i);break;}}
- });
- function pr(){
-  var n=Object.keys(rev).length;rB.hidden=n===0;rB.textContent="🎯 revisar ("+n+")";
-  document.querySelectorAll(".node").forEach(function(b){b.classList.toggle("torev",!!rev[flat[+b.dataset.i]._id]);});
- }
- pr();
-})();
-
-
-</script>
+<script defer src="../assets/js/system-design.inline.js"></script>
 <style>
 /* ===== camada de animação dos diagramas (.dg) =====
    O estado "escondido" depende da classe .dganim, que o script só adiciona
@@ -7052,112 +6417,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   ::view-transition-old(root),::view-transition-new(root){animation:none}
 }
 </style>
-<script>
-(function(){
-  if(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  if(!("IntersectionObserver" in window))return;
-  document.documentElement.classList.add("dganim");
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){
-    if(e.isIntersecting){e.target.classList.add("in");dispara(e.target);io.unobserve(e.target)}
-  })},{threshold:.18,rootMargin:"0px 0px -6% 0px"});
-  function pt(p,l){var o=p.getPointAtLength(l);return [o.x,o.y]}
-  function segs(f){
-    var arr=[].slice.call(f.querySelectorAll("svg path.l,svg path.lt,svg path.lb,svg path.lr,svg path.ln"));
-    return arr.map(function(p){
-      try{
-        var t=p.getTotalLength(); if(!t||t<12)return null;
-        var b=p.getBBox(); var a=pt(p,0),z=pt(p,t);
-        return {p:p,t:t,x:b.x,y:(a[1]+z[1])/2,a:a,z:z};
-      }catch(_){return null}
-    }).filter(Boolean);
-  }
-  function faixas(ss){
-    var out=[];
-    ss.slice().sort(function(a,b){return a.y-b.y}).forEach(function(s){
-      for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-s.y)<34){out[i].itens.push(s);return} }
-      out.push({y:s.y,itens:[s]});
-    });
-    return out.filter(function(g){return g.itens.length>=2})
-              .sort(function(a,b){return b.itens.length-a.itens.length}).slice(0,3);
-  }
-  function traco(itens){
-    itens.sort(function(a,b){return a.x-b.x});
-    var d="",n=0;
-    itens.forEach(function(s){
-      var N=Math.max(2,Math.min(14,Math.round(s.t/14)));
-      for(var i=0;i<=N;i++){ var q=pt(s.p,s.t*i/N); d+=(n++?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)+" "}
-    });
-    return n>1?d:null;
-  }
-  function fio(f){
-    if(f.querySelector(".pulse"))return;
-    var svg=f.querySelector("svg"); if(!svg)return;
-    var ss=segs(f); if(ss.length<2)return;
-    var ciclo=ss.some(function(s){return s.a[0]-s.z[0]>80});
-    var gs=faixas(ss); if(!gs.length)return;
-    var NS="http://www.w3.org/2000/svg";
-    gs.forEach(function(g,gi){
-      var d=traco(g.itens); if(!d)return;
-      var cor=getComputedStyle(g.itens[0].p).stroke;
-      if(!cor||cor==="none")cor="currentColor";
-      var wrap=document.createElementNS(NS,"g");
-      wrap.setAttribute("class","pulse gen");
-      wrap.style.setProperty("--pd",(1.15+gi*0.18).toFixed(2)+"s");
-      var c=document.createElementNS(NS,"circle");
-      c.setAttribute("r","4.2"); c.setAttribute("fill",cor);
-      var mo=document.createElementNS(NS,"animateMotion");
-      mo.setAttribute("path",d);
-      mo.setAttribute("calcMode","linear");
-      mo.setAttribute("begin","indefinite");
-      var dur = ciclo ? "5.2s" : (2.8 + gi * 0.35).toFixed(2) + "s";
-      mo.setAttribute("dur", dur);
-      mo.setAttribute("repeatCount", "indefinite");
-      var fade = document.createElementNS(NS, "animate");
-      fade.setAttribute("attributeName", "opacity");
-      fade.setAttribute("begin", "indefinite");
-      fade.setAttribute("dur", dur);
-      fade.setAttribute("repeatCount", "indefinite");
-      fade.setAttribute("values", "0;1;1;0");
-      fade.setAttribute("keyTimes", "0;0.12;0.88;1");
-      c.appendChild(fade); wrap.__fade = fade;
-      c.appendChild(mo); wrap.appendChild(c); svg.appendChild(wrap);
-      wrap.__mo=mo;
-    });
-    f.__fios=[].slice.call(svg.querySelectorAll(".pulse.gen"));
-  }
-  function dispara(f){
-    (f.__fios||[]).forEach(function(w){
-      try{ w.__mo&&w.__mo.beginElement(); w.__fade&&w.__fade.beginElement(); w.classList.add("go") }catch(_){}
-    });
-  }
-  function px(n){try{return n.getBBox().x}catch(_){return 0}}
-  function prep(f){
-    if(f.getAttribute("data-dg"))return;
-    f.setAttribute("data-dg","1");
-    var ns=[].slice.call(f.querySelectorAll("svg *")).filter(function(n){return n.getBBox});
-    ns.forEach(function(n){
-      if(n.getTotalLength&&n.tagName!=="text"){try{n.setAttribute("pathLength",100)}catch(_){}}
-    });
-    ns.map(function(n){return [n,px(n)]})
-      .sort(function(a,b){return a[1]-b[1]})
-      .forEach(function(p,i){p[0].style.setProperty("--d",(i*0.035).toFixed(3)+"s")});
-    try{fio(f)}catch(_){}
-    io.observe(f);
-  }
-  function scan(r){[].slice.call((r||document).querySelectorAll("figure.dg")).forEach(prep)}
-  scan(document);
-  /* o painel da trilha injeta diagramas depois do carregamento */
-  new MutationObserver(function(ms){
-    for(var i=0;i<ms.length;i++){
-      var a=ms[i].addedNodes;
-      for(var j=0;j<a.length;j++){
-        var n=a[j];
-        if(n.nodeType===1){ if(n.matches&&n.matches("figure.dg")) prep(n); else scan(n); }
-      }
-    }
-  }).observe(document.body,{childList:true,subtree:true});
-})();
-</script>
 
 <div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
   <div class="im-backdrop" id="imBackdrop"></div>
@@ -7185,7 +6444,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
   </div>
 </div>
 
-<script src="../assets/js/img-modal.js"></script>
+<script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
 </body>

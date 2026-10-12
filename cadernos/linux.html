@@ -349,7 +349,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <!-- MAPA MENTAL PRINCIPAL — VISÃO SISTÊMICA LINUX & TERMINAL -->
       <figure class="topic-img" style="margin: 28px 0 20px 0; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; background: var(--bg2); box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
-        <img src="../assets/img/linux_mapa_mental_principal.jpg" alt="Mapa Mental Completo de Linux e Terminal: Da Linha de Comando ao Kernel, Arquitetura, Processos, Syscalls e Produtividade" style="width: 100%; height: auto; display: block; cursor: zoom-in;" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL SISTÊMICO')">
+        <img src="../assets/img/linux/linux_mapa_mental_principal.jpg" alt="Mapa Mental Completo de Linux e Terminal: Da Linha de Comando ao Kernel, Arquitetura, Processos, Syscalls e Produtividade" style="width: 100%; height: auto; display: block; cursor: zoom-in;" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL SISTÊMICO')" loading="lazy" decoding="async">
         <figcaption style="padding: 10px 16px; font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); background: var(--card); display: flex; justify-content: space-between; align-items: center;">
           <span><b>Mapa Mental Completo:</b> Arquitetura do Linux, Shell, Syscalls, Gerenciamento de Processos, Rede e Produtividade.</span>
           <span style="color: var(--brand); font-weight: 600; font-size: 0.78rem;">🔍 Clique para ampliar</span>
@@ -507,14 +507,14 @@ Ao executar, o script tentou deletar `/var/log/minha` e o diretório `app/` no d
                 <p class="te-instrucao">Qual falha fundamental do shell causou esse comportamento desastroso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sem aspas duplas, o shell quebra a string no espaço em branco, transformando um único caminho com espaços em múltiplos argumentos independentes passados ao comando.">
-                    <span class="te-letter">A</span> Word Splitting: como a variável $LOG_DIR não estava envolvida em aspas duplas ("$LOG_DIR"), o shell expandiu o valor e o dividiu pelo caractere de espaço (IFS padrão), passando dois argumentos separados para o comando rm: '/var/log/minha' e 'app/'.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O shell não cria subshells concorrentes para caminhos; a causa é a divisão de campos por espaços via IFS.">
+                    <span class="te-letter">A</span> Path Expansion Recursiva: o shell converte barras e espaços não escapados em tokens de subshell concorrentes que tentam resolver caminhos de diretório de forma desordenada no kernel.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando rm suporta qualquer caractere POSIX válido no sistema de arquivos.">
-                    <span class="te-letter">B</span> O comando rm do Linux não suporta diretórios com nomes que contenham vogais.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sem aspas, a expansão de parâmetros sofre Word Splitting baseado no IFS, separando a string em argumentos distintos.">
+                    <span class="te-letter">B</span> Word Splitting: sem aspas duplas envoltas na variável ("$LOG_DIR"), o shell divide a string no espaço em branco (IFS padrão), passando dois argumentos ao comando rm.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Linux é sensível a maiúsculas/minúsculas (case-sensitive), mas não restringe nomes de pastas.">
-                    <span class="te-letter">C</span> O Linux exige que todos os caminhos de log sejam escritos em maiúsculas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Globbing refere-se a curingas (*, ?); a separação de palavras com base em espaços decorre do Word Splitting.">
+                    <span class="te-letter">C</span> Falha de Globbing de Nomes de Arquivo: o caractere de espaço em branco ativa a busca por padrões curinga em diretórios adjacentes antes da chamada do comando no kernel.
                   </button>
                 </div>
 
@@ -648,14 +648,14 @@ Ao executar, o script tentou deletar `/var/log/minha` e o diretório `app/` no d
                 <p class="te-instrucao">Por que o Java 17 continua sendo executado e como corrigir?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ao colocar /opt/jdk-21/bin no início do PATH ($PATH no final), o shell encontra o Java 21 primeiro e o executa com prioridade.">
-                    <span class="te-letter">A</span> Porque o PATH é avaliado da esquerda para a direita. Como /usr/bin já continha um binário 'java' e estava antes de /opt/jdk-21/bin, o shell parou na primeira correspondência. A correção é inverter a precedência: export PATH=/opt/jdk-21/bin:$PATH.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Na maioria das distribuições, /usr/bin/java é um executável real ou link simbólico gerado pelo update-alternatives, não um alias.">
+                    <span class="te-letter">A</span> Porque o comando java é um alias embutido no bash que tem precedência sobre variáveis de ambiente; deve-se executar unalias java na inicialização do shell.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É perfeitamente comum ter dezenas de versões instaladas em diretórios separados.">
-                    <span class="te-letter">B</span> Porque o Linux não permite ter duas versões de Java instaladas no mesmo disco.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ~/.bashrc é carregado em sessões interativas; o motivo da falha é a ordem de resolução dos diretórios na variável PATH.">
+                    <span class="te-letter">B</span> Porque o arquivo ~/.bashrc só é lido em sessões gráficas; deve-se mover a declaração para /etc/environment para habilitar múltiplas versões da JVM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. /etc/hosts gerencia resolução de nomes DNS locais, não execução de programas.">
-                    <span class="te-letter">C</span> Porque o comando java -version só lê variáveis gravadas no arquivo /etc/hosts.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O shell pesquisa no PATH da esquerda para a direita e para no primeiro executável correspondente. Prefixar o caminho dá prioridade à nova versão.">
+                    <span class="te-letter">C</span> O PATH é avaliado da esquerda para a direita; como /usr/bin aparece antes, o shell executa a primeira ocorrência encontrada. A correção é inverter para export PATH=/opt/jdk-21/bin:$PATH.
                   </button>
                 </div>
 
@@ -795,14 +795,14 @@ umask          # mostra a mascara atual (022 e o comum)
                 <p class="te-instrucao">Por que o usuário não consegue entrar na pasta se ela tem permissão de leitura (r)?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em diretórios no Linux, a permissão 'x' é mandatória para permitir navegação via 'cd' e resolução de caminhos de arquivos internos.">
-                    <span class="te-letter">A</span> Porque em diretórios a permissão de execução ('x') não significa rodar um programa, mas sim o direito de atravessar (traverse/search) o diretório para acessar seu conteúdo. Sem 'x', o comando 'cd' é bloqueado pelo kernel.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em diretórios no Linux, a permissão 'x' (execute/traverse) é mandatória para permitir navegação via 'cd' e resolução de caminhos internos.">
+                    <span class="te-letter">A</span> Em diretórios, a permissão de execução ('x') concede o direito de atravessar e navegar na pasta; sem 'x', o comando 'cd' é bloqueado pelo kernel.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Permissão de escrita (w) só é necessária para criar ou deletar arquivos dentro da pasta.">
-                    <span class="te-letter">B</span> Porque diretórios no Linux exigem que o usuário tenha permissão de gravação (w) para poder apenas navegar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Permissão de escrita só é requerida para criar, renomear ou remover arquivos dentro da pasta, nunca para navegar.">
+                    <span class="te-letter">B</span> O comando 'cd' exige permissão de escrita ('w') no diretório-alvo para criar entradas temporárias de navegação na tabela de descritores de processos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. cd é um comando builtin do shell disponível para qualquer usuário.">
-                    <span class="te-letter">C</span> Porque o comando cd é um binário exclusivo do usuário root.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 644 mantém leitura (r=4) para todos, mas a ausência do bit 'x' impede a travessia de diretório em nível de permissões POSIX padrão.">
+                    <span class="te-letter">C</span> A permissão 644 desativa o bit de leitura para grupos não proprietários em sistemas com módulo de segurança SELinux ou AppArmor ativado por padrão.
                   </button>
                 </div>
 
@@ -936,14 +936,14 @@ docker run --rm -u "$(id -u):$(id -g)" \
                 <p class="te-instrucao">Qual a solução correta no Kubernetes sem comprometer a segurança da imagem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A diretiva fsGroup do Kubernetes garante que o volume montado receba o GID correspondente à aplicação, permitindo escrita segura sem rodar como root.">
-                    <span class="te-letter">A</span> Configurar o securityContext do Pod no Kubernetes definindo `fsGroup: 10001`, instruindo o Kubernetes a alterar recursivamente o grupo do volume montado para o GID da aplicação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. allowPrivilegeEscalation permite elevação via binários setuid, não alterando a propriedade POSIX de diretórios montados e enfraquecendo a segurança.">
+                    <span class="te-letter">A</span> Adicionar a diretiva allowPrivilegeEscalation: true no securityContext para conceder permissões dinâmicas de escrita no volume ao processo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destrói as políticas de segurança de Pod Security Standards e viola conformidade.">
-                    <span class="te-letter">B</span> Alterar a imagem Docker para rodar com USER root e instalar o sudo sem senha.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A configuração fsGroup faz o kubelet alterar a posse de grupo dos arquivos do volume montado, permitindo que processos não-root escrevam com segurança.">
+                    <span class="te-letter">B</span> Configurar fsGroup: 10001 no securityContext do Pod, fazendo o Kubernetes ajustar recursivamente as permissões do volume para o grupo do processo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Provoca perda imediata de todos os dados do banco/logs a cada reinicialização do Pod.">
-                    <span class="te-letter">C</span> Deletar o volume e gravar os dados em memória RAM volátil dentro do container.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Permissão 777 é uma má prática grave de segurança que viola diretrizes de Pod Security Standards e expõe dados a outros processos.">
+                    <span class="te-letter">C</span> Inserir um initContainer rodando como root com comando chmod -R 777 /data para conceder permissão universal de escrita a qualquer usuário no host do cluster.
                   </button>
                 </div>
 
@@ -1103,14 +1103,14 @@ mv "$tmp" /destino/saida.txt
                 <p class="te-instrucao">O que o Kubernetes fará no 10º segundo e qual a consequência técnica?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esgotado o tempo do grace period sem o processo ter saído voluntariamente, o container runtime dispara SIGKILL incondicional. Aumentar o grace period permite que a aplicação termine seu shutdown gracioso.">
-                    <span class="te-letter">A</span> O kubelet enviará um SIGKILL (sinal 9) imediato no 10º segundo, matando o processo no meio do fechamento das conexões e potencialmente deixando transações incompletas. A solução é aumentar o terminationGracePeriodSeconds para 30s.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O ciclo de vida do Pod passa de SIGTERM diretamente para SIGKILL se o tempo limite expirar.">
+                    <span class="te-letter">A</span> O kubelet enviará um sinal SIGINT para interromper o loop de eventos, aguardando que o garbage collector finalize as conexões ativas do pool.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kubernetes impõe estritamente o prazo do terminationGracePeriodSeconds.">
-                    <span class="te-letter">B</span> O Kubernetes aguardará indefinidamente por até 24 horas até a JVM decidir terminar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. SIGSTOP apenas congela o processo na memória, não sendo utilizado pelo kubelet no fluxo de deleção de Pods.">
+                    <span class="te-letter">B</span> O container runtime emitirá um SIGSTOP pausando o processo até que todas as transações do banco retornem resposta para o cliente HTTP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O processo de rollout continua e o Pod pendente é sumariamente terminado.">
-                    <span class="te-letter">C</span> O Kubernetes reverterá o deploy e voltará a subir a versão legada automaticamente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ao expirar o grace period sem encerramento voluntário, o kernel envia SIGKILL sem possibilidade de captura, interrompendo o shutdown limpo.">
+                    <span class="te-letter">C</span> O kubelet enviará um SIGKILL (sinal 9) incondicional no 10º segundo, matando o processo imediatamente e abortando transações em andamento; deve-se elevar o terminationGracePeriodSeconds.
                   </button>
                 </div>
 
@@ -1252,14 +1252,14 @@ Ao executar `docker stop` nesse container, o comando trava por exatamente 10 seg
                 <p class="te-instrucao">Por que a aplicação não executou o shutdown gracioso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Exec Form com array JSON, a JVM assume o PID 1 diretamente (ou via tini) e recebe o SIGTERM do Docker imediatamente, executando seus shutdown hooks em frações de segundo.">
-                    <span class="te-letter">A</span> Porque foi usado o Shell Form ('CMD java...'), fazendo o /bin/sh rodar como PID 1. O shell não repassa o sinal SIGTERM para o processo filho Java, forçando o Docker a matá-lo com SIGKILL após 10s. A correção é usar o Exec Form: CMD ["java", "-jar", "/app.jar"].
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Shell Form, o shell roda como PID 1 e ignora o SIGTERM por padrão. A correção é usar Exec Form: CMD [&quot;java&quot;, &quot;-jar&quot;, &quot;/app.jar&quot;].">
+                    <span class="te-letter">A</span> O uso do Shell Form (CMD java...) faz o /bin/sh assumir o PID 1, e ele não repassa o sinal SIGTERM para o processo filho Java.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Java 21 possui suporte nativo e excelente a containers.">
-                    <span class="te-letter">B</span> Porque o Java 21 não suporta ser executado dentro de containers Docker.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema não é na JVM, mas no fato de que o sinal SIGTERM enviado pelo Docker nunca chegou ao processo Java porque o /bin/sh não o repassou.">
+                    <span class="te-letter">B</span> A JVM aloca pools de threads non-daemon por padrão, impedindo que o coletor de lixo finalize as conexões do Spring Boot antes do timeout do docker daemon.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O atraso de 10s é exatamente o timeout padrão do docker stop aguardando o processo responder ao SIGTERM.">
-                    <span class="te-letter">C</span> Porque o comando docker stop sempre desliga a placa de rede da máquina hospedeira por 10 segundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O docker stop envia sinais POSIX padrão via kernel para o processo com PID 1 dentro do namespace, sem envolver portas de rede ou JMX.">
+                    <span class="te-letter">C</span> O comando docker stop exige que a porta de debug do container esteja exposta para envio de comandos de terminação via protocolo JMX remoto no host.
                   </button>
                 </div>
 
@@ -1417,14 +1417,14 @@ Ao testar, os erros de conexão continuaram aparecendo no terminal em vez de ser
                 <p class="te-instrucao">Por que a sintaxe falhou e como corrigir?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Primeiro redireciona-se o descritor 1 para o arquivo físico; depois duplica-se o descritor 2 para apontar para o mesmo destino do descritor 1.">
-                    <span class="te-letter">A</span> O shell avalia os redirecionamentos da esquerda para a direita. Na ordem digitada, o descritor 2 foi duplicado para onde o 1 apontava naquele momento (a tela/terminal) e só depois o 1 foi redirecionado para o arquivo. A ordem correta é: `./migrar-banco.sh > migracao.log 2>&1` (ou `./migrar-banco.sh &> migracao.log`).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é a precedência da esquerda para a direita nos redirecionamentos do shell, não havendo necessidade de fifos nomeados.">
+                    <span class="te-letter">A</span> A sintaxe falhou porque o caractere > sobrescreve o descritor stderr; a forma correta é usar pipes nomeados mkfifo para canalizar os streams entre os processos do script.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Qualquer descritor de arquivo pode ser redirecionado para arquivos no disco.">
-                    <span class="te-letter">B</span> Porque no Linux o descritor 2 não pode ser gravado em arquivos de texto comuns.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Primeiro redireciona-se o stdout (1) para o arquivo, e depois duplica-se o stderr (2) para o mesmo destino do stdout via 2&gt;&1 (ou &&gt; arquivo).">
+                    <span class="te-letter">B</span> O shell avalia da esquerda para a direita: o descritor 2 foi duplicado para o terminal antes de o 1 ir para o arquivo. A correção é ./migrar-banco.sh > migracao.log 2>&1.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Na sintaxe de file descriptors, &1 representa uma referência ao descritor de número 1.">
-                    <span class="te-letter">C</span> Porque o operador & só serve para rodar programas em segundo plano (background job).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Redirecionamento de descritores é recurso padrão POSIX do shell para qualquer ambiente de execução, interativo ou batch.">
+                    <span class="te-letter">C</span> O operador 2>&1 só opera em sessões interativas; em scripts automatizados sem tty alocado deve-se invocar obrigatoriamente o utilitário tee em pipeline de logs do servidor.
                   </button>
                 </div>
 
@@ -1551,14 +1551,14 @@ Ao testar, os erros de conexão continuaram aparecendo no terminal em vez de ser
                 <p class="te-instrucao">Qual pipeline de comandos processa os dados em streaming com baixíssimo consumo de memória?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cada comando atua como um filtro em streaming conectado via buffers de pipe no kernel, sem carregar o arquivo de 20GB inteiro na memória de uma só vez.">
-                    <span class="te-letter">A</span> grep '/admin' access.log | awk '{print $1}' | sort | uniq | head -n 10
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ler todas as linhas de um stream massivo em uma coleção em memória no Python provocará Out Of Memory (OOM) em um servidor com apenas 2GB de RAM.">
+                    <span class="te-letter">A</span> cat access.log | grep '/admin' | python3 -c "import sys; print(list(set(sys.stdin))[:10])" para realizar deduplicação em memória via tabela hash.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O editor nano tentará alocar o arquivo inteiro de 20GB na RAM, resultando em travamento por OOM Killer.">
-                    <span class="te-letter">B</span> Abrir o arquivo access.log no editor de texto nano e pressionar Ctrl+W.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se houver milhões de IPs distintos tentando o endpoint, o array associativo em memória do Awk consumirá toda a RAM disponível do servidor.">
+                    <span class="te-letter">B</span> awk '/admin/ {ips[$1]++} END {for (i in ips) print i}' access.log | head -n 10 acumulando todos os IPs únicos em um array associativo do Awk.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. readlines() carrega todo o arquivo de 20GB na memória RAM do Python, estourando os 2GB da máquina.">
-                    <span class="te-letter">C</span> cat access.log | python3 -c 'import sys; lines = sys.stdin.readlines(); print(set(lines)[:10])'
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Os comandos processam dados em streaming via pipes do kernel, e o sort utiliza arquivos temporários em disco quando a memória atinge o limite.">
+                    <span class="te-letter">C</span> grep '/admin' access.log | awk '{print $1}' | sort | uniq | head -n 10
                   </button>
                 </div>
 
@@ -1708,14 +1708,14 @@ grep "$(date -d '1 hour ago' +%H):" access.log |
                 <p class="te-instrucao">Qual das três ferramentas é a mais apropriada para realizar filtros com cálculos matemáticos em colunas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Awk é uma linguagem completa de processamento de texto estruturado em tabelas e campos, perfeita para agregações matemáticas.">
-                    <span class="te-letter">A</span> Awk, pois possui suporte nativo a divisão de colunas ($1..$NF), variáveis numéricas de acumulação e bloco END { print soma/total } para cálculos estatísticos em streaming.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Awk é uma linguagem completa de processamento de texto orientada a registros e colunas, perfeita para agregações e cálculos estatísticos.">
+                    <span class="te-letter">A</span> Awk, pois processa texto em colunas ($1..$NF), suporta operadores aritméticos e acumulação em variáveis com bloco END { print soma/total }.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O grep apenas filtra texto e não possui operadores aritméticos.">
-                    <span class="te-letter">B</span> Grep, pois a flag -math calcula médias automaticamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Executar loops no bash invocando bc para cada linha é extremamente lento e consome ordens de magnitude mais CPU do que o Awk.">
+                    <span class="te-letter">B</span> Cut, combinando a extração dos delimitadores de coluna com o utilitário bc através de loops while no shell para somar os tempos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O sed é focado em transformações de fluxo de texto e substituições regex, não agregações tabulares.">
-                    <span class="te-letter">C</span> Sed, pois o sed foi desenhado especificamente para substituir planilhas Excel no terminal.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O sed é projetado para transformações e substituições de texto em fluxo (stream editor), não para aritmética de colunas.">
+                    <span class="te-letter">C</span> Sed, aplicando expressões regulares de substituição para somar recursivamente os valores no buffer de padrões (pattern space).
                   </button>
                 </div>
 
@@ -1867,14 +1867,14 @@ df -h /var     # espaco liberado
                 <p class="te-instrucao">O que explica o espaço de 50GB não ter sido liberado e qual a resolução técnica?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Desvincular o arquivo com 'rm' remove a entrada na tabela de diretórios, mas o inode e os blocos de disco continuam alocados enquanto houver descritores abertos apontando para ele.">
-                    <span class="te-letter">A</span> O processo da aplicação continua em execução mantendo um File Descriptor aberto para aquele arquivo. No Linux, os blocos só são liberados quando o descritor for fechado. A solução é identificar o processo com `lsof +L1` e reiniciar o serviço ou truncar o descritor em /proc/<PID>/fd/.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sistemas de arquivos transacionais modernos atualizam metadados em tempo de execução sem necessidade de fsck para unlinks comuns.">
+                    <span class="te-letter">A</span> O sistema de arquivos ext4/xfs requer execução de fsck offline para atualizar superblocos e liberar nós excluídos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O utilitário rm em linha de comando não utiliza lixeira desktop.">
-                    <span class="te-letter">B</span> O comando rm moveu o arquivo de 50GB para a pasta oculta da lixeira do root e basta esvaziar a lixeira.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Linux, deletar com rm remove o link na pasta, mas o inode e seus blocos persistem alocados no disco enquanto houver descritores abertos apontando para ele.">
+                    <span class="te-letter">B</span> Um processo ativo mantém o File Descriptor do arquivo aberto; os blocos só são liberados ao fechar o descritor (identificável via lsof +L1).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É o comportamento clássico de inodes e unlinks no kernel Linux.">
-                    <span class="te-letter">C</span> O disco rígido sofreu defeito físico instantâneo motivado pelo comando rm.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A opção de montagem sync força gravações síncronas imediatas no disco, não adiamento de desalocação.">
+                    <span class="te-letter">C</span> A partição /var foi montada com sync, forçando o kernel a postergar a desalocação para o próximo ciclo de execução do daemon de cron local.
                   </button>
                 </div>
 
@@ -2016,14 +2016,14 @@ O administrador envia um e-mail urgente para a diretoria pedindo para comprar ma
                 <p class="te-instrucao">Qual interpretação correta das métricas de memória evita esse gasto desnecessário?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Memória em Page Cache é devolvida imediatamente ao pool de alocação de processos sob demanda. O sistema está folgado com mais de 75% de capacidade disponível.">
-                    <span class="te-letter">A</span> A coluna 'available' indica que o sistema possui mais de 12.2GB de memória efetivamente disponível para aplicações. Os 12.1GB em 'buff/cache' são apenas páginas de disco mantidas em RAM pelo kernel para acelerar I/O e que são descartadas instantaneamente se a app solicitar alocação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O valor chave é 'available'; swapping causa degradação severa de I/O de disco e latência inaceitável em produção.">
+                    <span class="te-letter">A</span> A métrica free de 400MB é o único valor confiável, mas o kernel utilizará a partição Swap em disco sem perda sensível de latência na aplicação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A interpretação confunde 'free estrito' com 'capacidade disponível'.">
-                    <span class="te-letter">B</span> O servidor está na iminência de um colapso total e todos os serviços devem ser reiniciados imediatamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Buff/cache é composto principalmente por Page Cache, que é volátil e desalocado instantaneamente quando os processos demandam alocação de memória RAM.">
+                    <span class="te-letter">B</span> A memória buff/cache de 12.1GB está travada pelo sistema operacional e só é liberada reiniciando o daemon de alocação de memória do kernel.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Buffers/cache é a alocação de otimização de leitura/escrita de disco do kernel.">
-                    <span class="te-letter">C</span> O Linux perdeu 12GB de memória devido a um vazamento físico no circuito dos pentes de RAM.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Linux adota a máxima 'memória livre é memória desperdiçada'. O page cache ocupa a RAM ociosa para acelerar leituras de disco, sendo descartado conforme necessário.">
+                    <span class="te-letter">C</span> A coluna available (12.2GB) indica a memória real para processos; o kernel alocou 12.1GB em buff/cache e a libera sob demanda imediatamente.
                   </button>
                 </div>
 
@@ -2173,14 +2173,14 @@ LISTEN 0 128 127.0.0.1:8080 0.0.0.0:*
                 <p class="te-instrucao">Qual a causa raiz de o serviço não responder a requisições externas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bind em 127.0.0.1 rejeita conexões que não se originem do próprio localhost. Configurar 0.0.0.0 abre o socket para as interfaces externas da VM/container.">
-                    <span class="te-letter">A</span> A aplicação fez bind exclusivamente na interface de loopback local (127.0.0.1:8080), recusando qualquer pacote de rede vindo de interfaces externas. A correção é configurar server.address=0.0.0.0 para escutar em todas as interfaces de rede da máquina.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bind em 127.0.0.1 rejeita conexões de outras interfaces de rede. Configurar 0.0.0.0 instrui a aplicação a escutar em todas as placas de rede disponíveis.">
+                    <span class="te-letter">A</span> O socket escuta apenas na interface de loopback (127.0.0.1); deve-se configurar o bind para 0.0.0.0 para aceitar conexões externas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Navegadores suportam qualquer porta TCP entre 1 e 65535.">
-                    <span class="te-letter">B</span> O navegador do desenvolvedor não suporta requisições HTTP para números de porta superiores a 1024.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embora Security Groups possam bloquear tráfego, o comando ss revela explicitamente que o bind local foi restrito ao endereço de loopback 127.0.0.1:8080.">
+                    <span class="te-letter">B</span> O Security Group da AWS bloqueou a porta 8080; se o socket aparece como LISTEN no comando ss, o kernel já está recebendo e descartando pacotes nas interfaces públicas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem qualquer sentido técnico na pilha de rede TCP/IP.">
-                    <span class="te-letter">C</span> O Linux bloqueia conexões externas em servidores cujo hostname não termina com .com.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O socket nem sequer está associado à interface eth0, pois está explicitamente configurado com bind em 127.0.0.1.">
+                    <span class="te-letter">C</span> O firewall local iptables/nftables rejeitou conexões não autenticadas na porta 8080 devido a regras padrão de filtragem da interface eth0 instaladas na distribuição.
                   </button>
                 </div>
 
@@ -2336,14 +2336,14 @@ WantedBy=multi-user.target</code></pre>
                 <p class="te-instrucao">Qual comando do journalctl entrega exatamente esse filtro sem ruído?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! -u isola a unit do serviço, --since restringe o intervalo de tempo e -p err filtra apenas mensagens com nível de severidade de erro ou superior.">
-                    <span class="te-letter">A</span> journalctl -u api-pedidos.service --since "30 minutes ago" -p err..emerg
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A flag -f acompanha logs em tempo real (follow) e não filtra pelo nível de severidade de erros.">
+                    <span class="te-letter">A</span> journalctl -f -u api-pedidos.service --since "-30min"
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não restringe o serviço nem o tempo, trazendo milhares de linhas irrelevantes de outros daemons do sistema.">
-                    <span class="te-letter">B</span> cat /var/log/syslog | grep erro
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A flag -u isola a unidade do systemd, --since delimita o tempo relativo e -p err..emerg filtra logs de severidade erro até emergência.">
+                    <span class="te-letter">B</span> journalctl -u api-pedidos.service --since "30 minutes ago" -p err..emerg
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. systemctl status mostra apenas as últimas 10 linhas e flags incorretas.">
-                    <span class="te-letter">C</span> systemctl status api-pedidos.service -f --delete-all
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A opção --until traria registros anteriores a 30 minutos atrás (invertendo o intervalo) e o grep textual perde mensagens com severidade de syslog sem a palavra ERROR.">
+                    <span class="te-letter">C</span> journalctl --unit=api-pedidos.service --grep="ERROR" --until "30 minutes ago" --output=json-pretty
                   </button>
                 </div>
 
@@ -2495,14 +2495,14 @@ cat /proc/self/cgroup</code></pre>
                 <p class="te-instrucao">Qual correção técnica esclarece o funcionamento real da tecnologia de containers?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa distinção é fundamental para entender a leveza dos containers e a importância da segurança do kernel compartilhado.">
-                    <span class="te-letter">A</span> Incorreto. Containers compartilham o mesmo Kernel do host. O isolamento de visão é fornecido por Linux Namespaces (PID, NET, MNT) e a limitação de recursos por Cgroups. Diferente de VMs, não há emulação de hardware nem múltiplos kernels em execução.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Containers não utilizam KVM nem microkernels; eles compartilham integralmente o mesmo kernel da máquina hospedeira.">
+                    <span class="te-letter">A</span> Containers compartilham apenas os módulos de rede do host, mas instanciam microkernels isolados via virtualização KVM leve.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Imagens de containers contêm apenas bibliotecas e arquivos de usuário (userland), nunca o kernel do SO.">
-                    <span class="te-letter">B</span> Correto. O Docker instala uma cópia física completa do kernel Linux dentro de cada arquivo de imagem.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Containers modernos usam Linux Namespaces para isolamento de visão e Cgroups para controle rígido de recursos.">
+                    <span class="te-letter">B</span> O isolamento de containers opera exclusivamente através de chroot e jails BSD, sem controle de consumo de memória ou processamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Containers Docker e Kubernetes operam estritamente sobre as primitivas do Kernel Linux.">
-                    <span class="te-letter">C</span> Incorreto. Containers não utilizam o Linux, operando exclusivamente sobre tecnologia de microkernels Mach.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Containers são processos comuns isolados por namespaces e limitados por cgroups rodando sobre o mesmo kernel Linux da máquina física ou VM.">
+                    <span class="te-letter">C</span> Containers compartilham o mesmo Kernel do host; o isolamento de visão é feito por Linux Namespaces (PID, NET, MNT) e os limites de recursos por Cgroups.
                   </button>
                 </div>
 
@@ -2632,14 +2632,14 @@ ls -l /proc/1/fd                      # os descritores abertos</code></pre>
                 <p class="te-instrucao">Qual a forma canônica e recomendada pelas boas práticas de depuração do Kubernetes para inspecionar a rede desse pod?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O 'kubectl debug' anexa um container efêmero contendo ferramentas de diagnóstico (como a imagem netshoot) aos mesmos namespaces de rede e processo do container distroless sem alterá-lo.">
-                    <span class="te-letter">A</span> Utilizar Ephemeral Debug Containers executando `kubectl debug -it meu-pod --image=nicolaka/netshoot --target=meu-container`, anexando um container com utilitários de rede (curl, nc, tcpdump) diretamente aos namespaces de processo e rede do pod em execução.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Port-forward testa a conectividade da máquina do desenvolvedor até o cluster, mas não diagnostica a resolução de nomes ou rede interna do Pod no nó.">
+                    <span class="te-letter">A</span> Realizar port-forward da porta da aplicação e executar comandos locais de diagnóstico apontando para a interface de rede da máquina de trabalho.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ação extrema e sem relação com a ausência de shell na imagem.">
-                    <span class="te-letter">B</span> Recriar o cluster Kubernetes do zero desativando as regras de segurança OCI.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O kubectl debug acopla um container efêmero contendo ferramentas de diagnóstico aos mesmos namespaces do container em execução sem reiniciar o pod.">
+                    <span class="te-letter">B</span> Utilizar Ephemeral Containers com kubectl debug -it meu-pod --image=nicolaka/netshoot --target=meu-container para acoplar utilitários ao Pod.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Inflaciona o tamanho da imagem e quebra todas as regras de segurança de contêineres.">
-                    <span class="te-letter">C</span> Alterar a imagem para Ubuntu completo com interface gráfica desktop GNOME.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Alterar e fazer deploy de imagens não homologadas em produção reinicia o pod com problema e mascara falhas intermitentes de infraestrutura.">
+                    <span class="te-letter">C</span> Recompilar a imagem da aplicação alterando a base para Alpine Linux e aplicar novo rollout do Deployment em produção no cluster Kubernetes.
                   </button>
                 </div>
 
@@ -2781,14 +2781,14 @@ dmesg -T | grep -i "killed process"</code></pre>
                 <p class="te-instrucao">O que a métrica `%wa` em 94% revela sobre o verdadeiro gargalo do sistema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! %wa alto indica que o estrangulamento não é capacidade computacional da CPU, mas sim lentidão extrema ou saturação nas operações de disco/armazenamento.">
-                    <span class="te-letter">A</span> A CPU está praticamente ociosa de processamento de código, mas passa quase todo o tempo paralisada aguardando o subsistema de I/O de disco (ou storage de rede) responder a operações de leitura/escrita bloqueantes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Contenção de código de usuário em threads refletiria em alto %us (user time), não em tempo de espera de I/O (%wa).">
+                    <span class="te-letter">A</span> A CPU está saturada por contenção de locks de threads em nível de espaço de usuário (user space), demandando escalabilidade vertical de núcleos de processamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Criptografia refletiria em alto %us (user time), não em %wa.">
-                    <span class="te-letter">B</span> A CPU está executando criptografia pesada de blockchain em código de usuário.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sobrecarga de interrupções de rede é indicada pelas métricas %si (software interrupts) ou %hi (hardware interrupts) no top.">
+                    <span class="te-letter">B</span> O sistema operacional está sofrendo sobrecarga severa de interrupções de hardware causadas por pacotes de rede (softirqs), indicado pelo percentual de wait.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métricas de SO reportam alocação de tempo do scheduler do kernel.">
-                    <span class="te-letter">C</span> O cooler do processador parou de girar e a placa-mãe desligou os núcleos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! %wa alto indica que as threads estão bloqueadas aguardando a conclusão de operações de entrada e saída (leitura/escrita em disco ou rede).">
+                    <span class="te-letter">C</span> Os núcleos de CPU estão ociosos aguardando operações lentas ou bloqueantes do subsistema de disco ou storage de rede responderem.
                   </button>
                 </div>
 
@@ -2931,14 +2931,14 @@ dmesg -T | grep -i "killed process"</code></pre>
                 <p class="te-instrucao">Qual comando identifica com precisão as tentativas de abertura de arquivos executadas pelo processo?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Rastrear a syscall 'openat' revela o caminho exato passado para o kernel e o código de retorno (ex: ENOENT - No such file or directory).">
-                    <span class="te-letter">A</span> strace -e trace=openat,open -f java -jar app.jar, filtrando apenas as syscalls de abertura de arquivos para ver o caminho absoluto passado para o kernel.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O strace intercepta as chamadas de sistema (syscalls); filtrar por openat/open com -f (threads filhas) revela os caminhos exatos passados ao kernel.">
+                    <span class="te-letter">A</span> strace -e trace=openat,open -f java -jar app.jar para rastrear as syscalls de abertura de arquivos e inspecionar os caminhos retornados com ENOENT.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem inviável e sem qualquer cabimento técnico.">
-                    <span class="te-letter">B</span> Desmontar o disco rígido e ler os clusters com um microscópio eletrônico.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Como o arquivo não é encontrado, o processo falha imediatamente e o descritor nunca chega a constar na lista de arquivos abertos do lsof.">
+                    <span class="te-letter">B</span> lsof -p <PID> executado continuamente em loop shell para capturar a lista de descritores no exato instante em que o arquivo de configuração é lido.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Limpa o histórico de comandos e não investiga o comportamento do processo.">
-                    <span class="te-letter">C</span> history -c para limpar o histórico do shell e esperar o arquivo aparecer.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando find lista arquivos existentes que foram modificados, mas não rastreia quais caminhos inexistentes a aplicação tentou abrir na inicialização.">
+                    <span class="te-letter">C</span> find / -name "*app*.yml" -mmin -10 para localizar arquivos de configuração que tenham sofrido leitura ou modificação recente no sistema de arquivos.
                   </button>
                 </div>
 
@@ -3038,7 +3038,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -3050,5 +3050,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

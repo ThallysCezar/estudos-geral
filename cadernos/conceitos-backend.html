@@ -566,14 +566,14 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
                 <p class="te-instrucao">Qual ação imediata de engenharia de software endereça a causa raiz do problema?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adicionar servidores web enviaria o dobro de conexões contra um banco já asfixiado, e réplicas demandam segregação prévia no código.">
+                    <span class="te-letter">A</span> Adicionar nós de réplica de leitura de forma imediata e duplicar a quantidade de instâncias web no cluster para diluir o volume de conexões ativas por nó da aplicação.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Identificar o elo mais fraco (banco preso por queries lentas) e otimizá-lo é o único caminho para desafogar o sistema como um todo.">
-                    <span class="te-letter">A</span> Otimizar o gargalo do banco de dados: inspecionar queries lentas que prendem conexões abertas por segundos, adicionar índices B-Tree para reduzir tempo de execução e ajustar o dimensionamento do connection pool (HikariCP) e réplicas.
+                    <span class="te-letter">B</span> Otimizar queries lentas no banco, adicionar índices adequados e redimensionar o pool de conexões do HikariCP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adicionar servidores web enviaria o dobro de conexões contra um banco já asfixiado.">
-                    <span class="te-letter">B</span> Duplicar o número de servidores web de 5 para 10 instâncias.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem qualquer impacto na arquitetura de backend.">
-                    <span class="te-letter">C</span> Trocar as telas de computador dos desenvolvedores por modelos curvos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elevar conexões sem capacidade de CPU e I/O no banco gera sobrecarga severa de troca de contexto e esgota recursos do SGBD.">
+                    <span class="te-letter">C</span> Aumentar indefinidamente o limite máximo de conexões do banco de dados relacional para comportar picos sem alterar consultas.
                   </button>
                 </div>
 
@@ -692,14 +692,14 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
                 <p class="te-instrucao">Qual é a conduta sênior recomendada conforme as 6 Alavancas de Escala?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sharding introduz enorme complexidade operacional, quebra transações ACID entre partições e deve ser a última alternativa técnica.">
+                    <span class="te-letter">A</span> Implementar sharding horizontal imediato por chave de cliente com particionamento manual de esquemas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trocar a base inteira para NoSQL quebra a modelagem relacional e a consistência contábil sem garantia de solucionar gargalos de consulta.">
+                    <span class="te-letter">B</span> Migrar o banco relacional para uma base NoSQL orientada a documentos para eliminar a carga transacional.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sharding é a última alavanca devido à perda de transações ACID e integridade referencial; otimizações e cache resolvem a imensa maioria dos casos.">
-                    <span class="te-letter">A</span> Esgotar as alavancas preliminares: rodar EXPLAIN ANALYZE nas queries do topo do ranking de lentidão (adicionando índices que resolvem em horas), avaliar scale-up vertical da instância de banco e implantar cache Redis nas consultas quentes antes de sequer cogitar sharding.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Colocaria a viabilidade financeira e o roadmap do produto em risco.">
-                    <span class="te-letter">B</span> Aceitar a proposta e pausar a empresa por 3 meses para fazer sharding manual.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Totalmente inadequado para qualquer sistema profissional.">
-                    <span class="te-letter">C</span> Desligar o banco de dados e passar a guardar os dados em arquivos CSV no desktop.
+                    <span class="te-letter">C</span> Esgotar alavancas preliminares: analisar queries com EXPLAIN ANALYZE, criar índices faltantes, avaliar scale-up vertical e introduzir cache Redis.
                   </button>
                 </div>
 
@@ -832,13 +832,13 @@ teto de réplicas:    <span class="n">15</span>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Reduzir o número de conexões ativas simultâneas permite que a CPU execute as queries até o final sem disputas destrutivas de troca de contexto.">
-                    <span class="te-letter">A</span> Reduzir o tamanho do pool para cerca de 10 a 15 conexões: aplicar a fórmula do HikariCP (4 núcleos * 2 + 1) permite que os 4 núcleos de CPU processem queries reais sem desperdiçar ciclos alternando threads em fila, eliminando o overhead de context switching.
+                    <span class="te-letter">A</span> Reduzir o pool para cerca de 10 conexões, seguindo a regra de dimensionamento recomendada pelo HikariCP (núcleos * 2 + 1).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Agravaria o colapso do sistema operacional por falta de memória e contenção.">
-                    <span class="te-letter">B</span> Aumentar o pool para 5.000 conexões para acomodar todos os clientes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar o pool agrava a disputa por tempo de CPU entre threads concorrentes, elevando ainda mais o custo de troca de contexto do SGBD.">
+                    <span class="te-letter">B</span> Aumentar o pool para 500 conexões para assegurar que nenhuma thread HTTP do Tomcat fique bloqueada esperando um slot.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Handshakes TCP manuais por requisição são ainda mais lentos e ineficientes.">
-                    <span class="te-letter">C</span> Desativar o uso de pools de conexão e abrir conexões TCP manuais por socket puro.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abrir conexões sob demanda impõe overhead de handshake TCP e autenticação em cada request, colapsando a performance.">
+                    <span class="te-letter">C</span> Desabilitar o connection pool e abrir conexões sob demanda via JDBC direto a cada requisição HTTP recebida na aplicação.
                   </button>
                 </div>
 
@@ -873,7 +873,7 @@ teto de réplicas:    <span class="n">15</span>
 
       <!-- MAPA CONCEITUAL: CONCORRÊNCIA E RACE CONDITION -->
       <figure class="topic-img">
-        <img src="../assets/img/concorrencia_race_condition.jpg" alt="Mapa Conceitual: Concorrência e Race Condition — Executando mais, com segurança" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <img src="../assets/img/conceitos/concorrencia_race_condition.jpg" alt="Mapa Conceitual: Concorrência e Race Condition — Executando mais, com segurança" loading="lazy" title="Clique para abrir no visualizador ampliado" decoding="async">
         <figcaption>
           <span>MAPA MENTAL</span>
           <em>CONCORRÊNCIA E RACE CONDITION — Executando mais, com segurança</em>
@@ -989,14 +989,14 @@ teto de réplicas:    <span class="n">15</span>
                 <p class="te-instrucao">Qual anomalia clássica de concorrência ocorreu e como eliminá-la no banco de dados?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Validação em frontend não protege contra requisições concorrentes disparadas por usuários distintos ou chamadas de API paralelas.">
+                    <span class="te-letter">A</span> Condição de corrida tratada exclusivamente no frontend desabilitando o botão de reserva após o primeiro clique do cliente para evitar duplicidade de envio.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A atomização da checagem e atualização ou o uso de locks previne que estados obsoletos autorizem reservas concorrentes duplicadas.">
-                    <span class="te-letter">A</span> Lost Update / Race Condition (Check-Then-Act): ambas leram o quarto livre antes da gravação da outra. Elimina-se com Lock Pessimista (`SELECT ... FOR UPDATE`), Lock Otimista com coluna de versão (`@Version`) ou comando atômico condicional (`UPDATE quarto SET status = 'RESERVADO' WHERE id = 1 AND status = 'DISPONIVEL'`).
+                    <span class="te-letter">B</span> Condição de corrida (Lost Update) do tipo Check-Then-Act; exige lock pessimista (SELECT ... FOR UPDATE) ou atualização atômica condicional no banco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é lógico de concorrência de software transacional.">
-                    <span class="te-letter">B</span> Falha física no cabo de fibra óptica do hotel.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Solução física descabida para um problema de software.">
-                    <span class="te-letter">C</span> Construir outro hotel idêntico no mesmo terreno para acomodar ambos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema decorre de concorrência em nível transacional de escrita e leitura de banco de dados, não de cache estático em borda.">
+                    <span class="te-letter">C</span> Inconsistência de replicação eventual entre clusters de CDN que cachearam a resposta HTTP da listagem de disponibilidade de quartos.
                   </button>
                 </div>
 
@@ -1113,14 +1113,14 @@ teto de réplicas:    <span class="n">15</span>
                 <p class="te-instrucao">Qual das cinco saídas de concorrência entrega o menor custo de latência e zero retenção de conexões no banco de dados?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O lock pessimista introduz contenção e bloqueio desnecessário em tabelas com taxa de colisão praticamente nula.">
+                    <span class="te-letter">A</span> Lock pessimista exclusivo (PESSIMISTIC_WRITE) em cada leitura de perfil para assegurar consistência estrita durante todo o fluxo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Serializar operações em fila adiciona complexidade e latência excessivas para um cenário perfeitamente resolvido por controle de concorrência otimista.">
+                    <span class="te-letter">B</span> Fila distribuída obrigatória com serialização de todas as alterações de clientes em um único worker assíncrono particionado.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em cenários de baixa taxa de colisão, o Lock Otimista oferece performance imbatível sem nenhum overhead de filas de espera no banco.">
-                    <span class="te-letter">A</span> Lock Otimista (Optimistic Locking via coluna de versão `@Version`): leituras são 100% livres e não seguram nenhum lock no banco; no momento do UPDATE, valida-se `WHERE version = :oldVersion`. Se houver conflito raro, aborta-se com OptimisticLockException.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Travaria o sistema e causaria filas desnecessárias em cenários de colisão quase nula.">
-                    <span class="te-letter">B</span> Lock Pessimista bloqueando a tabela inteira por 10 minutos a cada clique.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com persistência corporativa.">
-                    <span class="te-letter">C</span> Desativar o banco de dados e salvar dados em cookies no navegador do cliente.
+                    <span class="te-letter">C</span> Lock otimista com coluna @Version, permitindo leituras sem locks no banco e abortando apenas no evento raro de colisão no update.
                   </button>
                 </div>
 
@@ -1270,13 +1270,13 @@ teto de réplicas:    <span class="n">15</span>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ordenar os identificadores dos recursos antes da aquisição dos locks elimina a possibilidade matemática da espera circular.">
-                    <span class="te-letter">A</span> Deadlock por Espera Circular (Condição de Coffman): a Transferência 1 segurou #10 esperando #20, enquanto a Transferência 2 segurou #20 esperando #10. Elimina-se forçando uma ordem determinística de bloqueio (ex: sempre adquirir o lock na conta de menor ID primeiro, independentemente de ser origem ou destino).
+                    <span class="te-letter">A</span> Deadlock por espera circular; corrige-se estabelecendo uma ordem determinística e consistente de aquisição dos locks (ex: travar sempre o menor ID primeiro).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é de contenção mútua de locks no software, não de hardware.">
-                    <span class="te-letter">B</span> Livelock térmico: o processador esquentou demais e congelou as instruções.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As threads estão em estado bloqueado aguardando liberação mútua de locks, caracterizando deadlock estrito, não livelock ativo.">
+                    <span class="te-letter">B</span> Livelock transacional gerado por retries síncronos imediatos sem recuo exponencial nas duas conexões concorrentes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria o propósito do sistema bancário.">
-                    <span class="te-letter">C</span> Proibir transferências financeiras entre contas de números diferentes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O travamento ocorre pela retenção cruzada de recursos entre duas transações ativas, não por esgotamento de conexões no pool.">
+                    <span class="te-letter">C</span> Starvation de threads no pool JDBC causado por timeout desconfigurado no driver de conexão com o banco de dados.
                   </button>
                 </div>
 
@@ -1311,7 +1311,7 @@ teto de réplicas:    <span class="n">15</span>
 
       <!-- MAPA CONCEITUAL: LOCKS PESSIMISTA, OTIMISTA E DISTRIBUÍDOS -->
       <figure class="topic-img">
-        <img src="../assets/img/locks_pessimista_otimista_distribuido.jpg" alt="Mapa Conceitual: Locks (Pessimista, Otimista e Distribuídos) — Controle de acesso para mais consistência, segurança e escala" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <img src="../assets/img/conceitos/locks_pessimista_otimista_distribuido.jpg" alt="Mapa Conceitual: Locks (Pessimista, Otimista e Distribuídos) — Controle de acesso para mais consistência, segurança e escala" loading="lazy" title="Clique para abrir no visualizador ampliado" decoding="async">
         <figcaption>
           <span>MAPA MENTAL</span>
           <em>LOCKS (PESSIMISTA, OTIMISTA E DISTRIBUÍDOS) — Controle de acesso para mais consistência</em>
@@ -1430,14 +1430,14 @@ Optional&lt;Produto&gt; <span class="a">findParaAtualizar</span>(<span class="a"
                 <p class="te-instrucao">Como o Lock Otimista com coluna `@Version` atua para impedir que o Jornalista B apague acidentalmente a correção do Jornalista A?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos relacionais não executam resolução automática de conflitos textuais estilo git merge.">
+                    <span class="te-letter">A</span> O banco executa merge automático de linhas mesclando os parágrafos alterados de ambos os jornalistas por meio de um diff sintático no motor relacional.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Lock Otimista detecta a alteração concorrente pela divergência no número de versão, impedindo que a gravação defasada sobrescreva os dados novos.">
-                    <span class="te-letter">A</span> O salvamento do Jornalista A incrementa a versão do artigo de 1 para 2. Quando o Jornalista B tenta salvar enviando a versão 1 antiga, a cláusula `WHERE id = ? AND version = 1` não encontra nenhuma linha correspondente; o JPA lança OptimisticLockException e a interface alerta B de que o texto foi modificado por outra pessoa.
+                    <span class="te-letter">B</span> O JPA lança OptimisticLockException porque a versão enviada por B é inferior à versão persistida por A (WHERE version = 1).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações drásticas e inexistentes em software.">
-                    <span class="te-letter">B</span> O computador do Jornalista B é formatado automaticamente para evitar o conflito.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos relacionais operam sob regras estritas de transação.">
-                    <span class="te-letter">C</span> O banco de dados funde os dois textos em um poema aleatório.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Com lock otimista ativo, a cláusula WHERE compara a versão e falha ao encontrar 0 linhas afetadas, impedindo a sobregravação silenciosa.">
+                    <span class="te-letter">C</span> A alteração de B sobrescreve silenciosamente a de A sem alertas, pois transações em nível Read Committed priorizam o último commit.
                   </button>
                 </div>
 
@@ -1577,14 +1577,14 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
                 <p class="te-instrucao">Qual problema grave de concorrência esse `del` cego causou para o segundo worker?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O segundo worker recriou a chave sob o mesmo nome; logo, o DEL apaga com sucesso a chave ativa do novo worker.">
+                    <span class="te-letter">A</span> O Redis rejeita a execução do comando DEL devido à expiração prévia da chave no índice de expiração passiva da memória do nó.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando DEL remove a chave existente normalmente; não há vazamento de memória envolvido no cenário.">
+                    <span class="te-letter">B</span> Ocorre um vazamento definitivo de memória na instância do Redis porque chaves renovadas não podem ser deletadas programaticamente.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Nunca libere locks distribuídos com simples DEL: compare o valor do token exclusivo via script Lua para garantir que você está liberando apenas o seu próprio lock ativo.">
-                    <span class="te-letter">A</span> Deleção indevida do lock alheio: o primeiro worker apagou o lock legítimo do segundo worker enquanto este ainda estava em execução, deixando o recurso desprotegido para um terceiro nó entrar e corromper o arquivo. A liberação exige script Lua que deleta apenas se o token for igual ao gerado pelo nó.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Redis processa comandos DEL em microssegundos.">
-                    <span class="te-letter">B</span> O Redis explode fisicamente por excesso de chamadas DEL.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem nexo técnico.">
-                    <span class="te-letter">C</span> O vídeo é convertido automaticamente em uma música de rádio.
+                    <span class="te-letter">C</span> O primeiro worker apaga indevidamente o lock legítimo do segundo worker; a liberação correta exige validar o token via script Lua.
                   </button>
                 </div>
 
@@ -1693,14 +1693,14 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
                 <p class="te-instrucao">Por que esse argumento técnico está profundamente equivocado?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! 'Single-threaded' em Node.js impede corridas de memória física em variáveis síncronas, mas condições de corrida em operações assíncronas com banco de dados continuam ocorrendo livremente.">
-                    <span class="te-letter">A</span> Porque o Event Loop intercala tarefas assíncronas nos pontos de 'await': se a Requisição A faz `await lerSaldo()` e pausa esperando a resposta do banco, o Event Loop atende a Requisição B que também faz `await lerSaldo()`; ambas recebem o saldo antigo e geram Lost Update no commit posterior.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Single-threaded em Node.js impede corridas de memória física em variáveis síncronas, mas condições de corrida em operações assíncronas com banco de dados continuam ocorrendo livremente.">
+                    <span class="te-letter">A</span> Porque o Event Loop alterna a execução nos pontos de await, permitindo que requisições concorrentes leiam o mesmo saldo defasado no banco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O código JavaScript da aplicação executa em single-thread no loop principal de eventos.">
-                    <span class="te-letter">B</span> Porque o Node.js roda secretamente em 1.000 threads escondidas do desenvolvedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A threadpool da libuv lida com I/O nativo e tarefas do sistema, mas a lógica do código JS roda sempre no loop de eventos principal.">
+                    <span class="te-letter">B</span> Porque a biblioteca libuv do Node.js aloca threads do sistema operacional de forma não determinística para executar funções assíncronas do JavaScript.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. async/await é padrão estável e moderno da linguagem.">
-                    <span class="te-letter">C</span> Porque async/await foi banido do padrão ECMAScript.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O motor V8 não utiliza escalonamento preemptivo no runtime de execução de JavaScript.">
+                    <span class="te-letter">C</span> Porque o interpretador V8 converte chamadas com await em concorrência preemptiva clássica quando o consumo de memória ultrapassa o limite padrão.
                   </button>
                 </div>
 
@@ -1841,14 +1841,14 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
                 <p class="te-instrucao">Qual mecanismo impede que todas as 6 réplicas executem o mesmo relatório simultaneamente a cada hora?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ShedLock e coordenadores distribuídos garantem a execução única (Single Execution) de jobs em ambientes multi-instância em contêineres.">
-                    <span class="te-letter">A</span> Lock Distribuído de Agendamento (como ShedLock com Redis ou banco relacional): a primeira instância adquire o lock distribuído no início do cron e as outras 5 instâncias ignoram a execução ao constatar que o lock já está retido para aquele ciclo.
-                  </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Synchronized opera apenas no escopo de uma única JVM; as outras 5 réplicas executariam normalmente.">
-                    <span class="te-letter">B</span> Colocar a palavra-chave synchronized no método Java da aplicação.
+                    <span class="te-letter">A</span> Marcar o método com synchronized para que a JVM serialize a execução da tarefa agendada entre as threads da aplicação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria a alta disponibilidade da aplicação.">
-                    <span class="te-letter">C</span> Desligar 5 das 6 réplicas da empresa permanentemente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ShedLock e coordenadores distribuídos garantem a execução única (Single Execution) de jobs em ambientes multi-instância em contêineres.">
+                    <span class="te-letter">B</span> Implementar lock distribuído com ShedLock ou Redis, garantindo que apenas um pod adquira o direito de executar a tarefa naquele intervalo de tempo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Afinidades de nó afetam o agendamento de pods no hardware do cluster, mas não impedem que múltiplas réplicas executem o job simultaneamente.">
+                    <span class="te-letter">C</span> Configurar uma afinidade de pods no Kubernetes para forçar a execução da rotina sempre no nó master do cluster em produção.
                   </button>
                 </div>
 
@@ -1883,7 +1883,7 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
 
       <!-- MAPA CONCEITUAL: IDEMPOTÊNCIA E DEFESAS -->
       <figure class="topic-img">
-        <img src="../assets/img/idempotencia_defesas.jpg" alt="Mapa Conceitual: Idempotência e Defesas — Mesma requisição, mesmo resultado com consistência e segurança" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <img src="../assets/img/conceitos/idempotencia_defesas.jpg" alt="Mapa Conceitual: Idempotência e Defesas — Mesma requisição, mesmo resultado com consistência e segurança" loading="lazy" title="Clique para abrir no visualizador ampliado" decoding="async">
         <figcaption>
           <span>MAPA MENTAL</span>
           <em>IDEMPOTÊNCIA E DEFESAS — Mesma requisição, mesmo resultado</em>
@@ -2002,14 +2002,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Como a implementação correta de Idempotency Key no backend impede a cobrança duplicada?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Rate limiting por IP pode afetar múltiplos usuários na mesma rede NAT e não resolve a garantia de idempotência no processamento do pedido.">
+                    <span class="te-letter">A</span> Rejeitar a segunda requisição no API Gateway por rate limiting estrito com janela deslizante de 1 segundo baseada exclusivamente no endereço IP do cliente.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cancelar transações legítimas prejudica gravemente a experiência do usuário diante de variações comuns de conectividade móvel.">
+                    <span class="te-letter">B</span> Cancelar ambas as transações de forma preventiva e exigir que o cliente recarregue a página antes de iniciar uma nova tentativa de pagamento.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A chave de idempotência garante que retries rápidos ou cliques duplos devolvam a resposta já processada sem reexecutar efeitos colaterais financeiros.">
-                    <span class="te-letter">A</span> Ambas as requisições chegam com o mesmo cabeçalho `Idempotency-Key`: a primeira transação insere a chave sob uma restrição UNIQUE no banco; a segunda requisição sofre violação de chave primária, é interceptada pelo handler e devolve o mesmo recibo de confirmação da primeira sem cobrar o cartão novamente.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cliques duplos acidentais são comuns e devem ser tratados com elegância pelo software.">
-                    <span class="te-letter">B</span> O banco de dados cancela a conta bancária do usuário que clicou duas vezes.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prática antiética e ilegal.">
-                    <span class="te-letter">C</span> O segundo clique é convertido em uma doação obrigatória para a empresa.
+                    <span class="te-letter">C</span> Enviar cabeçalho Idempotency-Key único; a segunda chamada detecta o registro em processamento e retorna a mesma resposta sem reprocessar cobrança.
                   </button>
                 </div>
 
@@ -2125,14 +2125,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual padrão de resiliência isola a falha do serviço de recomendação e garante que o checkout continue operando?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Circuit Breaker com fallback desacopla a funcionalidade secundária degradada (recomendações), garantindo que a funcionalidade crítica (checkout de compras) continue viva.">
-                    <span class="te-letter">A</span> Circuit Breaker no cliente HTTP de recomendação: detecta o aumento de latência e erros, abre o circuito (Fast Fail) e aciona um Fallback que devolve uma lista estática de produtos mais vendidos sem chamar o serviço de IA degradado, liberando as threads do checkout imediatamente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Circuit Breaker com fallback desacopla a funcionalidade secundária degradada (recomendações), garantindo que a funcionalidade crítica continue viva.">
+                    <span class="te-letter">A</span> Circuit Breaker com fallback para retornar recomendações em cache ou estáticas, protegendo as threads do checkout contra degradação externa.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Seguraria ainda mais threads e derrubaria o sistema inteiro.">
-                    <span class="te-letter">B</span> Aumentar os timeouts de checkout para 5 minutos por cliente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar timeouts agrava o esgotamento das threads HTTP do checkout, acelerando o colapso do serviço principal.">
+                    <span class="te-letter">B</span> Aumentar o timeout de leitura do cliente HTTP para 60 segundos com o objetivo de assegurar que todas as respostas da IA sejam concluídas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Impediria a realização de qualquer venda.">
-                    <span class="te-letter">C</span> Desligar o banco de dados do checkout para economizar energia.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Retries imediatos sobre um serviço em sobrecarga geram tempestade de requisições (thundering herd) e amplificam a degradação.">
+                    <span class="te-letter">C</span> Configurar retries imediatos agressivos com até 5 tentativas consecutivas para compensar a instabilidade temporária no serviço dependente.
                   </button>
                 </div>
 
@@ -2280,14 +2280,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual arquitetura de resiliência de mensageria destrava a fila e isola a mensagem defeituosa?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar consumidores consome recursos sem resolver o ciclo vicioso da mensagem venenosa rejeitada continuamente com requeue.">
+                    <span class="te-letter">A</span> Elevar a contagem de consumidores em paralelo no cluster para que as mensagens com dados inválidos sejam diluídas entre os diferentes pods de processamento.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A DLQ remove mensagens venenosas do fluxo ativo de processamento, preservando a disponibilidade do sistema e permitindo auditoria posterior.">
-                    <span class="te-letter">A</span> Configuração de Dead Letter Queue (DLQ) com limite de tentativas (ex: max-attempts = 3): após 3 falhas consecutivas, a mensagem malformada (poison pill) é transferida para a DLQ e descartada da fila principal, permitindo que as passagens legítimas continuem fluindo normalmente.
+                    <span class="te-letter">B</span> Configurar política de retries com limite e encaminhar a mensagem defeituosa para uma Dead Letter Queue (DLQ) após o esgotamento das tentativas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem nexo com a engenharia de software.">
-                    <span class="te-letter">B</span> Excluir o aeroporto do mapa de rotas aéreas.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Viola normas regulatórias da aviação civil.">
-                    <span class="te-letter">C</span> Desativar a validação de CPF e emitir passagens com dados corrompidos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desabilitar validações compromete a integridade do banco de dados e viola conformidade regulatória.">
+                    <span class="te-letter">C</span> Ignorar a validação de formato de CPF na camada de entrada e gravar o registro inconsistente no banco de dados para evitar travar a fila.
                   </button>
                 </div>
 
@@ -2401,14 +2401,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual estratégia de indexação entrega máxima velocidade consumindo o menor espaço possível de buffer pool e disco?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Um índice completo em 80 milhões de linhas consome gigabytes desnecessários de memória e I/O para indexar dados frios que nunca são consultados.">
+                    <span class="te-letter">A</span> Criar índice B-Tree padrão composto nas colunas (cliente_id, lida) abrangendo toda a base histórica de 80 milhões de linhas da tabela.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Particionamento por hash distribui linhas uniformemente, mas não soluciona a seletividade de consultar apenas registros não lidos.">
+                    <span class="te-letter">B</span> Particionar a tabela por hash de cliente para balancear a quantidade de notificações distribuídas entre diferentes discos do servidor.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Índices parciais filtram exatamente a fatia de dados de interesse frequente, economizando espaço em disco e acelerando a busca.">
-                    <span class="te-letter">A</span> Criar um Índice Parcial (Partial Index no PostgreSQL): `CREATE INDEX idx_notif_pendente ON notificacoes (cliente_id) WHERE lida = false;`. O índice armazenará apenas os 1% de registros relevantes, ocupando centenas de vezes menos memória RAM do que um índice completo.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desperdiçaria memória e I/O de disco armazenando dados frios que ninguém consulta.">
-                    <span class="te-letter">B</span> Criar um índice completo tradicional indexando os 80 milhões de registros lidos.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria o histórico dos usuários.">
-                    <span class="te-letter">C</span> Apagar a tabela inteira a cada 10 minutos.
+                    <span class="te-letter">C</span> Criar um índice parcial com cláusula condicional (WHERE lida = false), indexando unicamente o 1% de registros relevantes para busca constante.
                   </button>
                 </div>
 
@@ -2540,13 +2540,13 @@ criarPedido(clienteId, valor);
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O LEFT JOIN garante a preservação integral da tabela primária da esquerda mesmo na ausência de correspondências na tabela associada.">
-                    <span class="te-letter">A</span> LEFT JOIN (ou LEFT OUTER JOIN) de clientes com pedidos: preserva 100% das linhas da tabela da esquerda (clientes), preenchendo com NULL os campos de pedidos para aqueles clientes que nunca compraram nada.
+                    <span class="te-letter">A</span> LEFT OUTER JOIN partindo da tabela de clientes, preenchendo colunas de pedidos ausentes com NULL e usando COALESCE(COUNT(p.id), 0).
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O INNER JOIN eliminaria todos os clientes novatos da listagem.">
-                    <span class="te-letter">B</span> INNER JOIN, que descarta automaticamente clientes sem compras.
+                    <span class="te-letter">B</span> INNER JOIN entre clientes e pedidos agrupando por cliente, pois o SGBD inclui clientes sem dependências quando agregados com COUNT.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Produziria produto cartesiano incorreto e gigantesco.">
-                    <span class="te-letter">C</span> CROSS JOIN com multiplicação infinita de linhas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CROSS JOIN cria o produto cartesiano completo entre os dados, gerando custo de processamento massivo e resultados incorretos.">
+                    <span class="te-letter">C</span> CROSS JOIN entre todas as tabelas seguido de filtro WHERE condicional para associar clientes sem pedidos a linhas nulas fictícias.
                   </button>
                 </div>
 
@@ -2656,14 +2656,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual classe de banco de dados é a escolha técnica natural e recomendada para essa necessidade transacional?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Garantias transacionais ACID fortes com integridade referencial são a força primordial dos bancos relacionais consolidados.">
-                    <span class="te-letter">A</span> Banco de Dados Relacional (SQL com suporte a ACID forte, como PostgreSQL): oferece suporte nativo e maduro a transações multi-tabela atômicas, isolamento e integridade referencial estrita por chave estrangeira.
-                  </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Consistência eventual fraca introduz risco inaceitável de desbalanceamento de saldos contábeis.">
-                    <span class="te-letter">B</span> Banco NoSQL chave-valor sem suporte a transações multi-registro com consistência eventual fraca.
+                    <span class="te-letter">A</span> Base NoSQL orientada a documentos distribuídos adotando consistência eventual e compensações em segundo plano para otimizar throughput de escritas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem qualquer sentido computacional.">
-                    <span class="te-letter">C</span> Gravar as transferências em um arquivo de áudio MP3 no servidor.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Garantias transacionais ACID fortes com integridade referencial são a força primordial dos bancos relacionais consolidados.">
+                    <span class="te-letter">B</span> Banco de dados relacional com suporte a ACID estrito, garantindo atomicidade transacional e integridade referencial entre contas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Snapshots em memória não oferecem durabilidade estrita nem garantias transacionais multi-registro necessárias para saldos monetários.">
+                    <span class="te-letter">C</span> Cache em memória no Redis persistindo snapshots periódicos em disco com intervalos de sincronização assíncrona a cada 1 segundo.
                   </button>
                 </div>
 
@@ -2777,14 +2777,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual arquitetura representa a escolha mais eficiente e econômica de recursos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Para fluxo unidirecional (servidor para cliente), SSE é o padrão ouro: roda sobre HTTP normal, suporta reconexão nativa e não exige brokers de websocket ou complexidade de framing bidirecional.">
-                    <span class="te-letter">A</span> Server-Sent Events (SSE) expondo um endpoint SseEmitter ou Flux<ServerSentEvent> com heartbeat periódico.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Superdimensionado para um cenário estritamente unidirecional que envolve apenas notificações do servidor para o browser.">
+                    <span class="te-letter">A</span> WebSocket bidirecional em tempo real configurado com broker de mensageria externo RabbitMQ sobre STOMP para controlar o fluxo de publicação e subscrição.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gera enorme overhead de handshake TCP/TLS, satura o connection pool do banco e desperdiça banda com respostas vazias.">
-                    <span class="te-letter">B</span> Short polling HTTP disparando requisições GET a cada 300ms contra o banco de dados.
+                    <span class="te-letter">B</span> Polling HTTP curto disparando requisições GET periódicas com intervalo de 200ms para verificar o status de processamento da remessa no banco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Superdimensionado para um cenário estritamente unidirecional que envolve apenas notificações do servidor para o browser.">
-                    <span class="te-letter">C</span> WebSocket full-duplex com broker RabbitMQ STOMP externo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Para fluxo unidirecional (servidor para cliente), SSE é o padrão ouro: roda sobre HTTP normal, suporta reconexão nativa e não exige brokers de websocket.">
+                    <span class="te-letter">C</span> Server-Sent Events (SSE), que provê canal unidirecional leve sobre HTTP com reconexão automática nativa sem complexidade de sockets.
                   </button>
                 </div>
 
@@ -2912,13 +2912,13 @@ criarPedido(clienteId, valor);
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O padrão Presigned URL elimina o tráfego do arquivo da memória e da rede do backend, transferindo o I/O pesado diretamente para o Object Storage.">
-                    <span class="te-letter">A</span> Implementar Presigned URLs no S3/MinIO: o cliente solicita a URL pré-assinada de upload ao backend e envia o binário diretamente para o Object Storage, que notifica o backend via webhook após a conclusão.
+                    <span class="te-letter">A</span> Gerar Presigned URLs para upload direto no Object Storage (S3/GCS), liberando a memória e a rede do backend do tráfego do arquivo pesado.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas posterga o problema a um custo elevado e continua bloqueando threads de I/O da API.">
-                    <span class="te-letter">B</span> Aumentar a memória -Xmx da JVM de 2GB para 16GB e configurar spring.servlet.multipart.max-file-size=5GB.
+                    <span class="te-letter">B</span> Aumentar a heap da JVM para 16GB e configurar o limite de tamanho do Spring Multipart para aceitar uploads concorrentes em buffers de disco.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Base64 adiciona 33% de overhead de tamanho e armazena blobs gigantes no banco relacional, degradando o buffer pool.">
-                    <span class="te-letter">C</span> Converter o arquivo binário para string Base64 e enviar em lote via JSON para gravação em coluna BYTEA do PostgreSQL.
+                    <span class="te-letter">C</span> Converter o payload binário para strings Base64 no frontend e persistir em colunas BLOB do banco de dados relacional via transação JDBC.
                   </button>
                 </div>
 
@@ -3027,14 +3027,14 @@ criarPedido(clienteId, valor);
                 <p class="te-instrucao">Qual explicação técnica justifica a obsolescência dessas técnicas no HTTP/2?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No HTTP/2, a multiplexação elimina o limite de 6 conexões e o bloqueio de linha. Domain sharding força handshakes TLS extras e quebra o HPACK, enquanto sprites impedem o cache granular.">
-                    <span class="te-letter">A</span> Porque a multiplexação de streams binários do HTTP/2 permite trafegar centenas de requisições concorrentes sobre uma única conexão TCP sem bloqueio de fila, tornando requisições individuais leves e melhorando a taxa de cache individual.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O HTTP/2 opera sobre TCP padrão; o transporte via UDP é introduzido no HTTP/3 através do protocolo QUIC.">
+                    <span class="te-letter">A</span> Porque o HTTP/2 estabelece conexões UDP sem estado que desativam o pipeline tradicional de download de múltiplos arquivos estáticos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HTTP/2 suporta qualquer tipo de arquivo binário e suporta certificados Wildcard/SAN perfeitamente.">
-                    <span class="te-letter">B</span> Porque o HTTP/2 proíbe o carregamento de imagens no formato PNG e restringe o acesso a um único subdomínio por certificado TLS.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No HTTP/2, a multiplexação elimina o limite de 6 conexões e o bloqueio de linha. Domain sharding força handshakes TLS extras e sprites impedem o cache granular.">
+                    <span class="te-letter">B</span> Porque a multiplexação em uma única conexão TCP elimina o bloqueio de fila, tornando requisições individuais leves e cacheáveis.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HTTP/2 baixa centenas de arquivos em paralelo na mesma conexão.">
-                    <span class="te-letter">C</span> Porque no HTTP/2 o navegador só consegue baixar um arquivo por segundo, priorizando conexões WebSocket.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HTTP/2 multiplexa centenas de streams em paralelo sobre uma mesma conexão sem a barreira de 6 conexões do HTTP/1.1.">
+                    <span class="te-letter">C</span> Porque navegadores modernos limitam o tráfego HTTP/2 a no máximo 6 streams simultâneos independentemente da infraestrutura de servidores.
                   </button>
                 </div>
 
@@ -3174,14 +3174,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Qual vulnerabilidade crítica está presente e como corrigi-la?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Spring Data JPA utiliza PreparedStatements parametrizados por padrão, inviabilizando injeção clássica via ID numérico.">
+                    <span class="te-letter">A</span> Injeção de SQL no path parameter da requisição, exigindo sanitização manual de strings e validação por regex antes da execução do método do repositório.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos HTTP GET são idempotentes e de leitura, não utilizando proteção CSRF.">
+                    <span class="te-letter">B</span> Ausência de proteção contra Cross-Site Request Forgery (CSRF), que permite que sites maliciosos capturem dados da fatura por meio de formulários ocultos.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A anotação @PreAuthorize valida apenas a role genérica CLIENTE, permitindo que o cliente A acerte o ID da fatura do cliente B.">
-                    <span class="te-letter">A</span> BOLA / IDOR (Broken Object Level Authorization); qualquer cliente autenticado pode ler faturas de outros clientes alterando o faturaId. Correção: validar se a fatura pertence ao usuário logado (usuario_id = securityContext.getUserId()).
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Spring Data JPA utiliza PreparedStatements parametrizados por padrão.">
-                    <span class="te-letter">B</span> Injeção de SQL via PathVariable; a correção é converter o parâmetro para String e usar PreparedStatements.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos HTTP GET são idempotentes/safe e não utilizam proteção CSRF.">
-                    <span class="te-letter">C</span> CSRF Token ausente; a correção é habilitar CSRF nos endpoints GET do Spring Security.
+                    <span class="te-letter">C</span> Vulnerabilidade BOLA/IDOR; o endpoint valida apenas a role genérica e não verifica se a fatura pertence ao ID do usuário autenticado na sessão.
                   </button>
                 </div>
 
@@ -3298,14 +3298,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Por que isso ocorreu e qual o ajuste arquitetural correto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Tokens stateless não sabem que a senha mudou no banco. Sem expiração curta ou checagem de estado/blacklist, tokens roubados permanecem válidos até o expirar dos 7 dias.">
-                    <span class="te-letter">A</span> O token é stateless e sua validade é verificada exclusivamente pela assinatura criptográfica e expiração (exp); a API não consulta o banco a cada request. A solução é reduzir o tempo do Access Token (5-15 min) e gerenciar a revogação no Refresh Token ou manter blacklist em Redis.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Tokens stateless não sabem que a senha mudou no banco. Sem expiração curta ou checagem de estado/blacklist, tokens vazados permanecem válidos.">
+                    <span class="te-letter">A</span> O JWT é stateless e auto-contido; revogações imediatas demandam Access Tokens curtos e checagem de estado ou blacklist no Redis.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A criptografia HMAC SHA-256 é computacionalmente segura com chaves adequadas; o problema é a ausência de validação de estado.">
-                    <span class="te-letter">B</span> O algoritmo de assinatura HS256 foi quebrado por força bruta pelo invasor no navegador.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A criptografia HMAC SHA-256 permanece válida com a mesma chave do servidor; o problema é a ausência de validação de estado ou revogação.">
+                    <span class="te-letter">B</span> A assinatura HS256 do token perde integridade quando a chave de hash do servidor não é rotacionada sincronizadamente a cada alteração de senha de usuário.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não há cache permanente de tokens na JVM em filtros stateless padrão.">
-                    <span class="te-letter">C</span> O Spring Security mantém os tokens em memória permanente de pods que só limpa reiniciando o cluster.
+                    <span class="te-letter">C</span> O filtro do Spring Security armazena em cache permanente na JVM todas as credenciais decodificadas de tokens validados nos últimos 7 dias.
                   </button>
                 </div>
 
@@ -3430,14 +3430,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Qual a justificativa de segurança para a proibição de client_secret em SPAs?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Qualquer client_secret embutido em código JavaScript de frontend pode ser inspecionado no DevTools por qualquer pessoa. O PKCE resolve isso com chaves efêmeras por transação.">
-                    <span class="te-letter">A</span> Porque SPAs são clientes públicos (código fonte e memória visíveis no browser de qualquer usuário) e não conseguem manter segredos em sigilo; o PKCE protege o fluxo gerando um segredo efêmero e dinâmico (code_verifier/challenge) por sessão.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A restrição não é relacionada a CORS, mas à impossibilidade de manter segredos confidenciais em código aberto ao cliente.">
+                    <span class="te-letter">A</span> Porque navegadores web bloqueiam requisições de autenticação que trafegam credenciais estáticas por restrições da política de CORS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HTTPS é obrigatório em todas as comunicações modernas.">
-                    <span class="te-letter">B</span> Porque o Google desativou conexões HTTPS para navegadores web corporativos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Qualquer client_secret embutido em código JavaScript de frontend pode ser inspecionado no DevTools por qualquer pessoa. O PKCE resolve isso com chaves efêmeras.">
+                    <span class="te-letter">B</span> Porque SPAs são clientes públicos e não conseguem ocultar segredos; o PKCE utiliza segredos efêmeros (code_verifier) gerados por sessão no navegador.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. PKCE é apenas uma extensão de validação criptográfica do fluxo OAuth 2.0.">
-                    <span class="te-letter">C</span> Porque o PKCE converte automaticamente todas as requisições REST para sockets binários gRPC.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. PKCE é uma validação com base em pares verifier e challenge SHA-256, dispensando certificados mTLS no cliente público.">
+                    <span class="te-letter">C</span> Porque a especificação OAuth 2.1 exige que toda troca de tokens utilize assinaturas criptográficas baseadas em certificados mTLS cliente.
                   </button>
                 </div>
 
@@ -3566,14 +3566,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Selecione o fluxo metódico e profissional de diagnóstico:</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A sequência métrica -> trace -> log correlacionado permite ir do sintoma macro até a linha exata de código que disparou a exceção sem chutes.">
-                    <span class="te-letter">A</span> Verificar no Grafana qual endpoint e serviço tem o pico de 5xx (métrica) -> pegar uma amostra de requisições com falha e inspecionar o Trace ID no Jaeger (tracing) -> filtrar pelo Trace ID no Elasticsearch para ler a stack trace exata do erro.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ação destrutiva e sem qualquer diagnóstico da causa raiz.">
-                    <span class="te-letter">B</span> Acessar o banco de dados de produção via SSH, rodar DROP TABLE logs para liberar espaço e reiniciar todos os pods.
-                  </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O volume de logs em pico de tráfego torna a leitura manual em tempo real inútil e caótica.">
-                    <span class="te-letter">C</span> Conectar via kubectl logs e ler as mensagens em tempo real de dezenas de instâncias simultaneamente sem filtros.
+                    <span class="te-letter">A</span> Conectar via SSH em cada nó de produção e executar tail -f nos logs de aplicação até identificar exceções em tempo real nas saídas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas mascara temporariamente o sintoma e pode provocar novas indisponibilidades sem descobrir a causa raiz.">
+                    <span class="te-letter">B</span> Reiniciar todos os pods da aplicação de forma sequencial para liberar conexões estagnadas e aguardar a normalização dos alertas do Grafana.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A sequência métrica -> trace -> log correlacionado permite ir do sintoma macro até a linha exata de código que disparou a exceção sem chutes.">
+                    <span class="te-letter">C</span> Localizar o endpoint com falha nas métricas do Grafana, obter amostras de Trace ID no Jaeger e inspecionar a stack trace no Elasticsearch.
                   </button>
                 </div>
 
@@ -3700,14 +3700,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Qual a solução recomendada pelas melhores práticas de segurança em nuvem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A federação OIDC elimina o armazenamento de credenciais estáticas de longa duração, gerando credenciais efêmeras do AWS STS válidas apenas durante o job do pipeline.">
-                    <span class="te-letter">A</span> Configurar uma conexão federada via OpenID Connect (OIDC) entre o Azure DevOps e uma AWS IAM Role, permitindo que a pipeline assuma a Role via STS temporariamente durante a execução da esteira.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A federação OIDC elimina o armazenamento de credenciais estáticas de longa duração, gerando credenciais efêmeras do AWS STS válidas apenas durante o job.">
+                    <span class="te-letter">A</span> Estabelecer federação via OpenID Connect (OIDC) entre o Azure DevOps e uma IAM Role da AWS, assumindo permissões temporárias via STS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Grave falha de segurança que expõe a infraestrutura a qualquer atacante na internet.">
-                    <span class="te-letter">B</span> Desativar a autenticação na AWS e permitir acesso anônimo aos clusters EKS durante a janela de deploy.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Túneis de rede não substituem a governança de credenciais de autenticação da nuvem e violam boas práticas de menor privilégio.">
+                    <span class="te-letter">B</span> Configurar um túnel VPN seguro dedicado ligando os runners do Azure DevOps aos nós do Kubernetes para transmitir credenciais sem criptografia adicional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Base64 é codificação trivial e comitar credenciais no repositório viola as diretrizes de segurança.">
-                    <span class="te-letter">C</span> Inserir as chaves de acesso criptografadas com Base64 diretamente no arquivo azure-pipelines.yml no repositório.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Persistir chaves estáticas em máquinas ou runners viola as diretrizes de conformidade contra armazenamento de credenciais permanentes.">
+                    <span class="te-letter">C</span> Injetar credenciais estáticas em arquivos de configuração locais dos runners privados mantendo o segredo oculto dos logs de build da esteira.
                   </button>
                 </div>
 
@@ -3831,14 +3831,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Qual sequência de etapas garante o padrão Expand and Contract?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Desacopla a evolução do banco da versão da aplicação. Durante as fases intermediárias, tanto a versão N-1 quanto a versão N funcionam perfeitamente sem quebrar.">
-                    <span class="te-letter">A</span> Fase 1: Adicionar a coluna documento_fiscal como nula mantendo cpf. Fase 2: Deploy da app gravando em ambas e lendo da nova. Fase 3: Migrar dados legados em background. Fase 4 (Contract): Após validação e sem risco de rollback, remover a coluna antiga cpf.
-                  </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bloqueia a tabela durante o DDL e torna impossível fazer rollback para a versão de código antiga se houver bug na nova versão.">
-                    <span class="te-letter">B</span> Executar ALTER TABLE clientes RENAME COLUMN cpf TO documento_fiscal durante o horário de almoço e fazer deploy da nova aplicação simultaneamente.
+                    <span class="te-letter">A</span> Executar ALTER TABLE clientes RENAME COLUMN na janela de menor movimento e realizar o deploy da nova versão da aplicação em seguida.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Provoca horas de indisponibilidade e risco severo de perda de integridade dos dados.">
-                    <span class="te-letter">C</span> Fazer dump completo do banco MySQL, editar o arquivo SQL no Notepad e restaurar o backup.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Desacopla a evolução do banco da versão da aplicação. Durante as fases intermediárias, tanto a versão N-1 quanto a versão N funcionam perfeitamente sem quebrar.">
+                    <span class="te-letter">B</span> Criar a nova coluna, implantar versão que grava em ambas e lê da nova, migrar registros legados e só então remover a coluna antiga em fase posterior.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Triggers síncronas em tabelas de grande volume geram overhead de escrita e contenção de locks durante operações concorrentes.">
+                    <span class="te-letter">C</span> Criar uma view temporária apontando para a coluna antiga e aplicar triggers de sincronização síncrona para atualizar o schema em tempo real.
                   </button>
                 </div>
 
@@ -3947,14 +3947,14 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
                 <p class="te-instrucao">Como o Git gerencia o histórico e qual a prática preventiva ideal?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O alerta ocorre porque o objeto do commit original continua integrando a árvore de commits (DAG) do repositório remoto.">
+                    <span class="te-letter">A</span> O GitHub indexa o código excluído em caches internos de busca que demandam abertura de chamado formal de suporte para expurgo manual dos índices do repositório.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O histórico do Git é governado por árvores de objetos do repositório, não por arquivos de configuração de atributos.">
+                    <span class="te-letter">B</span> A credencial foi registrada nos arquivos .gitattributes da branch e permanece acessível para clones que não utilizem profundidade de histórico shallow.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Deletar um arquivo em um novo commit não apaga o snapshot do commit anterior. A chave deve ser rotacionada imediatamente e ferramentas como Gitleaks devem rodar em pre-commit.">
-                    <span class="te-letter">A</span> O Git é um sistema append-only de objetos imutáveis; arquivos commitados permanecem no histórico para sempre a menos que o histórico seja reescrito (com git-filter-repo/BFG) e a credencial revogada. Preventivamente, deve-se usar git hooks com scanners de segredos (ex: gitleaks/trufflehog).
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Git preserva todo o DAG de commits anteriores, permitindo que qualquer pessoa visualize o arquivo commitado no passado.">
-                    <span class="te-letter">B</span> O Git só salva o estado do último commit; o alerta é falso positivo e basta deletar o branch no GitHub.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Os commits foram enviados para o repositório remoto e residem no servidor.">
-                    <span class="te-letter">C</span> Basta reiniciar o computador do desenvolvedor para descarregar o cache do Git.
+                    <span class="te-letter">C</span> Commits no Git são imutáveis; o arquivo persiste no snapshot do commit anterior e exige rotação da chave além de limpeza do histórico.
                   </button>
                 </div>
 
@@ -4124,14 +4124,14 @@ java -XX:MaxRAMPercentage=70.0 \
                 <p class="te-instrucao">O que explica o ocorrido e como corrigir?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Exit Code 137 é 128 + 9 (SIGKILL). O Linux mata o container sumariamente ao estourar o cgroup. Como o sinal é de fora, a JVM não tem oportunidade de executar hooks nem despejar heap dumps.">
-                    <span class="te-letter">A</span> O processo da JVM ultrapassou os 512Mi do cgroup no Linux (somando Heap + Off-Heap/Metaspace/Buffers de I/O) e o Kernel disparou SIGKILL (137) de fora, sem dar tempo para a JVM interceptar ou emitir o heap dump. Correção: ajustar MaxRAMPercentage para 70% ou aumentar os limites de memória do Pod.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Exit Code 137 é 128 + 9 (SIGKILL). O Linux mata o container sumariamente ao estourar o cgroup. Como o sinal é de fora, a JVM não emite heap dump.">
+                    <span class="te-letter">A</span> O processo total ultrapassou o limite do cgroup e recebeu SIGKILL (137) do Kernel; ajusta-se MaxRAMPercentage ou o limite do pod.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Exit 137 é estritamente relacionado ao sinal SIGKILL do OOM Killer do Linux.">
-                    <span class="te-letter">B</span> O Kubernetes sofreu uma falha física de disco corrompendo a imagem do container.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falhas de probes no Kubernetes emitem sinais de finalização gradual (SIGTERM 143), não código 137 direto do sistema operacional.">
+                    <span class="te-letter">B</span> O garbage collector da JVM congelou as threads por timeout de liveness probe, resultando em cancelamento do container pelo kubelet.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falhas de probe resultam em restarts com código 143 (SIGTERM), não em OOMKilled 137.">
-                    <span class="te-letter">C</span> O garbage collector da JVM travou e o processo foi finalizado por timeout de readiness probe do HTTP.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falta de file descriptors acarreta IOException (Too many open files), mas não aciona o encerramento do processo por OOMKilled 137.">
+                    <span class="te-letter">C</span> Ocorreu esgotamento de descritores de arquivos abertos no sistema operacional devido a conexões de rede presas no servidor web Tomcat.
                   </button>
                 </div>
 
@@ -4270,14 +4270,14 @@ Sob carga de 50 req/s, a aplicação lança `ConnectionTimeoutException: Connect
                 <p class="te-instrucao">Qual a causa raiz e a correção arquitetural definitiva?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cada thread retém uma conexão do banco enquanto espera o HTTP de 2 a 5s. Sob 50 req/s, o pool de 20 ou 30 conexões se esgota em menos de 1 segundo. A chamada externa deve ser realizada fora do bloco transacional.">
-                    <span class="te-letter">A</span> A chamada externa cobrarCartao segura a conexão JDBC do pool presa durante todo o tempo de espera do HTTP externo. A correção é remover o I/O externo de dentro da transação, chamando o gateway fora do @Transactional.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Superdimensionar o pool consome memória excessiva e satura o banco de dados sem solucionar o bloqueio indevido de conexões ociosas.">
+                    <span class="te-letter">A</span> Aumentar a capacidade máxima do connection pool para 1.000 conexões ativas simultâneas de modo a absorver o tempo de espera do gateway de pagamento externo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HikariCP é o pool mais rápido e confiável do ecossistema Java; o erro é de arquitetura da transação.">
-                    <span class="te-letter">B</span> O HikariCP possui um bug na versão Spring Boot; deve-se migrar para o pool Apache DBCP.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cada thread retém uma conexão do banco enquanto espera o HTTP de 2 a 5s. Sob 50 req/s, o pool se esgota rapidamente. A chamada externa deve ficar fora da transação.">
+                    <span class="te-letter">B</span> A chamada externa retém a conexão do banco de dados durante todo o tempo de espera; deve-se extrair o I/O de rede de dentro do @Transactional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas fará com que as threads do servidor fiquem travadas por 30 minutos acumulando backlog.">
-                    <span class="te-letter">C</span> Aumentar o connection-timeout do pool de 30 segundos para 30 minutos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O timeout decorre da indisponibilidade de conexões livres retidas por outras threads, não de problemas na integridade das conexões físicas.">
+                    <span class="te-letter">C</span> Habilitar retries automáticos com reconexão imediata no driver JDBC para restabelecer instâncias de conexões que sofreram timeout no pool.
                   </button>
                 </div>
 
@@ -4406,14 +4406,14 @@ spring.rabbitmq.listener.simple:
                 <p class="te-instrucao">Como mitigar definitivamente essa vulnerabilidade?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Interromper o ciclo de requeue imediato e enviar a mensagem venenosa para uma DLQ isolada permite que a fila continue processando as demais mensagens normais sem travar o cluster.">
-                    <span class="te-letter">A</span> Desabilitar o requeue infinito, configurar política de retry com limite (ex: 3 tentativas com backoff exponencial) e direcionar mensagens não recuperáveis para uma Dead Letter Queue (DLQ) associada a alertas de observabilidade.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Tolerar payloads corrompidos sem validação contamina as camadas de domínio da aplicação com dados inconsistentes.">
+                    <span class="te-letter">A</span> Desabilitar o schema de validação JSON do Spring AMQP para deserializar payloads malformados como mapas genéricos de strings.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas multiplicará o consumo inútil de CPU e acelerará o colapso dos novos pods.">
-                    <span class="te-letter">B</span> Aumentar o número de instâncias consumidoras de 2 para 50 para processar a mensagem corrupta mais vezes por segundo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar consumidores sem desativar o requeue infinito apenas multiplicará o consumo inútil de CPU e acelerará o colapso dos pods.">
+                    <span class="te-letter">B</span> Ampliar horizontalmente a quantidade de consumidores para 20 pods para pulverizar a carga das mensagens com erro de serialização.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem qualquer efeito sobre a lógica de rejeição e requeue do broker de mensageria.">
-                    <span class="te-letter">C</span> Mudar o formato de todas as mensagens do sistema de JSON para XML puro sem schemas de validação.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Interromper o ciclo de requeue imediato e enviar a mensagem venenosa para uma DLQ isolada permite que a fila continue processando as demais mensagens normais.">
+                    <span class="te-letter">C</span> Desativar o requeue imediato infinito, estabelecer política de retry com limite máximo e encaminhar a mensagem com falha irrecuperável para uma DLQ.
                   </button>
                 </div>
 
@@ -4540,13 +4540,13 @@ spring.rabbitmq.listener.simple:
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Investigar a causa fundamental (ordem de aquisição de locks concorrentes) e documentar a lição aprendida enriquece a capacidade técnica e elimina o problema na raiz.">
-                    <span class="te-letter">A</span> Pesquisar o log de locks no catálogo do PostgreSQL (pg_locks), mapear a ordem de aquisição dos recursos nas transações concorrentes, reproduzir o cenário em um ambiente isolado e documentar a solução para a equipe.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas mascara o sintoma e agrava o congestionamento de conexões no banco.">
-                    <span class="te-letter">B</span> Aumentar aleatoriamente o timeout da transação para 10 minutos e reiniciar o banco sempre que travar.
+                    <span class="te-letter">A</span> Inspecionar o log de locks no catálogo pg_locks, analisar a ordem de aquisição nas transações, reproduzir o caso em teste e documentar a correção.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Provoca leituras sujas (dirty reads) e corrupção severa da consistência contábil dos dados.">
-                    <span class="te-letter">C</span> Desativar completamente o isolamento de transações mudando para Read Uncommitted para que nenhuma query trave.
+                    <span class="te-letter">B</span> Configurar o nível de isolamento de todas as transações para Read Uncommitted para que nenhuma query dispute bloqueios compartilhados de leitura ou escrita.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas mascara o sintoma e agrava o congestionamento de conexões no banco.">
+                    <span class="te-letter">C</span> Aumentar arbitrariamente o timeout de deadlock no postgresql.conf para adiar a interrupção de transações que estejam aguardando liberação de recursos.
                   </button>
                 </div>
 
@@ -4671,14 +4671,14 @@ Ao final do teste, o saldo ficou em -14 e 15 compras foram aprovadas.</p>
                 <p class="te-instrucao">Como solucionar esse problema de forma performática e robusta no banco de dados?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A verificação condicional atômica na cláusula WHERE aproveita o row lock nativo do motor do banco, garantindo que apenas uma transação reduza o saldo para 0 e as demais recebam 0 linhas afetadas.">
-                    <span class="te-letter">A</span> Utilizar atualização atômica no banco com restrição condicional (UPDATE produto SET estoque = estoque - 1 WHERE id = :id AND estoque >= 1;) ou lock pessimista/otimista (@Version).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O modificador synchronized funciona somente dentro da mesma JVM e falha completamente em ambientes distribuídos com múltiplos nós.">
+                    <span class="te-letter">A</span> Envolver a leitura do estoque em um bloco synchronized no método Java do serviço para controlar requisições entre todas as instâncias da aplicação.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A verificação condicional atômica na cláusula WHERE aproveita o row lock nativo do motor do banco, garantindo que apenas transações válidas decrementem o estoque.">
+                    <span class="te-letter">B</span> Executar atualização atômica no banco (UPDATE produto SET estoque = estoque - 1 WHERE id = :id AND estoque >= 1) ou aplicar lock pessimista.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Atrasos artificiais não sincronizam memória e pioram drasticamente a latência sob concorrência.">
-                    <span class="te-letter">B</span> Adicionar um Thread.sleep(100) antes do if para dar tempo de outros pods lerem o valor atualizado.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar a largura do tipo não tem nenhuma relação com condições de corrida de concorrência.">
-                    <span class="te-letter">C</span> Trocar o tipo da coluna no banco de INTEGER para BIGINT no schema do PostgreSQL.
+                    <span class="te-letter">C</span> Inserir um atraso artificial via Thread.sleep antes da verificação condicional para permitir que a sincronização da memória da JVM se estabilize.
                   </button>
                 </div>
 
@@ -4777,7 +4777,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -4789,5 +4789,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

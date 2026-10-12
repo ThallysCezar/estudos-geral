@@ -498,243 +498,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
 </style>
 
-<style id="img-modal-styles">
-
-/* ==================== MODAL DE IMAGEM / LIGHTBOX COM ZOOM ==================== */
-.img-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .22s ease, visibility .22s ease;
-}
-.img-modal.open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.im-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 14, 22, 0.90);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.im-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  overflow: hidden;
-  user-select: none;
-}
-.im-header {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 22px;
-  background: rgba(28, 29, 39, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line2, #44475a);
-  z-index: 10;
-}
-.im-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.im-badge {
-  font: 800 .68rem/1 "Inter", sans-serif;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--brand, #bd93f9);
-  background: var(--brand-s, #332a4e);
-  border: 1px solid var(--brand, #bd93f9);
-  border-radius: 6px;
-  padding: 5px 9px;
-  white-space: nowrap;
-}
-.im-caption {
-  margin: 0;
-  font: 600 .9rem/1.25 "Inter", sans-serif;
-  color: var(--ink, #f8f8f2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.im-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.im-btn {
-  background: var(--card, #2f313f);
-  color: var(--ink, #f8f8f2);
-  border: 1px solid var(--line2, #44475a);
-  border-radius: 8px;
-  padding: 0 11px;
-  font: 700 .86rem "Inter", sans-serif;
-  cursor: pointer;
-  transition: all .15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  min-width: 34px;
-}
-.im-btn:hover {
-  background: var(--brand, #bd93f9);
-  color: #1e1f29;
-  border-color: var(--brand, #bd93f9);
-}
-.im-btn.im-scale-val {
-  min-width: 58px;
-  font-family: "Cascadia Code", monospace;
-  font-size: .78rem;
-}
-.im-btn.im-close {
-  background: rgba(255, 85, 85, 0.16);
-  border-color: rgba(255, 85, 85, 0.4);
-  color: #ff5555;
-  font-size: 1rem;
-  margin-left: 6px;
-}
-.im-btn.im-close:hover {
-  background: #ff5555;
-  border-color: #ff5555;
-  color: #ffffff;
-}
-.im-viewport {
-  flex: 1 1 auto;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-}
-.im-viewport.is-dragging {
-  cursor: grabbing;
-}
-.im-canvas {
-  position: absolute;
-  transform-origin: center center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  will-change: transform;
-}
-.im-canvas img {
-  max-width: 90vw;
-  max-height: 80vh;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-  border: 1px solid var(--line2, #44475a);
-  pointer-events: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  cursor: grab;
-}
-.im-viewport.is-dragging .im-canvas img {
-  cursor: grabbing;
-}
-.im-footer {
-  flex: 0 0 auto;
-  padding: 9px 18px;
-  text-align: center;
-  background: rgba(20, 21, 30, 0.88);
-  border-top: 1px solid var(--line, #343746);
-  z-index: 10;
-}
-.im-hint {
-  font: 400 .78rem "Inter", sans-serif;
-  color: var(--muted, #9aa1c0);
-}
-.im-hint b {
-  color: var(--cyan, #8be9fd);
-}
-
-@media (max-width: 640px) {
-  .im-header { padding: 10px 14px; }
-  .im-badge { display: none; }
-  .im-caption { font-size: .8rem; }
-  .im-btn { height: 30px; min-width: 30px; padding: 0 7px; font-size: .8rem; }
-  .im-hint { font-size: .7rem; }
-}
-
-/* ==================== IMAGENS & MAPAS CONCEITUAIS PADRÃO ==================== */
-.topic-img {
-  margin: 24px 0 28px 0;
-  padding: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--line2, #44475a);
-  background: #1e1f29;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
-  transition: border-color .2s ease, box-shadow .2s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover {
-  border-color: var(--brand, #bd93f9);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
-}
-.topic-img a {
-  display: block;
-  text-decoration: none;
-  cursor: zoom-in;
-}
-.topic-img img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform .3s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover img {
-  transform: scale(1.008);
-}
-.topic-img figcaption {
-  padding: 11px 18px;
-  font: 600 .82rem/1.3 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--muted, #9aa1c0);
-  background: var(--bg2, #21222c);
-  border-top: 1px solid var(--line, #343746);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.topic-img figcaption span {
-  color: var(--cyan, #8be9fd);
-  font-family: "Cascadia Code", Consolas, monospace;
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-}
-.topic-img figcaption em {
-  font-style: normal;
-  color: var(--ink, #f8f8f2);
-  font-weight: 500;
-}
-
-</style>
-<style>
-
-</style>
+<link rel="stylesheet" id="img-modal-styles" href="../assets/css/img-modal.css">
 <style id="v5-5-code-studio-styles">
 /* ==================== V5.5 BALANCED CODE STUDIO ARCHITECTURE ==================== */
 @media (min-width: 1200px) {
@@ -1053,7 +817,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <!-- MAPA MENTAL PRINCIPAL -->
       <figure class="topic-img">
-        <img src="../assets/img/mensageria/mensageria_mapa_mental_principal.jpg" alt="Mapa Mental: RabbitMQ - MENSAGERIA QUE CONECTA SISTEMAS" loading="lazy">
+        <img src="../assets/img/mensageria/mensageria_mapa_mental_principal.jpg" alt="Mapa Mental: RabbitMQ - MENSAGERIA QUE CONECTA SISTEMAS" loading="lazy" decoding="async">
         <figcaption>
           <span>MAPA MENTAL PRINCIPAL</span>
           <em>RabbitMQ MENSAGERIA — Exchanges, Filas, Bindings &amp; Padrões Assíncronos</em>
@@ -1238,14 +1002,14 @@ public class CheckoutAsyncService {
                 <p class="te-instrucao">Como a mensageria atua para proteger o banco de dados e evitar a queda do site?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Replicação síncrona adiciona overhead de consenso bidirecional na rede e piora a contenção de locks durante picos de escrita.">
+                    <span class="te-letter">A</span> Configurar replicação multi-master síncrona no PostgreSQL para distribuir as transações de escrita entre 50 instâncias de banco em tempo real.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A fila atua como uma represa amortecedora de vazão (buffer), acumulando o choque do pico de tráfego e liberando o fluxo de forma controlada dentro da capacidade do armazenamento persistente.">
-                    <span class="te-letter">A</span> Padrão Load Leveling (Nivelamento de Carga): o gateway aceita os pedidos, publica mensagens em uma fila durável em milissegundos e retorna 'Pedido Recebido'. Uma frota estável de workers consome da fila a uma taxa constante segura de 700 pedidos/s, blindando o banco de dados de sobrecarga.
+                    <span class="te-letter">B</span> Padrão Load Leveling: publicar mensagens em fila durável e consumir a uma taxa estável de 700 req/s, amortecendo o pico de tráfego.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas armazenam mensagens assíncronas, não disparam chamadas HTTP diretas no banco.">
-                    <span class="te-letter">B</span> A fila converte os 100.000 pedidos em chamadas HTTP GET síncronas contra o banco.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers de mensageria gerenciam mensagens, não alteram o hardware do banco.">
-                    <span class="te-letter">C</span> O RabbitMQ duplica o número de núcleos físicos de CPU do servidor de banco.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Descartar compras legítimas de clientes gera perda direta de receita comercial em momentos críticos de alta demanda.">
+                    <span class="te-letter">C</span> Rejeitar requisições excedentes via circuit breaker no gateway descartando pagamentos que excederem a capacidade imediata do banco.
                   </button>
                 </div>
 
@@ -1417,14 +1181,14 @@ rabbitTemplate.convertAndSend("amq.direct", "cmd.fiscal.emitir-danfe", command);
                 <p class="te-instrucao">Qual é a classificação correta dessas mensagens na arquitetura orientada a eventos?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. DebitarSaldoDaConta expressa intenção imperativa de alteração de estado, caracterizando um comando e não uma notificação passiva.">
+                    <span class="te-letter">A</span> Mensagem 1 é uma Notificação reativa de auditoria e Mensagem 2 é um Documento canônico persistido em banco NoSQL.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. SaldoDebitadoComSucesso é um evento de domínio que comunica um fato passado imutável, e não uma instrução de comando pendente.">
+                    <span class="te-letter">B</span> Ambas representam Comandos de orquestração assíncrona, diferindo apenas pelo código de status HTTP retornado pelo serviço.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Comandos expressam intenção de mudança de estado; eventos anunciam fatos que já aconteceram e que são imutáveis na linha do tempo do negócio.">
-                    <span class="te-letter">A</span> Mensagem 1 é um COMANDO (ordem direcionada que pode falhar caso não haja saldo suficiente); Mensagem 2 é um EVENTO (um fato consumado e imutável que informa ao mundo que o débito já ocorreu).
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A semântica gramatical e temporal define a natureza da mensagem, não o assunto financeiro.">
-                    <span class="te-letter">B</span> Ambas são Comandos, pois ambas envolvem dinheiro.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Documentos são fichas cadastrais completas sem semântica de gatilho comportamental.">
-                    <span class="te-letter">C</span> Ambas são Documentos estáticos de banco de dados.
+                    <span class="te-letter">C</span> Mensagem 1 é um Comando (ordem direcionada a um executor específico que pode falhar); Mensagem 2 é um Evento (fato consumado e imutável que informa que a ação ocorreu).
                   </button>
                 </div>
 
@@ -1603,13 +1367,13 @@ CREATE TABLE mensagens_processadas (
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em garantias At-Least-Once, a perda do pacote de ACK na rede gera reenvio legítimo pelo broker. O consumidor precisa se defender contra duplicações através de travas de idempotência.">
-                    <span class="te-letter">A</span> O broker considera que a mensagem não foi confirmada e a reentrega para outro consumidor (ou para o mesmo após reconexão). O consumidor DEVE ser idempotente (checar ID da transação no banco) para não cobrar os R$ 100 novamente.
+                    <span class="te-letter">A</span> O broker reentrega a mensagem ao reconectar; o consumidor deve ser idempotente para evitar cobranças duplicadas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O broker desconhece regras bancárias de clientes.">
-                    <span class="te-letter">B</span> O broker apaga a conta do cliente para evitar inconsistência contábil.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers de mensageria operam desacoplados da camada de persistência e não possuem capacidade de coordenar rollbacks em bancos de terceiros.">
+                    <span class="te-letter">B</span> O RabbitMQ detecta a perda do socket e desfaz automaticamente a transação de débito no banco relacional da aplicação consumidora.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers de mensageria não gerenciam rollbacks em bancos de terceiros.">
-                    <span class="te-letter">C</span> O RabbitMQ entra em modo Exactly-Once e cancela o débito no banco do cliente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem o recebimento do ACK, a mensagem retorna ao estado Ready no broker e será reencaminhada para outro consumidor disponível.">
+                    <span class="te-letter">C</span> A mensagem é descartada pelo broker ao expirar o handshake TCP, exigindo que o cliente web reenvie o pagamento manualmente.
                   </button>
                 </div>
 
@@ -1783,14 +1547,14 @@ public class CepController {
                 <p class="te-instrucao">Qual é a crítica técnica a essa proposta arquitetural?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers AMQP suportam qualquer carga útil binária com criptografia de transporte via TLS.">
+                    <span class="te-letter">A</span> O RabbitMQ não suporta tráfego de dados confidenciais ou tokens criptografados sem habilitação prévia do plugin de mascaramento de payloads.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Operações de leitura e autenticação de interface síncrona devem usar chamadas diretas REST ou gRPC. Mensageria é voltada para desacoplamento e tarefas assíncronas.">
-                    <span class="te-letter">A</span> Uso inadequado de mensageria para um fluxo que é inerentemente síncrono e bloqueante. A tela de login precisa da resposta imediata para autenticar o usuário; colocar fila no meio adiciona latência, complexidade de correlação de mensagens e risco de filas cheias atrasarem logins simples.
+                    <span class="te-letter">B</span> Inadequado para fluxos síncronos; a autenticação requer resposta imediata via HTTP/gRPC sem mensageria.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers AMQP suportam qualquer payload binário ou JSON.">
-                    <span class="te-letter">B</span> O RabbitMQ não suporta transmissão de senhas criptografadas.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas processam qualquer tipo de dados de domínio.">
-                    <span class="te-letter">C</span> Filas só funcionam para envio de e-mails em formato HTML.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O AMQP opera com latências em sub-milissegundos; o problema é a complexidade arquitetural desnecessária para um fluxo inerentemente request-reply síncrono.">
+                    <span class="te-letter">C</span> O protocolo AMQP impõe uma latência de tráfego de rede mínima de 500ms por mensagem que inviabiliza autenticações de baixa latência.
                   </button>
                 </div>
 
@@ -1964,14 +1728,14 @@ public TopicExchange fiscalExchange() {
                 <p class="te-instrucao">O que está acontecendo tecnicamente sob o capô do protocolo AMQP?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No AMQP é fisicamente impossível publicar sem passar por uma Exchange. A string vazia '' utiliza a Default Exchange, que roteia mensagens para a fila com nome idêntico à routing key.">
-                    <span class="te-letter">A</span> Ele está utilizando a 'Default Exchange' (Exchange anônima pré-definida do tipo Direct): o RabbitMQ secretamente cria um binding automático onde o nome de cada fila é a sua própria routing key na Default Exchange.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A comunicação continua ocorrendo via protocolo AMQP sobre TCP através do broker RabbitMQ.">
+                    <span class="te-letter">A</span> O driver amqp detecta a ausência de exchanges e estabelece uma comunicação ponto a ponto direta por meio de sockets Unix locais do sistema operacional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A conformidade com a especificação AMQP é mantida através da Default Exchange.">
-                    <span class="te-letter">B</span> O RabbitMQ desativou o protocolo AMQP e passou a operar como um socket TCP bruto.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A especificação AMQP é mantida estritamente; a publicação utiliza a exchange padrão implícita com string vazia.">
+                    <span class="te-letter">B</span> O RabbitMQ desabilita as regras formais do protocolo AMQP e opera em modo compatível com tópicos simples de memória do Redis.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As mensagens residem no broker RabbitMQ.">
-                    <span class="te-letter">C</span> As mensagens estão sendo gravadas diretamente no disco rígido do desenvolvedor.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No AMQP é fisicamente impossível publicar sem passar por uma Exchange. A string vazia usa a Default Exchange, que roteia mensagens para a fila com nome idêntico à routing key.">
+                    <span class="te-letter">C</span> Está usando a Default Exchange (Direct anônima), onde o broker cria binding automático direcionando routing keys com o nome exato da fila.
                   </button>
                 </div>
 
@@ -2141,13 +1905,13 @@ rabbitTemplate.execute(channel -> {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Conexões TCP no AMQP foram desenhadas para serem persistentes e duradouras. Multiplexar canais sobre uma única conexão física é a arquitetura ideal.">
-                    <span class="te-letter">A</span> Anti-padrão de Connection Churn: abrir e fechar conexões TCP por mensagem satura o broker. A solução é abrir uma única Connection durável na inicialização da aplicação e reutilizá-la, abrindo apenas canais multiplexados sob demanda.
+                    <span class="te-letter">A</span> Connection Churn; abrir e fechar conexões TCP esgota file descriptors e satura o broker. A solução é manter uma Connection durável e reutilizar canais multiplexados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. RabbitMQ suporta facilmente centenas de milhares de mensagens por segundo.">
-                    <span class="te-letter">B</span> O RabbitMQ só suporta no máximo 10 mensagens por dia.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O travamento ocorreu no servidor RabbitMQ pelo consumo excessivo de descritores de arquivos, não por falta de memória na aplicação cliente.">
+                    <span class="te-letter">B</span> Esgotamento do heap do Node.js causado pelo acúmulo de promises não resolvidas no driver assíncrono da biblioteca amqplib.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha é puramente de ciclo de vida de sockets em software.">
-                    <span class="te-letter">C</span> Deveria ser usado cabo de fibra ótica dedicado em vez de conexões TCP normais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embora sockets entrem em TIME_WAIT, o gargalo principal reportado é o esgotamento de descritores do Erlang no servidor RabbitMQ devido ao churn contínuo.">
+                    <span class="te-letter">C</span> Bloqueio de portas de saída gerado pelo firewall do sistema operacional que impede a reutilização de sockets TCP em TIME_WAIT.
                   </button>
                 </div>
 
@@ -2319,14 +2083,14 @@ public void consumir(
                 <p class="te-instrucao">Quais são as DUAS condições obrigatórias que devem ser satisfeitas simultaneamente?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se a mensagem não for publicada como persistente (deliveryMode: 2), a fila ainda pode descartá-la em reinicializações da memória.">
+                    <span class="te-letter">A</span> Declarar a fila com quorum replication ativada, independentemente do modo de persistência das mensagens atribuído pelo publicador.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Se a fila for durável mas a mensagem for não-persistente, as mensagens somem no reboot. Se a mensagem for persistente mas a fila for transitória, a fila inteira é destruída no reboot. Ambas são indispensáveis.">
-                    <span class="te-letter">A</span> 1. A Fila deve ter sido declarada como durável (durable: true); e 2. A mensagem deve ser publicada com a propriedade de entrega persistente (deliveryMode: 2 / MessageDeliveryMode.PERSISTENT).
+                    <span class="te-letter">B</span> Fila declarada como durável (durable: true) e mensagens publicadas com entrega persistente (deliveryMode: 2 / PERSISTENT).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O broker não inspeciona o corpo da mensagem; ele avalia as propriedades formais do envelope AMQP.">
-                    <span class="te-letter">B</span> Basta colocar a palavra 'PERSIST' dentro do texto JSON do payload.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Por padrão, sem deliveryMode: 2, mensagens ficam apenas na memória RAM.">
-                    <span class="te-letter">C</span> O RabbitMQ salva automaticamente todas as mensagens em fita magnética sem configuração.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Snapshots periódicos não garantem a durabilidade imediata das mensagens transacionadas sem as propriedades nativas de durabilidade e persistência.">
+                    <span class="te-letter">C</span> Configurar políticas de mirroring automático com salvamento de snapshots em disco a cada intervalo de 30 segundos no cluster.
                   </button>
                 </div>
 
@@ -2496,14 +2260,14 @@ public class LogisticaConsumerTopologyConfig {
                 <p class="te-instrucao">Por que esse erro ocorreu e como resolvê-lo?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O erro PRECONDITION_FAILED ocorre mesmo sem consumidores ativos porque os metadados da fila gravada no broker diferem dos novos argumentos.">
+                    <span class="te-letter">A</span> O cluster RabbitMQ impede alterações em parâmetros de tempo de vida enquanto houver consumidores conectados em qualquer nó do cluster de produção.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reiniciar o broker não altera os metadados da fila persistida no Mnesia; a incompatibilidade continuará ocorrendo.">
+                    <span class="te-letter">B</span> O driver do Spring AMQP exige reinicialização prévia do broker para sincronizar alterações em anotações de configuração declarativa.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Filas no RabbitMQ não suportam mutação dinâmica de argumentos (como TTL ou DLX). Se os parâmetros diferirem da fila viva no broker, a chamada queueDeclare falha com PRECONDITION_FAILED.">
-                    <span class="te-letter">A</span> O RabbitMQ é imutável em relação a argumentos estruturais de filas já declaradas. Alterar argumentos de uma fila existente exige deletar a fila antiga manualmente no RabbitMQ (se não houver dados críticos) ou criar uma nova fila com outro nome versionado.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. RabbitMQ aceita TTL de horas, dias ou semanas.">
-                    <span class="te-letter">B</span> Ocorreu porque o RabbitMQ não aceita valores de TTL maiores que 1 minuto.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O erro é uma rejeição formal de protocolo vinda do próprio broker.">
-                    <span class="te-letter">C</span> O erro foi causado por falta de memória RAM no contêiner do Spring.
+                    <span class="te-letter">C</span> Argumentos de filas são imutáveis após declarados; alterar TTL exige excluir a fila antiga no broker ou criar uma nova fila com outro nome.
                   </button>
                 </div>
 
@@ -2693,14 +2457,14 @@ public Binding bindingAuditoriaTotal(Queue filaAuditoria, TopicExchange ecommerc
                 <p class="te-instrucao">Um produtor publica uma mensagem com routing key: 'alerta.critico.servidor.banco'. Quais filas receberão a mensagem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na sintaxe de Topic Exchange do AMQP, '*' casa rigorosamente uma única palavra entre pontos, enquanto '#' engole qualquer quantidade de palavras subsequentes.">
-                    <span class="te-letter">A</span> Apenas a Fila B! 'alerta.*' não casa porque exige exatamente 1 palavra após 'alerta' (a chave tem 3); 'alerta.critico.servidor' não casa porque é estrita de 3 palavras; 'alerta.#' casa porque o curinga '#' aceita zero ou múltiplas palavras.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na sintaxe de Topic Exchange do AMQP, * casa rigorosamente uma única palavra entre pontos, enquanto # engole qualquer quantidade de palavras subsequentes.">
+                    <span class="te-letter">A</span> Apenas a Fila B; o curinga * casa exatamente 1 palavra após alerta, enquanto # casa zero ou múltiplas palavras, capturando as 3 palavras da chave.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas A e C não satisfazem os critérios de casamento de palavras.">
-                    <span class="te-letter">B</span> Todas as 3 filas receberão a mensagem.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A Fila A exige exatamente uma palavra após alerta; a chave possui três palavras (critico.infra.disco), falhando no casamento de *.">
+                    <span class="te-letter">B</span> Filas A e B; o operador de ponto decimal divide a chave em partes independentes avaliadas de forma distributiva pelas filas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A Fila B casou perfeitamente através do operador '#'.">
-                    <span class="te-letter">C</span> Nenhuma fila receberá e a mensagem será descartada.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Topic Exchanges aplicam regras estritas de pattern matching e não atuam como Fanout indiscriminado.">
+                    <span class="te-letter">C</span> Todas as filas; a exchange do tipo Topic realiza broadcast sempre que o prefixo raiz da routing key for compartilhado.
                   </button>
                 </div>
 
@@ -2886,14 +2650,14 @@ public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
                 <p class="te-instrucao">Qual arquitetura no RabbitMQ impede que essa mensagem financeira seja perdida sem deixar rastros?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers realizam roteamento por casamento exato de bytes e não executam aproximações fonéticas ou de distância textual.">
+                    <span class="te-letter">A</span> Habilitar o modo de autocompensação léxica no RabbitMQ para que o broker normalize routing keys semelhantes por distância de Levenshtein.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A Alternate Exchange atua como a rede de proteção nativa do RabbitMQ para capturar mensagens órfãs que não encontraram bindings compatíveis.">
-                    <span class="te-letter">A</span> Configurar uma Alternate Exchange (AE) na Exchange de origem: o broker detecta que a mensagem não roteou para nenhuma fila comum e a despacha automaticamente para a AE, gravando a mensagem em uma fila dedicada de mensagens não roteadas para intervenção.
+                    <span class="te-letter">B</span> Alternate Exchange (AE); mensagens não roteadas para nenhuma fila são desviadas para a AE.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O broker faz casamento literal de bytes sem correção de texto.">
-                    <span class="te-letter">B</span> O RabbitMQ corrige a ortografia da palavra 'tranzferencia' usando inteligência artificial e entrega na fila certa.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Brokers de mensageria não geram arquivos na interface do usuário.">
-                    <span class="te-letter">C</span> A mensagem é convertida automaticamente em um arquivo PDF na área de trabalho.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Dead Letter Exchanges são configuradas em filas para mensagens rejeitadas ou expiradas, não em exchanges para erros de roteamento de publicação.">
+                    <span class="te-letter">C</span> Registrar uma Dead Letter Queue na exchange principal com chave coringa # para capturar exceções de formatação de strings.
                   </button>
                 </div>
 
@@ -3067,14 +2831,14 @@ MessagePostProcessor persistentPostProcessor = message -> {
                 <p class="te-instrucao">Após o reinício do RabbitMQ, em qual das 3 filas as mensagens continuarão existindo?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Na Fila A, as mensagens foram publicadas com deliveryMode=1 (não-persistentes) e residiam apenas na RAM, sendo perdidas no reboot.">
+                    <span class="te-letter">A</span> Nas Filas A e C; todas as filas com durable=true preservam suas mensagens em disco independentemente do deliveryMode especificado no envelope.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Na Fila B, a fila era volátil e foi destruída no reboot, levando junto suas mensagens mesmo que tivessem deliveryMode=2.">
+                    <span class="te-letter">B</span> Nas Filas B e C; mensagens marcadas com deliveryMode=2 são mantidas em arquivo de log mesmo que suas filas de origem sejam transitórias.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! É a regra canônica do RabbitMQ: durabilidade de fila sem persistência de mensagem perde os dados; persistência de mensagem em fila volátil perde a fila inteira no reboot.">
-                    <span class="te-letter">A</span> Apenas na Fila C! Na Fila A, a fila sobreviveu mas as mensagens eram transitórias e sumiram. Na Fila B, a fila não era durável e foi apagada inteira junto com suas mensagens. Apenas a Fila C possuía ambos os interruptores ligados.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mensagens sem deliveryMode=2 vivem exclusivamente na memória RAM.">
-                    <span class="te-letter">B</span> Nas Filas A, B e C igualmente, pois o RabbitMQ salva tudo no disco por padrão.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O RabbitMQ suporta persistência robusta em disco através de Write-Ahead Logging.">
-                    <span class="te-letter">C</span> Em nenhuma delas, pois reinício de servidor limpa 100% dos dados de mensageria.
+                    <span class="te-letter">C</span> Apenas na Fila C; na Fila A as mensagens eram transitórias e sumiram; na Fila B a própria fila volátil foi apagada no reinício.
                   </button>
                 </div>
 
@@ -3251,13 +3015,13 @@ public class PedidoSeguroProducer {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Publisher Confirms é a extensão AMQP desenvolvida para garantir confiabilidade de envio no produtor sem o overhead desastroso de transações de banco tradicionais.">
-                    <span class="te-letter">A</span> Publisher Confirms: o canal opera em modo de confirmação e o broker responde com um ACK assíncrono somente após a mensagem ser gravada com sucesso no storage durável e roteada para as filas persistentes.
+                    <span class="te-letter">A</span> Publisher Confirms; o canal opera em modo de confirmação e o broker responde com ACK assíncrono após gravar a mensagem no storage durável e rotear.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Firewalls não fornecem garantias de confirmação de mensageria.">
-                    <span class="te-letter">B</span> Desativar o firewall do sistema operacional para acelerar o envio.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Protocolos XA/2PC introduzem sobrecarga extrema de latência e contenção de locks, sendo desaconselhados para fluxos de mensageria modernos.">
+                    <span class="te-letter">B</span> Transações de banco distribuídas 2PC/XA travando os nós de mensageria até a emissão do commit no cliente HTTP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. deliveryMode=0 não grava no disco e não provê garantias de durabilidade.">
-                    <span class="te-letter">C</span> Utilizar a Default Exchange com deliveryMode=0.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ACKs de nível TCP garantem apenas que o pacote chegou à placa de rede do servidor, não que a mensagem foi persistida em disco pelo SGBD ou broker.">
+                    <span class="te-letter">C</span> Desativar o pool de conexões do produtor e abrir um canal socket direto aguardando confirmação no nível de transporte TCP.
                   </button>
                 </div>
 
@@ -3429,14 +3193,14 @@ public class RabbitBlockedConnectionListener implements ConnectionListener {
                 <p class="te-instrucao">Qual é o comportamento que está ocorrendo no RabbitMQ?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A Mnesia armazena metadados de topologia e não sofre contenção por volume de mensagens na fila.">
+                    <span class="te-letter">A</span> Ocorreu um deadlock distribuído no cluster de mensageria gerado por contenção de locks concorrentes na tabela Mnesia.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse é o auto-mecanismo de sobrevivência do RabbitMQ: ele congela as entradas (produtores) para permitir que as saídas (consumidores) drenem a memória antes de colapsar.">
-                    <span class="te-letter">A</span> Mecanismo nativo de Backpressure por Memory/Disk Alarm: o broker atingiu o teto de segurança de memória ou espaço em disco e parou intencionalmente de ler os sockets dos produtores para evitar a queda do servidor por OOM, aguardando os consumidores esvaziarem as filas.
+                    <span class="te-letter">B</span> Alarme de Memória ou Disco (Backpressure); o broker suspende a leitura para evitar OOM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O RabbitMQ é open-source e gratuito sob licença Mozilla Public License.">
-                    <span class="te-letter">B</span> A licença do software expirou por excesso de mensagens enviadas.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas mantêm sua estrutura nativa AMQP.">
-                    <span class="te-letter">C</span> As filas foram convertidas automaticamente em bancos de dados relacionais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O status blocked é emitido pelo protocolo AMQP quando o próprio broker ativa seus limites de segurança de recursos.">
+                    <span class="te-letter">C</span> O firewall do Kubernetes bloqueou as portas dos nós de produção após atingir a taxa máxima de conexões simultâneas.
                   </button>
                 </div>
 
@@ -3623,14 +3387,14 @@ public void processar(PedidoMsg msg, Channel channel, @Header(AmqpHeaders.DELIVE
                 <p class="te-instrucao">Qual a consequência trágica da ordem das instruções executadas nesse código?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma vez confirmado o ACK, a mensagem é imediatamente desalocada do broker; o RabbitMQ não sabe o que ocorre depois no código do consumidor.">
+                    <span class="te-letter">A</span> O RabbitMQ intercepta a exceção lançada na aplicação consumidora e reinjeta a mensagem no início da fila original com status de reentrega.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Como o ACK foi emitido com sucesso, não há rejeição (NACK) para acionar a Dead Letter Queue.">
+                    <span class="te-letter">B</span> A mensagem é transferida automaticamente para a Dead Letter Queue após o rollback transacional da sessão do Spring AMQP.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O ACK confirma o término seguro. Emiti-lo antes de consolidar a persistência no banco de dados cria uma janela de perda de dados irreversível em caso de falhas posteriores.">
-                    <span class="te-letter">A</span> Perda definitiva de dados: como o ACK foi enviado na Linha 1, o RabbitMQ removeu a mensagem da fila imediatamente. Quando a Linha 2 falhou no banco, a mensagem já não existia mais no broker e nunca poderá ser reprocessada.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma vez confirmado o ACK, a mensagem é desalocada e expurgada do broker.">
-                    <span class="te-letter">B</span> O RabbitMQ percebe a falha no banco e recupera a mensagem da lixeira automaticamente.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O código compila perfeitamente; a falha é de lógica arquitetural.">
-                    <span class="te-letter">C</span> O compilador Java não permite inverter a ordem desses métodos.
+                    <span class="te-letter">C</span> Perda definitiva de dados; o ACK já instruiu o broker a expurgar a mensagem da fila antes da confirmação da gravação no banco de dados.
                   </button>
                 </div>
 
@@ -3795,14 +3559,14 @@ public SimpleRabbitListenerContainerFactory slowTaskFactory(ConnectionFactory cf
                 <p class="te-instrucao">O que acontece com a distribuição de trabalho entre os 5 trabalhadores?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sem prefetch limitado, o RabbitMQ empurra todas as mensagens prontas imediatamente para o socket do primeiro cliente conectado. Configurar 'prefetch: 1' ou '2' força o broker a distribuir as mensagens sob demanda igualmente entre os workers conforme eles concluem cada tarefa.">
-                    <span class="te-letter">A</span> O primeiro trabalhador que conectar receberá todas as 5.000 mensagens de uma vez em sua memória RAM, acumulando uma fila local de mais de 5 horas de trabalho, enquanto os outros 4 trabalhadores recém-subidos ficarão completamente ociosos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sem prefetch limitado, o RabbitMQ empurra todas as mensagens prontas imediatamente para o socket do primeiro cliente conectado. Configurar prefetch: 1 ou 2 força o broker a distribuir tarefas sob demanda.">
+                    <span class="te-letter">A</span> O primeiro consumidor conectado receberá todas as mensagens no buffer, ficando sobrecarregado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem prefetch configurado, o broker empurra tudo o que estiver no buffer para a primeira conexão ativa.">
-                    <span class="te-letter">B</span> O RabbitMQ divide as 5.000 mensagens exatamente em lotes de 1.000 para cada réplica.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem prefetch configurado, o broker não aplica balanceamento de carga justo (fair dispatch) e drena todo o backlog para o primeiro consumidor ativo.">
+                    <span class="te-letter">B</span> O broker RabbitMQ distribui as mensagens de forma equilibrada em lotes de 1.000 unidades entre as 5 instâncias conectadas no cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O processamento da imagem é feito pela CPU da aplicação, não pelo protocolo.">
-                    <span class="te-letter">C</span> As imagens são compactadas pelo protocolo AMQP e finalizam em 2 milissegundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A biblioteca cliente armazena as mensagens em memória na fila interna do processo até que ocorra falta de memória.">
+                    <span class="te-letter">C</span> Os consumidores rejeitam as tarefas por estouro de canal TCP e a fila entra em modo de suspensão até que os nós se estabilizem.
                   </button>
                 </div>
 
@@ -3962,14 +3726,14 @@ public Queue filaOrdenada() {
                 <p class="te-instrucao">Qual risco arquitetural existe e qual a forma correta de mitigar?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O TCP ordena pacotes dentro da mesma conexão de socket, mas consumidores concorrentes rodam em processos e threads independentes com tempos de execução variáveis.">
+                    <span class="te-letter">A</span> Nenhum risco; o protocolo TCP serializa pacotes na camada física garantindo execução em ordem cronológica estrita entre threads.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Múltiplos consumidores em paralelo quebram a ordem de execução no tempo de processamento. Roteamento por hash da entidade (chave de partição) garante que eventos da mesma conta sejam serializados.">
-                    <span class="te-letter">A</span> Risco de concorrência e quebra de ordem: o Consumidor B pode processar o Débito antes de o Consumidor A finalizar o Depósito, recusando o débito por 'saldo insuficiente'. Mitigação: usar Consistent Hash Exchange agrupando todos os eventos da mesma conta na mesma fila consumida em ordem por uma única thread.
+                    <span class="te-letter">B</span> Quebra de ordem; o Débito pode ser processado antes do Depósito, gerando recusa indevida. Corrige-se particionando por Consistent Hash Exchange por conta.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sistemas operacionais mantêm seus próprios ciclos de clock independentes.">
-                    <span class="te-letter">B</span> O RabbitMQ congela o relógio do sistema operacional para sincronizar os dois consumidores.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O TCP serializa a entrega no socket, mas o processamento concorrente em threads diferentes é assíncrono.">
-                    <span class="te-letter">C</span> Não há nenhum risco, pois o protocolo TCP garante que consumidores rodem em fila indiana.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema reside na ordenação da lógica de negócio nos consumidores, não em deadlocks internos do broker.">
+                    <span class="te-letter">C</span> Deadlock distribuído no broker gerado pela concorrência entre threads de consumidores que tentam confirmar mensagens da mesma conta.
                   </button>
                 </div>
 
@@ -4152,14 +3916,14 @@ try {
                 <p class="te-instrucao">Como o consumidor deve tratar essa falha para proteger o cluster?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Nenhuma quantidade de retentativas transformará a string 'CEM_REAIS' em um BigDecimal válido. Retentar cegamente criaria um loop infinito tóxico.">
-                    <span class="te-letter">A</span> Classificar como Falha de Contrato (Poison Pill) e rejeitar imediatamente sem requeue (basicReject com requeue=false), direcionando a mensagem para a DLQ e gerando um alerta de quebra de contrato no monitoramento.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Rejeitar com requeue=true gera loop infinito de consumo, esgotando CPU e impedindo o processamento de outras mensagens legítimas.">
+                    <span class="te-letter">A</span> Executar basicNack com requeue: true para que o consumidor tente deserializar a mensagem novamente após um intervalo de backoff de 5 segundos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso cria a infame Poison Pill em loop infinito que trava o consumidor.">
-                    <span class="te-letter">B</span> Fazer basicNack com requeue=true para tentar novamente 5.000 vezes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gravar dados inconsistentes corrompe a integridade da base e mascara falhas graves de validação de payload.">
+                    <span class="te-letter">B</span> Ignorar a exceção silenciosamente e salvar o registro com valor nulo no banco relacional para desobstruir o pipeline de processamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações drásticas de infraestrutura não resolvem erros de schema de payload.">
-                    <span class="te-letter">C</span> Desligar o servidor RabbitMQ para resetar os tipos de dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Nenhuma quantidade de retentativas transformará a string CEM_REAIS em um BigDecimal válido. Retentar cegamente criaria um loop infinito tóxico.">
+                    <span class="te-letter">C</span> Tratar como Poison Pill (falha não recuperável), rejeitando com requeue: false para desviar a mensagem diretamente para a Dead Letter Queue.
                   </button>
                 </div>
 
@@ -4340,13 +4104,13 @@ Argumentos:
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a forma mais consagrada e resiliente de implementar delay e retentativa não-bloqueante no ecossistema RabbitMQ.">
-                    <span class="te-letter">A</span> A mensagem aguarda 5 segundos na fila de espera (sem nenhum consumidor conectado); ao expirar o TTL de 5.000ms, o RabbitMQ a considera morta por tempo e a roteia automaticamente através da DLX para a exchange principal com a chave 'pedidos.processar', retornando para ser consumida novamente.
+                    <span class="te-letter">A</span> A mensagem aguarda o TTL na fila de espera e expira para a DLX com a routing key original.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A presença do x-dead-letter-exchange desvia a mensagem para a DLX em vez de expurgá-la.">
-                    <span class="te-letter">B</span> A mensagem é apagada permanentemente do disco após 5 segundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O atraso ocorre de forma não bloqueante dentro do broker via TTL da fila; threads de aplicação continuam livres para outras tarefas.">
+                    <span class="te-letter">B</span> O consumidor mantém a thread bloqueada com sleep durante 5 segundos e reenvia a mensagem diretamente para o canal TCP da aplicação de backend.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O delay ocorre dentro do broker; os consumidores continuam trabalhando normalmente em outras mensagens.">
-                    <span class="te-letter">C</span> O contêiner do consumidor é pausado por 5 segundos pelo kernel Linux.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A configuração de x-dead-letter-exchange redireciona mensagens expiradas em vez de destruí-las.">
+                    <span class="te-letter">C</span> A mensagem é expurgada permanentemente do broker e o produtor recebe um webhook informando que a operação foi cancelada por timeout.
                   </button>
                 </div>
 
@@ -4551,14 +4315,14 @@ public class DlqReplayController {
                 <p class="te-instrucao">Qual é o procedimento operacional correto para recuperar essas vendas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O plugin RabbitMQ Shovel ou scripts de replay permitem mover mensagens da DLQ de volta para a fila de processamento sem alterar seus payloads ou headers.">
-                    <span class="te-letter">A</span> Executar um processo de Replay (Shovel / Re-queue) transferindo as mensagens da DLQ de volta para a fila principal de pagamentos, permitindo que os consumidores as processem com sucesso contra o gateway restabelecido.
-                  </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Purgar a DLQ apaga definitivamente os pedidos dos clientes gerando prejuízo financeiro.">
-                    <span class="te-letter">B</span> Executar 'Purge' na DLQ para apagar as mensagens e zerar o painel de erros.
+                    <span class="te-letter">A</span> Executar purge na DLQ para zerar o backlog acumulado e evitar que métricas de erro continuem alertando no dashboard de operações.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falha operacional amadora.">
-                    <span class="te-letter">C</span> Pedir aos 120 clientes que passem o cartão novamente ligando para cada um.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O plugin RabbitMQ Shovel ou scripts de replay permitem mover mensagens da DLQ de volta para a fila de processamento sem alterar seus payloads ou headers.">
+                    <span class="te-letter">B</span> Executar processo de Replay (via RabbitMQ Shovel ou consumer de reprocessing) movendo as mensagens da DLQ de volta para a fila principal de pagamentos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas de Dead Letter são terminais passivas de retenção; o broker não realiza reprocessamento automático sem ação explícita.">
+                    <span class="te-letter">C</span> Aguardar que o RabbitMQ reenvie automaticamente as mensagens da DLQ para as filas de origem após detectar a normalização dos alertas.
                   </button>
                 </div>
 
@@ -4725,14 +4489,14 @@ public void processar(RelatorioMsg msg) {
                 <p class="te-instrucao">O que a biblioteca de mensageria bem configurada deve fazer?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Finalizações abruptas interrompem transações no meio do caminho e podem gerar inconsistências de dados na aplicação.">
+                    <span class="te-letter">A</span> Cancelar imediatamente os processos da JVM e forçar o envio de NACK com requeue=true para todas as mensagens alocadas no socket da conexão ativa.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ignorar SIGTERM resulta em terminação forçada por SIGKILL (137) ao estourar o grace period, cortando operações sem fechamento de conexões.">
+                    <span class="te-letter">B</span> Ignorar o sinal do Kubernetes e continuar consumindo novas mensagens até que o timeout de liveness probe encerre o contêiner forçadamente.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse é o protocolo completo de Graceful Shutdown: interrompe a ingestão de novas tarefas, conclui com êxito o trabalho já iniciado e libera conexões ordenadamente.">
-                    <span class="te-letter">A</span> Pede ao broker para parar de enviar novas mensagens (cancela a subscrição no canal), aguarda os 4 segundos restantes até a conclusão segura da mensagem em andamento, faz o commit do banco, envia o ACK para o broker e encerra a conexão de forma graciosa.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso seria desligamento forçado destrutivo.">
-                    <span class="te-letter">B</span> Aborta o processo imediatamente e descarta a mensagem em andamento no lixo.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A memória de um processo não é teletransportada entre máquinas.">
-                    <span class="te-letter">C</span> Redireciona a execução da memória para o nó master do Kubernetes.
+                    <span class="te-letter">C</span> Parar de consumir novas mensagens (cancelar subscrição), concluir o processamento da mensagem ativa, commitar banco, enviar ACK e fechar conexão.
                   </button>
                 </div>
 
@@ -4937,13 +4701,13 @@ public void processarDebito(DebitoMensagem msg) {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Checar e depois agir sem trava atômica abre uma brecha concorrente. A inserção em tabela de deduplicação com chave primária é a única solução 100% segura contra race conditions.">
-                    <span class="te-letter">A</span> Condição de Corrida (Race Condition / Check-Then-Act): se duas threads receberem a mensagem duplicada no mesmo milissegundo, ambas checam 'hasKey' antes de qualquer uma setar o valor. Ambas passam pelo if e o cliente é debitado duas vezes! A garantia deve usar constraint única atômica de banco.
+                    <span class="te-letter">A</span> Condição de corrida Check-Then-Act; threads concorrentes passam pelo if. Exige constraint única no banco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Strings são o tipo de dados mais básico e comum do Redis.">
-                    <span class="te-letter">B</span> O Redis proíbe o armazenamento de chaves do tipo String.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Comandos de chave como EXISTS operam normalmente em Redis Cluster; a vulnerabilidade decorre da falta de atomicidade entre a leitura e a escrita.">
+                    <span class="te-letter">B</span> O Redis proíbe a verificação de existência de chaves em ambientes de cluster que utilizem particionamento distribuído por hash slots.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring permite chamadas externas dentro do método transacional (embora gere retenção de conexão).">
-                    <span class="te-letter">C</span> O método @Transactional impede chamadas de rede para o Redis.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos transacionais do Spring executam chamadas de rede normalmente, embora retenham a conexão do banco de dados aberta.">
+                    <span class="te-letter">C</span> A anotação @Transactional bloqueia chamadas de rede para serviços externos de cache durante o ciclo de vida da transação JDBC.
                   </button>
                 </div>
 
@@ -5161,14 +4925,14 @@ public void criarPedido(CriarPedidoCmd cmd) {
                 <p class="te-instrucao">Por que essa abordagem é 100% resiliente a indisponibilidades do RabbitMQ?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O padrão Outbox utiliza tabelas de banco relacional para persistência transacional durável, não filas de memória voláteis.">
+                    <span class="te-letter">A</span> Porque converte transações relacionais em tópicos de memória garantindo entrega de mensagens com latência inferior a 1 microssegundo.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Elimina o acoplamento temporal com o broker no momento crítico da transação de negócio, garantindo consistência atômica através das propriedades ACID do próprio banco de dados.">
-                    <span class="te-letter">A</span> Porque o pedido e o registro da outbox são gravados de forma atômica no banco relacional. Se o RabbitMQ estiver fora do ar por 3 horas, a API de pedidos continua faturando normalmente; quando o broker voltar, o processo de relay lerá a tabela outbox e entregará todos os eventos acumulados com garantia At-Least-Once.
+                    <span class="te-letter">B</span> Porque o pedido e a outbox são persistidos atomicamente no banco; se o broker estiver fora do ar, o processo de relay enviará os eventos ao restabelecer.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O banco continua sendo um banco relacional; a tabela serve apenas como buffer persistente.">
-                    <span class="te-letter">B</span> Porque o PostgreSQL se transforma em um broker RabbitMQ nativo.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Transactional Outbox foi criado exatamente para evitar a complexidade do 2PC/XA.">
-                    <span class="te-letter">C</span> Porque a anotação @Transactional ativa o protocolo XA Two-Phase Commit automaticamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O padrão Transactional Outbox foi criado exatamente para evitar a complexidade do 2PC/XA.">
+                    <span class="te-letter">C</span> Porque ativa nativamente o protocolo 2PC distribuído entre o driver JDBC da aplicação e os nós de mensageria do cluster corporativo.
                   </button>
                 </div>
 
@@ -5329,14 +5093,14 @@ public void compensarEstoque(EstornoPedidoEvent event) {
                 <p class="te-instrucao">Como o orquestrador da Saga atua para reestabelecer a consistência do sistema?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Em microsserviços desacoplados e distribuídos, transações ACID distribuídas (2PC/XA) são antipadrões que violam o isolamento de esquemas.">
+                    <span class="te-letter">A</span> Executar um rollback transacional síncrono conectando diretamente nas bases relacionais dos microsserviços de estoque e câmbio via protocolo XA.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A recusa alfandegária inviabilizou a entrega; os recursos do cliente e produtos do lojista ficariam indevidamente retidos.">
+                    <span class="te-letter">B</span> Registrar a compra com status pendente e agendar uma rotina cron diária para tentar enviar a remessa novamente nos dias seguintes.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em arquiteturas orientadas a eventos assíncronos, a reversão de transações distribuídas é alcançada através de mensagens de compensação semântica ordenadas.">
-                    <span class="te-letter">A</span> Dispara mensagens de compensação: publica comando para o serviço de câmbio estornar o débito da taxa e comando para o serviço de estoque devolver os itens reservados, garantindo consistência eventual entre todos os serviços envolvidos.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A alfândega é um sistema externo que não compartilha transações locais.">
-                    <span class="te-letter">B</span> Dispara um comando ROLLBACK que desfaz as transações no banco de dados da alfândega.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações manuais destrutivas não corrigem o fluxo de negócio.">
-                    <span class="te-letter">C</span> Desliga o servidor RabbitMQ para reiniciar o dia de trabalho.
+                    <span class="te-letter">C</span> Emitir mensagens de compensação semântica: comando para estornar o débito de câmbio e comando para liberar os itens reservados no estoque.
                   </button>
                 </div>
 
@@ -5539,13 +5303,13 @@ public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Jackson2JsonMessageConverter é o padrão absoluto da indústria no Spring AMQP, viabilizando interoperabilidade e legibilidade no ecossistema.">
-                    <span class="te-letter">A</span> Garante que todas as mensagens enviadas pelo RabbitTemplate sejam serializadas como JSON legível e que mensagens recebidas nos listeners sejam automaticamente deserializadas em objetos Java a partir do JSON, adicionando o cabeçalho 'content_type: application/json'.
+                    <span class="te-letter">A</span> Serializa payloads como JSON com header content_type: application/json e deserializa automaticamente nos listeners para objetos Java tipados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Jackson serializa em texto JSON legível padrão.">
-                    <span class="te-letter">B</span> Faz com que todas as mensagens sejam criptografadas com chave militar de 4096 bits.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O conversor Jackson realiza serialização e deserialização textual JSON padrão, não compressão binária de transporte.">
+                    <span class="te-letter">B</span> Habilita compressão binária automática dos dados transmitidos sobre os canais TCP utilizando codificação GZIP para reduzir o consumo de rede no broker.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas define a forma como o payload é convertido.">
-                    <span class="te-letter">C</span> Desativa o envio de mensagens para o RabbitMQ.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O conversor trata de representação de formatos de dados; criptografia de mensagens exige camadas dedicadas de segurança.">
+                    <span class="te-letter">C</span> Criptografa o corpo de todas as mensagens com chaves assimétricas antes da gravação nas filas persistentes do cluster RabbitMQ.
                   </button>
                 </div>
 
@@ -5733,14 +5497,14 @@ public Declarables topologiaPedidos() {
                 <p class="te-instrucao">O que o Spring AMQP faz com essa declaração durante o bootstrap da aplicação?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O provisionamento é idempotente e incremental; filas existentes não são apagadas na inicialização.">
+                    <span class="te-letter">A</span> Exclui todas as filas e bindings existentes no broker e recria a topologia completa a cada inicialização de contêiner da aplicação.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O objeto Declarables é a forma idiomática mais limpa de empacotar múltiplos artefatos de topologia AMQP para provisionamento automático pelo RabbitAdmin.">
-                    <span class="te-letter">A</span> O RabbitAdmin lê o bean Declarables e cria de forma declarativa e idempotente a DirectExchange, a fila durável configurada com DLQ e o Binding no broker RabbitMQ caso eles ainda não existam.
+                    <span class="te-letter">B</span> O RabbitAdmin lê o bean Declarables e provisiona de forma declarativa e idempotente a exchange, a fila durável e os bindings no broker caso não existam.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações normais de provisionamento de topologia via chamadas AMQP declarativas.">
-                    <span class="te-letter">B</span> O Spring compila o código em formato Assembly e grava na placa mãe.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O QueueBuilder.durable garante criação de fila durável no broker.">
-                    <span class="te-letter">C</span> A fila é criada temporariamente apenas na memória RAM do computador local.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O RabbitAdmin executa comandos DDL de declaração AMQP (exchangeDeclare, queueDeclare, queueBind) no broker na subida do contexto.">
+                    <span class="te-letter">C</span> Valida apenas o formato dos esquemas JSON e delega a criação dos artefatos AMQP para a primeira mensagem publicada pelo produtor.
                   </button>
                 </div>
 
@@ -5945,14 +5709,14 @@ class PedidoConsumerIntegrationTest {
                 <p class="te-instrucao">Por que o uso de 'Awaitility' é mandatório ao testar o consumo de mensagens assíncronas?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Contêineres de banco comportam-se como instâncias normais; consultas funcionam imediatamente após a confirmação do commit da transação.">
+                    <span class="te-letter">A</span> O Testcontainers impõe restrições de isolamento que impedem a leitura imediata de registros em tabelas relacionais antes do fechamento do contêiner.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O banco relacional oferece consistência imediata após commit; a assincronia decorre do transporte e processamento de mensageria.">
+                    <span class="te-letter">B</span> O driver do Spring Data JPA exige um atraso de sincronização entre o flush de escrita e a disponibilização de índices de consulta.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em testes assíncronos, o término da publicação não coincide com o término do processamento. O Awaitility faz polling inteligente até que o assert seja satisfeito ou estoure o timeout.">
-                    <span class="te-letter">A</span> Porque o consumo é assíncrono: após o convertAndSend(), a mensagem viaja pela rede e é processada em outra thread. Um assert imediato falharia porque a gravação no banco leva alguns milissegundos; o Awaitility aguarda a condição de sucesso sem usar Thread.sleep fixo.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O RabbitMQ roda em contêiner Docker real.">
-                    <span class="te-letter">B</span> Porque o Awaitility compila o RabbitMQ em código Java em memória.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Asserts normais são perfeitamente suportados.">
-                    <span class="te-letter">C</span> Porque o JUnit proíbe o uso de assertEquals em classes de teste.
+                    <span class="te-letter">C</span> O consumo é assíncrono; após o envio, a mensagem viaja pela rede e roda em outra thread, exigindo polling inteligente até a persistência no banco.
                   </button>
                 </div>
 
@@ -6123,13 +5887,13 @@ public class QuorumQueueConfig {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Quorum Queues são o padrão oficial e moderno do RabbitMQ para alta disponibilidade, substituindo com superioridade técnica as antigas filas espelhadas.">
-                    <span class="te-letter">A</span> x-queue-type: quorum (Quorum Queues). Elas utilizam o protocolo de consenso distribuído Raft para replicar dados entre a maioria dos nós com consistência e eleição rápida de novo líder em caso de queda de nós.
+                    <span class="te-letter">A</span> Quorum Queues (x-queue-type: quorum), utilizando consenso Raft para replicação entre a maioria dos nós.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas transitórias perdem dados em reinicializações.">
-                    <span class="te-letter">B</span> x-queue-type: transient-memory.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mirrored Queues foram depreciadas e formalmente removidas nas versões modernas do RabbitMQ em favor das Quorum Queues.">
+                    <span class="te-letter">B</span> Classic Mirrored Queues com política ha-mode: all aplicando espelhamento síncrono de memória entre todas as réplicas ativas do broker.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse tipo de fila não existe no RabbitMQ.">
-                    <span class="te-letter">C</span> x-queue-type: blockchain.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas transitórias são voláteis e perdem dados caso instâncias do cluster sejam reinicializadas.">
+                    <span class="te-letter">C</span> Transient Queues configuradas com TTL de persistência em disco operando sob protocolo de replicação eventual ponto a ponto.
                   </button>
                 </div>
 
@@ -6296,14 +6060,14 @@ rate(rabbitmq_queue_messages_delivered_total[1m])</code></pre>
                 <p class="te-instrucao">Qual é o diagnóstico operacional imediato?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Com zero mensagens não-reconhecidas (Unack = 0), nenhum consumidor está processando nada; o problema não é lentidão de banco.">
+                    <span class="te-letter">A</span> Esgotamento do buffer pool de conexões do banco de dados relacional onde os eventos consumidos são persistidos.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Com zero consumidores, as mensagens acumulam sem ninguém para ler. O foco da investigação deve ser reestabelecer as aplicações consumidoras.">
-                    <span class="te-letter">A</span> Ausência total de consumidores ativos: não há nenhum trabalhador conectado para ler a fila (Consumer Count = 0). As aplicações consumidoras provavelmente caíram, sofreram CrashLoopBackOff no Kubernetes ou estão com erro de autenticação.
+                    <span class="te-letter">B</span> Ausência total de consumidores conectados (Consumer Count = 0); os workers de aplicação caíram ou falharam na autenticação com o broker.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A métrica do broker indica ausência de conexão de consumidores.">
-                    <span class="te-letter">B</span> O banco de dados PostgreSQL está com excesso de memória RAM livre.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Há 45.200 mensagens esperando processamento.">
-                    <span class="te-letter">C</span> A fila atingiu a velocidade da luz e consumiu as mensagens antes do contador atualizar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Messages Ready crescendo a 120/s indica que o roteamento está funcionando perfeitamente; o gargalo é a falta de consumidores ativos.">
+                    <span class="te-letter">C</span> Congestionamento nos índices da exchange do tipo Topic gerado por incompatibilidade de bindings entre as filas de trabalho.
                   </button>
                 </div>
 
@@ -6462,14 +6226,14 @@ spring:
                 <p class="te-instrucao">Quais parâmetros de configuração na fila implementam a proteção automática de capacidade?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Dispositivos IoT muitas vezes não suportam controle síncrono de backpressure e podem sofrer perda de conexões em campo.">
+                    <span class="te-letter">A</span> Pausar os sockets TCP dos dispositivos IoT em nível de balanceador de carga sempre que o consumo de espaço em disco no nó ultrapassar 80%.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desativar persistência pode levar a falhas catastróficas por Out of Memory quando a taxa de ingestão ultrapassa a capacidade da RAM.">
+                    <span class="te-letter">B</span> Desativar a gravação de logs de transação no sistema de arquivos do RabbitMQ para que as mensagens permaneçam apenas na memória volátil.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Combinar TTL com limites de tamanho máximo e política de descarte protege o broker contra esgotamento catastrófico de recursos em workloads de alta ingestão de telemetria.">
-                    <span class="te-letter">A</span> Configurar 'x-message-ttl: 600000' (expira mensagens após 10 minutos) e definir 'x-max-length' com política 'x-overflow: drop-head' (descartando mensagens antigas quando a fila atingir o tamanho máximo seguro em disco).
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso cortaria toda a conectividade de rede.">
-                    <span class="te-letter">B</span> Desativar o protocolo TCP no sistema operacional do servidor RabbitMQ.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso causaria colapso do disco em poucas horas.">
-                    <span class="te-letter">C</span> Permitir que as mensagens acumulem indefinidamente na pasta /tmp.
+                    <span class="te-letter">C</span> Definir x-message-ttl: 600000 (10 minutos) e configurar x-max-length com política x-overflow: drop-head para descartar dados defasados.
                   </button>
                 </div>
 
@@ -6667,13 +6431,13 @@ public void ouvirKafka(ConsumerRecord&lt;String, String&gt; record) {
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A persistência imutável baseada em log com offsets independentes por consumidor é a grande revolução trazida pelo Kafka para análise de streams de dados.">
-                    <span class="te-letter">A</span> Log Distribuído (Apache Kafka): as mensagens ficam persistidas no log ordenado durante o período de retenção (ex: 14 dias). O time de dados pode simplesmente criar um novo Consumer Group, apontar o Offset para 14 dias atrás e reler todo o histórico de eventos sem interferir nos outros sistemas.
+                    <span class="te-letter">A</span> Log Distribuído (Apache Kafka); armazena eventos imutáveis durante a retenção configurada, permitindo que novos grupos de consumidores reposicionem o offset.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. No RabbitMQ tradicional, mensagens são expurgadas da fila imediatamente após o recebimento do ACK.">
-                    <span class="te-letter">B</span> Fila RabbitMQ tradicional, pois o RabbitMQ mantém cópias de todas as mensagens na memória RAM por 1 ano.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. No RabbitMQ tradicional, a mensagem é desalocada e destruída da fila assim que o consumidor emite o ACK.">
+                    <span class="te-letter">B</span> RabbitMQ tradicional; mensagens consumidas permanecem armazenadas no storage histórico de réplicas e podem ser reexecutadas sob demanda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Inviável e absurdo.">
-                    <span class="te-letter">C</span> Nenhuma das duas; deve-se imprimir os cliques em papel e redigitar manualmente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Redis Pub/Sub é volátil (fire-and-forget); mensagens não entregues a inscritos conectados no momento são perdidas imediatamente.">
+                    <span class="te-letter">C</span> Redis Pub/Sub; os eventos publicados nos canais de streaming permanecem armazenados em listas ligadas para auditorias retroativas.
                   </button>
                 </div>
 
@@ -6866,14 +6630,14 @@ public class SqsPedidoConsumer {
                 <p class="te-instrucao">Qual padrão arquitetural viabiliza o envio desse grande volume respeitando os limites das filas?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Fragmentar binários grandes em filas de mensageria aumenta overhead e complexidade de remontagem no consumidor.">
+                    <span class="te-letter">A</span> Dividir o arquivo PDF binário em dezenas de pequenos fragmentos de 200 KB e publicar cada bloco como mensagens independentes com headers de ordenação.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Filas foram projetadas para controle de fluxo de eventos leves, e não como repositórios de arquivos grandes. O Claim Check Pattern desacopla o payload pesado do transporte da mensagem.">
-                    <span class="te-letter">A</span> Claim Check Pattern: o produtor faz upload do PDF de 15 MB em um bucket seguro de armazenamento de objetos (Amazon S3 / Google Cloud Storage) e envia apenas uma mensagem leve na fila contendo o link e metadados; o consumidor recebe a mensagem e baixa o arquivo do bucket.
+                    <span class="te-letter">B</span> Claim Check Pattern: salvar o PDF no Object Storage (S3/GCS) e enviar na fila apenas a mensagem leve com metadados e URI do arquivo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Base64 aumentará o tamanho para ~20 MB, estourando o limite máximo de 256 KB do SQS.">
-                    <span class="te-letter">B</span> Codificar o PDF em Base64 e enviar diretamente na fila SQS.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prática inexistente na computação em nuvem moderna.">
-                    <span class="te-letter">C</span> Compactar o arquivo em disquete virtual.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Base64 aumentará o tamanho para ~20 MB, estourando limites de brokers de nuvem como o SQS (256 KB).">
+                    <span class="te-letter">C</span> Codificar o PDF de 15 MB em Base64 e publicar o payload bruto diretamente em uma fila de mensagens gerenciada da nuvem.
                   </button>
                 </div>
 
@@ -7047,14 +6811,14 @@ public class OrderFlowFaturamentoConsumer {
                 <p class="te-instrucao">Qual a sequência de resiliência correta executada pelo consumidor?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso caracterizaria o antipadrão da Poison Pill em loop contínuo que esgota CPU e trava o processamento do cluster.">
+                    <span class="te-letter">A</span> Manter a thread do consumidor bloqueada em loop de repetição imediato com requeue=true enquanto o gateway parceiro não restabelecer a comunicação.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O pedido seria perdido do fluxo transacional sem cobrança e o cliente não teria seu pedido processado automaticamente.">
+                    <span class="te-letter">B</span> Emitir ACK imediatamente para evitar retenção na fila e salvar o status do pedido como pendente de análise manual em relatório diário.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a confluência de todos os grandes pilares aprendidos: classificação de falha transitória, retentativa não-bloqueante com backoff por TTL e desvio seguro para DLQ com observabilidade.">
-                    <span class="te-letter">A</span> O consumidor identifica a falha como transitória, rejeita a mensagem com requeue: false direcionando-a para a fila de retry com TTL de backoff; após as tentativas máximas esgotadas, a mensagem transita para a Dead Letter Queue (DLQ), emitindo métrica de erro no Micrometer e aguardando recuperação.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso caracterizaria o antipadrão da Poison Pill que trava todo o cluster.">
-                    <span class="te-letter">B</span> O consumidor trava a thread e fica em loop infinito dando requeue=true até o gateway voltar.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O pedido seria perdido sem cobrança e o cliente receberia o produto de graça.">
-                    <span class="te-letter">C</span> O consumidor envia o ACK imediatamente e ignora a falha no pagamento.
+                    <span class="te-letter">C</span> Rejeitar com requeue: false para fila de retry com TTL; após esgotamento, enviar para DLQ e alertar observabilidade.
                   </button>
                 </div>
 
@@ -7218,13 +6982,13 @@ docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-mana
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A prática deliberada de injeção de falhas (Chaos Engineering em pequena escala) consolida a compreensão profunda dos mecanismos de resiliência e recuperação do protocolo.">
-                    <span class="te-letter">A</span> Criar um projeto de teste com Testcontainers, publicar 1.000 mensagens com Publisher Confirms, simular falhas no banco no meio do consumo e verificar se as mensagens realmente transitam para a DLQ sem perda de dados nem loops infinitos.
+                    <span class="te-letter">A</span> Construir testes de integração com Testcontainers, publicar com Publisher Confirms, injetar falhas e validar roteamento para a DLQ.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aprendizado passivo gera ilusão de competência que evapora em dias.">
-                    <span class="te-letter">B</span> Assistir a 10 palestras de 1 hora sem abrir o terminal nem digitar código.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O aprendizado passivo sem resolução prática de incidentes cria falsa sensação de domínio e desmorona diante de incidentes reais.">
+                    <span class="te-letter">B</span> Assistir a tutoriais em vídeo e memorizar os parâmetros teóricos das especificações do protocolo AMQP sem executar aplicações locais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Decorar números de portas não confere raciocínio arquitetural.">
-                    <span class="te-letter">C</span> Memorizar a tabela de portas padrão de cor sem entender o protocolo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Memorizar comandos isolados não desenvolve o discernimento arquitetural necessário para projetar topologias resilientes.">
+                    <span class="te-letter">C</span> Decorar tabelas de comandos administrativos da CLI do RabbitMQ e portas de rede padrão utilizadas em ambientes de homologação.
                   </button>
                 </div>
 
@@ -7380,14 +7144,14 @@ docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-mana
                 <p class="te-instrucao">Qual a postura correta de um engenheiro atualizado?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mirrored Queues foram oficialmente removidas no RabbitMQ 4.0 e desaconselhadas desde a versão 3.8.">
+                    <span class="te-letter">A</span> Seguir a recomendação do artigo histórico, já que as políticas de espelhamento clássicas mantêm suporte integral e ativo nas versões atuais.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A evolução tecnológica exige checagem de fontes e obsolescência. Quorum Queues são o padrão atual e obrigatório para alta disponibilidade no RabbitMQ moderno.">
-                    <span class="te-letter">A</span> Rejeitar a recomendação do artigo: o modo de espelhamento 'ha-mode' (Mirrored Queues) foi descontinuado e substituído formalmente pelas Quorum Queues (x-queue-type: quorum), que devem ser a escolha padrão em projetos modernos.
+                    <span class="te-letter">B</span> Rejeitar a recomendação; Mirrored Queues (ha-mode) foram descontinuadas e substituídas pelas Quorum Queues (x-queue-type: quorum) em projetos modernos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O ecossistema evoluiu e as mirrored queues foram formalmente removidas.">
-                    <span class="te-letter">B</span> Seguir o artigo cegamente porque o que funcionava em 2017 continua sendo a melhor solução hoje.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem sentido.">
-                    <span class="te-letter">C</span> Desinstalar o RabbitMQ e voltar a usar disquetes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Tópicos sem persistência não atendem aos requisitos de alta disponibilidade e confiabilidade de entrega de mensagens corporativas.">
+                    <span class="te-letter">C</span> Adotar tópicos voláteis sem persistência em disco configurados com replicação entre contêineres gerenciada por agentes de rede do Kubernetes.
                   </button>
                 </div>
 
@@ -7546,13 +7310,13 @@ docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-mana
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essas três garantias formam a espinha dorsal da engenharia sênior de mensageria: nenhum dado é processado em duplicidade, nenhuma mensagem é perdida e falhas são contidas com observabilidade e elegância.">
-                    <span class="te-letter">A</span> 1. Idempotência estrita (deduplicação por chave única); 2. Consumo seguro com ACK manual após commit e prefetch calibrado; 3. Resiliência a falhas com retentativa via TTL/DLX e desvio de mensagens tóxicas para Dead Letter Queue monitorada.
+                    <span class="te-letter">A</span> 1. Idempotência por chave única; 2. ACK manual após commit com prefetch; 3. Retentativas via TTL/DLX e DLQ.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esses itens representam o oposto de boas práticas operacionais.">
-                    <span class="te-letter">B</span> 1. Envio de mensagens em texto puro sem senha; 2. Desativação de todas as filas de Dead Letter; 3. Prefetch infinito.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse conjunto representa os principais antipadrões operacionais que causam perda de mensagens e travamento por poison pill.">
+                    <span class="te-letter">B</span> 1. Auto-ack ativo para máxima vazão; 2. Desativação de limites de prefetch para drenar a fila; 3. Requeue imediato infinito em qualquer exceção.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Totalmente inadequado para mensageria corporativa.">
-                    <span class="te-letter">C</span> Uso obrigatório de banco de dados Access compartilhado em rede Windows.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas transitórias e ausência de confirmações acarretam perda catastrófica de dados em qualquer reinicialização de infraestrutura.">
+                    <span class="te-letter">C</span> 1. Filas transitórias em memória RAM; 2. Eliminação de filas de dead letter para simplificar topologia; 3. Desativação de confirmações de envio.
                   </button>
                 </div>
 
@@ -7652,7 +7416,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -7665,5 +7429,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

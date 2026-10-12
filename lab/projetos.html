@@ -6,7 +6,10 @@
   <meta name="description" content="A bancada: 18 projetos práticos e 18 aquecimentos curtos de Java, Spring, Cloud agnóstica, AWS, RabbitMQ e IA. Cada projeto aponta para o documento de teoria que o sustenta. Tema Dracula.">
   <title>Laboratório de projetos — a bancada do acervo</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
-  <style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
     :root{
       color-scheme:dark;
       --ink:#1b1c24;
@@ -31,8 +34,8 @@
       --radius:28px;
       --ease:cubic-bezier(.23,1,.32,1);
       --ease-snap:cubic-bezier(.34,1.56,.64,1);
-      --display:"Bahnschrift","Aptos Display","Segoe UI",sans-serif;
-      --body:"Aptos","Segoe UI",sans-serif;
+      --display:"Inter","Bahnschrift","Aptos Display","Segoe UI",sans-serif;
+      --body:"Inter","Aptos","Segoe UI",sans-serif;
       --mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
     }
     *{box-sizing:border-box}
@@ -47,7 +50,7 @@
     button,input,select,textarea{font:inherit}
     button{color:inherit}
     a{color:inherit}
-    :focus-visible{outline:2px solid var(--acid);outline-offset:4px}
+    :focus-visible{outline:2px solid var(--acid);outline-offset:3px;box-shadow:0 0 0 4px rgba(189,147,249,.2)}
     .skip{position:fixed;left:16px;top:12px;z-index:30;transform:translateY(-180%);background:var(--acid);color:#1c1330;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:800;transition:transform 220ms var(--ease)}
     .skip:focus{transform:translateY(0)}
     .shell{width:min(1480px,calc(100% - 48px));margin:0 auto}
@@ -104,53 +107,44 @@
     .progress-track{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
     .progress-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--mint),var(--acid));transform:scaleX(0);transform-origin:left;transition:transform 700ms var(--ease)}
     .progress-label{font:750 .78rem var(--mono);color:var(--muted)}
-    /* align-items:start — cada card assume a própria altura. Sem isso, o card
-       mais longo da linha estica os outros e abre um vão morto no meio deles. */
-    .project-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:30px;align-items:start}
-    .project-wrap{grid-column:span 4;min-width:0;transition:transform 360ms var(--ease),opacity 360ms var(--ease)}
-    .project-wrap:nth-child(6n + 1),.project-wrap:nth-child(6n + 6){grid-column:span 5}
-    .project-wrap:nth-child(6n + 2),.project-wrap:nth-child(6n + 5){grid-column:span 3}
-    .project-wrap:nth-child(6n + 3),.project-wrap:nth-child(6n + 4){grid-column:span 4}
+    /* Grid padronizado em 3 colunas uniformes com cards de mesma altura */
+    .project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:30px}
+    .project-wrap{display:flex;flex-direction:column;min-width:0;height:100%;transition:transform 320ms var(--ease),border-color 320ms var(--ease),box-shadow 320ms var(--ease)}
     .project-wrap[hidden]{display:none}
-    /* sem altura mínima: qualquer valor fixo vira vão no card de conteúdo curto,
-       porque o rodapé usa margin-top:auto. A altura é a do conteúdo, e ponto. */
-    .project{display:flex;flex-direction:column;width:100%;padding:0;border:0;text-align:left;cursor:pointer;background:transparent}
-    /* .project.core (composto), não ".project .core": as duas classes estão no
-       MESMO elemento. Como descendente o seletor nunca casava, o card ficava
-       sem padding e o canto arredondado cortava o marcador de concluído. */
-    .project.core{position:relative;display:flex;flex-direction:column;padding:25px;isolation:isolate}
-    .project.core::before{content:"";position:absolute;inset:auto -20% -45% 20%;height:68%;background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.14;z-index:-1}
-    .project-wrap:hover{transform:translateY(-7px)}
-    .project-top{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
-    .project-number{font:800 .72rem var(--mono);color:var(--accent);letter-spacing:.1em}
-    .complete-dot{width:25px;height:25px;border-radius:9px;border:1px solid var(--line-strong);display:grid;place-items:center;color:transparent;transition:transform 220ms var(--ease-snap),background 220ms var(--ease)}
-    .project-wrap.done .complete-dot{background:var(--acid);color:#1c1330;transform:rotate(-5deg)}
-    .area-tag{display:inline-flex;margin-top:24px;color:var(--accent);font:700 .67rem var(--mono);letter-spacing:.12em;text-transform:uppercase}
-    .project h3{font-size:clamp(1.45rem,2.1vw,2.2rem);line-height:1.02;margin:10px 0 13px;letter-spacing:-.035em}
-    .project-desc{color:#a8aec9;margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-    /* a arquitetura inteira, quebrando linha. Antes só cabiam três etapas numa
-       linha só e o fluxo terminava seco na borda, parecendo cortado. */
-    .mini-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:22px 0 0;color:var(--soft);font:700 .61rem var(--mono)}
-    .mini-flow span{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.045)}
-    .mini-flow i{font-style:normal;color:var(--accent);opacity:.65}
-    .project-foot{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:auto;padding-top:22px;border-top:1px dashed rgba(248,248,242,.1)}
-    .meta{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{padding:6px 8px;border-radius:9px;background:rgba(255,255,255,.045);font:650 .65rem var(--mono);color:var(--muted)}
+    .project{display:flex;flex-direction:column;width:100%;height:100%;padding:0;border:0;text-align:left;cursor:pointer;background:transparent}
+    .project.core{position:relative;display:flex;flex-direction:column;height:100%;flex:1 1 auto;padding:26px;isolation:isolate}
+    .project.core::before{content:"";position:absolute;inset:auto -20% -45% 20%;height:68%;background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.12;z-index:-1;transition:opacity 320ms var(--ease)}
+    .project-wrap:hover{transform:translateY(-6px);border-color:rgba(189,147,249,.4);box-shadow:0 18px 40px -10px rgba(0,0,0,.5)}
+    .project-wrap:hover .project.core::before{opacity:.22}
+    .project-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+    .project-number{font:800 .72rem var(--mono);color:var(--accent);letter-spacing:.1em;display:inline-flex;align-items:center;gap:6px}
+    .complete-dot{width:24px;height:24px;border-radius:8px;border:1px solid var(--line-strong);display:grid;place-items:center;color:transparent;font-size:.7rem;font-weight:800;background:rgba(255,255,255,.02);transition:transform 220ms var(--ease-snap),background 220ms var(--ease),color 220ms var(--ease)}
+    .project-wrap.done .complete-dot{background:var(--lime);color:#1c1330;border-color:var(--lime);transform:scale(1.05)}
+    .area-tag{display:inline-flex;color:var(--accent);font:750 .65rem var(--mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+    .project h3{font-size:1.32rem;line-height:1.22;margin:8px 0 10px;letter-spacing:-.025em;color:var(--paper);min-height:3.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .project-desc{color:#a8aec9;font-size:.9rem;line-height:1.55;margin:0 0 16px;min-height:4.2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .mini-flow{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:auto 0 18px;min-height:36px;color:var(--soft);font:700 .62rem var(--mono)}
+    .mini-flow span{padding:5px 8px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.04);color:var(--ink2)}
+    .mini-flow i{font-style:normal;color:var(--accent);opacity:.7}
+    .project-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:18px;border-top:1px dashed rgba(248,248,242,.1)}
+    .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .chip{padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.045);font:650 .66rem var(--mono);color:var(--muted);border:1px solid rgba(255,255,255,.03)}
     .chip.tc{color:var(--accent);background:rgba(255,255,255,.03);border:1px solid var(--line)}
-    .open-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.065);color:var(--accent);transition:transform 250ms var(--ease),background 250ms var(--ease)}
-    .project:hover .open-icon{transform:translate(3px,-3px) rotate(4deg);background:rgba(255,255,255,.11)}
+    .open-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--accent);font-size:.82rem;font-weight:700;flex:0 0 auto;transition:transform 240ms var(--ease),background 240ms var(--ease)}
+    .project:hover .open-icon{transform:translate(2px,-2px);background:rgba(189,147,249,.2);color:var(--paper)}
     .empty{grid-column:1/-1;padding:60px;text-align:center;color:var(--muted)}
 
     /* ---------- aquecimento: práticas curtas ---------- */
-    .prac-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:12px}
-    .prac{--pc:var(--acid);padding:6px;border:1px solid var(--line);border-radius:23px;background:rgba(255,255,255,.022);align-self:start}
-    .prac>summary{list-style:none;cursor:pointer;padding:20px;border-radius:17px;background:var(--panel);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);display:grid;gap:9px;transition:background 220ms var(--ease)}
+    .prac-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+    .prac{--pc:var(--acid);padding:6px;border:1px solid var(--line);border-radius:23px;background:rgba(255,255,255,.022);align-self:start;transition:transform 240ms var(--ease),border-color 240ms var(--ease)}
+    .prac:hover{border-color:rgba(189,147,249,.35);transform:translateY(-3px)}
+    .prac>summary{list-style:none;cursor:pointer;padding:18px 20px;border-radius:17px;background:var(--panel);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:108px;transition:background 220ms var(--ease)}
     .prac>summary::-webkit-details-marker{display:none}
     .prac>summary:hover{background:var(--panel-2)}
     .prac-top{display:flex;align-items:center;justify-content:space-between;gap:10px;font:750 .64rem var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--pc)}
     .prac-min{color:var(--muted);letter-spacing:.05em}
-    .prac h3{font-size:1.1rem;letter-spacing:-.02em;line-height:1.14}
-    .prac[open]>summary{border-radius:17px 17px 0 0}
+    .prac h3{font-size:1.05rem;letter-spacing:-.02em;line-height:1.25;margin:0;color:var(--paper)}
+    .prac[open]>summary{border-radius:17px 17px 0 0;min-height:auto}
     .prac-body{padding:2px 20px 20px;display:grid;gap:15px;background:var(--panel);border-radius:0 0 17px 17px}
     .prac-body h4{margin:0 0 5px;font:750 .63rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--pc)}
     .prac-body p{margin:0;color:#b3b9d4;font-size:.93rem}
@@ -232,9 +226,9 @@
     .reveal.in{opacity:1;transform:translateY(0);transition:transform 760ms var(--ease),opacity 760ms var(--ease)}
     @keyframes veil-in{from{opacity:0}to{opacity:1}}
     @keyframes modal-in{from{opacity:0;transform:translateY(18px) scale(.975)}to{opacity:1;transform:translateY(0) scale(1)}}
-    @media(max-width:1050px){
+    @media(max-width:1100px){
       .hero{grid-template-columns:1fr}.blueprint{min-height:360px}.bp-svg{height:210px}
-      .project-wrap,.project-wrap:nth-child(n){grid-column:span 6}
+      .project-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
       .controls{grid-template-columns:1fr 1fr}.search-field{grid-column:1/-1}
       .prac-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
@@ -245,11 +239,12 @@
       .blueprint{min-height:330px;padding:19px}.bp-svg{height:190px}.bp-foot{font-size:.74rem}
       .section{padding:66px 0}.section-head{grid-template-columns:1fr;gap:20px}.section-head h2{font-size:3.2rem}
       .controls{grid-template-columns:1fr}.search-field{grid-column:auto}
-      .project-grid{display:block}.project-wrap{margin-bottom:16px}
-      /* no celular cada card fica sozinho na linha: altura fixa só criaria vão */
-      .project.core{padding:22px}
-      .project h3{font-size:1.5rem}
-      .project-foot{padding-top:18px}
+      .project-grid{grid-template-columns:1fr;gap:16px}
+      .project.core{padding:20px}
+      .project h3{font-size:1.25rem;min-height:auto}
+      .project-desc{min-height:auto}
+      .mini-flow{min-height:auto}
+      .project-foot{padding-top:16px}
       .prac-grid{grid-template-columns:1fr}
       .legend{grid-template-columns:1fr;gap:25px}.legend h2{position:static}
       .sources-grid{grid-template-columns:1fr}
@@ -265,56 +260,12 @@
       .reveal{opacity:1;transform:none}
     }
   </style>
-<style>
-
-/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
-@media (min-width: 1200px) {
-  .shell {
-    display: grid !important;
-    grid-template-columns: 280px minmax(0, 1fr) !important;
-    max-width: 1680px !important;
-    margin: 0 auto !important;
-  }
-  main {
-    padding: 0 clamp(28px, 3.5vw, 56px) !important;
-  }
-  .topic-split {
-    display: grid !important;
-    grid-template-columns: 1.15fr 0.95fr !important;
-    gap: 36px !important;
-    align-items: start !important;
-    margin-top: 20px !important;
-  }
-  .topic-split-left {
-    min-width: 0;
-  }
-  .topic-split-right {
-    min-width: 0;
-    position: sticky;
-    top: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .topic-split-right .topic-img,
-  .topic-split-right .visual-diagram,
-  .topic-split-right .exemplo-box,
-  .topic-split-right pre,
-  .topic-split-right .code-title,
-  .topic-split-right .sim-box,
-  .topic-split-right .diag-card {
-    margin: 0 !important;
-  }
-}
-
-</style>
-<link rel="stylesheet" href="../assets/css/responsive-drawer.css">
 </head>
 <body>
   <a class="skip" href="#projetos">Pular para os projetos</a>
   <nav class="island" aria-label="Navegação principal">
     <div class="island-inner">
-      <a class="brand" href="#top"><span class="brand-mark">21</span><span>Workshop 21</span><small style="color:var(--muted);font-weight:500">/ a bancada</small></a>
+      <a class="brand" href="#top"><span class="brand-mark">LAB</span><span>Laboratório de Projetos</span><small style="color:var(--muted);font-weight:500">/ bancada</small></a>
       <a class="nav-link" href="../index.html">Índice</a>
       <a class="nav-link" href="../acervo.html">Acervo</a>
       <a class="nav-link" href="#aquecimento">Aquecimento</a>
@@ -327,7 +278,7 @@
   <main id="top">
     <header class="hero shell">
       <div class="hero-copy reveal">
-        <span class="eyebrow">Java 21 · laboratório local-first</span>
+        <span class="eyebrow">Laboratório de Projetos · Local-First</span>
         <h1>Código que vira <em>evidência.</em></h1>
         <p>Os documentos do acervo explicam. Aqui você constrói: <strong>18 projetos</strong> em seis oficinas, mais <strong>18 aquecimentos</strong> de 20 a 40 minutos para os dias curtos. Cada projeto aponta de volta para o documento que sustenta a teoria dele.</p>
         <div class="hero-stats">
@@ -372,7 +323,7 @@
       <div class="control-shell reveal">
         <div class="controls">
           <label class="field search-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="search" type="search" placeholder="Buscar projeto, conceito ou stack…" aria-label="Buscar projetos"></label>
-          <label class="field"><select id="area" aria-label="Filtrar por área"><option value="all">Todas as áreas</option></select></label>
+          <label class="field"><select id="area" aria-label="Filtrar por oficina"><option value="all">Todas as oficinas</option></select></label>
           <label class="field"><select id="difficulty" aria-label="Filtrar por dificuldade"><option value="all">Todas as dificuldades</option><option>Fundação</option><option>Intermediário</option><option>Avançado</option></select></label>
           <label class="field"><select id="sort" aria-label="Ordenar projetos"><option value="order">Ordem recomendada</option><option value="sessions">Menos sessões</option><option value="difficulty">Por dificuldade</option><option value="title">Por título</option></select></label>
         </div>
@@ -421,6 +372,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script defer src="../assets/js/projetos.inline.js"></script>
-<script src="../assets/js/responsive-drawer.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

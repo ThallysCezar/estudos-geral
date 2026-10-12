@@ -69,14 +69,13 @@
           var isCorrect = btn.getAttribute('data-correct') === 'true';
           var explanation = btn.getAttribute('data-feedback') || '';
 
-          opts.forEach(function(b) {
-            b.disabled = true;
-            if (b.getAttribute('data-correct') === 'true') {
-              b.classList.add('correct');
-            }
-          });
-
           if (isCorrect) {
+            opts.forEach(function(b) {
+              b.disabled = true;
+              if (b.getAttribute('data-correct') === 'true') {
+                b.classList.add('correct');
+              }
+            });
             btn.classList.add('correct');
             if (feedback) {
               feedback.className = 'qc-feedback show ok';
@@ -89,14 +88,15 @@
             }
           } else {
             btn.classList.add('wrong');
+            btn.disabled = true;
             if (feedback) {
               feedback.className = 'qc-feedback show err';
               feedback.innerHTML = '<strong>Incorreto ✗</strong> ' + explanation;
             }
             if (quizId) localStorage.setItem('pratica.quiz.' + quizId, 'wrong');
             if (statusEl) {
-              statusEl.textContent = 'Revisar ⚠️';
-              statusEl.style.color = 'var(--rose)';
+              statusEl.textContent = 'Tentar novamente ⚠️';
+              statusEl.style.color = 'var(--orange)';
             }
           }
         });
@@ -148,14 +148,13 @@
           var isCorrect = btn.getAttribute('data-correct') === 'true';
           var rationale = btn.getAttribute('data-rationale') || '';
 
-          opts.forEach(function(b) {
-            b.disabled = true;
-            if (b.getAttribute('data-correct') === 'true') {
-              b.classList.add('correct');
-            }
-          });
-
           if (isCorrect) {
+            opts.forEach(function(b) {
+              b.disabled = true;
+              if (b.getAttribute('data-correct') === 'true') {
+                b.classList.add('correct');
+              }
+            });
             btn.classList.add('correct');
             if (feedback) {
               feedback.className = 'te-feedback ok';
@@ -176,10 +175,31 @@
             updateXpDisplay();
           } else {
             btn.classList.add('wrong');
+            btn.disabled = true;
             if (feedback) {
               feedback.className = 'te-feedback err';
-              feedback.innerHTML = '<strong>Incorreto ⚠️</strong> ' + rationale;
+              feedback.innerHTML = 
+                '<strong>Incorreto ⚠️</strong> ' + rationale +
+                '<div class="te-err-help" style="margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,85,85,0.25);font-size:0.83rem;color:var(--comment,#6272a4);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
+                  '<span>Reflita sobre o ponto acima e tente outra alternativa.</span>' +
+                  '<button type="button" class="te-reveal-ans" style="background:none;border:none;color:var(--cyan,#8be9fd);text-decoration:underline;cursor:pointer;font-size:0.83rem;padding:0;">💡 Ver gabarito comentado</button>' +
+                '</div>';
               feedback.hidden = false;
+
+              var revealBtn = feedback.querySelector('.te-reveal-ans');
+              if (revealBtn) {
+                revealBtn.addEventListener('click', function() {
+                  opts.forEach(function(b) {
+                    b.disabled = true;
+                    if (b.getAttribute('data-correct') === 'true') {
+                      b.classList.add('correct');
+                      var cr = b.getAttribute('data-rationale') || '';
+                      feedback.className = 'te-feedback ok';
+                      feedback.innerHTML = '<strong>Gabarito Comentado 💡</strong> ' + cr;
+                    }
+                  });
+                });
+              }
             }
             if (exId) localStorage.setItem('pratica.ex.' + exId, 'wrong');
             if (statusEl) {

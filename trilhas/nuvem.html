@@ -447,243 +447,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
 </style>
 
-<style id="img-modal-styles">
-
-/* ==================== MODAL DE IMAGEM / LIGHTBOX COM ZOOM ==================== */
-.img-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .22s ease, visibility .22s ease;
-}
-.img-modal.open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.im-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 14, 22, 0.90);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.im-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  overflow: hidden;
-  user-select: none;
-}
-.im-header {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 22px;
-  background: rgba(28, 29, 39, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line2, #44475a);
-  z-index: 10;
-}
-.im-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.im-badge {
-  font: 800 .68rem/1 "Inter", sans-serif;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--brand, #bd93f9);
-  background: var(--brand-s, #332a4e);
-  border: 1px solid var(--brand, #bd93f9);
-  border-radius: 6px;
-  padding: 5px 9px;
-  white-space: nowrap;
-}
-.im-caption {
-  margin: 0;
-  font: 600 .9rem/1.25 "Inter", sans-serif;
-  color: var(--ink, #f8f8f2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.im-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.im-btn {
-  background: var(--card, #2f313f);
-  color: var(--ink, #f8f8f2);
-  border: 1px solid var(--line2, #44475a);
-  border-radius: 8px;
-  padding: 0 11px;
-  font: 700 .86rem "Inter", sans-serif;
-  cursor: pointer;
-  transition: all .15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  min-width: 34px;
-}
-.im-btn:hover {
-  background: var(--brand, #bd93f9);
-  color: #1e1f29;
-  border-color: var(--brand, #bd93f9);
-}
-.im-btn.im-scale-val {
-  min-width: 58px;
-  font-family: "Cascadia Code", monospace;
-  font-size: .78rem;
-}
-.im-btn.im-close {
-  background: rgba(255, 85, 85, 0.16);
-  border-color: rgba(255, 85, 85, 0.4);
-  color: #ff5555;
-  font-size: 1rem;
-  margin-left: 6px;
-}
-.im-btn.im-close:hover {
-  background: #ff5555;
-  border-color: #ff5555;
-  color: #ffffff;
-}
-.im-viewport {
-  flex: 1 1 auto;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-}
-.im-viewport.is-dragging {
-  cursor: grabbing;
-}
-.im-canvas {
-  position: absolute;
-  transform-origin: center center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  will-change: transform;
-}
-.im-canvas img {
-  max-width: 90vw;
-  max-height: 80vh;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-  border: 1px solid var(--line2, #44475a);
-  pointer-events: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  cursor: grab;
-}
-.im-viewport.is-dragging .im-canvas img {
-  cursor: grabbing;
-}
-.im-footer {
-  flex: 0 0 auto;
-  padding: 9px 18px;
-  text-align: center;
-  background: rgba(20, 21, 30, 0.88);
-  border-top: 1px solid var(--line, #343746);
-  z-index: 10;
-}
-.im-hint {
-  font: 400 .78rem "Inter", sans-serif;
-  color: var(--muted, #9aa1c0);
-}
-.im-hint b {
-  color: var(--cyan, #8be9fd);
-}
-
-@media (max-width: 640px) {
-  .im-header { padding: 10px 14px; }
-  .im-badge { display: none; }
-  .im-caption { font-size: .8rem; }
-  .im-btn { height: 30px; min-width: 30px; padding: 0 7px; font-size: .8rem; }
-  .im-hint { font-size: .7rem; }
-}
-
-/* ==================== IMAGENS & MAPAS CONCEITUAIS PADRÃO ==================== */
-.topic-img {
-  margin: 24px 0 28px 0;
-  padding: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--line2, #44475a);
-  background: #1e1f29;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
-  transition: border-color .2s ease, box-shadow .2s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover {
-  border-color: var(--brand, #bd93f9);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
-}
-.topic-img a {
-  display: block;
-  text-decoration: none;
-  cursor: zoom-in;
-}
-.topic-img img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform .3s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover img {
-  transform: scale(1.008);
-}
-.topic-img figcaption {
-  padding: 11px 18px;
-  font: 600 .82rem/1.3 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--muted, #9aa1c0);
-  background: var(--bg2, #21222c);
-  border-top: 1px solid var(--line, #343746);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.topic-img figcaption span {
-  color: var(--cyan, #8be9fd);
-  font-family: "Cascadia Code", Consolas, monospace;
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-}
-.topic-img figcaption em {
-  font-style: normal;
-  color: var(--ink, #f8f8f2);
-  font-weight: 500;
-}
-
-</style>
-<style>
-
-</style>
+<link rel="stylesheet" id="img-modal-styles" href="../assets/css/img-modal.css">
 <style id="v5-5-code-studio-styles">
 /* ==================== V5.5 BALANCED CODE STUDIO ARCHITECTURE ==================== */
 @media (min-width: 1200px) {
@@ -1002,7 +766,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <!-- MAPA MENTAL PRINCIPAL -->
       <figure class="topic-img">
-        <img src="../assets/img/nuvem/nuvem_mapa_mental_principal.jpg" alt="Mapa Mental: NUVEM (CLOUD) - RECURSOS DE COMPUTAÇÃO SOB DEMANDA" loading="lazy">
+        <img src="../assets/img/nuvem/nuvem_mapa_mental_principal.jpg" alt="Mapa Mental: NUVEM (CLOUD) - RECURSOS DE COMPUTAÇÃO SOB DEMANDA" loading="lazy" decoding="async">
         <figcaption>
           <span>MAPA MENTAL PRINCIPAL</span>
           <em>NUVEM (CLOUD) — Recursos de Computação, Redes VPC, Storage &amp; IAM</em>
@@ -1214,14 +978,14 @@ public class CloudDiscoveryService {
                 <p class="te-instrucao">Qual é o principal argumento financeiro e operacional que justifica a migração?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O valor supremo da computação em nuvem é a velocidade de experimentação e a elasticidade de só pagar pelo que realmente estiver gerando valor de computação, eliminando custos de capacidade ociosa permanente.">
-                    <span class="te-letter">A</span> Elasticidade e agilidade: a capacidade de desligar ambientes de teste à noite, escalar de 5 para 100 servidores em minutos durante picos e desprovisionar sem prejuízo financeiro, além de eliminar o custo de manutenção física de hardware, energia, refrigeração e segurança predial.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O valor supremo da nuvem é a velocidade de experimentação e a elasticidade de pagar apenas pelo consumo real de computação.">
+                    <span class="te-letter">A</span> Elasticidade e agilidade: desligar ambientes ociosos à noite, escalar em minutos nos picos e eliminar custos de datacenter físico e refrigeração.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A nuvem é cobrada por segundo/hora de uso de recursos.">
-                    <span class="te-letter">B</span> A nuvem é 100% gratuita para sempre por decisão dos governos mundiais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A economia da nuvem decorre da elasticidade e eliminação de ociosidade, não de conversão gratuita de licenças legadas.">
+                    <span class="te-letter">B</span> Garantia de que a migração automática de licenças legadas perpétuas eliminará completamente o custo unitário por VM frente ao hardware depreciado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falhas de hardware acontecem rotineiramente e são gerenciadas pelo hipervisor e orquestrador.">
-                    <span class="te-letter">C</span> Servidores na nuvem nunca sofrem falhas de hardware ou reinicializações.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Equipes de engenharia continuam indispensáveis para governança, automação, observabilidade e arquitetura.">
+                    <span class="te-letter">C</span> Eliminação completa da necessidade de engenheiros e administradores de infraestrutura, pois todos os servidores passam a ser autogerenciados sem monitoramento contínuo.
                   </button>
                 </div>
 
@@ -1419,14 +1183,14 @@ management.endpoint.health.probes.enabled=true</code></pre>
                 <p class="te-instrucao">Qual modelo de serviço em nuvem atende perfeitamente à necessidade do time?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! PaaS permite foco total na regra de negócio e no código, abstraindo a complexidade de manutenção de servidores e patches operacionais.">
-                    <span class="te-letter">A</span> PaaS (Platform as a Service) ou Container-as-a-Service (ex: AWS App Runner, Google Cloud Run): o time fornece apenas o código ou a imagem Docker, delegando toda a gestão de sistema operacional, balanceamento e escalabilidade para o provedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. IaaS exige que o time configure e mantenha sistema operacional, patches e balanceamento de portas.">
+                    <span class="te-letter">A</span> IaaS com instâncias EC2 gerenciadas por scripts locais de automação e rotinas manuais de atualização do kernel do Linux.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. IaaS forçaria a equipe a configurar Linux, firewalls, nginx e patches de segurança manualmente.">
-                    <span class="te-letter">B</span> IaaS com instâncias EC2 puras sem automação.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! PaaS abstrai servidores, balanceamento de carga e patches de segurança do SO, acelerando entregas.">
+                    <span class="te-letter">B</span> PaaS ou Container-as-a-Service (App Runner, Cloud Run): o time envia o código ou imagem e o provedor gerencia SO e escala.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adiciona burocracia física desnecessária e custo adiantado.">
-                    <span class="te-letter">C</span> On-Premises com compras de blades em racks de data center próprio.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não é necessário reescrever a API para FaaS se um serviço PaaS ou CaaS executa o código diretamente.">
+                    <span class="te-letter">C</span> FaaS serverless reescrevendo todo o backend em rotas monolíticas com gatilhos síncronos de buckets de armazenamento de dados.
                   </button>
                 </div>
 
@@ -1615,14 +1379,14 @@ public class SecureS3Factory {
                 <p class="te-instrucao">De quem é a responsabilidade por esse incidente segundo o Modelo de Responsabilidade Compartilhada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O provedor protege a infraestrutura subjacente; o cliente é integralmente responsável pelas regras de acesso, proteção de rede e autenticação dos seus recursos.">
-                    <span class="te-letter">A</span> Responsabilidade 100% do CLIENTE (Segurança NA Nuvem): configurar firewalls (Security Groups), regras de rede e senhas fortes é dever exclusivo do cliente. A AWS garantiu que o hipervisor e o servidor físico estivessem protegidos, mas não interfere nas permissões lógicas definidas pelo usuário.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O provedor não intercepta nem decide quais portas o cliente escolhe abrir em suas instâncias privadas.">
+                    <span class="te-letter">A</span> Responsabilidade mista, pois o provedor de nuvem deve inspecionar e bloquear portas de bancos de dados no firewall de borda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Provedores não alteram senhas nem invadem o ambiente privado dos clientes.">
-                    <span class="te-letter">B</span> Responsabilidade exclusiva da nuvem, que deveria alterar senhas fracas sem permissão.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O provedor não possui acesso nem gerencia credenciais internas dos bancos configurados pelos usuários.">
+                    <span class="te-letter">B</span> Responsabilidade exclusiva da nuvem, cuja obrigação contratual é auditar senhas fracas e aplicar políticas de complexidade.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha ocorreu por configuração errônea de rede na nuvem.">
-                    <span class="te-letter">C</span> Responsabilidade do provedor de internet local de banda larga.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Pelo Modelo de Responsabilidade Compartilhada, o cliente é o único responsável pela configuração de rede e autenticação de seus recursos.">
+                    <span class="te-letter">C</span> Responsabilidade 100% do cliente (Segurança NA Nuvem): configurar regras de rede (Security Groups) e senhas fortes é dever do usuário, enquanto o provedor protege o hardware físico e o hipervisor.
                   </button>
                 </div>
 
@@ -1812,14 +1576,14 @@ public class DatabaseConfig {
                 <p class="te-instrucao">Qual mudança de arquitetura de nuvem eliminaria esse ponto único de falha sem incorrer na complexidade de replicação entre continentes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Zonas de Disponibilidade possuem infraestrutura elétrica, refrigeração e conectividade totalmente isoladas. Se uma AZ cair, as outras AZs da mesma região continuam operando normalmente.">
-                    <span class="te-letter">A</span> Implantar uma arquitetura Multi-AZ: distribuir as instâncias de aplicação atrás de um balanceador e configurar o banco com réplica síncrona de failover automático entre 'us-east-1a' e 'us-east-1b' (zonas distintas dentro da mesma região).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Zonas de Disponibilidade possuem infraestrutura isolada (energia e rede). Falhas em uma AZ não afetam as outras na mesma região.">
+                    <span class="te-letter">A</span> Arquitetura Multi-AZ: distribuir instâncias de API atrás de balanceador e configurar banco com réplica síncrona de failover automático entre AZs distintas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escala vertical na mesma AZ não protege contra falhas físicas do data center ou corte de energia.">
-                    <span class="te-letter">B</span> Aumentar a memória RAM e a CPU da máquina atual dentro da mesma zona us-east-1a.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar recursos computacionais dentro da mesma AZ não protege contra problemas elétricos ou desastres físicos no data center.">
+                    <span class="te-letter">B</span> Escala vertical das instâncias de aplicação e migração do volume de banco para discos EBS com provisionamento de IOPS extremo dentro do mesmo datacenter físico de us-east-1a.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O sistema operacional não resolve falhas elétricas no data center.">
-                    <span class="te-letter">C</span> Mudar o sistema operacional do servidor de Linux para Windows Server.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Replicação multi-região adiciona altíssima complexidade e latência, violando a premissa de resolver o problema sem complexidade continental.">
+                    <span class="te-letter">C</span> Replicação assíncrona entre regiões continentais distintas (Cross-Region) com failover de DNS via Route 53 e particionamento manual de tabelas em múltiplos continentes.
                   </button>
                 </div>
 
@@ -1871,15 +1635,15 @@ public class DatabaseConfig {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito Arquitetural</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">VMware</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Conta / Hierarquia</b></td><td style="padding:8px;color:var(--ink2)">Account + Organizations</td><td style="padding:8px;color:var(--ink2)">Subscription + Mgmt Group</td><td style="padding:8px;color:var(--ink2)">Project + Folder</td><td style="padding:8px;color:var(--ink2)">Tenancy + Compartment</td><td style="padding:8px;color:var(--muted)">vCenter + Tenant</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Rede Isolada</b></td><td style="padding:8px;color:var(--ink2)">VPC</td><td style="padding:8px;color:var(--ink2)">Virtual Network (VNet)</td><td style="padding:8px;color:var(--ink2)">VPC Network</td><td style="padding:8px;color:var(--ink2)">VCN</td><td style="padding:8px;color:var(--ink2)">NSX Segment</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Máquina Virtual</b></td><td style="padding:8px;color:var(--ink2)">EC2</td><td style="padding:8px;color:var(--ink2)">Virtual Machines</td><td style="padding:8px;color:var(--ink2)">Compute Engine</td><td style="padding:8px;color:var(--ink2)">Compute</td><td style="padding:8px;color:var(--ink2)">vSphere VM</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Object Storage</b></td><td style="padding:8px;color:var(--ink2)">S3</td><td style="padding:8px;color:var(--ink2)">Blob Storage</td><td style="padding:8px;color:var(--ink2)">Cloud Storage</td><td style="padding:8px;color:var(--ink2)">Object Storage</td><td style="padding:8px;color:var(--muted)">vSAN Appliance</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Kubernetes Gerenciado</b></td><td style="padding:8px;color:var(--ink2)">EKS</td><td style="padding:8px;color:var(--ink2)">AKS</td><td style="padding:8px;color:var(--ink2)">GKE</td><td style="padding:8px;color:var(--ink2)">OKE</td><td style="padding:8px;color:var(--ink2)">Tanzu (TKG)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Identidade & Acesso</b></td><td style="padding:8px;color:var(--ink2)">IAM</td><td style="padding:8px;color:var(--ink2)">Entra ID + RBAC</td><td style="padding:8px;color:var(--ink2)">Cloud IAM</td><td style="padding:8px;color:var(--ink2)">IAM Policies</td><td style="padding:8px;color:var(--ink2)">vCenter SSO</td></tr>
-          <tr><td style="padding:8px"><b>Observabilidade</b></td><td style="padding:8px;color:var(--ink2)">CloudWatch</td><td style="padding:8px;color:var(--ink2)">Azure Monitor</td><td style="padding:8px;color:var(--ink2)">Cloud Operations</td><td style="padding:8px;color:var(--ink2)">OCI Monitoring</td><td style="padding:8px;color:var(--ink2)">Aria Operations</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito Arquitetural</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th><th>VMware</th></tr></thead>
+          <tr><td><b>Conta / Hierarquia</b></td><td>Account + Organizations</td><td>Subscription + Mgmt Group</td><td>Project + Folder</td><td>Tenancy + Compartment</td><td style="padding:8px;color:var(--muted)">vCenter + Tenant</td></tr>
+          <tr><td><b>Rede Isolada</b></td><td>VPC</td><td>Virtual Network (VNet)</td><td>VPC Network</td><td>VCN</td><td>NSX Segment</td></tr>
+          <tr><td><b>Máquina Virtual</b></td><td>EC2</td><td>Virtual Machines</td><td>Compute Engine</td><td>Compute</td><td>vSphere VM</td></tr>
+          <tr><td><b>Object Storage</b></td><td>S3</td><td>Blob Storage</td><td>Cloud Storage</td><td>Object Storage</td><td style="padding:8px;color:var(--muted)">vSAN Appliance</td></tr>
+          <tr><td><b>Kubernetes Gerenciado</b></td><td>EKS</td><td>AKS</td><td>GKE</td><td>OKE</td><td>Tanzu (TKG)</td></tr>
+          <tr><td><b>Identidade & Acesso</b></td><td>IAM</td><td>Entra ID + RBAC</td><td>Cloud IAM</td><td>IAM Policies</td><td>vCenter SSO</td></tr>
+          <tr><td><b>Observabilidade</b></td><td>CloudWatch</td><td>Azure Monitor</td><td>Cloud Operations</td><td>OCI Monitoring</td><td>Aria Operations</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -2020,14 +1784,14 @@ public class AzureBlobStorageAdapter implements StoragePort {
                 <p class="te-instrucao">Qual é o mapa de equivalência exato dos serviços no GCP?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a correspondência direta de serviços equivalentes entre AWS e GCP, validando a universalidade dos conceitos fundamentais de computação em nuvem.">
-                    <span class="te-letter">A</span> 1. S3 → Cloud Storage | 2. EKS → Google Kubernetes Engine (GKE) | 3. Lambda → Cloud Functions.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filestore é NFS gerenciado (equivalente ao EFS) e MIGs são grupos de VMs (equivalentes a Auto Scaling Groups).">
+                    <span class="te-letter">A</span> 1. Cloud Filestore | 2. Compute Engine Managed Instance Groups | 3. Cloud Run jobs em lote.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. BigQuery é um data warehouse analítico, Cloud Run é CaaS e Compute Engine são VMs puras.">
-                    <span class="te-letter">B</span> 1. S3 → BigQuery | 2. EKS → Cloud Run | 3. Lambda → Compute Engine.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a correspondência direta de serviços fundamentais de armazenamento de objetos, orquestração de contêineres e funções serverless.">
+                    <span class="te-letter">B</span> 1. S3 → Cloud Storage | 2. EKS → Google Kubernetes Engine (GKE) | 3. Lambda → Cloud Functions (ou Cloud Run para eventos serverless baseados em requisições).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Todos os grandes provedores cobrem amplamente o catálogo de infraestrutura de nuvem.">
-                    <span class="te-letter">C</span> O GCP não possui serviços equivalentes à AWS.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. App Engine é um PaaS tradicional e Cloud Tasks é um gerenciador de filas e tarefas, não computação orientada a eventos.">
+                    <span class="te-letter">C</span> 1. Google Drive Enterprise | 2. Google App Engine Standard | 3. Cloud Tasks assíncronos.
                   </button>
                 </div>
 
@@ -2090,18 +1854,18 @@ public class AzureBlobStorageAdapter implements StoragePort {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>VM (IaaS)</b></td><td style="padding:8px;color:var(--ink2)">EC2</td><td style="padding:8px;color:var(--ink2)">Virtual Machines</td><td style="padding:8px;color:var(--ink2)">Compute Engine</td><td style="padding:8px;color:var(--ink2)">Compute</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Auto Scaling de VM</b></td><td style="padding:8px;color:var(--ink2)">Auto Scaling Group</td><td style="padding:8px;color:var(--ink2)">VM Scale Sets</td><td style="padding:8px;color:var(--ink2)">Managed Instance Groups</td><td style="padding:8px;color:var(--ink2)">Instance Pools</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Container Gerenciado</b></td><td style="padding:8px;color:var(--ink2)">ECS / Fargate / App Runner</td><td style="padding:8px;color:var(--ink2)">Container Apps</td><td style="padding:8px;color:var(--ink2)">Cloud Run</td><td style="padding:8px;color:var(--ink2)">Container Instances</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Kubernetes Gerenciado</b></td><td style="padding:8px;color:var(--ink2)">EKS</td><td style="padding:8px;color:var(--ink2)">AKS</td><td style="padding:8px;color:var(--ink2)">GKE</td><td style="padding:8px;color:var(--ink2)">OKE</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Função (FaaS)</b></td><td style="padding:8px;color:var(--ink2)">Lambda</td><td style="padding:8px;color:var(--ink2)">Functions</td><td style="padding:8px;color:var(--ink2)">Cloud Functions</td><td style="padding:8px;color:var(--ink2)">Functions</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>VM (IaaS)</b></td><td>EC2</td><td>Virtual Machines</td><td>Compute Engine</td><td>Compute</td></tr>
+          <tr><td><b>Auto Scaling de VM</b></td><td>Auto Scaling Group</td><td>VM Scale Sets</td><td>Managed Instance Groups</td><td>Instance Pools</td></tr>
+          <tr><td><b>Container Gerenciado</b></td><td>ECS / Fargate / App Runner</td><td>Container Apps</td><td>Cloud Run</td><td>Container Instances</td></tr>
+          <tr><td><b>Kubernetes Gerenciado</b></td><td>EKS</td><td>AKS</td><td>GKE</td><td>OKE</td></tr>
+          <tr><td><b>Função (FaaS)</b></td><td>Lambda</td><td>Functions</td><td>Cloud Functions</td><td>Functions</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
             <figure class="topic-img">
-          <img src="../assets/img/nuvem/cloud_compute_spectrum.svg" alt="A Régua do Compute: Do Bare Metal ao Serverless sob a Ótica da Responsabilidade Compartilhada" loading="lazy">
+          <img src="../assets/img/nuvem/cloud_compute_spectrum.svg" alt="A Régua do Compute: Do Bare Metal ao Serverless sob a Ótica da Responsabilidade Compartilhada" loading="lazy" decoding="async">
           <figcaption>
             <span>Fig C-2 · Computação & Escala</span>
             <em>A Régua do Compute: Do Bare Metal ao Serverless sob a Ótica da Responsabilidade Compartilhada</em>
@@ -2233,14 +1997,14 @@ gcloud run deploy orders-service \\
                 <p class="te-instrucao">Por que uma função AWS Lambda é arquiteturalmente inviável para esse problema e qual serviço deve ser adotado?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Funções serverless (FaaS) foram concebidas para operações rápidas e efêmeras. Processamentos longos estouram o timeout da plataforma e pertencem a serviços de batch ou contêineres desacoplados.">
-                    <span class="te-letter">A</span> Porque o AWS Lambda possui um limite máximo estrito de execução de 15 minutos (timeout rígido de plataforma). A solução recomendada é utilizar AWS Batch ou contêineres ECS/Fargate com tarefas sem limite rígido de tempo de processamento.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Lambda suporta FFmpeg perfeitamente via Lambda Layers ou imagens de contêiner customizadas.">
+                    <span class="te-letter">A</span> O Lambda não suporta ferramentas como o FFmpeg em ambientes Linux; deve-se usar API Gateway com WebSockets para streaming contínuo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Lambdas aceitam qualquer arquivo binário; o impedimento é estritamente o tempo de execução de 15 minutos.">
-                    <span class="te-letter">B</span> Porque o Lambda não suporta arquivos de vídeo em formato MP4.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A cobrança do Lambda é linear por GB-segundo, mas a execução simplesmente é abortada ao atingir o timeout máximo.">
+                    <span class="te-letter">B</span> O Lambda cobra tarifas exponenciais por gigabyte após 10 minutos; deve-se usar instâncias EC2 spot configuradas com cron jobs.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A cobrança do Lambda é por gigabyte-segundo em frações de centavo.">
-                    <span class="te-letter">C</span> Porque o Lambda cobra 10.000 dólares por gigabyte de RAM.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Funções serverless têm timeout estrito de 15 minutos na AWS. Processamentos longos pertencem a jobs batch ou contêineres sem limite rígido.">
+                    <span class="te-letter">C</span> O Lambda possui limite rígido de execução de 15 minutos (timeout de plataforma); a solução recomendada é AWS Batch ou ECS/Fargate.
                   </button>
                 </div>
 
@@ -2427,14 +2191,14 @@ public class OrderProcessingMetrics {
                 <p class="te-instrucao">Por que o Auto Scaling tradicional falhará nesse cenário e qual a estratégia técnica de contingência?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Auto scaling reativo baseado em métricas de CPU é inútil para picos verticais instantâneos com eventos conhecidos no calendário. O agendamento prévio (Scheduled Scaling) garante que as máquinas já estejam quentes antes do apito do juiz.">
-                    <span class="te-letter">A</span> Porque o tempo de resposta do Auto Scaling reativo de VMs (6 minutos de boot) é ordens de grandeza mais lento que a velocidade da avalanche de tráfego (30 segundos). A estratégia é pré-escalar proativamente através de Scheduled Scaling (agendamento prévio) ou usar tecnologias com tempo de subida em milissegundos (Serverless/Containers).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Escala reativa falha em subidas verticais instantâneas. Agendamento prévio (Scheduled Scaling) garante instâncias aquecidas antes do pico.">
+                    <span class="te-letter">A</span> Auto Scaling reativo baseado em métricas de CPU é lento demais para picos em segundos (6 min de boot); a solução técnica é pré-escalar proativamente via Scheduled Scaling antes do evento previsível ou usar containers serverless rápidos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A infraestrutura de nuvem opera normalmente; o atrito é a inércia física de boot de máquinas virtuais.">
-                    <span class="te-letter">B</span> O Auto Scaling falhou porque o provedor de nuvem desliga a internet durante jogos de futebol.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Balanceadores não exigem número mínimo arbitrário de nós para manter conexões ativas.">
+                    <span class="te-letter">B</span> O balanceador de carga descarta conexões se o pool tiver menos de 10 nós ativos na janela de verificação de integridade.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O gargalo do cenário foi a velocidade de subida das instâncias de computação web.">
-                    <span class="te-letter">C</span> Deveria ter sido usado um banco de dados NoSQL sem Auto Scaling.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A sincronização de relógio de sistema não bloqueia portas TCP nem tráfego de entrada da aplicação.">
+                    <span class="te-letter">C</span> As instâncias EC2 bloqueiam novas conexões de rede enquanto o sistema operacional sincroniza o relógio do NTP via UDP.
                   </button>
                 </div>
 
@@ -2616,14 +2380,14 @@ public class OrderValidationHandler implements RequestHandler<APIGatewayProxyReq
                 <p class="te-instrucao">Qual componente gerenciado de nuvem resolve esse problema de saturação de conexões em ambientes Serverless?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O RDS Proxy foi construído especificamente para resolver a incompatibilidade entre a natureza efêmera e massivamente concorrente do Serverless e os limites tradicionais de conexão de bancos relacionais.">
-                    <span class="te-letter">A</span> AWS RDS Proxy: ele atua como um intermediário de connection pooling gerenciado que recebe as 1.500 conexões voláteis das funções Lambda e as multiplexa eficientemente em um pool estável e pequeno de conexões persistentes com o PostgreSQL.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cache em borda não resolve chamadas de escrita ou conexões diretas abertas ao banco relacional por execuções concorrentes.">
+                    <span class="te-letter">A</span> API Gateway com cache de resposta em borda ativado para interceptar requisições repetidas de leitura antes de atingir a execução da função Lambda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. SSL afeta criptografia, não a contagem de slots de conexões abertas.">
-                    <span class="te-letter">B</span> Desativar o protocolo SSL das conexões do banco de dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O RDS Proxy foi desenhado especificamente para proteger bancos relacionais contra a proliferação descontrolada de conexões serverless.">
+                    <span class="te-letter">B</span> AWS RDS Proxy: pool gerenciado de conexões que multiplexa milhares de execuções efêmeras sobre um conjunto estável de conexões persistentes com o PostgreSQL.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas causaria timeouts em massa sem resolver a disputa por conexões.">
-                    <span class="te-letter">C</span> Configurar o timeout do Lambda para 1 segundo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cada conexão no PostgreSQL aloca memória de processo dedicada (work_mem); elevar o limite sem controle causará esgotamento de RAM e OOM.">
+                    <span class="te-letter">C</span> Aumentar o parâmetro max_connections no grupo de parâmetros do RDS para 25.000 conexões simultâneas forçando alocação de swap no Linux para suportar a carga de picos.
                   </button>
                 </div>
 
@@ -2825,14 +2589,14 @@ spec:
                 <p class="te-instrucao">Qual das opções justifica tecnicamente a adoção do serviço gerenciado (EKS)?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Manter um Control Plane e etcd com alta disponibilidade e consistência por conta própria é uma das tarefas mais complexas e arriscadas de infraestrutura. Delegar isso ao provedor é uma decisão de governança madura.">
-                    <span class="te-letter">A</span> O EKS assume toda a complexidade operacional crítica de manter o etcd replicado com quorum, backups automatizados, alta disponibilidade do kube-apiserver em múltiplas AZs e rotação transparente de certificados internos do cluster, reduzindo o custo de engenharia de SRE.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O EKS utiliza imagens padrão de nó e drivers CNI convencionais sem recompilação de kernel em tempo de execução.">
+                    <span class="te-letter">A</span> O EKS compila os binários do kernel sob demanda para acelerar a taxa de transferência de I/O de rede dos contêineres em ambientes distribuídos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O EKS cobra pelo cluster control plane e pelo uso das instâncias EC2 de worker nodes.">
-                    <span class="te-letter">B</span> O EKS é gratuito e não cobra nada pelo uso dos Worker Nodes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Instâncias EC2 que atuam como workers continuam sendo faturadas normalmente pelo seu consumo computacional.">
+                    <span class="te-letter">B</span> O EKS elimina a cobrança das instâncias worker nodes, tarifando apenas as requisições HTTP recebidas pelas regras de roteamento do Ingress.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Manifestos de aplicação e contêineres continuam sendo de responsabilidade do desenvolvedor.">
-                    <span class="te-letter">C</span> O EKS elimina a necessidade de escrever manifestos YAML e Dockerfiles.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Operar etcd e o kube-apiserver com alta disponibilidade e consistência por conta própria é complexo e arriscado; o EKS automatiza isso.">
+                    <span class="te-letter">C</span> O EKS assume a gestão do Control Plane: replicação do etcd com quórum, alta disponibilidade da API Multi-AZ e atualizações de versão seguras.
                   </button>
                 </div>
 
@@ -2895,17 +2659,17 @@ spec:
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Rede Virtual</b></td><td style="padding:8px;color:var(--ink2)">VPC</td><td style="padding:8px;color:var(--ink2)">Virtual Network (VNet)</td><td style="padding:8px;color:var(--ink2)">VPC Network (Global)</td><td style="padding:8px;color:var(--ink2)">VCN (Virtual Cloud Network)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Escopo</b></td><td style="padding:8px;color:var(--ink2)">Regional</td><td style="padding:8px;color:var(--ink2)">Regional</td><td style="padding:8px;color:var(--ink2)">Global (subnets regionais)</td><td style="padding:8px;color:var(--ink2)">Regional</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Roteamento Central</b></td><td style="padding:8px;color:var(--ink2)">Route Table</td><td style="padding:8px;color:var(--ink2)">Route Table (UDR)</td><td style="padding:8px;color:var(--ink2)">VPC Routes</td><td style="padding:8px;color:var(--ink2)">Route Table</td></tr>
-          <tr><td style="padding:8px"><b>Ligar duas redes</b></td><td style="padding:8px;color:var(--ink2)">VPC Peering / Transit Gateway</td><td style="padding:8px;color:var(--ink2)">VNet Peering / Virtual WAN</td><td style="padding:8px;color:var(--ink2)">VPC Peering / Network Conn. Center</td><td style="padding:8px;color:var(--ink2)">Local/Remote Peering / DRG</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>Rede Virtual</b></td><td>VPC</td><td>Virtual Network (VNet)</td><td>VPC Network (Global)</td><td>VCN (Virtual Cloud Network)</td></tr>
+          <tr><td><b>Escopo</b></td><td>Regional</td><td>Regional</td><td>Global (subnets regionais)</td><td>Regional</td></tr>
+          <tr><td><b>Roteamento Central</b></td><td>Route Table</td><td>Route Table (UDR)</td><td>VPC Routes</td><td>Route Table</td></tr>
+          <tr><td><b>Ligar duas redes</b></td><td>VPC Peering / Transit Gateway</td><td>VNet Peering / Virtual WAN</td><td>VPC Peering / Network Conn. Center</td><td>Local/Remote Peering / DRG</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
             <figure class="topic-img">
-          <img src="../assets/img/nuvem/cloud_vpc_network_architecture.svg" alt="Arquitetura de Rede VPC: Sub-redes Públicas vs Privadas, NAT Gateway, Route Tables e Security Groups" loading="lazy">
+          <img src="../assets/img/nuvem/cloud_vpc_network_architecture.svg" alt="Arquitetura de Rede VPC: Sub-redes Públicas vs Privadas, NAT Gateway, Route Tables e Security Groups" loading="lazy" decoding="async">
           <figcaption>
             <span>Fig C-3 · Redes & Conectividade</span>
             <em>Arquitetura de Rede VPC: Sub-redes Públicas vs Privadas, NAT Gateway, Route Tables e Security Groups</em>
@@ -3034,14 +2798,14 @@ spring.datasource.hikari.maximum-pool-size=20</code></pre>
                 <p class="te-instrucao">Qual das faixas abaixo é um bloco de IP privado válido segundo a RFC 1918?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A RFC 1918 reservou internacionalmente essas 3 faixas exclusivas para redes privadas não-roteáveis diretamente na internet pública.">
-                    <span class="te-letter">A</span> 10.0.0.0/16 (ou faixas dentro de 10.0.0.0/8, 172.16.0.0/12 ou 192.168.0.0/16).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A RFC 1918 reservou internacionalmente essas três faixas para redes privadas corporativas não-roteáveis na internet pública.">
+                    <span class="te-letter">A</span> 10.0.0.0/16 (ou faixas contidas em 10.0.0.0/8, 172.16.0.0/12 ou 192.168.0.0/16).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É um IP público registrado pelo Google na internet.">
-                    <span class="te-letter">B</span> 8.8.8.0/24 (pertencente ao Google DNS público).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Essas faixas são reservadas para documentação e exemplos (RFC 5737), não para roteamento de VPCs privadas.">
+                    <span class="te-letter">B</span> 198.51.100.0/24 e 203.0.113.0/24 reservadas internacionalmente para tráfego privado de roteadores de borda corporativos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É um IP público de DNS da Cloudflare.">
-                    <span class="te-letter">C</span> 1.1.1.0/24 (pertencente à Cloudflare pública).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O bloco 100.64.0.0/10 é reservado para Carrier-Grade NAT (RFC 6598), usado por operadoras e serviços compartilhados de nuvem.">
+                    <span class="te-letter">C</span> 100.64.0.0/10 reservada para redes de datacenters privados corporativos sem nenhuma conexão com a internet pública externa.
                   </button>
                 </div>
 
@@ -3296,14 +3060,14 @@ public class PaymentGatewayClient {
                 <p class="te-instrucao">Qual componente de rede deve ser colocado na sub-rede pública para viabilizar essa comunicação de saída segura?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O NAT Gateway viabiliza o tráfego unidirecional: os recursos privados saem para a internet, mas agentes externos na internet continuam completamente incapazes de alcançar as instâncias privadas.">
-                    <span class="te-letter">A</span> Um NAT Gateway (Network Address Translation): alocado na sub-rede pública com um IP elástico público, atuando como rota de saída (0.0.0.0/0) para a tabela de roteamento da sub-rede privada, traduzindo as requisições de saída sem expor as portas de entrada.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Rota direta para Internet Gateway tornaria a sub-rede pública ou falharia caso as instâncias não possuam IP público associado.">
+                    <span class="te-letter">A</span> Internet Gateway associado diretamente à tabela de rotas da sub-rede privada, habilitando comunicação bidirecional com a internet pública de modo irrestrito.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destrói o isolamento e expõe a máquina a invasões.">
-                    <span class="te-letter">B</span> Mudar a sub-rede privada para pública e desativar as senhas do Linux.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O NAT Gateway possibilita tráfego de saída unidirecional: nós privados acessam a internet, mas a internet não consegue alcançá-los.">
+                    <span class="te-letter">B</span> NAT Gateway na sub-rede pública: traduz requisições de saída dos IPs privados sem expor portas nem aceitar conexões iniciadas externamente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Totalmente inviável e sem sentido na nuvem.">
-                    <span class="te-letter">C</span> Conectar um cabo de rede USB entre o servidor e a máquina do desenvolvedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. VPC Peering interliga VPCs privadas; ele não provê tradução de endereços para saída direta à internet.">
+                    <span class="te-letter">C</span> VPC Peering estabelecido entre a sub-rede privada e a VPC pública padrão criada na inicialização da conta de nuvem corporativa no provedor.
                   </button>
                 </div>
 
@@ -3413,12 +3177,12 @@ resource "aws_security_group" "db" {
             <div class="pilar-card p-funciona">
           <div class="pilar-header"><span class="pilar-icon">⚙️</span> <b>5. Como funciona por baixo dos panos? Security Group vs NACL</b></div>
           <p>Existem dois níveis complementares de firewall na nuvem que funcionam de formas radicalmente distintas:</p>
-          <table style="width:100%;border-collapse:collapse;margin:12px 0;font:400 .85rem/1.45 Georgia,serif">
-            <tr style="border-bottom:1px solid var(--line2)"><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Característica</td><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Security Group</td><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Network ACL (NACL)</td></tr>
-            <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px"><b>Nível de Atuação</b></td><td style="padding:6px">Interface de Rede (ENI / Recurso)</td><td style="padding:6px">Sub-rede (Subnet Boundary)</td></tr>
-            <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px"><b>Estado de Conexão</b></td><td style="padding:6px"><b>Com Estado (Stateful)</b>: resposta é permitida automaticamente</td><td style="padding:6px"><b>Sem Estado (Stateless)</b>: exige regras de entrada E saída</td></tr>
-            <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px"><b>Regras Suportadas</b></td><td style="padding:6px">Apenas permissão (Allow)</td><td style="padding:6px">Permissão e Bloqueio (Allow & Deny com ordem numérica)</td></tr>
-            <tr><td style="padding:6px"><b>Portas Efêmeras</b></td><td style="padding:6px">Não precisa configurar</td><td style="padding:6px">Obrigatório liberar 1024-65535 para retorno de pacotes</td></tr>
+          <table class="table-didatica">
+            <thead><tr><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Característica</td><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Security Group</td><td style="padding:6px;color:var(--muted);font:700 .66rem 'Inter',sans-serif">Network ACL (NACL)</td></tr></thead>
+            <tr><td><b>Nível de Atuação</b></td><td>Interface de Rede (ENI / Recurso)</td><td>Sub-rede (Subnet Boundary)</td></tr>
+            <tr><td><b>Estado de Conexão</b></td><td><b>Com Estado (Stateful)</b>: resposta é permitida automaticamente</td><td><b>Sem Estado (Stateless)</b>: exige regras de entrada E saída</td></tr>
+            <tr><td><b>Regras Suportadas</b></td><td>Apenas permissão (Allow)</td><td>Permissão e Bloqueio (Allow & Deny com ordem numérica)</td></tr>
+            <tr><td><b>Portas Efêmeras</b></td><td>Não precisa configurar</td><td>Obrigatório liberar 1024-65535 para retorno de pacotes</td></tr>
           </table>
         </div>
           </div>
@@ -3522,14 +3286,14 @@ try (Socket socket = new Socket()) {
                 <p class="te-instrucao">Qual a forma mais elegante e segura de configurar os Security Groups?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Referenciar Security Groups por identidade de grupo em vez de IPs estáticos garante desacoplamento dinâmico: novos nós adicionados ao SG da API herdam permissão instantânea sem expor o banco.">
-                    <span class="te-letter">A</span> Criar 3 Security Groups: SG-ALB, SG-API e SG-DB. No SG-API, permitir entrada na porta 8080 referenciando a origem como 'SG-ALB'. No SG-DB, permitir entrada na porta 5432 referenciando a origem como 'SG-API'.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CIDRs estáticos são rígidos e não identificam a origem com base na entidade do serviço balanceador ou contêiner.">
+                    <span class="te-letter">A</span> Configurar regras de entrada baseadas no CIDR estático das sub-redes para as portas 8080 e 5432 nas tabelas de roteamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Expõe o banco de dados para a internet inteira.">
-                    <span class="te-letter">B</span> Liberar a porta 5432 para 0.0.0.0/0 no SG do banco para facilitar os testes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Colocar tudo em um único Security Group sem isolamento viola o princípio do menor privilégio na camada de rede.">
+                    <span class="te-letter">B</span> Agrupar todos os componentes em um único Security Group padrão com regras abertas para todas as portas internas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elimina a defesa em profundidade da camada de rede.">
-                    <span class="te-letter">C</span> Desativar os Security Groups e usar apenas senhas de texto puro no banco.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Referenciar Security Groups por identificador de grupo garante acoplamento seguro e dinâmico sem depender de faixas de IP fixas.">
+                    <span class="te-letter">C</span> Criar 3 Security Groups distintos (ALB, API, DB): no SG da API autorizar entrada na porta 8080 referenciando a origem como SG-ALB; no SG do banco autorizar entrada na porta 5432 referenciando a origem como SG-API.
                   </button>
                 </div>
 
@@ -3586,11 +3350,11 @@ try (Socket socket = new Socket()) {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Camada 7 (HTTP/HTTPS/gRPC)</b></td><td style="padding:8px;color:var(--ink2)">Application Load Balancer (ALB)</td><td style="padding:8px;color:var(--ink2)">Application Gateway</td><td style="padding:8px;color:var(--ink2)">Cloud HTTP(S) Load Balancing</td><td style="padding:8px;color:var(--ink2)">OCI Load Balancer (L7)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Camada 4 (TCP/UDP ultra veloz)</b></td><td style="padding:8px;color:var(--ink2)">Network Load Balancer (NLB)</td><td style="padding:8px;color:var(--ink2)">Azure Load Balancer</td><td style="padding:8px;color:var(--ink2)">TCP/UDP Network Load Balancer</td><td style="padding:8px;color:var(--ink2)">Network Load Balancer</td></tr>
-          <tr><td style="padding:8px"><b>WAF (Firewall de Aplicação)</b></td><td style="padding:8px;color:var(--ink2)">AWS WAF</td><td style="padding:8px;color:var(--ink2)">Azure WAF</td><td style="padding:8px;color:var(--ink2)">Cloud Armor</td><td style="padding:8px;color:var(--ink2)">OCI WAF</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>Camada 7 (HTTP/HTTPS/gRPC)</b></td><td>Application Load Balancer (ALB)</td><td>Application Gateway</td><td>Cloud HTTP(S) Load Balancing</td><td>OCI Load Balancer (L7)</td></tr>
+          <tr><td><b>Camada 4 (TCP/UDP ultra veloz)</b></td><td>Network Load Balancer (NLB)</td><td>Azure Load Balancer</td><td>TCP/UDP Network Load Balancer</td><td>Network Load Balancer</td></tr>
+          <tr><td><b>WAF (Firewall de Aplicação)</b></td><td>AWS WAF</td><td>Azure WAF</td><td>Cloud Armor</td><td>OCI WAF</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -3730,14 +3494,14 @@ try (Socket socket = new Socket()) {
                 <p class="te-instrucao">Qual tipo de balanceador atende nativamente a esses requisitos na nuvem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O ALB é o balanceador de aplicação projetado especificamente para avaliação de requisições HTTP e roteamento inteligente por caminhos de URL.">
-                    <span class="te-letter">A</span> Application Load Balancer (ALB): operando na Camada 7 (HTTP/HTTPS), ele suporta regras de roteamento baseadas em Path (/api/*) e Host, além de terminação e renovação automática de certificados SSL/TLS.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O ALB inspeciona requisições HTTP/HTTPS (Camada 7) e roteia com base em caminhos de URL (/api/*) e cabeçalhos.">
+                    <span class="te-letter">A</span> Application Load Balancer (ALB): operando na Camada 7, ele suporta regras de roteamento por Path e Host, além de terminação e renovação de certificados SSL/TLS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Obsoleto e não recomendado para arquiteturas modernas.">
-                    <span class="te-letter">B</span> Classic Load Balancer legado de 2006.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O NLB opera na Camada 4 (transporte TCP/UDP) e não possui visibilidade de caminhos HTTP (/api/*).">
+                    <span class="te-letter">B</span> Network Load Balancer (NLB) operando na Camada 4 com balanceamento ultra-rápido de pacotes TCP e inspeção de expressões regulares em caminhos de URL de requisições web corporativas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. NLBs operam no nível TCP bruto e não entendem caminhos de URL HTTP.">
-                    <span class="te-letter">C</span> Network Load Balancer (NLB) operando puramente em Camada 4.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Classic Load Balancer é legado e não suporta roteamento nativo avançado por caminhos de URL com múltiplos target groups.">
+                    <span class="te-letter">C</span> Classic Load Balancer configurado com regras manuais de redirecionamento no arquivo de configuração do proxy reverso de cada nó balanceador alocado na VPC.
                   </button>
                 </div>
 
@@ -3916,14 +3680,14 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
                 <p class="te-instrucao">Qual arquitetura de borda absorveria essa demanda sem que 99% das requisições tocassem no servidor de origem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! CDNs são os escudos mais eficazes para conteúdo estático ou semi-estático, blindando servidores de aplicação contra picos repentinos de acesso em massa.">
-                    <span class="te-letter">A</span> Configurar uma CDN (Amazon CloudFront / Cloudflare) na frente do domínio: o primeiro usuário busca a página no servidor; a CDN armazena a resposta em cache nos servidores de borda e atende os outros 4.999.999 acessos diretamente da memória do Edge, com latência de 5ms e zero carga no servidor de origem.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escala vertical em uma única máquina ou zona não previne saturação do servidor de aplicação frente a milhões de requisições.">
+                    <span class="te-letter">A</span> Adicionar instâncias EC2 maiores com interfaces de rede de 100 Gbps na mesma zona de disponibilidade dos servidores web principais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é de capacidade de rede e conexões web concorrentes, não de espaço em disco.">
-                    <span class="te-letter">B</span> Aumentar o tamanho do disco rígido da máquina física para 100 terabytes.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! CDNs absorvem picos massivos de conteúdo estático ou semi-estático na borda, protegendo servidores de origem.">
+                    <span class="te-letter">B</span> Configurar CDN (CloudFront/Cloudflare): faz cache na borda e atende requisições do Edge com latência mínima e zero carga na origem.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria a segurança sem resolver o gargalo de tráfego.">
-                    <span class="te-letter">C</span> Trocar o protocolo HTTPS por telnet sem criptografia.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O tráfego continuaria atingindo o servidor web para consultar o Redis, mantendo o gargalo de rede e conexões.">
+                    <span class="te-letter">C</span> Adicionar cluster Redis com 64 nós de cache para processar e renderizar páginas HTML diretamente da camada de banco de dados.
                   </button>
                 </div>
 
@@ -3980,11 +3744,11 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>VPN IPsec (Internet)</b></td><td style="padding:8px;color:var(--ink2)">AWS Site-to-Site VPN</td><td style="padding:8px;color:var(--ink2)">Azure VPN Gateway</td><td style="padding:8px;color:var(--ink2)">Cloud VPN (HA VPN)</td><td style="padding:8px;color:var(--ink2)">Site-to-Site VPN</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Link Físico Dedicado</b></td><td style="padding:8px;color:var(--ink2)">Direct Connect (DX)</td><td style="padding:8px;color:var(--ink2)">ExpressRoute</td><td style="padding:8px;color:var(--ink2)">Cloud Interconnect</td><td style="padding:8px;color:var(--ink2)">FastConnect</td></tr>
-          <tr><td style="padding:8px"><b>Concentrador Hub-and-Spoke</b></td><td style="padding:8px;color:var(--ink2)">Transit Gateway (TGW)</td><td style="padding:8px;color:var(--ink2)">Virtual WAN (VWAN)</td><td style="padding:8px;color:var(--ink2)">Network Connectivity Center</td><td style="padding:8px;color:var(--ink2)">Dynamic Routing Gateway (DRG)</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>VPN IPsec (Internet)</b></td><td>AWS Site-to-Site VPN</td><td>Azure VPN Gateway</td><td>Cloud VPN (HA VPN)</td><td>Site-to-Site VPN</td></tr>
+          <tr><td><b>Link Físico Dedicado</b></td><td>Direct Connect (DX)</td><td>ExpressRoute</td><td>Cloud Interconnect</td><td>FastConnect</td></tr>
+          <tr><td><b>Concentrador Hub-and-Spoke</b></td><td>Transit Gateway (TGW)</td><td>Virtual WAN (VWAN)</td><td>Network Connectivity Center</td><td>Dynamic Routing Gateway (DRG)</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -4136,14 +3900,14 @@ public class ItemBatchRepository {
                 <p class="te-instrucao">Qual solução de conectividade híbrida atende a essas exigências regulatórias e técnicas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Direct Connect e ExpressRoute são linhas dedicadas privadas de telecomunicação que ignoram a internet pública, atendendo a rígidos critérios de conformidade e grande volume de dados.">
-                    <span class="te-letter">A</span> AWS Direct Connect: conexão de fibra óptica física dedicada que liga o roteador do data center corporativo aos roteadores da AWS sem trafegar pela internet pública, garantindo banda alta e previsibilidade determinística de rede.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. VPNs trafegam pela internet pública, sofrendo oscilações de jitter, latência variável e sem garantia estrita de link dedicado.">
+                    <span class="te-letter">A</span> Túnel VPN IPsec Site-to-Site com múltiplos túneis criptografados estabelecidos através de conexões redundantes da internet aberta.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Servidores de e-mail não suportam terabytes nem atendem a padrões de segurança.">
-                    <span class="te-letter">B</span> Enviar os dados por e-mail em arquivos compactados .zip.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. VPC Peering conecta apenas VPCs da nuvem entre si, não conectando redes on-premises físicas diretamente.">
+                    <span class="te-letter">B</span> VPC Peering configurado entre a rede do datacenter físico e a conta de nuvem corporativa via protocolo BGP na borda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação grave de segurança bancária.">
-                    <span class="te-letter">C</span> Publicar o mainframe na internet aberta com a porta do banco liberada para qualquer IP.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Direct Connect oferece conexão de rede dedicada e privada, garantindo segurança, estabilidade e conformidade regulatória.">
+                    <span class="te-letter">C</span> AWS Direct Connect: conexão física dedicada de fibra óptica ligando o roteador do datacenter aos pontos de presença da nuvem, contornando a internet pública com alta largura de banda e previsibilidade determinística.
                   </button>
                 </div>
 
@@ -4206,16 +3970,16 @@ public class ItemBatchRepository {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Tipo</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Objeto (HTTP REST)</b></td><td style="padding:8px;color:var(--ink2)">S3</td><td style="padding:8px;color:var(--ink2)">Blob Storage</td><td style="padding:8px;color:var(--ink2)">Cloud Storage (GCS)</td><td style="padding:8px;color:var(--ink2)">Object Storage</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Bloco (Discos de VM)</b></td><td style="padding:8px;color:var(--ink2)">EBS (gp3, io2)</td><td style="padding:8px;color:var(--ink2)">Managed Disks</td><td style="padding:8px;color:var(--ink2)">Persistent Disk</td><td style="padding:8px;color:var(--ink2)">Block Volume</td></tr>
-          <tr><td style="padding:8px"><b>Arquivo (NFS/SMB)</b></td><td style="padding:8px;color:var(--ink2)">EFS / FSx</td><td style="padding:8px;color:var(--ink2)">Azure Files / NetApp</td><td style="padding:8px;color:var(--ink2)">Filestore</td><td style="padding:8px;color:var(--ink2)">File Storage</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Tipo</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>Objeto (HTTP REST)</b></td><td>S3</td><td>Blob Storage</td><td>Cloud Storage (GCS)</td><td>Object Storage</td></tr>
+          <tr><td><b>Bloco (Discos de VM)</b></td><td>EBS (gp3, io2)</td><td>Managed Disks</td><td>Persistent Disk</td><td>Block Volume</td></tr>
+          <tr><td><b>Arquivo (NFS/SMB)</b></td><td>EFS / FSx</td><td>Azure Files / NetApp</td><td>Filestore</td><td>File Storage</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
             <figure class="topic-img">
-          <img src="../assets/img/nuvem/cloud_storage_tiers.svg" alt="Matriz de Armazenamento na Nuvem: Objeto (S3), Bloco (EBS) e Arquivo (EFS) com Ciclo de Vida Automático" loading="lazy">
+          <img src="../assets/img/nuvem/cloud_storage_tiers.svg" alt="Matriz de Armazenamento na Nuvem: Objeto (S3), Bloco (EBS) e Arquivo (EFS) com Ciclo de Vida Automático" loading="lazy" decoding="async">
           <figcaption>
             <span>Fig C-4 · Armazenamento & Dados</span>
             <em>Matriz de Armazenamento na Nuvem: Objeto (S3), Bloco (EBS) e Arquivo (EFS) com Ciclo de Vida Automático</em>
@@ -4358,14 +4122,14 @@ public class DocumentStorageService {
                 <p class="te-instrucao">Qual serviço e tipo de armazenamento em nuvem é a escolha adequada para essa necessidade?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sistemas de arquivos de rede gerenciados (EFS/Filestore) oferecem suporte nativo a múltiplos montadores concorrentes (ReadWriteMany) entre zonas com compatibilidade POSIX.">
-                    <span class="te-letter">A</span> Storage de Arquivo Gerenciado (como AWS EFS ou GCP Filestore), pois suporta protocolo NFSv4 permitindo montagem concorrente Multi-AZ por múltiplos servidores simultaneamente com locking de arquivos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Sistemas de arquivos NFS gerenciados permitem que múltiplos nós e contêineres em diferentes AZs leiam e escrevam simultaneamente com locking de arquivo.">
+                    <span class="te-letter">A</span> Storage de Arquivo Gerenciado (AWS EFS / Filestore), com protocolo NFSv4 suportando montagem concorrente Multi-AZ (ReadWriteMany) e locking POSIX.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. EBS padrão só pode ser anexado a uma única instância de VM na mesma Zona de Disponibilidade.">
-                    <span class="te-letter">B</span> Storage de Bloco EBS padrão gp3 compartilhado em formato NTFS local.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O EBS Multi-Attach funciona apenas dentro da mesma AZ e exige sistemas de arquivos com reconhecimento de cluster (como GFS2), não ext4.">
+                    <span class="te-letter">B</span> Volume de Bloco EBS configurado com a funcionalidade Multi-Attach ativada entre contêineres alocados em diferentes Zonas de Disponibilidade usando sistema ext4.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A memória RAM do balanceador não armazena arquivos persistentes.">
-                    <span class="te-letter">C</span> Salvar os arquivos na memória RAM volátil do balanceador de carga.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O S3 é armazenamento de objetos, não de arquivos. Drivers FUSE não oferecem semântica POSIX completa nem locking confiável.">
+                    <span class="te-letter">C</span> Bucket S3 montado no diretório local via ferramenta S3FS em cada contêiner com suporte completo a locks atômicos e compatibilidade POSIX nativa.
                   </button>
                 </div>
 
@@ -4579,14 +4343,14 @@ Custo mensal no Deep Archive: US$ 49,50 / mês (Redução de 95,7%!)</code></pre
                 <p class="te-instrucao">Qual estratégia de armazenamento minimiza drasticamente os custos operacionais mantendo o compliance legal?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Glacier Deep Archive custa cerca de US$ 0,00099 por GB/mês (menos de 1 dólar por TB), reduzindo o custo de retenção regulatória em mais de 95% comparado ao S3 Standard.">
-                    <span class="te-letter">A</span> Configurar uma regra de ciclo de vida (Lifecycle Policy) no bucket S3 para transicionar os relatórios para Glacier Flexible Retrieval após 180 dias e para Glacier Deep Archive após 1 ano, deletando após 7 anos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O S3 Standard tem o custo mais alto de armazenamento por GB; reter terabytes frios nessa classe desperdiça orçamento.">
+                    <span class="te-letter">A</span> Compactar os documentos em arquivos ZIP criptografados mantendo-os no S3 Standard aplicando rotinas mensais de deduplicação e compressão de disco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Pagará o valor máximo por dados praticamente mortos que ninguém consulta.">
-                    <span class="te-letter">B</span> Manter todos os 7 anos de dados no S3 Standard sem políticas de ciclo de vida.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Glacier Deep Archive oferece o menor custo de armazenamento para retenção de conformidade de longo prazo com acessos raros.">
+                    <span class="te-letter">B</span> Lifecycle Policy no S3: transicionar para Glacier Flexible Retrieval após 180 dias e Glacier Deep Archive após 1 ano, deletando após 7 anos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso viola a exigência legal de compliance regulatório de 7 anos.">
-                    <span class="te-letter">C</span> Deletar os relatórios após 60 dias para zerar os custos de armazenamento.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Volumes EBS e snapshots cumulativos são significativamente mais caros que classes de arquivamento de objetos como Glacier.">
+                    <span class="te-letter">C</span> Exportar relatórios para volumes EBS Cold HDD (sc1) e manter snapshots diários acumulados indefinidamente sem expiração de dados corporativos no longo prazo.
                   </button>
                 </div>
 
@@ -4774,14 +4538,14 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
                 <p class="te-instrucao">Por que a garantia de 11 noves de durabilidade do provedor não impediu a perda dos dados e como isso deveria ter sido protegido?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A API atendeu rigorosamente ao comando recebido. Proteção real contra perda lógica exige versionamento com bloqueio imutável (Object Lock) e isolamento em conta secundária de backup.">
-                    <span class="te-letter">A</span> Porque durabilidade protege contra falhas físicas de hardware (bit rot/queima de discos), não contra comandos de deleção autorizados. A proteção correta exige Versionamento ativado, S3 Object Lock (modo Compliance/WORM) e replicação entre contas com MFA Delete.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Os 11 noves de durabilidade são padrão intrínseco do armazenamento de objetos no S3 Standard.">
+                    <span class="te-letter">A</span> A durabilidade de 11 noves é um plano premium que exige ativação explícita nas propriedades avançadas do bucket de armazenamento corporativo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A AWS executou exatamente a API que o cliente autorizou com suas credenciais.">
-                    <span class="te-letter">B</span> A AWS falhou gravemente no SLA e reembolsará o valor das notas fiscais perdidas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A API atendeu normalmente a um comando de exclusão válido emitido por credenciais administrativas autenticadas.">
+                    <span class="te-letter">B</span> O erro ocorreu porque a AWS sofreu falha catastrófica de partição de discos no exato momento da execução do script de esteira CI/CD.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A infraestrutura não analisa a semântica de negócio de um script.">
-                    <span class="te-letter">C</span> Durabilidade significa que o S3 adivinha e bloqueia scripts errados de desenvolvedores.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Durabilidade garante que bits não se percam por defeito mecânico de discos. Exclusões acidentais exigem imutabilidade (Object Lock) e versionamento.">
+                    <span class="te-letter">C</span> Durabilidade protege contra falhas físicas de hardware, não contra comandos de deleção; a proteção exige Versionamento e S3 Object Lock.
                   </button>
                 </div>
 
@@ -4844,12 +4608,12 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Relacional Gerenciado</b></td><td style="padding:8px;color:var(--ink2)">RDS / Aurora</td><td style="padding:8px;color:var(--ink2)">Azure Database for PostgreSQL</td><td style="padding:8px;color:var(--ink2)">Cloud SQL / AlloyDB</td><td style="padding:8px;color:var(--ink2)">Autonomous Database / MySQL</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Chave-Valor / NoSQL</b></td><td style="padding:8px;color:var(--ink2)">DynamoDB</td><td style="padding:8px;color:var(--ink2)">Cosmos DB</td><td style="padding:8px;color:var(--ink2)">Firestore / Bigtable</td><td style="padding:8px;color:var(--ink2)">NoSQL Database</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Cache em Memória</b></td><td style="padding:8px;color:var(--ink2)">ElastiCache / MemoryDB</td><td style="padding:8px;color:var(--ink2)">Azure Cache for Redis</td><td style="padding:8px;color:var(--ink2)">Memorystore</td><td style="padding:8px;color:var(--ink2)">OCI Cache with Redis</td></tr>
-          <tr><td style="padding:8px"><b>Data Warehouse Analítico</b></td><td style="padding:8px;color:var(--ink2)">Redshift</td><td style="padding:8px;color:var(--ink2)">Synapse / Fabric</td><td style="padding:8px;color:var(--ink2)">BigQuery</td><td style="padding:8px;color:var(--ink2)">Autonomous Data Warehouse</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>Relacional Gerenciado</b></td><td>RDS / Aurora</td><td>Azure Database for PostgreSQL</td><td>Cloud SQL / AlloyDB</td><td>Autonomous Database / MySQL</td></tr>
+          <tr><td><b>Chave-Valor / NoSQL</b></td><td>DynamoDB</td><td>Cosmos DB</td><td>Firestore / Bigtable</td><td>NoSQL Database</td></tr>
+          <tr><td><b>Cache em Memória</b></td><td>ElastiCache / MemoryDB</td><td>Azure Cache for Redis</td><td>Memorystore</td><td>OCI Cache with Redis</td></tr>
+          <tr><td><b>Data Warehouse Analítico</b></td><td>Redshift</td><td>Synapse / Fabric</td><td>BigQuery</td><td>Autonomous Data Warehouse</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -4984,14 +4748,14 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
                 <p class="te-instrucao">Qual recurso nativo do RDS gerenciado permite restaurar a integridade dos dados exatamente como estavam às 14:31?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O PITR permite restaurar o banco para qualquer segundo dentro do período de retenção de backup sem depender de dumps diários estáticos.">
-                    <span class="te-letter">A</span> Point-in-Time Recovery (PITR): o RDS combina o último snapshot automatizado com os logs de transação (WAL) contínuos para criar uma nova instância idêntica no minuto exato antes do comando destrutivo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O PITR permite restaurar a base para qualquer segundo específico dentro da janela de retenção de backups usando os logs de transação.">
+                    <span class="te-letter">A</span> Point-in-Time Recovery (PITR): o RDS combina o snapshot automatizado com os logs de transação WAL contínuos para criar uma nova instância exatamente no estado de 14:31, sem perda de dados históricos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A transação já foi confirmada (committed) no disco persistente.">
-                    <span class="te-letter">B</span> Reiniciar o servidor EC2 para que as alterações na memória sejam descartadas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se o UPDATE já sofreu commit, um ROLLBACK de banco de dados não tem efeito retroativo sobre transações encerradas.">
+                    <span class="te-letter">B</span> Comando ROLLBACK executado no painel da AWS para desfazer as alterações registradas na tabela transacional afetada.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O suporte da nuvem não audita nem manipula os dados relacionais do cliente.">
-                    <span class="te-letter">C</span> Pedir suporte técnico por chat para desfazer o comando SQL digitado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Restaurar o dump diário perderia mais de 14 horas de transações legítimas de clientes processadas durante o dia.">
+                    <span class="te-letter">C</span> Restaurar o dump diário da meia-noite anterior e rodar scripts manuais de reconciliação de planilhas locais.
                   </button>
                 </div>
 
@@ -5179,14 +4943,14 @@ SELECT * FROM pedidos WHERE detalhes_customizados @> '{"canal": "mobile", "cupom
                 <p class="te-instrucao">Qual banco de dados é mais adequado para suportar esse padrão de acesso em hiper-escala e por quê?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Padrões de acesso simples por chave primária com taxa cavalar de gravação contínua são o caso de uso perfeito para bancos NoSQL chave-valor como DynamoDB.">
-                    <span class="te-letter">A</span> DynamoDB (chave-valor distribuído), particionado pelo VehicleId: oferece escalabilidade horizontal automática, absorve picos massivos de gravação sem contenção de locks de tabela e garante latência estável de milissegundos na busca por chave.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 150.000 gravações por segundo saturam conexões, WAL e I/O de instâncias relacionais mesmo com particionamento.">
+                    <span class="te-letter">A</span> PostgreSQL com particionamento por minuto e réplicas de leitura para evitar contenção de locks de linha em gravações simultâneas em grande escala.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A contenção de escrita de 150k IOPS e atualização de índices saturará CPU e conexões de um único nó relacional.">
-                    <span class="te-letter">B</span> PostgreSQL com uma única tabela sem particionamento e com 10 índices secundários.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O DynamoDB é perfeito para taxas massivas de escrita chave-valor com padrões de consulta estritos por ID de partição.">
+                    <span class="te-letter">B</span> DynamoDB particionado por VehicleId: escala horizontalmente para gravações massivas sem locks relacionais e oferece busca por chave rápida.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Custo e latência de 150k chamadas PUT HTTP por segundo inviabilizam a aplicação.">
-                    <span class="te-letter">C</span> Armazenar cada ponto de GPS como um arquivo .txt individual no S3 Standard.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O tempo de ajuste de ACUs do Aurora Serverless não absorve picos instantâneos dessa magnitude sem fila de espera e estrangulamento.">
+                    <span class="te-letter">C</span> RDS Aurora Serverless ajustado para variar entre 0.5 e 128 ACUs para acomodar as 150 mil escritas ACID concorrentes por segundo.
                   </button>
                 </div>
 
@@ -5381,14 +5145,14 @@ Teto máximo do Auto-Scaling:       15 réplicas
                 <p class="te-instrucao">Qual arquitetura resolve definitivamente o esgotamento de conexões sem exigir a compra de uma instância de banco 10 vezes maior?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O RDS Proxy foi projetado especificamente para atuar como pool intermediário gerenciado para cargas serverless imprevisíveis.">
-                    <span class="te-letter">A</span> Implantar um AWS RDS Proxy entre as funções Lambda e o banco PostgreSQL: o proxy gerencia um pool inteligente de conexões persistentes, multiplexando milhares de requisições concorrentes sobre poucas conexões reais abertas no banco.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas assíncronas não atendem APIs síncronas que precisam retornar confirmação imediata da transação para o usuário.">
+                    <span class="te-letter">A</span> Substituir o PostgreSQL por uma fila SQS onde as funções Lambda gravam transações financeiras para consumo assíncrono posterior por um único worker monolítico.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cada conexão aloca memória de processo no SO; 50k conexões causariam travamento imediato por OOM (Out Of Memory).">
-                    <span class="te-letter">B</span> Aumentar o valor de max_connections no PostgreSQL para 50.000 conexões.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha decorre do limite de processos/conexões do PostgreSQL (max_connections), não de restrição de autenticação de host.">
+                    <span class="te-letter">B</span> Configurar o arquivo pg_hba.conf da instância RDS para permitir conexões anônimas sem verificação de autenticação de credenciais de usuários das funções.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A autenticação não reduz o número de slots de conexão no SGBD.">
-                    <span class="te-letter">C</span> Desativar a autenticação com senha do banco de dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O RDS Proxy gerencia o pool de conexões de forma transparente para arquiteturas serverless com alta concorrência.">
+                    <span class="te-letter">C</span> AWS RDS Proxy: pool gerenciado entre as Lambdas e o PostgreSQL que multiplexa milhares de execuções concorrentes em poucas conexões persistentes.
                   </button>
                 </div>
 
@@ -5586,14 +5350,14 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
                 <p class="te-instrucao">Como esse fenômeno é conhecido na computação distribuída e como preveni-lo?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Cache Stampede acontece quando a expiração de uma chave de alto tráfego satura o banco subjacente. Locks distribuídos ou atualização antecipada em background evitam a avalanche.">
-                    <span class="te-letter">A</span> Cache Stampede (ou Thundering Herd). Previne-se com Mutex / Locks distribuídos no Cache Miss (apenas uma requisição vai ao banco recalcular, as demais aguardam), pré-aquecimento de cache (warm-up) e expiração probabilística (XFetch).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Cache Stampede ocorre quando expiração simultânea de chave de alto tráfego satura o banco. Locks distribuídos ou warm-up evitam o problema.">
+                    <span class="te-letter">A</span> Cache Stampede (Thundering Herd). Previne-se com Mutex/Locks distribuídos no cache miss, pré-aquecimento (warm-up) e expiração probabilística.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O tráfego era de usuários legítimos e o gargalo foi interno pela expiração do cache.">
-                    <span class="te-letter">B</span> DDoS externo. Deve-se desligar o roteador de internet da empresa.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O balanceador de carga não falhou; a causa raiz foi a sobrecarga repentina de conexões no banco de dados após a expiração do cache.">
+                    <span class="te-letter">B</span> Cascade Failover do balanceador de carga. Previne-se configurando o algoritmo Round Robin com balanceamento ponderado de portas nos nós do cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Redis funcionou como esperado; o desenho de invalidação que não tratou concorrência.">
-                    <span class="te-letter">C</span> Memory Leak no Redis. A solução é nunca usar cache em aplicações web.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Split-brain é uma partição de rede entre réplicas de um cluster, não a saturação do banco após expiração de chave.">
+                    <span class="te-letter">C</span> Split-Brain de nós distribuídos. Previne-se adicionando nós árbitros ímpares com quórum Raft na camada de cache do cluster Redis em memória de alta performance.
                   </button>
                 </div>
 
@@ -5657,17 +5421,17 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Oracle (OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Diretório de Identidade</b></td><td style="padding:8px;color:var(--ink2)">IAM Identity Center</td><td style="padding:8px;color:var(--ink2)">Microsoft Entra ID</td><td style="padding:8px;color:var(--ink2)">Cloud Identity</td><td style="padding:8px;color:var(--ink2)">Identity Domains</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Política de Permissão</b></td><td style="padding:8px;color:var(--ink2)">IAM Policy (JSON)</td><td style="padding:8px;color:var(--ink2)">Azure RBAC Role Definition</td><td style="padding:8px;color:var(--ink2)">IAM Policy / Role Binding</td><td style="padding:8px;color:var(--ink2)">IAM Policy (Sintaxe OCI)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Identidade para Máquinas</b></td><td style="padding:8px;color:var(--ink2)">IAM Role</td><td style="padding:8px;color:var(--ink2)">Managed Identity</td><td style="padding:8px;color:var(--ink2)">Service Account</td><td style="padding:8px;color:var(--ink2)">Instance Principal</td></tr>
-          <tr><td style="padding:8px"><b>Trilha de Auditoria</b></td><td style="padding:8px;color:var(--ink2)">CloudTrail</td><td style="padding:8px;color:var(--ink2)">Activity Log</td><td style="padding:8px;color:var(--ink2)">Cloud Audit Logs</td><td style="padding:8px;color:var(--ink2)">Audit Service</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Oracle (OCI)</th></tr></thead>
+          <tr><td><b>Diretório de Identidade</b></td><td>IAM Identity Center</td><td>Microsoft Entra ID</td><td>Cloud Identity</td><td>Identity Domains</td></tr>
+          <tr><td><b>Política de Permissão</b></td><td>IAM Policy (JSON)</td><td>Azure RBAC Role Definition</td><td>IAM Policy / Role Binding</td><td>IAM Policy (Sintaxe OCI)</td></tr>
+          <tr><td><b>Identidade para Máquinas</b></td><td>IAM Role</td><td>Managed Identity</td><td>Service Account</td><td>Instance Principal</td></tr>
+          <tr><td><b>Trilha de Auditoria</b></td><td>CloudTrail</td><td>Activity Log</td><td>Cloud Audit Logs</td><td>Audit Service</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
             <figure class="topic-img">
-          <img src="../assets/img/nuvem/cloud_iam_least_privilege.svg" alt="IAM e Identidade: Eliminação de Chaves Estáticas, IAM Roles Efêmeras e Anatomia de Policy JSON" loading="lazy">
+          <img src="../assets/img/nuvem/cloud_iam_least_privilege.svg" alt="IAM e Identidade: Eliminação de Chaves Estáticas, IAM Roles Efêmeras e Anatomia de Policy JSON" loading="lazy" decoding="async">
           <figcaption>
             <span>Fig C-5 · Segurança & IAM</span>
             <em>IAM e Identidade: Eliminação de Chaves Estáticas, IAM Roles Efêmeras e Anatomia de Policy JSON</em>
@@ -5807,14 +5571,14 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
                 <p class="te-instrucao">Qual princípio fundamental de segurança em nuvem foi violado e qual o risco imediato?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O menor privilégio exige conceder estritamente as ações mínimas (ex: s3:GetObject no bucket alvo e logs:GetLogEvents).">
-                    <span class="te-letter">A</span> Princípio do Menor Privilégio (Principle of Least Privilege). O risco é que credenciais vazadas ou erros acidentais do usuário podem excluir bancos de dados de produção, desligar redes e comprometer toda a conta.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O IAM avalia políticas por efeito cumulativo de permissões, sem gerar conflitos de merge de código.">
+                    <span class="te-letter">A</span> Princípio da Separação de Funções: o risco é gerar conflito de merge entre permissões de leitura e gravação no console do IAM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha é de privilégios excessivos no IAM, não de redundância de rede.">
-                    <span class="te-letter">B</span> Princípio da Redundância Geográfica. O estagiário não conseguirá logar em outros países.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O menor privilégio determina conceder estritamente as permissões mínimas necessárias para a tarefa (ex: s3:GetObject e logs:GetLogEvents).">
+                    <span class="te-letter">B</span> Princípio do Menor Privilégio (Least Privilege): o risco é que o comprometimento da conta ou comandos errôneos possam destruir infraestrutura de produção e vazar dados sigilosos corporativos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conceder permissão administrativa irrestrita é uma das piores práticas de segurança.">
-                    <span class="te-letter">C</span> Nenhuma violação ocorreu, pois todos os membros da equipe devem ter acesso irrestrito.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Políticas e permissões do IAM não geram cobrança adicional na fatura da AWS.">
+                    <span class="te-letter">C</span> Princípio da Defesa em Profundidade: o risco é a fatura da nuvem aumentar devido à cobrança adicional por permissões administrativas ativas.
                   </button>
                 </div>
 
@@ -6038,14 +5802,14 @@ public class DatabaseSecretConfig {
                 <p class="te-instrucao">Qual é a prática recomendada da arquitetura de nuvem para substituir completamente essas credenciais estáticas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Usar IAM Roles para recursos elimina chaves estáticas do código e impede o vazamento de credenciais em commits ou inspeções de arquivos locais.">
-                    <span class="te-letter">A</span> Remover as chaves do código e associar uma IAM Role com política de leitura no S3 diretamente ao Instance Profile da instância EC2. O AWS SDK obterá automaticamente credenciais temporárias rotativas via Instance Metadata Service.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Base64 é apenas codificação e pode ser decodificado instantaneamente, mantendo o segredo exposto.">
+                    <span class="te-letter">A</span> Ofuscar as chaves em formato Base64 dentro do código-fonte e definir permissão de leitura restrita no arquivo de propriedades.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Base64 é apenas codificação e pode ser revertido instantaneamente por qualquer invasor.">
-                    <span class="te-letter">B</span> Criptografar as chaves em Base64 no arquivo application.properties.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Credenciais estáticas de longo prazo continuam vulneráveis a vazamento por inspeção de variáveis ou cópia de imagens.">
+                    <span class="te-letter">B</span> Armazenar as credenciais em uma variável de ambiente estática configurada manualmente no script de inicialização do Linux.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação catastrófica de privacidade e segurança.">
-                    <span class="te-letter">C</span> Tornar o bucket S3 público para qualquer pessoa na internet para não precisar de chave.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! IAM Roles para instâncias EC2 utilizam o Instance Metadata Service para fornecer credenciais temporárias que são rotacionadas automaticamente.">
+                    <span class="te-letter">C</span> Associar IAM Role com política de S3 ao Instance Profile da EC2: credenciais temporárias são obtidas automaticamente via IMDS.
                   </button>
                 </div>
 
@@ -6240,14 +6004,14 @@ resource "aws_kms_alias" "pedidos_alias" {
                 <p class="te-instrucao">Qual configuração no serviço KMS cumpre rigorosamente esse requisito?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! As chaves CMK permitem habilitar rotação anual automática mantendo a capacidade de decriptar dados antigos com as versões anteriores, e todas as chamadas de API são registradas no CloudTrail.">
-                    <span class="te-letter">A</span> Criar uma Chave Gerenciada pelo Cliente (Customer Managed Key - CMK) no AWS KMS com a opção 'Automatic Key Rotation' ativada e integrar com o AWS CloudTrail para registrar todos os eventos de kms:Decrypt com usuário e timestamp.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Chaves gerenciadas pelo cliente (CMK) no KMS suportam rotação anual automática mantendo a capacidade de decriptar dados históricos, com auditoria completa via CloudTrail.">
+                    <span class="te-letter">A</span> Criar uma Customer Managed Key (CMK) no AWS KMS com Automatic Key Rotation anual habilitada e registrar todas as chamadas de decriptografia (kms:Decrypt) no AWS CloudTrail integrado a bucket seguro.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não possui trilha de auditoria segura nem conformidade regulatória.">
-                    <span class="te-letter">B</span> Gerar uma senha de texto comum no Bloco de Notas e alterá-la manualmente no código da aplicação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Chaves gerenciadas pela AWS não oferecem controle direto sobre a frequência de rotação nem políticas customizadas pelo cliente.">
+                    <span class="te-letter">B</span> Utilizar a chave padrão gerenciada pela AWS (AWS Managed Key), pois ela já possui rotação mensal obrigatória e expõe logs diretamente no painel do KMS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não atende aos dados armazenados nos serviços em nuvem.">
-                    <span class="te-letter">C</span> Usar a criptografia padrão do Windows BitLocker no laptop do desenvolvedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Certificados SSL e Secrets Manager não substituem o módulo criptográfico HSM gerenciado (FIPS 140-2) do AWS KMS para operações com cartões.">
+                    <span class="te-letter">C</span> Gerar certificados SSL/TLS autoassinados no Linux e importar as chaves privadas no Secrets Manager configurando rotação via função Lambda customizada.
                   </button>
                 </div>
 
@@ -6453,14 +6217,14 @@ resource "aws_kms_alias" "pedidos_alias" {
                 <p class="te-instrucao">Qual mecanismo de governança de nuvem garante que essa restrição seja aplicada a todas as contas da empresa sem depender de configurações manuais?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! As SCPs atuam como guardrails supremos que impedem até mesmo o usuário Root de uma conta-filha de executar comandos proibidos pela organização central.">
-                    <span class="te-letter">A</span> Configurar uma Service Control Policy (SCP) no AWS Organizations vinculada à Unidade Organizacional (OU) raiz, negando explicitamente qualquer ação (`Effect: Deny`) se a condição `aws:RequestedRegion` for diferente de `sa-east-1`.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Security Groups filtram tráfego de rede para instâncias existentes; eles não impedem a criação de novos recursos em outras regiões.">
+                    <span class="te-letter">A</span> Adicionar regras de Security Group em todas as VPCs bloqueando pacotes IP originados de nós fora do território nacional brasileiro em qualquer requisição.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Políticas por e-mail não são guardrails técnicos e falham por erro humano.">
-                    <span class="te-letter">B</span> Enviar um e-mail com aviso para todos os programadores pedindo que só usem São Paulo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! SCPs definem os limites máximos de permissão para contas da organização, sobrepondo-se inclusive aos administradores e usuários Root locais.">
+                    <span class="te-letter">B</span> Configurar Service Control Policy (SCP) no AWS Organizations na OU raiz com Effect: Deny quando aws:RequestedRegion for diferente de sa-east-1.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A nuvem é acessada pela internet e isso inviabilizaria o trabalho.">
-                    <span class="te-letter">C</span> Bloquear os cabos de rede física de todos os computadores da empresa.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Alertas de custo são reativos e informativos; eles não bloqueiam a criação e violação de conformidade regulatória.">
+                    <span class="te-letter">C</span> Configurar alertas no AWS Cost Explorer para disparar e-mails ao financeiro quando forem detectados gastos em regiões como us-east-1.
                   </button>
                 </div>
 
@@ -6546,11 +6310,11 @@ resource "aws_kms_alias" "pedidos_alias" {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Open Source</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Fila Ponto a Ponto</b></td><td style="padding:8px;color:var(--ink2)">SQS (Standard / FIFO)</td><td style="padding:8px;color:var(--ink2)">Service Bus Queue / Storage Queue</td><td style="padding:8px;color:var(--ink2)">Pub/Sub (com 1 assinatura)</td><td style="padding:8px;color:var(--ink2)">RabbitMQ Queue</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Tópico Pub/Sub</b></td><td style="padding:8px;color:var(--ink2)">SNS / EventBridge</td><td style="padding:8px;color:var(--ink2)">Service Bus Topic / Event Grid</td><td style="padding:8px;color:var(--ink2)">Cloud Pub/Sub</td><td style="padding:8px;color:var(--ink2)">RabbitMQ Fanout Exchange</td></tr>
-          <tr><td style="padding:8px"><b>Log de Eventos Contínuo</b></td><td style="padding:8px;color:var(--ink2)">Kinesis Data Streams / MSK</td><td style="padding:8px;color:var(--ink2)">Event Hubs</td><td style="padding:8px;color:var(--ink2)">Pub/Sub Lite</td><td style="padding:8px;color:var(--ink2)">Apache Kafka</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Open Source</th></tr></thead>
+          <tr><td><b>Fila Ponto a Ponto</b></td><td>SQS (Standard / FIFO)</td><td>Service Bus Queue / Storage Queue</td><td>Pub/Sub (com 1 assinatura)</td><td>RabbitMQ Queue</td></tr>
+          <tr><td><b>Tópico Pub/Sub</b></td><td>SNS / EventBridge</td><td>Service Bus Topic / Event Grid</td><td>Cloud Pub/Sub</td><td>RabbitMQ Fanout Exchange</td></tr>
+          <tr><td><b>Log de Eventos Contínuo</b></td><td>Kinesis Data Streams / MSK</td><td>Event Hubs</td><td>Pub/Sub Lite</td><td>Apache Kafka</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -6688,14 +6452,14 @@ public class PedidosQueueConsumer {
                 <p class="te-instrucao">Qual arquitetura orientada a eventos garante total desacoplamento e escalabilidade independente para esses três sistemas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O padrão Fan-Out com SNS + SQS garante que a falha ou lentidão de um dos consumidores (ex: serviço de e-mail) não afete nem bloqueie os demais serviços essenciais.">
-                    <span class="te-letter">A</span> Padrão Fan-Out: o serviço de checkout publica o evento 'PedidoCriado' em um tópico SNS; três filas SQS distintas assinam esse tópico (uma para Cobrança, uma para E-mail e uma para Antifraude), permitindo que cada serviço consuma no seu próprio ritmo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Chamadas síncronas em cadeia causam forte acoplamento temporal: se o e-mail estiver lento, todo o checkout é travado.">
+                    <span class="te-letter">A</span> Chamadas HTTP REST síncronas em cadeia: o checkout chama o serviço de cartão, que chama o de e-mail, que chama o de antifraude sequencialmente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cria acoplamento temporal forte: se um serviço cair, a compra falha.">
-                    <span class="te-letter">B</span> Fazer o checkout disparar 3 chamadas HTTP síncronas sequenciais em um loop for.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Polling contínuo em tabela compartilhada sobrecarrega o banco e gera acoplamento acentuado de esquema entre serviços.">
+                    <span class="te-letter">B</span> Banco relacional compartilhado onde os três serviços leem a mesma tabela com consultas periódicas executadas a cada 1 segundo no pool.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem inviável em ambientes de computação em nuvem.">
-                    <span class="te-letter">C</span> Gravar tudo em um único arquivo de texto compartilhado em um pendrive.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O padrão Fan-Out com SNS + SQS garante que a publicação de uma mensagem alimente múltiplos consumidores de forma assíncrona e desacoplada.">
+                    <span class="te-letter">C</span> Padrão Fan-Out: checkout publica em tópico SNS e três filas SQS independentes assinam o tópico, permitindo consumo no ritmo de cada serviço.
                   </button>
                 </div>
 
@@ -6903,14 +6667,14 @@ public class IdempotencyRepository {
                 <p class="te-instrucao">O que acontecerá quando outro worker pegar a mesma mensagem e como o sistema deve estar preparado para evitar cobrança duplicada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a essência do design idempotente: tolerar re-entregas normais da mensageria distribuída sem causar efeitos colaterais de negócio indesejados.">
-                    <span class="te-letter">A</span> A mensagem será reprocessada. Para evitar dupla cobrança, o consumidor deve verificar se o ID da transação (#8841) já existe na tabela de pagamentos concluídos usando uma constraint UNIQUE ou chave de idempotência; se já existir, ele descarta a mensagem com sucesso sem cobrar novamente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Filas distribuídas como SQS garantem entrega at-least-once. O consumidor deve ser idempotente para tratar reprocessamentos com segurança.">
+                    <span class="te-letter">A</span> A mensagem será reprocessada; para evitar duplicidade, o consumidor deve verificar se o ID já existe usando chave de idempotência.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso só ocorreria se o sistema fosse construído de maneira amadora sem idempotência.">
-                    <span class="te-letter">B</span> O cliente será cobrado indefinidamente a cada 5 minutos até estourar o limite do cartão.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O SQS não sabe se o worker concluiu o trabalho; sem o recebimento do deleteMessage, a mensagem volta à fila após o Visibility Timeout.">
+                    <span class="te-letter">B</span> O SQS descarta a mensagem automaticamente após o primeiro consumo detectando a reinicialização da máquina do consumidor original por telemetria.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A mensageria não sabe o que o worker fez antes de falhar; ela só sabe que o deleteMessage não foi recebido.">
-                    <span class="te-letter">C</span> O SQS detecta a mente do programador e apaga a mensagem automaticamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O balanceador de carga não possui visibilidade de mensagens de filas nem executa estornos em sistemas de pagamento externos.">
+                    <span class="te-letter">C</span> O balanceador de carga da nuvem reverte o débito bancário interceptando o erro de conexão do worker e emitindo estorno na adquirente do cartão.
                   </button>
                 </div>
 
@@ -7097,14 +6861,14 @@ public void consumirPedido(String payload) {
                 <p class="te-instrucao">Qual mecanismo de mensageria isola essas mensagens com erro para permitir que as demais mensagens de outros clientes continuem sendo processadas normalmente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A DLQ isola as mensagens venenosas (poison pills) para análise posterior e desbloqueia o fluxo dos dados íntegros.">
-                    <span class="te-letter">A</span> Configuração de Dead Letter Queue (DLQ) com maxReceiveCount (ex: 3 tentativas): após 3 falhas consecutivas, a mensagem malformada é movida automaticamente para a DLQ, liberando a fila principal para processar os clientes normais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Scripts destrutivos que apagam mensagens sem triagem podem causar perda irrecuperável de transações importantes.">
+                    <span class="te-letter">A</span> Script cron que executa a cada 5 minutos no servidor limpando todas as mensagens com payload de erro e reiniciando os workers.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causaria prejuízo financeiro irreparável ao negócio.">
-                    <span class="te-letter">B</span> Excluir toda a fila principal e perder todas as 100 mil compras do dia.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A DLQ isola mensagens venenosas (poison pills) para auditoria e correção posterior, impedindo o bloqueio do fluxo saudável da fila.">
+                    <span class="te-letter">B</span> Configurar Dead Letter Queue (DLQ) com maxReceiveCount: após o número limite de falhas, a mensagem com formato inválido é movida automaticamente para a DLQ, liberando a fila principal para processar os clientes normais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Exceção de parse de data não tem relação com quantidade de memória RAM.">
-                    <span class="te-letter">C</span> Aumentar a memória RAM dos servidores de mensageria.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar o Visibility Timeout apenas atrasa o reprocessamento da mensagem defeituosa, sem resolver o problema de acúmulo na fila.">
+                    <span class="te-letter">C</span> Aumentar o Visibility Timeout da fila principal para 12 horas para dar tempo ao time de ligar para o parceiro comercial.
                   </button>
                 </div>
 
@@ -7161,10 +6925,10 @@ public void consumirPedido(String payload) {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Open Source</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>API Gateway (Borda)</b></td><td style="padding:8px;color:var(--ink2)">API Gateway (REST / HTTP)</td><td style="padding:8px;color:var(--ink2)">Azure API Management (APIM)</td><td style="padding:8px;color:var(--ink2)">Apigee / Cloud API Gateway</td><td style="padding:8px;color:var(--ink2)">Spring Cloud Gateway / Kong</td></tr>
-          <tr><td style="padding:8px"><b>Service Mesh (Interno)</b></td><td style="padding:8px;color:var(--ink2)">AWS App Mesh</td><td style="padding:8px;color:var(--ink2)">Open Service Mesh</td><td style="padding:8px;color:var(--ink2)">Anthos Service Mesh</td><td style="padding:8px;color:var(--ink2)">Istio / Linkerd</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Open Source</th></tr></thead>
+          <tr><td><b>API Gateway (Borda)</b></td><td>API Gateway (REST / HTTP)</td><td>Azure API Management (APIM)</td><td>Apigee / Cloud API Gateway</td><td>Spring Cloud Gateway / Kong</td></tr>
+          <tr><td><b>Service Mesh (Interno)</b></td><td>AWS App Mesh</td><td>Open Service Mesh</td><td>Anthos Service Mesh</td><td>Istio / Linkerd</td></tr>
         </table>
 
             <div class="cs"><b>Tráfego Norte-Sul vs Tráfego Leste-Oeste:</b> O <b>API Gateway</b> rege o tráfego <em>Norte-Sul</em> (o tráfego que entra de fora para dentro da nuvem, vindo do cliente). A <b>Service Mesh (Malha de Serviços - Istio/Linkerd)</b> rege o tráfego <em>Leste-Oeste</em> (a comunicação interna entre microsserviço A chamando microsserviço B dentro do cluster Kubernetes, com mTLS mútuo automático e circuit breakers). Misturar os dois papéis gera complexidade inútil.</div>
@@ -7307,14 +7071,14 @@ public class SecurityHeaderFilter implements GlobalFilter, Ordered {
                 <p class="te-instrucao">Qual recurso do API Gateway viabiliza essa gestão de planos sem que os desenvolvedores precisem programar contadores manuais de requisição no código Java/Node?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O API Gateway gerencia nativamente planos de uso, cotas e throttling por chave de API sem sobrecarregar os servidores da aplicação.">
-                    <span class="te-letter">A</span> Planos de Uso (Usage Plans) e Chaves de API (API Keys) com Throttling e Quotas configurados nativamente no API Gateway, aplicando controle estrito de requisições por segundo e limites mensais diretamente na borda.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Implementar controle manual na aplicação consome recursos de computação do backend e exige código boilerplate adicional.">
+                    <span class="te-letter">A</span> Implementar contadores atômicos em cache Redis em cada rota de backend na aplicação gerenciados por middleware HTTP de controle.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Fazer escritas no banco para validar rate limiting saturará o banco e adicionará latência brutal.">
-                    <span class="te-letter">B</span> Criar uma tabela no PostgreSQL e gravar um log a cada clique para calcular médias manualmente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Clientes corporativos muitas vezes acessam via IPs dinâmicos ou NAT de provedores, inviabilizando controle por IP fixo.">
+                    <span class="te-letter">B</span> Configurar regras de firewall no AWS WAF associando um IP estático individual para cada cliente corporativo da plataforma.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Clientes do plano Enterprise seriam prejudicados e a configuração não é dinâmica.">
-                    <span class="te-letter">C</span> Bloquear todos os clientes com mais de 10 requisições diretamente no firewall de hardware da sala de servidores.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O API Gateway gerencia nativamente planos de uso, chaves de API, limites de taxa (rate limiting) e cotas por cliente.">
+                    <span class="te-letter">C</span> Usage Plans e API Keys com Throttling e Quotas no API Gateway, aplicando controle de requisições por segundo e limites na borda.
                   </button>
                 </div>
 
@@ -7381,17 +7145,17 @@ public class SecurityHeaderFilter implements GlobalFilter, Ordered {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Conceito</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">AWS</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Azure</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Google Cloud</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Open Source (Padrão OTel)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Métricas</b></td><td style="padding:8px;color:var(--ink2)">CloudWatch Metrics</td><td style="padding:8px;color:var(--ink2)">Azure Monitor Metrics</td><td style="padding:8px;color:var(--ink2)">Cloud Monitoring</td><td style="padding:8px;color:var(--ink2)">Prometheus / Mimir</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Logs</b></td><td style="padding:8px;color:var(--ink2)">CloudWatch Logs</td><td style="padding:8px;color:var(--ink2)">Log Analytics</td><td style="padding:8px;color:var(--ink2)">Cloud Logging</td><td style="padding:8px;color:var(--ink2)">Grafana Loki / OpenSearch</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Traces</b></td><td style="padding:8px;color:var(--ink2)">AWS X-Ray</td><td style="padding:8px;color:var(--ink2)">Application Insights</td><td style="padding:8px;color:var(--ink2)">Cloud Trace</td><td style="padding:8px;color:var(--ink2)">Grafana Tempo / Jaeger</td></tr>
-          <tr><td style="padding:8px"><b>Painéis / Dashboards</b></td><td style="padding:8px;color:var(--ink2)">CloudWatch Dashboards</td><td style="padding:8px;color:var(--ink2)">Workbooks</td><td style="padding:8px;color:var(--ink2)">Cloud Monitoring Dashboards</td><td style="padding:8px;color:var(--ink2)">Grafana</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Conceito</th><th>AWS</th><th>Azure</th><th>Google Cloud</th><th>Open Source (Padrão OTel)</th></tr></thead>
+          <tr><td><b>Métricas</b></td><td>CloudWatch Metrics</td><td>Azure Monitor Metrics</td><td>Cloud Monitoring</td><td>Prometheus / Mimir</td></tr>
+          <tr><td><b>Logs</b></td><td>CloudWatch Logs</td><td>Log Analytics</td><td>Cloud Logging</td><td>Grafana Loki / OpenSearch</td></tr>
+          <tr><td><b>Traces</b></td><td>AWS X-Ray</td><td>Application Insights</td><td>Cloud Trace</td><td>Grafana Tempo / Jaeger</td></tr>
+          <tr><td><b>Painéis / Dashboards</b></td><td>CloudWatch Dashboards</td><td>Workbooks</td><td>Cloud Monitoring Dashboards</td><td>Grafana</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
             <figure class="topic-img">
-          <img src="../assets/img/nuvem/cloud_observability_finops.svg" alt="Observabilidade em Nuvem (Métricas, Logs, Traces) e os 4 Eixos de Custos de Infraestrutura (FinOps)" loading="lazy">
+          <img src="../assets/img/nuvem/cloud_observability_finops.svg" alt="Observabilidade em Nuvem (Métricas, Logs, Traces) e os 4 Eixos de Custos de Infraestrutura (FinOps)" loading="lazy" decoding="async">
           <figcaption>
             <span>Fig C-6 · Operação & FinOps</span>
             <em>Observabilidade em Nuvem (Métricas, Logs, Traces) e os 4 Eixos de Custos de Infraestrutura (FinOps)</em>
@@ -7534,14 +7298,14 @@ public class ProcessadorPagamentoService {
                 <p class="te-instrucao">Qual pilar da observabilidade deve ser consultado para descobrir exatamente quantos milissegundos foram gastos em cada etapa dessa requisição específica?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O rastreamento distribuído decompõe a latência de ponta a ponta em spans individuais entre microsserviços e bancos de dados.">
-                    <span class="te-letter">A</span> Rastreamento Distribuído (Distributed Tracing / OpenTelemetry / AWS X-Ray), que correlaciona a requisição por meio de um Trace ID único dividido em Spans, mostrando um gráfico em cascata (waterfall) do tempo gasto em cada serviço e chamada de rede.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O rastreamento distribuído decompõe uma requisição de ponta a ponta em spans individuais entre microsserviços, revelando onde o tempo foi consumido.">
+                    <span class="te-letter">A</span> Rastreamento Distribuído (Distributed Tracing / OTel / X-Ray): correlaciona a requisição via Trace ID em Spans, exibindo gráfico em cascata de latência.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar a retenção de logs antigos não revela o caminho temporal da requisição distribuída.">
-                    <span class="te-letter">B</span> Aumentar a retenção de logs para 10 anos no CloudWatch.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem Trace ID correlacionado, logs textuais não mostram a sequência exata de chamadas de rede nem o tempo decorrido em cada etapa.">
+                    <span class="te-letter">B</span> Agregação centralizada de logs em tempo real filtrando mensagens de INFO por timestamp e agrupando por endereço IP de cada servidor da esteira de microsserviços.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não resolve o gargalo nem fornece diagnóstico de causa raiz.">
-                    <span class="te-letter">C</span> Reiniciar todos os servidores para limpar o tráfego de rede.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métricas de hardware mostram a saúde dos nós, mas não fornecem rastreabilidade da latência de uma transação específica.">
+                    <span class="te-letter">C</span> Monitoramento de métricas de infraestrutura de hardware analisando o uso percentual de memória RAM e consumo de disco em cada nó do cluster de contêineres.
                   </button>
                 </div>
 
@@ -7742,14 +7506,14 @@ Resultado: Dispara apenas quando o cliente sofre. Resposta imediata em 5 minutos
                 <p class="te-instrucao">Qual mudança de engenharia de confiabilidade (SRE) resolve o problema de Alert Fatigue nessa organização?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Separar métricas de ação de máquina (Auto-scaling) de métricas de impacto no cliente (SLOs) elimina a fadiga de alertas e assegura resposta rápida a falhas reais.">
-                    <span class="te-letter">A</span> Redesenhar os alertas com foco em sintomas de SLO (ex: taxa de erro 5xx > 1% por 3 minutos consecutivos ou latência de checkout > 2s) que acordam o plantonista com severidade alta, enquanto métricas de CPU acionam apenas políticas automáticas de Auto-Scaling sem alertar humanos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ignorar incidentes ou enviá-los para caixas esquecidas impede a detecção rápida de problemas reais em produção.">
+                    <span class="te-letter">A</span> Desativar todos os alertas no Slack e encaminhar os e-mails de CPU para uma caixa de entrada compartilhada verificada uma vez ao dia.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Deixa a empresa operando às cegas sem visibilidade de produção.">
-                    <span class="te-letter">B</span> Excluir todos os sistemas de monitoramento para não incomodar a equipe.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Alertas devem notificar humanos apenas quando houver impacto real para o usuário final ou risco imediato de violação de SLO.">
+                    <span class="te-letter">B</span> Redesenhar alertas com foco em sintomas de SLO (ex: taxa de erro 5xx > 1% ou latência de checkout > 2s) para acionar humanos, enquanto picos de CPU acionam apenas regras automáticas de Auto-Scaling sem notificação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Agrava exponencialmente a fadiga de alertas.">
-                    <span class="te-letter">C</span> Configurar para enviar SMS para toda a empresa a cada 1% de aumento de uso de RAM.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas subir o limiar de CPU não resolve o problema conceitual: CPU alta isolada é causa, não sintoma de indisponibilidade de negócio.">
+                    <span class="te-letter">C</span> Elevar o limiar de alerta de CPU de 75% para 98% em todas as máquinas para diminuir a quantidade de mensagens disparadas nos canais de monitoramento.
                   </button>
                 </div>
 
@@ -7932,14 +7696,14 @@ public ResponseEntity&lt;OrderDTO&gt; buscarPedido(@PathVariable Long id) {
                 <p class="te-instrucao">Qual ação imediata de FinOps e engenharia deve ser tomada para reduzir drasticamente esse gasto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Descartar logs de rotina sem valor diagnóstico e limitar o tempo de retenção reduz a ingestão e o armazenamento de logs em até 80%.">
-                    <span class="te-letter">A</span> Configurar o agente de logs (Fluentbit/OTel) para descartar requisições de probe HTTP 200 de health check, definir nível de log global como INFO ou WARN em produção e configurar política de retenção nos Log Groups para expirar em 14 dias.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desativar health checks impede o balanceador de identificar contêineres mortos ou degradados, derrubando a disponibilidade.">
+                    <span class="te-letter">A</span> Desligar o balanceador de carga de aplicação e desativar os health checks periódicos dos contêineres em todos os ambientes de teste.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso derrubaria a distribuição de tráfego de todos os usuários.">
-                    <span class="te-letter">B</span> Desligar todos os balanceadores de carga da empresa.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gerenciar Elasticsearch próprio adiciona custo operacional de infraestrutura e manutenção sem tratar a causa raiz do volume excessivo.">
+                    <span class="te-letter">B</span> Migrar os logs para instâncias EC2 rodando servidores Elasticsearch autogerenciados com discos EBS provisionados sem nenhuma replicação extra.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar servidores só aumentaria o volume de logs e o custo total.">
-                    <span class="te-letter">C</span> Contratar o dobro de servidores EC2 para baratear o CloudWatch.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Filtrar logs irrelevantes na coleta, elevar o nível de log em produção e limitar a retenção reduz drasticamente o custo de ingestão.">
+                    <span class="te-letter">C</span> Descartar probes HTTP 200 de health check no agente de logs (Fluentbit/OTel), ajustar nível para INFO/WARN e definir retenção de 14 dias.
                   </button>
                 </div>
 
@@ -8156,14 +7920,14 @@ public class InfrastructureHealthCheckConfig {
                 <p class="te-instrucao">Qual prática de engenharia moderna teria permitido recriar todo o ecossistema idêntico em outra região em menos de 15 minutos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! IaC confere reprodutibilidade determinística e capacidade de disaster recovery veloz e automatizado.">
-                    <span class="te-letter">A</span> Infraestrutura como Código (IaC com Terraform/OpenTofu ou CloudFormation): todo o estado desejado da infraestrutura estaria versionado em repositório Git, bastando executar o pipeline de deploy apontando para a nova região.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Com IaC versionado no Git, a infraestrutura inteira pode ser provisionada automaticamente em minutos em qualquer outra região da nuvem.">
+                    <span class="te-letter">A</span> Infraestrutura como Código (IaC com Terraform/OpenTofu): declara o estado em Git, permitindo replicar o ambiente de forma determinística.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Procedimento manual, lento, sujeito a erros e incompatível com padrões profissionais.">
-                    <span class="te-letter">B</span> Tirar fotos da tela do computador com um celular para lembrar onde clicar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Processos manuais via console são lentos, sujeitos a falhas humanas e inviáveis para recuperação de desastres em larga escala.">
+                    <span class="te-letter">B</span> Exportar snapshots manuais de discos e recriar redes, firewalls e tabelas de roteamento pelo painel web da nova região seguindo a memória dos operadores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não garante precisão de rede, integridade de credenciais nem escalabilidade.">
-                    <span class="te-letter">C</span> Contratar 50 pessoas para clicar nos menus simultaneamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Docker empacota aplicações, mas não provisiona VPCs, sub-redes, balanceadores, políticas IAM nem bancos gerenciados.">
+                    <span class="te-letter">C</span> Utilizar contêineres Docker para as aplicações e configurar os servidores da nova região via scripts manuais de SSH executados na linha de comando.
                   </button>
                 </div>
 
@@ -8220,11 +7984,11 @@ public class InfrastructureHealthCheckConfig {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Categoria</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Ferramentas Principais</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Vantagem Principal</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Trade-off / Custo</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Agnóstica</b></td><td style="padding:8px;color:var(--ink2)">Terraform · OpenTofu · Pulumi</td><td style="padding:8px;color:var(--ink2)">Mesmo fluxo para AWS, Azure, GCP, SaaS</td><td style="padding:8px;color:var(--ink2)">Exige gerenciar backend de state remoto</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Nativa</b></td><td style="padding:8px;color:var(--ink2)">CloudFormation · Bicep</td><td style="padding:8px;color:var(--ink2)">Zero setup de state; suporte Day-0 a novas features</td><td style="padding:8px;color:var(--ink2)">Vendor lock-in total na sintaxe proprietária</td></tr>
-          <tr><td style="padding:8px"><b>Configuração de SO</b></td><td style="padding:8px;color:var(--ink2)">Ansible · Chef · Puppet</td><td style="padding:8px;color:var(--ink2)">Automação de pacotes e daemons em VMs clássicas</td><td style="padding:8px;color:var(--ink2)">Infraestrutura mutável (substituída por Docker/Packer)</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Categoria</th><th>Ferramentas Principais</th><th>Vantagem Principal</th><th>Trade-off / Custo</th></tr></thead>
+          <tr><td><b>Agnóstica</b></td><td>Terraform · OpenTofu · Pulumi</td><td>Mesmo fluxo para AWS, Azure, GCP, SaaS</td><td>Exige gerenciar backend de state remoto</td></tr>
+          <tr><td><b>Nativa</b></td><td>CloudFormation · Bicep</td><td>Zero setup de state; suporte Day-0 a novas features</td><td>Vendor lock-in total na sintaxe proprietária</td></tr>
+          <tr><td><b>Configuração de SO</b></td><td>Ansible · Chef · Puppet</td><td>Automação de pacotes e daemons em VMs clássicas</td><td>Infraestrutura mutável (substituída por Docker/Packer)</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -8345,14 +8109,14 @@ public class InfrastructureHealthCheckConfig {
                 <p class="te-instrucao">Qual arquitetura padrão de backend do Terraform previne corrupção de estado por concorrência de execuções?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O State Locking com DynamoDB adquire um lock exclusivo no início do plan/apply e o libera ao final, impedindo escritas simultâneas catastróficas.">
-                    <span class="te-letter">A</span> Configurar um Remote Backend no S3 para armazenar o estado criptografado com versionamento ativado, combinado com uma tabela do DynamoDB para State Locking (bloqueio distribuído que impede execuções concorrentes).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Versionar o tfstate no Git é uma péssima prática: expõe segredos em texto puro e não fornece trava atômica distribuída durante execuções concorrentes.">
+                    <span class="te-letter">A</span> Git LFS para versionar o arquivo terraform.tfstate dentro do repositório Git com comandos git pull obrigatórios antes de cada apply executado pelos desenvolvedores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não oferece controle programático nem segurança.">
-                    <span class="te-letter">B</span> Enviar o arquivo de estado por mensagem no WhatsApp antes de cada comando.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Remote Backend com S3 e DynamoDB garante bloqueio atômico durante o apply, prevenindo corrupção e divergências de estado.">
+                    <span class="te-letter">B</span> Remote Backend no S3 com versionamento e criptografia, aliado a DynamoDB para State Locking (bloqueio distribuído que impede execuções concorrentes).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Terraform necessita do estado para mapear recursos existentes aos recursos declarados.">
-                    <span class="te-letter">C</span> Desativar o arquivo de estado com a flag --no-state.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Compartilhamentos de rede locais não garantem bloqueio confiável e expõem o arquivo a corrupção por acessos simultâneos.">
+                    <span class="te-letter">C</span> Compartilhamento do arquivo tfstate em pasta de rede NFS montada localmente nas estações de trabalho de todos os engenheiros da equipe de desenvolvimento.
                   </button>
                 </div>
 
@@ -8583,14 +8347,14 @@ class PedidoIntegrationTest {
                 <p class="te-instrucao">Qual estratégia de implantação contínua (CD) atende a esse requisito de segurança operacional?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Canary Deployment limita o blast radius de potenciais bugs ao expor apenas uma pequena fração do público à nova versão com rollback automático em caso de desvio de SLO.">
-                    <span class="te-letter">A</span> Canary Deployment (Implantação Canário), roteando um percentual controlado de tráfego no balanceador/Service Mesh para a nova versão enquanto monitora métricas de erro antes da promoção total.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Blue/Green comuta 100% do tráfego de uma vez, expondo todos os usuários ao novo release caso surja um bug não detectado nos testes.">
+                    <span class="te-letter">A</span> Blue/Green Deployment, alternando 100% do tráfego do ambiente azul para o ambiente verde imediatamente após o balanceador passar nos testes de fumaça da API.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem conhecida como 'Big Bang' com risco altíssimo de indisponibilidade geral.">
-                    <span class="te-letter">B</span> Substituição total dos servidores às 12h sem nenhum teste prévio.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Implantações Big Bang geram downtime e aumentam o raio de explosão (blast radius) de falhas operacionais.">
+                    <span class="te-letter">B</span> Big Bang Deployment com parada programada do sistema na madrugada de sábado para troca integral dos binários em todas as instâncias.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Interrompe a operação da empresa desnecessariamente.">
-                    <span class="te-letter">C</span> Desligar o banco de dados antes de fazer o deploy.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Canary Deployment minimiza o raio de impacto expondo uma pequena fração de usuários reais e avaliando erros antes da promoção completa.">
+                    <span class="te-letter">C</span> Canary Deployment (Implantação Canário): roteia percentual controlado (10%) para a nova versão enquanto monitora SLOs antes da promoção automática total.
                   </button>
                 </div>
 
@@ -8791,14 +8555,14 @@ public class EnvironmentTagLoader {
                 <p class="te-instrucao">Qual prática de governança em nuvem resolve a atribuição de despesas e permite faturamento proporcional por equipe?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cost Allocation Tags ativadas no console de billing agrupam os gastos por centro de custo e squad nos relatórios analíticos de faturamento.">
-                    <span class="te-letter">A</span> Implementar uma política estrita de Marcação (Tagging) ativando Cost Allocation Tags (chaves como 'CostCenter', 'Environment' e 'Team') no painel de faturamento e aplicando guardrails via AWS Config ou SCPs para proibir recursos sem tags.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cost Allocation Tags ativadas no console de faturamento categorizam cada centavo gasto por centro de custo, equipe ou projeto.">
+                    <span class="te-letter">A</span> Implementar política de Marcação (Tagging) ativando Cost Allocation Tags (como CostCenter, Environment e Team) no painel de billing e aplicando guardrails via AWS Config ou SCPs para exigir tags obrigatórias.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A nuvem não possui conhecimento da estrutura corporativa interna do cliente.">
-                    <span class="te-letter">B</span> Pedir que o provedor da nuvem adivinhe quem usou cada servidor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Divisão uniforme não reflete o uso real e desestimula boas práticas de otimização de custos por times eficientes.">
+                    <span class="te-letter">B</span> Dividir a fatura mensal igualmente entre todos os departamentos da empresa sem considerar o consumo real de cada equipe.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causa interrupções operacionais graves em produção.">
-                    <span class="te-letter">C</span> Desligar todas as máquinas aleatoriamente para ver quem reclama.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Criar contas individuais isoladas sem governança central gera fragmentação de segurança e perda de descontos por volume consolidado.">
+                    <span class="te-letter">C</span> Criar uma conta de nuvem separada para cada desenvolvedor individualmente sem consolidação de faturamento centralizado.
                   </button>
                 </div>
 
@@ -8997,14 +8761,14 @@ java -XX:+UseContainerSupport \\
                 <p class="te-instrucao">Qual a diferença técnica crítica de arquitetura entre a virtualização em escala de nuvem e um hipervisor hosted local?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Hipervisores Tipo 1 oferecem desempenho próximo ao nativo (bare-metal) e isolamento garantido por microcódigo de CPU e chips dedicados.">
-                    <span class="te-letter">A</span> A nuvem utiliza Hipervisores Tipo 1 (Bare-Metal) ultra-otimizados e subsistemas acelerados por hardware (como cartões AWS Nitro), executando diretamente sobre o silício sem overhead de um SO hospedeiro comum, oferecendo isolamento criptográfico, IOPS de barramento e altíssima estabilidade.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Soluções como VirtualBox são hipervisores Tipo 2 voltados para desktop, com overhead excessivo de emulação em software.">
+                    <span class="te-letter">A</span> A nuvem roda VirtualBox sobre servidores Linux comuns com placas de rede configuradas em modo bridge para expor portas na internet pública.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A infraestrutura de nuvem opera em escala de hardware especializado.">
-                    <span class="te-letter">B</span> Não há diferença técnica; o provedor de nuvem usa VirtualBox em laptops antigos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Hipervisores Tipo 1 executam diretamente sobre o silício e arquiteturas como Nitro transferem I/O e segurança para chips dedicados.">
+                    <span class="te-letter">B</span> A nuvem usa Hipervisores Tipo 1 (Bare-Metal) e offloading Nitro, sem SO hospedeiro comum, garantindo isolamento e alto desempenho.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Toda computação necessita de memória física.">
-                    <span class="te-letter">C</span> Hipervisores da nuvem não utilizam memória RAM.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Emulação pura por software seria ordens de grandeza mais lenta; a nuvem utiliza extensões de hardware da CPU (VT-x/AMD-V).">
+                    <span class="te-letter">C</span> A virtualização em nuvem é feita por emulação de software na camada de usuário sem acesso direto às instruções de virtualização da CPU da máquina.
                   </button>
                 </div>
 
@@ -9061,13 +8825,13 @@ java -XX:+UseContainerSupport \\
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Camada Arquitetural</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Pilha VMware On-Premises</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Equivalente na Nuvem Pública (AWS/Azure/GCP)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Hypervisor Bare-Metal</b></td><td style="padding:8px;color:var(--ink2)">VMware ESXi</td><td style="padding:8px;color:var(--ink2)">AWS Nitro / Azure Hyper-V / GCP KVM</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Console e Gestão Central</b></td><td style="padding:8px;color:var(--ink2)">vCenter Server</td><td style="padding:8px;color:var(--ink2)">AWS Management Console / Azure Portal / Cloud APIs</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Rede Definida por Software</b></td><td style="padding:8px;color:var(--ink2)">VMware NSX (Microsegmentação)</td><td style="padding:8px;color:var(--ink2)">VPC / Security Groups / Load Balancers</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Storage Hiperconvergente</b></td><td style="padding:8px;color:var(--ink2)">VMware vSAN</td><td style="padding:8px;color:var(--ink2)">Amazon EBS / Azure Managed Disks</td></tr>
-          <tr><td style="padding:8px"><b>Kubernetes Corporativo</b></td><td style="padding:8px;color:var(--ink2)">VMware Tanzu (TKG)</td><td style="padding:8px;color:var(--ink2)">Amazon EKS / Azure AKS / Google GKE</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Camada Arquitetural</th><th>Pilha VMware On-Premises</th><th>Equivalente na Nuvem Pública (AWS/Azure/GCP)</th></tr></thead>
+          <tr><td><b>Hypervisor Bare-Metal</b></td><td>VMware ESXi</td><td>AWS Nitro / Azure Hyper-V / GCP KVM</td></tr>
+          <tr><td><b>Console e Gestão Central</b></td><td>vCenter Server</td><td>AWS Management Console / Azure Portal / Cloud APIs</td></tr>
+          <tr><td><b>Rede Definida por Software</b></td><td>VMware NSX (Microsegmentação)</td><td>VPC / Security Groups / Load Balancers</td></tr>
+          <tr><td><b>Storage Hiperconvergente</b></td><td>VMware vSAN</td><td>Amazon EBS / Azure Managed Disks</td></tr>
+          <tr><td><b>Kubernetes Corporativo</b></td><td>VMware Tanzu (TKG)</td><td>Amazon EKS / Azure AKS / Google GKE</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -9213,14 +8977,14 @@ public class HybridInfrastructureConfig {
                 <p class="te-instrucao">Qual modelo de infraestrutura atende a essa exigência de isolamento físico local combinado com flexibilidade programável?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Uma nuvem privada moderna entrega APIs e orquestração de nuvem dentro do data center do próprio cliente atendendo exigências de soberania.">
-                    <span class="te-letter">A</span> Nuvem Privada On-Premises (usando VMware Cloud Foundation, OpenStack ou appliances de nuvem como AWS Outposts / Azure Stack), garantindo residência física total dos dados sob a governança da instituição com APIs de automação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Enviar os dados para regiões remotas na nuvem pública viola a determinação expressa de que os prontuários permaneçam nas dependências físicas da instituição.">
+                    <span class="te-letter">A</span> Nuvem Pública com criptografia de ponta a ponta configurada nos buckets S3 em regiões geograficamente distantes da sede física do hospital corporativo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Grave infração ética e legal.">
-                    <span class="te-letter">B</span> Hospedar os dados em servidores públicos gratuitos em fóruns de internet.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desktops comuns não possuem automação via API, alta disponibilidade nem esteiras modernas para orquestração de contêineres.">
+                    <span class="te-letter">B</span> Hospedar os sistemas em computadores desktop convencionais nos consultórios dos médicos conectados por rede Wi-Fi interna sem isolamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não atende ao requisito de APIs programáveis para times de software.">
-                    <span class="te-letter">C</span> Guardar os dados impressos em pastas de papel em arquivos de aço.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Uma nuvem privada ou appliance híbrido entrega recursos elásticos e automação de contêineres mantendo os dados fisicamente dentro do data center local.">
+                    <span class="te-letter">C</span> Nuvem Privada On-Premises (VMware Cloud Foundation, OpenStack ou AWS Outposts), garantindo soberania física dos dados com APIs de automação.
                   </button>
                 </div>
 
@@ -9434,14 +9198,14 @@ cloud:
                 <p class="te-instrucao">Qual é o principal problema técnico e financeiro dessa arquitetura?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A velocidade da luz e a tarifação de egresso entre data centers de provedores diferentes tornam réplicas transacionais síncronas entre nuvens impraticáveis.">
-                    <span class="te-letter">A</span> Latência proibitiva de rede entre provedores concorrentes (degradando o tempo de resposta das transações síncronas) e custos altíssimos de Data Egress (transferência de dados de saída) cobrados pela AWS para cada gigabyte replicado.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Transações síncronas entre provedores diferentes sofrem com latência de internet e geram altos custos de transferência de dados de saída (Egress).">
+                    <span class="te-letter">A</span> Latência proibitiva entre provedores degradando transações síncronas e custos altíssimos de Data Egress cobrados pela AWS para cada gigabyte transferido.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não existe essa restrição comercial.">
-                    <span class="te-letter">B</span> A AWS desliga contas de clientes que contratam a Azure.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O PostgreSQL é open source e utiliza os mesmos tipos de dados e protocolos independente de onde esteja hospedado.">
+                    <span class="te-letter">B</span> Incompatibilidade estrutural de tipos de dados SQL entre a AWS e a Azure que impede o PostgreSQL de executar comandos de SELECT em réplicas de leitura distribuídas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O PostgreSQL é suportado nativamente em qualquer nuvem moderna.">
-                    <span class="te-letter">C</span> O PostgreSQL não roda na Azure.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não existe proibição jurídica ou técnica de comunicação entre provedores; a limitação é estritamente de desempenho e custo.">
+                    <span class="te-letter">C</span> Bloqueio legal imposto pelos provedores de nuvem que proíbe formalmente qualquer tráfego de rede entre instâncias da AWS e serviços hospedados na Azure.
                   </button>
                 </div>
 
@@ -9498,14 +9262,14 @@ cloud:
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Estratégia (6 Rs)</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">O que significa</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Quando utilizar</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Velocidade vs Retorno</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Rehost (Lift & Shift)</b></td><td style="padding:8px;color:var(--ink2)">Move a mesma VM como está</td><td style="padding:8px;color:var(--ink2)">Prazo urgente de datacenter; código legado sem mantenedor</td><td style="padding:8px;color:var(--ink2)">Mais rápido de todos; baixo retorno de modernização</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Replatform (Lift & Tinker)</b></td><td style="padding:8px;color:var(--ink2)">Troca apenas peças (ex: DB para RDS)</td><td style="padding:8px;color:var(--ink2)"><b>O ponto ideal para a maioria:</b> ganha gestão sem reescrever app</td><td style="padding:8px;color:var(--ink2)">Rápido e com excelente retorno financeiro/operacional</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Repurchase (Drop & Shop)</b></td><td style="padding:8px;color:var(--ink2)">Troca o sistema por SaaS pronto</td><td style="padding:8px;color:var(--ink2)">Sistemas comuns que não diferenciam o negócio (RH, CRM, e-mail)</td><td style="padding:8px;color:var(--ink2)">Elimina desenvolvimento; contrata assinatura</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Refactor / Re-architect</b></td><td style="padding:8px;color:var(--ink2)">Reescreve para Cloud-Native</td><td style="padding:8px;color:var(--ink2)">O core business da empresa que exige escala elástica extrema</td><td style="padding:8px;color:var(--ink2)">Mais lento e caro; máximo retorno e escalabilidade</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Retain (Manter)</b></td><td style="padding:8px;color:var(--ink2)">Mantém no datacenter atual</td><td style="padding:8px;color:var(--ink2)">Sistemas com restrição legal rígida ou recentemente comprados</td><td style="padding:8px;color:var(--ink2)">Zero esforço no presente; reavalia no futuro</td></tr>
-          <tr><td style="padding:8px"><b>Retire (Aposentar)</b></td><td style="padding:8px;color:var(--ink2)">Desliga e deleta</td><td style="padding:8px;color:var(--ink2)">Sistemas zumbis que ninguém mais usa ou relatórios esquecidos</td><td style="padding:8px;color:var(--ink2)">Economia imediata de 100% de infraestrutura</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Estratégia (6 Rs)</th><th>O que significa</th><th>Quando utilizar</th><th>Velocidade vs Retorno</th></tr></thead>
+          <tr><td><b>Rehost (Lift & Shift)</b></td><td>Move a mesma VM como está</td><td>Prazo urgente de datacenter; código legado sem mantenedor</td><td>Mais rápido de todos; baixo retorno de modernização</td></tr>
+          <tr><td><b>Replatform (Lift & Tinker)</b></td><td>Troca apenas peças (ex: DB para RDS)</td><td><b>O ponto ideal para a maioria:</b> ganha gestão sem reescrever app</td><td>Rápido e com excelente retorno financeiro/operacional</td></tr>
+          <tr><td><b>Repurchase (Drop & Shop)</b></td><td>Troca o sistema por SaaS pronto</td><td>Sistemas comuns que não diferenciam o negócio (RH, CRM, e-mail)</td><td>Elimina desenvolvimento; contrata assinatura</td></tr>
+          <tr><td><b>Refactor / Re-architect</b></td><td>Reescreve para Cloud-Native</td><td>O core business da empresa que exige escala elástica extrema</td><td>Mais lento e caro; máximo retorno e escalabilidade</td></tr>
+          <tr><td><b>Retain (Manter)</b></td><td>Mantém no datacenter atual</td><td>Sistemas com restrição legal rígida ou recentemente comprados</td><td>Zero esforço no presente; reavalia no futuro</td></tr>
+          <tr><td><b>Retire (Aposentar)</b></td><td>Desliga e deleta</td><td>Sistemas zumbis que ninguém mais usa ou relatórios esquecidos</td><td>Economia imediata de 100% de infraestrutura</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -9637,14 +9401,14 @@ public class MigracaoDualWriteService {
                 <p class="te-instrucao">Qual estratégia dos '6 R's' de migração deve ser priorizada para cumprir o prazo inadiável com o menor risco de negócio?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Rehost é a estratégia de menor atrito e maior velocidade para cumprir prazos críticos de evacuação de hardware físico.">
-                    <span class="te-letter">A</span> Rehost (Lift-and-Shift): migrar as máquinas virtuais e bancos como estão para instâncias IaaS na nuvem usando ferramentas automatizadas (ex: AWS Application Migration Service - MGN), deixando refatorações de código para uma segunda fase com o datacenter desocupado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reescrever um monolito legado complexo em microsserviços exige muitos meses ou anos, estourando o prazo improrrogável de 90 dias.">
+                    <span class="te-letter">A</span> Refactor / Re-architect: reescrever o monolito em microsserviços serverless em Node.js com DynamoDB antes de iniciar qualquer migração de dados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reescrever um sistema crítico sob pressão de 90 dias causaria colapso da empresa.">
-                    <span class="te-letter">B</span> Refactor total: pausar o varejo por 90 dias e reescrever todo o sistema em Go serverless.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Rehost é a estratégia mais rápida e de menor risco para atender prazos inadiáveis de desocupação de infraestrutura física.">
+                    <span class="te-letter">B</span> Rehost (Lift-and-Shift): migrar VMs e bancos como estão para instâncias IaaS via ferramentas automatizadas (ex: AWS MGN), deixando refatorações para uma fase posterior com o datacenter desocupado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Extinguiria o negócio da empresa.">
-                    <span class="te-letter">C</span> Retire: excluir todos os servidores e desistir do sistema.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Substituir o sistema central da empresa por SaaS exige reaprender regras de negócio e reescrever integrações em prazo inviável.">
+                    <span class="te-letter">C</span> Repurchase: descartar o software corporativo e contratar um SaaS de e-commerce de prateleira para substituir o sistema em menos de 30 dias.
                   </button>
                 </div>
 
@@ -9843,14 +9607,14 @@ public class MigracaoDualWriteService {
                 <p class="te-instrucao">Qual componente de arquitetura reduz massivamente esses custos de egresso aproximando os dados dos usuários?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! CDNs reduzem a carga no backend e oferecem tarifas de egresso em escala significativamente menores que servidores diretos.">
-                    <span class="te-letter">A</span> Uma CDN (Content Delivery Network, como AWS CloudFront ou Cloudflare), que armazena em cache os vídeos em Edge Locations próximos aos usuários finais, oferecendo taxas de transferência por GB muito mais baratas que a saída direta dos servidores de origem.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Degradar severamente a qualidade de vídeo destrói a experiência dos usuários da plataforma de streaming.">
+                    <span class="te-letter">A</span> Substituir os vídeos 4K por arquivos compactados em resolução 480p e diminuir a taxa de quadros para 15 frames por segundo na esteira de conversão de mídia.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destrói a proposta de valor do negócio.">
-                    <span class="te-letter">B</span> Proibir os usuários de assistirem aos vídeos durante a tarde.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As taxas de transferência de dados de saída (Data Transfer Out) continuariam sendo cobradas igualmente pela AWS.">
+                    <span class="te-letter">B</span> Conectar as instâncias EC2 diretamente à internet pública sem passar por interfaces de rede virtuais da VPC da aplicação de streaming.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com streaming de vídeo moderno.">
-                    <span class="te-letter">C</span> Substituir os vídeos por arquivos de áudio gravados em fita cassete.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! CDNs distribuem o tráfego a partir de pontos de presença com tarifas de transferência de dados substancialmente mais baratas que servidores diretos.">
+                    <span class="te-letter">C</span> CDN (CloudFront/Cloudflare): faz cache de vídeos nas Edge Locations próximas aos usuários, com custo de egresso significativamente menor que a saída direta.
                   </button>
                 </div>
 
@@ -9912,12 +9676,12 @@ public class MigracaoDualWriteService {
           </div>
         </div>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:18px;font:400 .88rem/1.45 Georgia,serif">
-          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Modalidade de Compra</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Desconto Típico</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Risco Operacional</td><td style="padding:8px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Cargas Recomendadas</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Sob Demanda (On-Demand)</b></td><td style="padding:8px;color:var(--ink2)">Preço base de tabela</td><td style="padding:8px;color:var(--ink2)">Nenhum (pode desligar a qualquer segundo)</td><td style="padding:8px;color:var(--ink2)">Projetos novos, picos imprevistos, testes de carga</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Compute Savings Plans (1 ano)</b></td><td style="padding:8px;color:var(--ink2)">~30% a 45%</td><td style="padding:8px;color:var(--ink2)">Compromisso financeiro por 12 meses</td><td style="padding:8px;color:var(--ink2)">Base transacional de produção (EC2, Fargate, Lambda)</td></tr>
-          <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px"><b>Compute Savings Plans (3 anos)</b></td><td style="padding:8px;color:var(--ink2)">~50% a 72%</td><td style="padding:8px;color:var(--ink2)">Compromisso financeiro longo de 36 meses</td><td style="padding:8px;color:var(--ink2)">Bancos de dados estáveis e serviços perenes consolidados</td></tr>
-          <tr><td style="padding:8px"><b>Instâncias Spot</b></td><td style="padding:8px;color:var(--ink2)"><b>~70% a 90%</b></td><td style="padding:8px;color:var(--ink2)"><b>Interrupção com aviso de 2 minutos</b></td><td style="padding:8px;color:var(--ink2)">Workers de fila assíncronos, runners de CI/CD, batch ETL</td></tr>
+            <table class="table-didatica">
+          <thead><tr><th>Modalidade de Compra</th><th>Desconto Típico</th><th>Risco Operacional</th><th>Cargas Recomendadas</th></tr></thead>
+          <tr><td><b>Sob Demanda (On-Demand)</b></td><td>Preço base de tabela</td><td>Nenhum (pode desligar a qualquer segundo)</td><td>Projetos novos, picos imprevistos, testes de carga</td></tr>
+          <tr><td><b>Compute Savings Plans (1 ano)</b></td><td>~30% a 45%</td><td>Compromisso financeiro por 12 meses</td><td>Base transacional de produção (EC2, Fargate, Lambda)</td></tr>
+          <tr><td><b>Compute Savings Plans (3 anos)</b></td><td>~50% a 72%</td><td>Compromisso financeiro longo de 36 meses</td><td>Bancos de dados estáveis e serviços perenes consolidados</td></tr>
+          <tr><td><b>Instâncias Spot</b></td><td><b>~70% a 90%</b></td><td><b>Interrupção com aviso de 2 minutos</b></td><td>Workers de fila assíncronos, runners de CI/CD, batch ETL</td></tr>
         </table>
           </div>
           <div class="topic-split-right">
@@ -10044,14 +9808,14 @@ spring:
                 <p class="te-instrucao">Qual modelo de compra de computação entrega a maior economia financeira possível para essa carga de trabalho?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cargas batch efêmeras, desacopladas por mensageria e que toleram re-execuções são o cenário perfeito para economia extrema com instâncias Spot.">
-                    <span class="te-letter">A</span> Instâncias Spot (Spot Instances), pois oferecem descontos de até 90% em relação ao On-Demand e a carga de trabalho é completamente tolerante a interrupções eventuais graças à fila SQS.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cargas batch efêmeras, stateless e coordenadas por filas são o caso de uso ideal para instâncias Spot, maximizando a economia.">
+                    <span class="te-letter">A</span> Instâncias Spot (Spot Instances): descontos de até 90% em relação ao On-Demand para cargas tolerantes a interrupção desacopladas por fila SQS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Pagaria por 3 anos ininterruptos por máquinas que só rodam de madrugada.">
-                    <span class="te-letter">B</span> Assinar um contrato de Instâncias Reservadas de 3 anos dedicado exclusivamente a renderizar por 1 hora por dia.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Dedicated Hosts são a modalidade mais cara de computação, voltada para conformidade de licenças por socket e hardware físico dedicado.">
+                    <span class="te-letter">B</span> Instâncias Dedicadas (Dedicated Hosts) contratadas sob demanda por período mínimo de 3 anos para garantir que nenhuma outra empresa compartilhe o hardware.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Alto CapEx e custo de manutenção incompatível com nuvem.">
-                    <span class="te-letter">C</span> Comprar um supercomputador físico e instalar na casa do desenvolvedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Instâncias reservadas são ideais para cargas previsíveis ligadas 24/7, não para processamentos esporádicos que rodam apenas na madrugada.">
+                    <span class="te-letter">C</span> Instâncias Reservadas (Reserved Instances) com pagamento adiantado integral (All Upfront) fixando o tipo de instância sem flexibilidade de troca por 3 anos.
                   </button>
                 </div>
 
@@ -10238,14 +10002,14 @@ public class OrderCheckoutService {
                 <p class="te-instrucao">Como o líder de engenharia deve apresentar os dados usando o princípio de Unit Economics do FinOps?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! FinOps demonstra a eficiência técnica correlacionando gastos de infraestrutura com valor gerado de negócio através de Unit Economics.">
-                    <span class="te-letter">A</span> Demonstrar o Custo Unitário por Transação: provar que enquanto as transações cresceram 400%, o custo total subiu apenas 150%, o que significa que o custo de infraestrutura por transação processada caiu significativamente, comprovando ganho real de eficiência de escala.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métricas técnicas de CPU isoladas não justificam para o CFO o valor comercial gerado pelo aumento de despesas de infraestrutura.">
+                    <span class="te-letter">A</span> Apresentar os gráficos de uso de CPU mostrando que a média de utilização dos servidores permaneceu em 65% ao longo do ano fiscal.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria o faturamento da fintech.">
-                    <span class="te-letter">B</span> Desligar os servidores de produção para zerar a fatura e agradar as finanças.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O conceito de Unit Economics no FinOps correlaciona gastos de nuvem com métricas reais de negócio (custo por transação, por usuário ativo, etc.).">
+                    <span class="te-letter">B</span> Demonstrar o Custo Unitário por Transação: provar que as transações subiram 400% enquanto o custo subiu apenas 150%, demonstrando que o custo por transação caiu e a eficiência de escala aumentou.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Responsabilidade financeira compartilhada é a base do FinOps moderno.">
-                    <span class="te-letter">C</span> Afirmar que engenheiros não devem olhar para dinheiro.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Essa postura ignora a responsabilidade financeira e a necessidade de governança eficiente em custos de nuvem.">
+                    <span class="te-letter">C</span> Solicitar aumento no orçamento de TI alegando que empresas de tecnologia não devem ter custos de infraestrutura limitados por metas financeiras.
                   </button>
                 </div>
 
@@ -10497,14 +10261,14 @@ public class OrderCheckoutController {
                 <p class="te-instrucao">Qual conjunto de decisões arquiteturais na nuvem atende rigorosamente a esse nível de resiliência corporativa?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de computação distribuída Multi-AZ, failover síncrono de banco gerenciado e mensageria assíncrona elimina pontos únicos de falha e absorve picos sem degradação.">
-                    <span class="te-letter">A</span> Deploy Multi-AZ em no mínimo 3 AZs: balanceador Application Load Balancer distribuindo tráfego para pods do EKS distribuídos por regras de TopologySpreadConstraints, banco de dados Aurora Multi-AZ com réplicas síncronas de failover automático e mensageria distribuída com SQS para absorção de picos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escala vertical em uma única AZ não protege contra falhas físicas do data center, e backups de 60 minutos geram perda de dados (RPO alto).">
+                    <span class="te-letter">A</span> Escala vertical da máquina de banco em sa-east-1a com discos SSD de alta performance e backups automáticos executados a cada 60 minutos do sistema.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Representa um ponto único de falha absoluto (SPOF).">
-                    <span class="te-letter">B</span> Uma única máquina virtual gigante com 128 vCPUs e todo o código rodando em um único arquivo JAR.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Concentrar o tráfego em uma única AZ mantém ponto único de falha, e replicação assíncrona cross-region pode perder transações confirmadas.">
+                    <span class="te-letter">B</span> Balanceador NLB roteando todo o tráfego exclusivamente para uma única AZ com réplica assíncrona do banco em outra região internacional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem inviável e insegura.">
-                    <span class="te-letter">C</span> Salvar todas as compras pendentes na memória RAM dos computadores dos clientes.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de computação distribuída Multi-AZ, banco com replicação síncrona e mensageria assíncrona garante alta disponibilidade sem perda de dados.">
+                    <span class="te-letter">C</span> Deploy Multi-AZ (mínimo 3 AZs): ALB para pods EKS distribuídos por TopologySpreadConstraints, Aurora com failover síncrono e SQS para picos.
                   </button>
                 </div>
 
@@ -10716,14 +10480,14 @@ class LocalStackAwsLabTest {
                 <p class="te-instrucao">Qual estratégia prática de estudo desenvolve habilidades de engenharia de confiabilidade de alto nível?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A prática deliberada de testes de resiliência e simulação de falhas (Chaos Engineering) consolida a verdadeira mentalidade sênior de nuvem.">
-                    <span class="te-letter">A</span> Construir laboratórios práticos com IaC e simular cenários de falha reais: simular queda de uma Zona de Disponibilidade, injetar latência de rede, cortar conexão com o banco e validar se as métricas de observabilidade detectam o problema e se a aplicação resiste sem perda de dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Simulação ativa de falhas e engenharia do caos desenvolvem a capacidade de desenhar sistemas verdadeiramente resilientes para produção.">
+                    <span class="te-letter">A</span> Laboratórios com IaC e simulação de falhas (Chaos Engineering): injetar queda de AZ, latência e corte de banco para validar observabilidade e resiliência.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conhecimento puramente teórico sem prática não resolve problemas operacionais.">
-                    <span class="te-letter">B</span> Comprar mais 10 certificados sem nunca rodar uma linha de código.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Decorar respostas teóricas para exames não substitui a vivência de troubleshooting, depuração sob pressão e resolução de incidentes reais.">
+                    <span class="te-letter">B</span> Obter todas as certificações de nível associado e profissional decorando bancos de questões simuladas disponíveis em fóruns e comunidades online de certificação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Anacrônico e inviável.">
-                    <span class="te-letter">C</span> Desistir de aprender nuvem e voltar a usar disquetes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Compreender contratos de SLA é relevante para governança comercial, mas não desenvolve habilidades técnicas práticas de engenharia de software.">
+                    <span class="te-letter">C</span> Ler os termos de contrato de SLA de todos os serviços de nuvem para entender as penalidades financeiras contratuais aplicadas em caso de indisponibilidade de rede.
                   </button>
                 </div>
 
@@ -10895,14 +10659,14 @@ class LocalStackAwsLabTest {
                 <p class="te-instrucao">Onde ele encontra as informações mais confiáveis e aprofundadas sobre lições aprendidas em escala real?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Documentações oficiais aliadas a blogs de engenharia de alto volume fornecem a fundamentação teórica e as lições práticas de produção.">
-                    <span class="te-letter">A</span> Consultar os Whitepapers oficiais de arquitetura, a documentação de quotas/limites do provedor e estudar Tech Blogs de engenharia (como Netflix Tech Blog, Uber Engineering e AWS Architecture Center) com post-mortems de cenários semelhantes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Exemplos didáticos locais ignoram particionamento em escala, gargalos de rede distribuídos e limites de throughput de produção.">
+                    <span class="te-letter">A</span> Tutoriais introdutórios do YouTube demonstrando como subir um broker local na máquina de desenvolvimento com Docker Compose básico.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Padrões de 10 anos atrás contêm práticas obsoletas e inseguras.">
-                    <span class="te-letter">B</span> Copiar o primeiro script sem explicação encontrado em uma resposta de fórum de 10 anos atrás.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Whitepapers e relatos de pós-morte de grandes empresas expõem desafios reais de produção, armadilhas operacionais e soluções validadas em escala.">
+                    <span class="te-letter">B</span> Whitepapers oficiais do provedor, limites de quotas documentados e Tech Blogs de engenharia (como Netflix, Uber) com post-mortems reais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Representa amadorismo e risco desnecessário.">
-                    <span class="te-letter">C</span> Adivinhar os limites testando diretamente na conta bancária dos fundadores.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Opiniões subjetivas e informais frequentemente disseminam mitos ou conclusões baseadas em casos de uso de brinquedo.">
+                    <span class="te-letter">C</span> Grupos de discussão em redes sociais gerais pedindo opiniões subjetivas de desenvolvedores que utilizam a ferramenta em projetos pessoais.
                   </button>
                 </div>
 
@@ -11092,14 +10856,14 @@ class LocalStackAwsLabTest {
                 <p class="te-instrucao">Quais duas medidas de segurança operacional evitam faturas indesejadas em contas de estudos e experimentação?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Orçamentos monitorados com notificações precoces e destruição completa de recursos com IaC garantem custo previsível e controlado em laboratórios de estudo.">
-                    <span class="te-letter">A</span> Configurar um alerta de orçamento rigoroso (ex: AWS Budgets de US$ 5 com alarme por e-mail) logo no primeiro dia e automatizar a criação e destruição completa dos laboratórios com Infraestrutura como Código (`terraform destroy`).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Viola os termos de serviço e pode levar a bloqueio de conta e cobranças judiciais por inadimplência.">
+                    <span class="te-letter">A</span> Cadastrar cartões de crédito virtuais descartáveis sem saldo disponível para que o provedor de nuvem cancele a conta imediatamente após o primeiro uso.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A cobrança continuará ocorrendo no cartão de crédito cadastrado.">
-                    <span class="te-letter">B</span> Excluir o e-mail cadastrado para não receber os alertas de fatura.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Chamados de suporte não são garantia de estorno para recursos alocados legitimamente por negligência do próprio usuário.">
+                    <span class="te-letter">B</span> Abrir um chamado de suporte com prioridade crítica todo domingo à noite solicitando o estorno retroativo das instâncias ativas durante o final de semana.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causará um débito astronômico e evitável.">
-                    <span class="te-letter">C</span> Nunca desligar as instâncias para ver quanto custam após 1 ano.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Alertas de orçamento previnem surpresas e a destruição completa via IaC garante que nenhum recurso fique ligado consumindo dinheiro desnecessariamente.">
+                    <span class="te-letter">C</span> Configurar alertas precoces de orçamento (AWS Budgets de US$ 5 com alarme por e-mail) no primeiro dia e automatizar a criação e destruição completa dos laboratórios com IaC (terraform destroy).
                   </button>
                 </div>
 
@@ -11202,7 +10966,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -11215,5 +10979,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

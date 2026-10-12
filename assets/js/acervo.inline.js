@@ -62,7 +62,12 @@ var DOCS=[
    desc:"Toda a área de IA do vault e a engenharia moderna: escolha entre a Versão V1 (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a Versão V4 (6 grandes níveis didáticos com mapas conceituais: Transformers & RoPE, Speculative Decoding & MoE, SDD, Spring AI, pgvector, Topologias Multi-Agente e Evals com Test Harness). Ao clicar, abre o modal de escolha.",
    tags:["6 Grandes Níveis","Didática Visual"],
    chaves:"ia v1 v4 inteligencia artificial ai engineering modelo llm token previsao proximo token janela de contexto alucinacao transformer attention qkv rope rotary position embedding scaled dot product speculative decoding draft model moe mixture of experts embedding pgvector qdrant hnsw ann busca semantica rag semantic chunking hyde query rewriting prompt engineering saida estruturada json schema function calling tool calling sdd spec driven development agentes subagentes react loop multi agente supervisor debate consenso checkpointing langgraph crewai mcp test harness quality gate eval recall mrr llm as a judge prompt injection dual llm caching semantico redis"},
- {n:"15",nome:"Laboratório de projetos",curto:"Bancada",file:"lab/projetos.html",cor:"var(--lime)",hex:"#50fa7b",nos:18,top:18,
+ {n:"15",nome:"Governança e segurança de TI",curto:"Governança",file:"cadernos/governanca-seguranca.html",cor:"var(--cyan)",hex:"#8be9fd",nos:0,top:0,radar:false,
+  meta:"Caderno de fundamentos · governança, risco e segurança",
+  desc:"Fundamentos de governança de TI, alinhamento com o negócio, risco, controles, IAM, privacidade e LGPD, desenvolvimento seguro, resposta a incidentes e continuidade. Inclui aplicação prática em uma API Java/Spring com RabbitMQ.",
+  tags:["governança","risco","segurança"],
+  chaves:"governança governanca segurança seguranca ti tecnologia da informação alinhamento estratégico valor negócio risco controles COBIT ITIL ISO IAM identidade acesso autenticação autorização privacidade LGPD dados pessoais desenvolvimento seguro OWASP incidentes continuidade fornecedores auditoria conformidade evidências políticas responsabilidades NIST ANPD"},
+ {n:"16",nome:"Laboratório de projetos",curto:"Bancada",file:"lab/projetos.html",cor:"var(--lime)",hex:"#50fa7b",nos:18,top:18,
    meta:"18 projetos em 6 oficinas · 18 aquecimentos de 20 a 40 min",radar:false,
    desc:"A bancada: a única peça que não se lê, se constrói. Seis oficinas — Java puro, Spring, Cloud agnóstica, AWS, RabbitMQ e IA — com problema real, arquitetura, etapas, critérios de aceite, falhas para injetar de propósito e evidências no repositório. Cada projeto liga de volta ao documento que explica a teoria dele.",
    tags:["18 projetos","aquecimentos","OrderFlow"],
@@ -252,12 +257,15 @@ if(btnExportar){
     var backup = {
       versao: 1,
       exportadoEm: new Date().toISOString(),
+      origem: "site-estudos",
       dados: {}
     };
     try {
       for(var i = 0; i < localStorage.length; i++){
         var k = localStorage.key(i);
-        if(k && (k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-"))){
+        // Proteção estrita: NUNCA exportar chaves de API, senhas ou tokens
+        if(!k || /api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+        if(k.startsWith("site.") || k.startsWith("pratica.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.includes("-rev-") || k.startsWith("ml.") || k === "quiz_xp"){
           backup.dados[k] = localStorage.getItem(k);
         }
       }
@@ -278,7 +286,7 @@ if(btnExportar){
     URL.revokeObjectURL(url);
     var msg = q("backupMsg");
     if(msg){
-      msg.textContent = "✓ Backup exportado com sucesso!";
+      msg.textContent = "✓ Backup exportado com sucesso (sem credenciais)!";
       msg.style.display = "block";
       setTimeout(function(){ msg.style.display = "none"; }, 4000);
     }
@@ -295,30 +303,44 @@ if(btnRestaurar && fileInput){
     var reader = new FileReader();
     reader.onload = function(e){
       try {
-        var json = JSON.parse(e.target.result);
-        if(!json || !json.dados){
-          alert("Arquivo de backup inválido.");
+        var raw = e.target.result;
+        if(typeof raw !== "string" || raw.length > 5000000){
+          alert("Arquivo excede o tamanho máximo seguro suportado (5MB).");
+          return;
+        }
+        var json = JSON.parse(raw);
+        if(!json || typeof json !== "object" || Array.isArray(json) || !json.dados || typeof json.dados !== "object" || Array.isArray(json.dados)){
+          alert("Estrutura do arquivo de backup inválida ou corrompida.");
+          return;
+        }
+        var keys = Object.keys(json.dados);
+        if(keys.length > 2500){
+          alert("Quantidade de registros no arquivo excede o limite aceito.");
           return;
         }
         var count = 0;
-        for(var k in json.dados){
-          if(json.dados.hasOwnProperty(k)){
-            if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
-              if(typeof json.dados[k] === "string"){
-                localStorage.setItem(k, json.dados[k]);
-                count++;
-              }
+        for(var i = 0; i < keys.length; i++){
+          var k = keys[i];
+          // Blindagem contra Prototype Pollution e injeção de credenciais
+          if(k === "__proto__" || k === "constructor" || k === "prototype") continue;
+          if(/api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+          // Validação de escopo de chaves e tipo primitivo seguro
+          if(k.startsWith("site.") || k.startsWith("pratica.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.includes("-rev-") || k.startsWith("ml.") || k === "quiz_xp"){
+            var val = json.dados[k];
+            if(typeof val === "string" && val.length <= 500000){
+              localStorage.setItem(k, val);
+              count++;
             }
           }
         }
         var msg = q("backupMsg");
         if(msg){
-          msg.textContent = "✓ " + count + " chaves restauradas com validação! Atualizando...";
+          msg.textContent = "✓ " + count + " chaves restauradas com validação de esquema! Atualizando...";
           msg.style.display = "block";
         }
         setTimeout(function(){ location.reload(); }, 1200);
       } catch(err){
-        alert("Erro ao ler arquivo JSON: " + err.message);
+        alert("Erro ao validar e ler arquivo JSON: " + err.message);
       }
     };
     reader.readAsText(file);
@@ -346,6 +368,7 @@ var PALETTE_DATA = [
   {t:"Git completo",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"DOC",url:"cadernos/git.html",cor:"var(--pink)"},
   {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"DOC",url:"cadernos/ingles.html",cor:"var(--cyan)"},
   {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"DOC",url:"cadernos/oratoria.html",cor:"var(--gold)"},
+  {t:"Governança e segurança de TI",sub:"Governança, risco, controles, IAM, privacidade e continuidade",cat:"DOC",url:"cadernos/governanca-seguranca.html",cor:"var(--cyan)"},
   {t:"Inteligência Artificial completo (V1)",sub:"Tokens, embeddings, RAG, tool calling, MCP e evals (Vault)",cat:"DOC",url:"trilhas/ia.html",cor:"var(--purple)"},
   {t:"AI Engineering completo (V4 - Didática & Visual)",sub:"Os 6 Grandes Níveis com mapas conceituais: Transformers Q/K/V, RoPE, Speculative Decoding, pgvector, Multi-Agente e Evals",cat:"DOC V4",url:"trilhas/ia.html",cor:"var(--teal)"},
   {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"DOC",url:"lab/projetos.html",cor:"var(--lime)"},

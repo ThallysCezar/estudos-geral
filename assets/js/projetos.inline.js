@@ -19,18 +19,18 @@
     /* Os documentos do acervo. Cada projeto aponta para os que explicam
        o que ele exercita — a bancada nunca fica solta da teoria. */
     var D = {
-      java :["Java completo","java.html","Java"],
-      spring:["Spring completo","spring.html","Spring"],
-      arq  :["Arquitetura completo","arquitetura.html","Arquitetura"],
-      k8s  :["Docker e Kubernetes completo","docker-kubernetes.html","Docker/K8s"],
-      nuvem:["Nuvem completo","nuvem.html","Nuvem"],
-      msg  :["Mensageria e RabbitMQ completo","mensageria.html","Mensageria"],
-      back :["Conceitos de backend completo","conceitos-backend.html","Backend"],
-      bib  :["Biblioteca completa","biblioteca.html","Biblioteca"],
-      ia   :["Inteligência Artificial completo","ia.html","IA"],
-      sys  :["System Design completo","system-design.html","System Design"],
-      linux:["Linux e terminal completo","linux.html","Linux"],
-      git  :["Git completo","git.html","Git"]
+      java :["Trilha Java","../trilhas/java.html","Java"],
+      spring:["Trilha Spring","../trilhas/spring.html","Spring"],
+      arq  :["Trilha Arquitetura","../trilhas/arquitetura.html","Arquitetura"],
+      k8s  :["Trilha Docker e Kubernetes","../trilhas/docker-kubernetes.html","Docker/K8s"],
+      nuvem:["Trilha Nuvem","../trilhas/nuvem.html","Nuvem"],
+      msg  :["Trilha Mensageria","../trilhas/mensageria.html","Mensageria"],
+      back :["Caderno Conceitos de Backend","../cadernos/conceitos-backend.html","Backend"],
+      bib  :["Caderno Biblioteca","../cadernos/biblioteca.html","Biblioteca"],
+      ia   :["Trilha Inteligência Artificial","../trilhas/ia.html","IA"],
+      sys  :["Trilha System Design","../trilhas/system-design.html","System Design"],
+      linux:["Caderno Linux e Terminal","../cadernos/linux.html","Linux"],
+      git  :["Caderno Git","../cadernos/git.html","Git"]
     };
     var TEORIA = {
       J01:[["java","Records, imutabilidade e o que BigDecimal resolve que double não resolve"],["arq","Por que o domínio não pode conhecer nem o arquivo nem a CLI"]],
@@ -346,7 +346,7 @@
       questions:["Por que liveness não deve testar tudo?","Quem reinicia um Pod e quem cria outro?","Request e limit afetam scheduling/runtime como?","Qual sinal vem da aplicação e qual do cluster?"],
       ladder:["imagem + Deployment + Service","probes, config, resources e rollout","game day, policy, autoscaling e observabilidade"],
       evidence:["manifests e scripts create/delete","diagrama do reconciliation loop","tabela falha → sintoma → comando → causa","captura do rollout sem erro ao cliente"],
-      cost:"R$ 0 em kind/minikube local. Cluster gerenciado não é necessário.",command:"kind create cluster --name workshop21 && kubectl cluster-info --context kind-workshop21"
+      cost:"R$ 0 em kind/minikube local. Cluster gerenciado não é necessário.",command:"kind create cluster --name lab-projetos && kubectl cluster-info --context kind-lab-projetos"
     });
     P({
       id:"I01",area:"ai",difficulty:"Avançado",sessions:10,title:"RAG local com fonte citável",
@@ -537,8 +537,10 @@
           +'</div></details>';
       }).join("");
     }
+    var lastActiveElement=null;
     function openProject(id,fromHash){
       var p=projects.find(function(x){return x.id===id;});if(!p)return;
+      lastActiveElement=document.activeElement;
       currentProject=p;
       var a=areas[p.area];
       dialog.style.setProperty("--dialog-accent",a.accent);
@@ -564,6 +566,8 @@
       document.getElementById("dialogBody").innerHTML=body;
       if(!dialog.open)dialog.showModal();
       dialog.querySelector(".dialog-core").scrollTop=0;
+      var closeBtn=document.getElementById("closeDialog");
+      if(closeBtn)closeBtn.focus();
       if(!fromHash&&location.hash!=="#project-"+p.id)history.pushState(null,"","#project-"+p.id);
       document.getElementById("modalDone").addEventListener("change",function(e){
         var ix=stored.done.indexOf(p.id);
@@ -577,6 +581,7 @@
       if(dialog.open)dialog.close();
       currentProject=null;
       if(location.hash.indexOf("#project-")===0)history.replaceState(null,"",location.pathname+location.search);
+      if(lastActiveElement&&typeof lastActiveElement.focus==="function"){lastActiveElement.focus();}
     }
     function updateProgress(){
       var count=stored.done.length;
@@ -621,6 +626,7 @@
     document.getElementById("closeDialog").addEventListener("click",closeProject);
     dialog.addEventListener("click",function(e){if(e.target===dialog)closeProject();});
     dialog.addEventListener("close",function(){if(location.hash.indexOf("#project-")===0)history.replaceState(null,"",location.pathname+location.search);});
+    window.addEventListener("keydown",function(e){if(e.key==="Escape"&&dialog.open){closeProject();}});
     document.getElementById("continueBtn").addEventListener("click",continueNext);
     window.addEventListener("hashchange",function(){var m=location.hash.match(/^#project-([A-Z]\d{2})$/);if(m)openProject(m[1],true);else if(dialog.open)dialog.close();});
     renderPracs();renderRoute();render();updateProgress();observeReveals();

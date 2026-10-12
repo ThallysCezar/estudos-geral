@@ -341,7 +341,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <!-- MAPA MENTAL PRINCIPAL: GIT -->
       <figure class="topic-img">
-        <img src="../assets/img/git_mapa_mental_principal.jpg" alt="Mapa Mental: Git — Controle de versão para construir melhores projetos, em equipe" loading="lazy" title="Clique para abrir no visualizador ampliado" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL PRINCIPAL')">
+        <img src="../assets/img/git/git_mapa_mental_principal.jpg" alt="Mapa Mental: Git — Controle de versão para construir melhores projetos, em equipe" loading="lazy" title="Clique para abrir no visualizador ampliado" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL PRINCIPAL')" decoding="async">
         <figcaption>
           <span>MAPA MENTAL PRINCIPAL</span>
           <em>GIT — Controle de versão para construir melhores projetos, em equipe</em>
@@ -486,14 +486,14 @@ git cat-file -p HEAD
                 <p class="te-instrucao">Por que os hashes dos commits serão completamente diferentes, mesmo tendo o mesmo código e mesma mensagem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Git gera o hash calculando o SHA sobre o header do commit, hash da tree raiz, hash do pai, autor, committer e timestamp UTC exato em segundos.">
-                    <span class="te-letter">A</span> Porque o hash SHA-1 do commit inclui os metadados do committer, timestamp exato de criação e o hash do commit pai. Qualquer diferença nesses campos altera irreversivelmente o hash criptográfico gerado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Git é estritamente determinístico e não utiliza salt pseudoaleatório; a diferença advém dos metadados reais de tempo e autoria.">
+                    <span class="te-letter">A</span> O Git calcula a soma criptográfica combinando a árvore de arquivos e a mensagem, mas injeta um salt pseudoaleatório no cabeçalho do commit para evitar colisão em repositórios distribuídos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Git é estritamente determinístico: mesmos inputs exatos (conteúdo + metadados + timestamp + pai) produzem sempre o mesmo hash.">
-                    <span class="te-letter">B</span> Porque o Git adiciona um número randômico pseudoaleatório gerado pela placa-mãe a cada commit para evitar duplicidades.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O hash de commit encapsula não apenas a árvore de arquivos e a mensagem, mas também os dados de autoria e o carimbo de data/hora (timestamp) exato em segundos.">
+                    <span class="te-letter">B</span> O hash SHA-1/SHA-256 é calculado sobre a tree raiz, o hash do commit pai, autor, committer e os timestamps UTC exatos de criação e commit.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O hash é uma soma de verificação SHA unidirecional, não uma cifra RSA.">
-                    <span class="te-letter">C</span> Porque o Git criptografa os commits com chaves RSA assimétricas do GitHub.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A branch é apenas uma referência móvel (ponteiro em .git/refs/heads) e não afeta o cálculo do hash do objeto de commit.">
+                    <span class="te-letter">C</span> O hash varia porque branches distintas utilizam identificadores criptográficos próprios atribuídos no momento da criação da ramificação local.
                   </button>
                 </div>
 
@@ -624,14 +624,14 @@ git cat-file -p HEAD
                 <p class="te-instrucao">Qual comando do Git permite selecionar interativamente apenas os blocos de código (hunks) que devem ir para o commit?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O 'git add -p' (patch) decompõe o diff em hunks interativos, permitindo carregar no Index apenas os trechos desejados e manter o restante no Working Directory.">
-                    <span class="te-letter">A</span> git add -p UserService.java (modo interativo de patch), selecionando 'y' para os blocos da regra e 'n' para os blocos com logs de depuração.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O modo interativo de patch (-p) decompõe o diff em hunks, permitindo encadear no Index apenas as alterações desejadas.">
+                    <span class="te-letter">A</span> git add -p UserService.java, marcando 'y' para blocos de regras e 'n' para prints de depuração.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Essa flag não existe no Git CLI.">
-                    <span class="te-letter">B</span> git commit -m 'feat: regra' --ignore-debug
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando git checkout -p descarta alterações do Working Directory em vez de prepará-las no Index, apagando seus prints locais.">
+                    <span class="te-letter">B</span> git checkout -p UserService.java, aplicando o descarte seletivo das linhas de depuração no arquivo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. git stash drop apaga snapshots salvos no stash e commit -a adicionaria tudo indistintamente.">
-                    <span class="te-letter">C</span> git stash drop UserService.java seguido de git commit -a
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embora o stash suporte patch, o fluxo padrão e direto para preparar commits parciais no Index é o git add -p.">
+                    <span class="te-letter">C</span> git stash push -p UserService.java, isolando a regra no stash para comitar as alterações restantes.
                   </button>
                 </div>
 
@@ -785,14 +785,14 @@ git range-diff origin/main@{1} origin/main HEAD</code></pre>
                 <p class="te-instrucao">Qual a prática recomendada para manter um histórico linear e fácil de revisar sem bagunçar o repositório remoto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Reaplicar seus commits locais sobre o estado atualizado da main mantém o histórico limpo e linear, facilitando a revisão no Pull Request.">
-                    <span class="te-letter">A</span> Estando na sua branch local, executar `git fetch origin` e `git rebase origin/main`, resolvendo eventuais conflitos commit a commit antes de subir para a PR.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O merge preserva o histórico, mas introduz múltiplos merge commits intermediários, poluindo a visualização da PR e quebrando a linearidade.">
+                    <span class="te-letter">A</span> Executar git merge origin/main na branch local, gerando um commit de merge recursivo intermediário.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reescrever a branch main diretamente e forçar push destruiria o histórico compartilhado de toda a equipe.">
-                    <span class="te-letter">B</span> Fazer checkout na branch main e rodar git rebase feature/checkout seguido de git push --force na main de produção.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Além de inverter o fluxo de trabalho, aplicar alterações na main sem PR contraria as regras de governança e revisão de código.">
+                    <span class="te-letter">B</span> Efetuar git cherry-pick origin/main..feature/checkout na branch main e publicar direto na release.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Perde todo o histórico de branches, stashes e commits locais.">
-                    <span class="te-letter">C</span> Deletar a pasta .git local e clonar o repositório novamente copiando os arquivos modificados por cima.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O rebase sobre a main atualizada mantém o histórico linear e limpo, simplificando a revisão atômica no Pull Request.">
+                    <span class="te-letter">C</span> Atualizar a base localmente com git fetch origin e executar git rebase origin/main, reaplicando seus commits sobre a ponta atualizada antes de abrir o Pull Request.
                   </button>
                 </div>
 
@@ -925,14 +925,14 @@ git merge --abort</code></pre>
                 <p class="te-instrucao">Qual a sequência correta de comandos no terminal para continuar o rebase?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No rebase, você adiciona o arquivo resolvido no Index com 'git add' e avisa o motor com 'git rebase --continue'. Executar 'git commit' criaria um commit avulso fora da esteira de rebase.">
-                    <span class="te-letter">A</span> git add SecurityConfig.java seguido de git rebase --continue (sem executar git commit).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O git rebase --skip descartaria as alterações do commit em conflito em vez de aplicá-las ao histórico resultante.">
+                    <span class="te-letter">A</span> Executar git commit --amend para embutir a resolução no commit pausado e acionar git rebase --skip.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não se deve dar commit manual durante o rebase; usa-se git rebase --continue.">
-                    <span class="te-letter">B</span> git commit -m 'fix: conflito' seguido de git push --force
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O git add marca o conflito como resolvido no Index e o git rebase --continue aplica o commit reformulado sem criar nós avulsos.">
+                    <span class="te-letter">B</span> Executar git add SecurityConfig.java para indexar a resolução e prosseguir com git rebase --continue.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso descartaria a resolução do conflito e abortaria o trabalho feito.">
-                    <span class="te-letter">C</span> git reset --hard HEAD e fechar o terminal.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não se deve invocar git commit durante um rebase interativo; o motor aplica o commit automaticamente após o git add.">
+                    <span class="te-letter">C</span> Executar git commit -m "fix: conflito" seguido de git rebase --continue para registrar um commit explícito no histórico intermediário.
                   </button>
                 </div>
 
@@ -1069,14 +1069,14 @@ git cherry-pick --continue    # ou --abort, ou --skip</code></pre>
                 <p class="te-instrucao">Qual comando executa a operação com as melhores práticas de auditoria?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A flag -x grava a referência do commit de origem no histórico da release, facilitando auditorias de segurança e compliance.">
-                    <span class="te-letter">A</span> git checkout release/v2.0 seguido de git cherry-pick -x a1b2c3d
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A flag -x adiciona automaticamente a linha 'cherry picked from commit...' ao corpo da mensagem, garantindo rastreabilidade formal.">
+                    <span class="te-letter">A</span> git checkout release/v2.0 && git cherry-pick -x a1b2c3d
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Injetaria dezenas de novas funcionalidades da main na branch estável de release.">
-                    <span class="te-letter">B</span> git merge main na release/v2.0 trazendo todos os commits não testados da main para produção.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O merge --squash não aceita um único hash arbitrário de outra árvore com precisão e não anexa os metadados de rastreabilidade de auditoria do -x.">
+                    <span class="te-letter">B</span> git checkout release/v2.0 && git merge --squash a1b2c3d para incorporar o diff sem criar um novo hash de commit no histórico da release.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Perde autoria, histórico de revisão e rastreabilidade entre branches.">
-                    <span class="te-letter">C</span> Copiar o código corrigido com Ctrl+C no GitHub e colar no arquivo local criando um commit anônimo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O uso de --no-commit perde a mensagem original, o autor original e a referência padronizada de auditoria gerada pelo parâmetro -x.">
+                    <span class="te-letter">C</span> git checkout release/v2.0 && git cherry-pick --no-commit a1b2c3d seguido de um commit com mensagem livre criada pelo operador.
                   </button>
                 </div>
 
@@ -1214,14 +1214,14 @@ git bisect run ./reproduz.sh</code></pre>
                 <p class="te-instrucao">Como identificar o commit exato que quebrou o frete de forma 100% autônoma?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O 'git bisect run' avalia o código de retorno (exit code) do script em cada passo da busca binária, localizando o culpado sem qualquer intervenção humana.">
-                    <span class="te-letter">A</span> Executar: `git bisect start` -> `git bisect bad HEAD` -> `git bisect good v1.5.0` -> `git bisect run npm test test/frete.test.js`. O Git fará a busca binária automática e apontará o commit exato com autor e data.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O subcomando correto para execução autônoma é git bisect run, e a ordem dos limites no start não substitui os comandos explícitos de bad/good.">
+                    <span class="te-letter">A</span> Executar git bisect start HEAD v1.5.0 e rodar git bisect check "npm test test/frete.test.js" para testar regressões.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem lenta, propensa a erro humano e inviável sob pressão de entrega.">
-                    <span class="te-letter">B</span> Rodar `git log -p` e ler todos os 600 commits manualmente no terminal.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma busca linear em 600 commits é ineficiente (O(N) vs O(log N)), enquanto a busca binária nativa do Git Bisect resolve em menos de 10 passos.">
+                    <span class="te-letter">B</span> Executar git log -S "frete" --reverse e usar um script shell que teste individualmente cada um dos commits.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desperdiça semanas de desenvolvimento e introduz novas regressões.">
-                    <span class="te-letter">C</span> Reescrever a funcionalidade de frete do zero em um novo repositório.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O git bisect run automatiza a busca binária baseando-se no código de saída do script (0 para sucesso, 1-127 para falha), isolando o commit faltoso em segundos.">
+                    <span class="te-letter">C</span> Iniciar com git bisect start, definir bad HEAD e good v1.5.0, e executar git bisect run npm test test/frete.test.js.
                   </button>
                 </div>
 
@@ -1352,14 +1352,14 @@ git bisect run ./reproduz.sh</code></pre>
                 <p class="te-instrucao">Qual comando deve ser utilizado para desfazer a alteração em conformidade com as regras de governança?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O 'git revert' gera um novo commit com o diff inverso, avançando o histórico da branch de forma segura sem reescrever o passado nem exigir force push.">
-                    <span class="te-letter">A</span> git revert <commit-hash> seguido de git push origin main
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Como o commit já foi publicado no remote, um git reset local deixa o branch atrás do origin/main, e o push subsequente será rejeitado sem force.">
+                    <span class="te-letter">A</span> Executar git reset --soft HEAD~1 localmente e reenviar via git push origin main com fast-forward padrão no branch.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O servidor rejeitará o push por não ser fast-forward, além de ser proibido por branch protection.">
-                    <span class="te-letter">B</span> git reset --hard HEAD~1 seguido de git push origin main
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O git revert cria um novo commit com o diff inverso, avançando a ponta da branch sem reescrever histórico e respeitando as travas de branch protection.">
+                    <span class="te-letter">B</span> Executar git revert <commit-hash> localmente e realizar git push origin main, gerando um commit com diff inverso.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. git commit --amend reescreve o hash do commit atual, exigindo push forçado que será rejeitado pelo repositório.">
-                    <span class="te-letter">C</span> git restore --source=HEAD~1 . seguido de git commit --amend
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O commit --amend altera o hash do commit anterior, o que continua exigindo rewrite do histórico e consequente push forçado.">
+                    <span class="te-letter">C</span> Executar git checkout HEAD~1 . seguido de git commit --amend para atualizar a ponta sem alterar a branch de trabalho.
                   </button>
                 </div>
 
@@ -1493,14 +1493,14 @@ git fsck --lost-found</code></pre>
                 <p class="te-instrucao">Como recuperar o estado exato dos cinco commits em menos de 1 minuto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O reflog mantém o histórico cronológico de movimentação do HEAD local, permitindo recolocar o ponteiro de volta no commit que parecia perdido.">
-                    <span class="te-letter">A</span> Executar `git reflog` para identificar o hash de onde o HEAD estava antes do reset (ex: HEAD@{1}) e rodar `git reset --hard HEAD@{1}` (ou criar uma branch apontando para aquele hash).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embora o git log -g acesse o reflog, restaurar arquivos individualmente é trabalhoso e perde a estrutura atômica dos commits anteriores.">
+                    <span class="te-letter">A</span> Inspecionar com git log -g e restaurar arquivos com o utilitário git restore --source=HEAD@{1}.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Git não armazena snapshots na lixeira do sistema operacional.">
-                    <span class="te-letter">B</span> Desinstalar o Git e reinstalar para forçar a recuperação da lixeira do Windows.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O fsck gera blobs anônimos desestruturados em .git/lost-found, enquanto os commits originais continuam intactos e acessíveis pelo reflog.">
+                    <span class="te-letter">B</span> Executar git fsck --lost-found para exportar blobs soltos e reconstruir manualmente os arquivos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Git apenas moveu o ponteiro da branch; os objetos de commit continuam intactos no banco .git/objects.">
-                    <span class="te-letter">C</span> Reescrever todos os 5 commits de memória, pois o reset --hard executa sanitização física de setores do SSD.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O reflog registra todas as movimentações do ponteiro HEAD. Como o Git mantém os objetos órfãos até o garbage collection, basta reposicionar a referência.">
+                    <span class="te-letter">C</span> Consultar git reflog para identificar o hash do HEAD anterior ao reset (ex: HEAD@{1}) e executar git reset --hard HEAD@{1} para recolocar o ponteiro.
                   </button>
                 </div>
 
@@ -1638,14 +1638,14 @@ git rebase -i --autosquash origin/main
                 <p class="te-instrucao">Qual a sequência mais elegante e automatizada de comandos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O par --fixup e --autosquash move a correção para a posição exata do commit 1 e o funde silenciosamente, mantendo os commits 2 e 3 intactos.">
-                    <span class="te-letter">A</span> Alterar a migration -> `git add .` -> `git commit --fixup <hash-do-commit-1>` -> `git rebase -i --autosquash origin/main` -> salvar e fechar o editor.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O par --fixup e --autosquash posiciona e marca o commit automaticamente como fixup logo após o commit-alvo durante o rebase interativo.">
+                    <span class="te-letter">A</span> Criar a alteração, executar git commit --fixup <hash-commit-1> e consolidar com git rebase -i --autosquash origin/main.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Funciona, mas polui o histórico com commits de descuido e dificulta o code review.">
-                    <span class="te-letter">B</span> Criar um commit 'fix: esqueci not null' e abrir a PR com esse commit avulso no final.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O fluxo com edit e amend funciona, mas exige intervenção manual com pausas e edição do arquivo todo, sendo menos elegante e automatizado do que fixup com autosquash.">
+                    <span class="te-letter">B</span> Executar git rebase -i HEAD~4, pausar no commit 1 usando edit, alterar a migration, rodar git commit --amend e prosseguir com git rebase --continue.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Perda de tempo drástica por falta de domínio das ferramentas de rebase.">
-                    <span class="te-letter">C</span> Resetar a branch inteira para o início, perdendo todos os 4 commits para refazer do zero.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O cherry-pick reaplica um commit na ponta da branch atual, não modificando o histórico retroativo do commit 1.">
+                    <span class="te-letter">C</span> Executar git cherry-pick --strategy=theirs <hash-commit-1> a partir da branch de feature para sobrescrever apenas a definição da tabela no commit corrente.
                   </button>
                 </div>
 
@@ -1775,14 +1775,14 @@ git config --global alias.pushf "push --force-with-lease"
                 <p class="te-instrucao">O que a rejeição do Git indica e qual a ação correta a tomar?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a exata razão de ser do --force-with-lease: impedir que você apague o trabalho de outros por engano. O --force comum teria deletado o commit do colega sem aviso.">
-                    <span class="te-letter">A</span> Indica que o branch remoto possui commits novos que você ainda não baixou localmente. A ação correta é rodar `git fetch`, inspecionar o commit do colega com `git log`, integrá-lo via rebase local e só então reenviar com lease.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A rejeição por --force-with-lease é um teste de integridade de referência remota, não uma recusa de permissão de branch protection.">
+                    <span class="te-letter">A</span> A branch possui branch protection ativa; deve-se pedir permissão temporária de administrador para desativá-la.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O erro é de concorrência de referências, e usar --force destruiria o trabalho do colega.">
-                    <span class="te-letter">B</span> Indica que sua chave SSH expirou; deve-se trocar para git push --force tradicional.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O --force-with-lease protege contra sobrescrita acidental de trabalho alheio, abortando o envio caso o ponteiro remoto divirja da tracking branch local.">
+                    <span class="te-letter">B</span> A referência remota avançou além do snapshot local conhecido; deve-se executar git fetch, inspecionar os commits novos do colega e integrá-los localmente antes de reenviar.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O servidor respondeu com rejeição explícita de integridade de lease.">
-                    <span class="te-letter">C</span> Indica que o GitHub está fora do ar e deve-se abrir um chamado no suporte do provedor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falha de autenticação geraria erro 401/403 de rede, e usar --force destruiria o commit enviado pelo colega.">
+                    <span class="te-letter">C</span> Houve conflito de token de autenticação expirado; deve-se renovar as credenciais e usar git push --force sem checagem.
                   </button>
                 </div>
 
@@ -1935,14 +1935,14 @@ echo "config/application-local.yml" >> .gitignore</code></pre>
                 <p class="te-instrucao">Por que a credencial ainda está totalmente comprometida e qual deve ser o primeiro passo do plantonista?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bots de varredura capturam segredos em segundos. Apagar em commit novo mantém o commit antigo no histórico. A revogação na AWS é a única ação que impede invasão imediata.">
-                    <span class="te-letter">A</span> Porque o commit anterior com o segredo continua intacto no histórico público do repositório e visível na API do GitHub. O primeiro passo mandatório é revogar e invalidar a credencial imediatamente no console AWS IAM.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O commit faz parte do objeto do repositório, não de cache efêmero de CDN, e abrir ticket demora muito enquanto credenciais vazadas são exploradas por bots em segundos.">
+                    <span class="te-letter">A</span> O arquivo permanece em cache nas instâncias de CDN do GitHub; a primeira ação deve ser abrir ticket prioritário para purgar as edge locations.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O histórico do Git é público e qualquer pessoa pode navegar até o commit anterior.">
-                    <span class="te-letter">B</span> A credencial está segura porque o commit 'remove secret' cancela a visibilidade dos hashes antigos na internet.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reescrever o repositório é importante, mas a chave já foi exposta; a primeira medida mandatória e emergencial é revogar a credencial no provedor (AWS IAM).">
+                    <span class="te-letter">B</span> O commit histórico é público, mas bastaria executar git push --force após rodar git filter-branch para impedir qualquer acesso à chave.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O tempo de resposta de e-mail é de horas/dias, enquanto a invasão ocorre em segundos.">
-                    <span class="te-letter">C</span> O primeiro passo é enviar um e-mail para o suporte do GitHub pedindo para desligarem os servidores por 24 horas.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bots de varredura monitoram o GitHub em tempo real. Uma vez comitada em repositório público, a chave deve ser considerada comprometida e invalidada imediatamente.">
+                    <span class="te-letter">C</span> O segredo permanece no histórico anterior; a primeira ação imediata é revogar e rotacionar a credencial no AWS IAM.
                   </button>
                 </div>
 
@@ -2075,14 +2075,14 @@ refactor(checkout): extrai calculo de frete
                 <p class="te-instrucao">Qual a melhor estratégia para destravar o processo de revisão com base nas boas práticas de engenharia?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! PRs menores de 300 linhas reduzem a carga cognitiva do time, viabilizam revisões profundas e são aprovados rapidamente com menor risco de bugs em produção.">
-                    <span class="te-letter">A</span> Fechar o PR gigante e fatiá-lo em uma série de Pull Requests menores e independentes (Stacked PRs ou fatias verticais com feature flags), cada um focado em uma única responsabilidade lógica com menos de 300 linhas.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! PRs menores reduzem a carga cognitiva dos revisores, aceleram a detecção de defeitos e diminuem drasticamente o tempo de ciclo da entrega.">
+                    <span class="te-letter">A</span> Decompor o trabalho em Pull Requests menores (Stacked PRs) de até 300 linhas, desacoplando entregas por camadas ou feature flags.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aprovar código gigante sem revisão é a causa raiz clássica de incidentes graves em produção.">
-                    <span class="te-letter">B</span> Marcar o PR como urgente no Slack com @channel e aprovar sem ler para bater a meta da sprint.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Revisar 3.200 linhas em bloco induz fadiga cognitiva severa, fazendo revisores deixarem passar falhas críticas na arquitetura ou segurança.">
+                    <span class="te-letter">B</span> Agendar pair review síncrono de 4 horas para aprovar o PR em bloco, mantendo o changeset consolidado na branch principal do projeto.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Subverte completamente os pipelines de qualidade e ferramentas de governança de código.">
-                    <span class="te-letter">C</span> Exportar as alterações para um arquivo .zip e enviar por e-mail para a diretoria aprovar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Postergar o code review apenas transfere o débito técnico e o risco para o final do ciclo, violando a prática de feedback contínuo.">
+                    <span class="te-letter">C</span> Mesclar o PR em uma branch develop sem revisão para testes em staging, postergando o code review detalhado para a homologação técnica.
                   </button>
                 </div>
 
@@ -2209,14 +2209,14 @@ git describe --tags
                 <p class="te-instrucao">Qual modelo de branching e prática de engenharia é o mais recomendado pelo State of DevOps (DORA)?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Trunk-Based Development reduz drásticamente o Lead Time e elimina o 'Merge Hell', permitindo entregas contínuas com controle de visibilidade via feature flags.">
-                    <span class="te-letter">A</span> Trunk-Based Development associado ao uso de Feature Flags e PRs curtos, onde todos integram suas alterações na branch principal (trunk) diariamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Branches com duração de semanas acumulam divergências significativas, mantendo alto o risco de conflitos de integração dolorosos.">
+                    <span class="te-letter">A</span> Adotar o GitHub Flow tradicional, mantendo feature branches de média duração (1 a 2 semanas) com testes de aceitação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Impede completamente o trabalho colaborativo e a entrega de software integrado.">
-                    <span class="te-letter">B</span> Criar uma branch individual para cada desenvolvedor que nunca é mergeada com a dos outros colegas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Code freezes e branches longas aumentam o Lead Time for Changes e contradizem os princípios de entrega contínua do DORA.">
+                    <span class="te-letter">B</span> Estruturar o fluxo com Release Branches dedicadas e congelamentos periódicos de código para estabilização de cada ciclo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar o isolamento de branches só torna os conflitos exponencialmente piores.">
-                    <span class="te-letter">C</span> Aumentar a duração das sprints de 2 para 8 semanas para ter mais tempo de resolver conflitos de merge no GitFlow.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Trunk-Based Development com branches de vida curtíssima e feature flags elimina branches divergentes e maximiza a velocidade de entrega comprovada pelo DORA.">
+                    <span class="te-letter">C</span> Adotar Trunk-Based Development com integração diária na branch principal, utilizando Feature Flags para desacoplar a implantação do deploy da liberação da funcionalidade.
                   </button>
                 </div>
 
@@ -2353,14 +2353,14 @@ git describe --tags
                 <p class="te-instrucao">Qual comando do Git localiza instantaneamente o commit que adicionou ou alterou esse valor literal ao longo de todo o histórico do projeto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A opção pickaxe (-S) do git log pesquisa os commits que alteraram a contagem de ocorrências daquela string específica, exibindo a mensagem do commit e o diff exato da época.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A opção pickaxe (-S) do git log pesquisa os commits que alteraram a contagem de ocorrências dessa string exata, exibindo diff e mensagem.">
                     <span class="te-letter">A</span> git log -S '3450' -p
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O git status apenas informa o estado das alterações pendentes no Working Directory e Index.">
-                    <span class="te-letter">B</span> git status --verbose
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O parâmetro --grep pesquisa apenas o texto da mensagem do commit, não encontrando commits cujo diff introduziu a constante se ela não foi citada na mensagem.">
+                    <span class="te-letter">B</span> git log --grep='3450' para pesquisar menções a esse valor nas mensagens de commit e no resumo das alterações do histórico do repositório.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas lista tags do repositório que correspondam ao padrão.">
-                    <span class="te-letter">C</span> git tag -l '3450'
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O git blame mostra apenas o último autor que tocou na linha; se alguém apenas reformatou o arquivo depois, o commit original que introduziu a constante se perde.">
+                    <span class="te-letter">C</span> git blame -L 1,500 Arquivo.java filtrando visualmente todas as anotações de autor para identificar quem editou o arquivo recentemente.
                   </button>
                 </div>
 
@@ -2504,14 +2504,14 @@ git commit --fixup=<sha> && git rebase -i --autosquash <base>
                 <p class="te-instrucao">Qual a sequência limpa e segura de comandos para organizar as branches?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Como criar uma branch apenas cria um ponteiro no commit atual, os 3 commits ficam salvos na 'feature/relatorios'. Em seguida, resetar a main para 'origin/main' a limpa com perfeição sem perder nada.">
-                    <span class="te-letter">A</span> Estando na main: `git branch feature/relatorios` (cria a nova branch apontando para o commit atual) -> `git reset --hard origin/main` (retorna a main para o estado do servidor) -> `git checkout feature/relatorios` (muda para a nova branch com os 3 commits intactos).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O revert adicionará 3 novos commits de reversão na main local em vez de deixá-la idêntica e limpa em relação à origin/main.">
+                    <span class="te-letter">A</span> Executar git checkout -b feature/relatorios, dar push da nova branch e depois na branch main rodar git revert HEAD~3..HEAD para anular os commits.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem amadora que ignora os mecanismos básicos de ponteiros do Git.">
-                    <span class="te-letter">B</span> Deletar a pasta do projeto e pedir para um colega enviar os arquivos pelo WhatsApp.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Criar a branch preserva o ponteiro atual com os 3 commits intactos; resetar a main local para origin/main a sincroniza sem perda de trabalho.">
+                    <span class="te-letter">B</span> Criar a nova branch com git branch feature/relatorios, resetar a main com git reset --hard origin/main e mudar com git checkout feature/relatorios.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quebra o repositório central e contamina a branch de produção com código não revisado.">
-                    <span class="te-letter">C</span> Dar push com force na main remota para sobrescrever o repositório corporativo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O git stash isola apenas alterações pendentes no Working Directory e Index, não transferindo commits que já foram gravados no histórico da main.">
+                    <span class="te-letter">C</span> Executar git stash na main, criar a branch feature/relatorios, aplicar o stash com git stash pop e forçar o reset da main para a tag de release estável.
                   </button>
                 </div>
 
@@ -2664,14 +2664,14 @@ git commit --fixup=<sha> && git rebase -i --autosquash <base>
                 <p class="te-instrucao">Quais configurações de governança atendem a todos esses requisitos no GitHub/GitLab Enterprise?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essas três regras combinadas garantem auditoria, autenticidade e histórico limpo, satisfazendo requisitos de compliance bancário e segurança da informação.">
-                    <span class="te-letter">A</span> Branch Protection com: 'Require pull request reviews before merging' (com CODEOWNERS), 'Require signed commits' (validação de chaves GPG/SSH) e 'Require linear history' (bloqueio de merge commits em favor de squash/rebase).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Hooks locais podem ser ignorados com --no-verify e tokens com MFA autenticam a sessão HTTPS, mas não assinam criptograficamente os objetos de commit.">
+                    <span class="te-letter">A</span> Habilitar webhooks de validação em esteiras CI para linter de commits, bloquear push direto e exigir token pessoal com MFA.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Viola frontalmente os princípios básicos de não-repúdio e identificação individual.">
-                    <span class="te-letter">B</span> Compartilhar a mesma senha de root do GitHub entre todos os desenvolvedores do time.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não garante a assinatura criptográfica dos commits (GPG/SSH) e não impõe formalmente a linearidade do histórico na branch protegida.">
+                    <span class="te-letter">B</span> Configurar aprovação obrigatória por gerentes de projeto via interface web, bloqueando a deleção de branches remotas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Auditorias e controles corporativos exigem travas técnicas e registros formais.">
-                    <span class="te-letter">C</span> Desativar os branches protegidos e confiar em acordos verbais durante as reuniões diárias.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! As regras de branch protection garantem revisão por pares, validação de chaves criptográficas (GPG/SSH) para não-repúdio e histórico linear sem merge commits.">
+                    <span class="te-letter">C</span> Configurar Branch Protection com aprovações obrigatórias via CODEOWNERS, exigir assinatura criptográfica de commits (Require signed commits) e impor histórico estritamente linear.
                   </button>
                 </div>
 
@@ -2772,7 +2772,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -2784,5 +2784,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

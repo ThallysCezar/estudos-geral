@@ -57,6 +57,7 @@ const files = [
   'cadernos/biblioteca.html',
   'cadernos/conceitos-backend.html',
   'cadernos/git.html',
+  'cadernos/governanca-seguranca.html',
   'cadernos/ingles.html',
   'cadernos/linux.html',
   'cadernos/oratoria.html',

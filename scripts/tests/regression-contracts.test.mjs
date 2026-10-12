@@ -47,10 +47,11 @@ const DOCUMENTOS_ESPERADOS = [
   'cadernos/git.html',
   'cadernos/ingles.html',
   'cadernos/oratoria.html',
+  'cadernos/governanca-seguranca.html',
   'lab/projetos.html'
 ];
 
-test('1. Existência e integridade de todos os 17 documentos fundamentais', () => {
+test('1. Existência e integridade de todos os 18 documentos fundamentais', () => {
   for (const doc of DOCUMENTOS_ESPERADOS) {
     const abs = path.join(RAIZ, doc);
     assert.ok(fs.existsSync(abs), `Documento obrigatório não encontrado: ${doc}`);
@@ -239,6 +240,7 @@ test('9. Existência dos elementos de interação fundamentais em index.html', (
     'backupModal',
     'btnExportarJson',
     'btnRestaurarJson',
+    'progressMount',
     'mdl',
     'mdlBox',
     'wk'
@@ -310,4 +312,31 @@ test('10. Contrato de correspondência e ordem dos pilares no chassi (Como usar 
   assert.ok(totalOque >= 270, `Esperado validar ao menos 270 blocos 'O que é', mas encontrados ${totalOque}`);
   assert.ok(totalServe >= 270, `Esperado validar ao menos 270 blocos 'Para que serve', mas encontrados ${totalServe}`);
   assert.ok(totalFunciona >= 270, `Esperado validar ao menos 270 blocos 'Como funciona', mas encontrados ${totalFunciona}`);
+});
+
+test('11. Inventário de documentos consistente entre Acervo, busca global e README', () => {
+  const extrairArray = (texto, nome, origem) => {
+    const match = texto.match(new RegExp(`var\\s+${nome}\\s*=\\s*(\\[[\\s\\S]*?\\]);`));
+    assert.ok(match, `Array ${nome} não encontrado em ${origem}`);
+    return new Function(`return ${match[1]}`)();
+  };
+
+  const documentos = DOCUMENTOS_ESPERADOS.filter((doc) =>
+    doc.startsWith('trilhas/') || doc.startsWith('cadernos/') || doc.startsWith('lab/')
+  );
+  const acervo = lerComScripts('acervo.html');
+  const index = lerComScripts('index.html');
+  const docsAcervo = extrairArray(acervo, 'DOCS', 'acervo.html');
+  const paletaAcervo = extrairArray(acervo, 'PALETTE_DATA', 'acervo.html');
+  const paletaHome = extrairArray(index, 'PALETTE_DATA', 'index.html');
+
+  const arquivosAcervo = docsAcervo.map((item) => item.file);
+  assert.equal(new Set(arquivosAcervo).size, arquivosAcervo.length, 'DOCS do Acervo não deve repetir documentos');
+  for (const doc of documentos) {
+    assert.ok(arquivosAcervo.includes(doc), `${doc} está fora do índice pesquisável do Acervo`);
+    assert.ok(paletaAcervo.some((item) => item.url.split('#')[0] === doc), `${doc} está fora da busca Ctrl+K do Acervo`);
+    assert.ok(paletaHome.some((item) => item.url.split('#')[0] === doc), `${doc} está fora da busca Ctrl+K da Home`);
+    assert.ok(fs.readFileSync(path.join(RAIZ, 'README.md'), 'utf8').includes(`(${doc})`), `${doc} está fora do inventário do README`);
+  }
+  assert.equal(arquivosAcervo.length, documentos.length, 'Acervo contém documentos fora do inventário oficial');
 });

@@ -1,6 +1,6 @@
 # Estudos · Backend & AI Engineering em Profundidade
 
-Quinze documentos de estudo e bancada prática organizados em trilhas especializadas, cadernos de fundamentos e laboratório. Cada documento reúne uma **trilha visual** interativa com modo teste e fila de revisão, e o **conteúdo em profundidade**, com a origem de cada mecanismo, o que veio substituir, diagramas vetoriais animados, armadilhas reais de produção, pontos de atenção e **exercícios interativos com feedback imediato**.
+Documentos de estudo e bancada prática organizados em trilhas especializadas, cadernos de fundamentos e laboratório. As trilhas principais combinam mapa visual interativo e conteúdo aprofundado; os cadernos complementam o estudo com referências, navegação por assunto e exemplos aplicados.
 
 **→ [thallyscezar.github.io/estudos](https://thallyscezar.github.io/estudos)**
 
@@ -29,11 +29,12 @@ Quinze documentos de estudo e bancada prática organizados em trilhas especializ
 | 12 | [Git em Profundidade](cadernos/git.html) | Grafo DAG de snapshots imutáveis, reflog, rebase e recuperação |
 | 13 | [Inglês Técnico](cadernos/ingles.html) | Input compreensível, shadowing e code review sem atrito |
 | 14 | [Oratória & Comunicação](cadernos/oratoria.html) | Defesa técnica de decisões, postmortems blameless e modelo SBI |
+| — | [Governança e Segurança de TI](cadernos/governanca-seguranca.html) | Governança, risco, controles, IAM, privacidade, desenvolvimento seguro, incidentes e continuidade |
 
 ### 🛠️ Laboratório & Prática (`lab/`)
 | # | Documento | Foco |
 |---|---|---|
-| 15 | [Laboratório de Projetos](lab/projetos.html) | 18 missões e aquecimentos: OrderFlow, Saga, Outbox, Toxiproxy e K8s |
+| — | [Laboratório de Projetos](lab/projetos.html) | Missões e aquecimentos: OrderFlow, Saga, Outbox, Toxiproxy e K8s |
 
 ### 🧰 Ferramentas de Produtividade & IA (`ferramentas/`)
 | Ferramenta | Descrição |

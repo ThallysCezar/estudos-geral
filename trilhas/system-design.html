@@ -386,7 +386,7 @@ details.alem>summary:hover{background:var(--bg2)}
 
       <!-- MAPA MENTAL PRINCIPAL -->
       <figure class="topic-img">
-        <img src="../assets/img/system_design_mapa_mental_principal.jpg" alt="Mapa Mental: SYSTEM DESIGN - PROJETANDO SISTEMAS PARA O PRESENTE E PARA O FUTURO" loading="lazy" title="Clique para abrir no visualizador ampliado">
+        <img src="../assets/img/system-design/system_design_mapa_mental_principal.jpg" alt="Mapa Mental: SYSTEM DESIGN - PROJETANDO SISTEMAS PARA O PRESENTE E PARA O FUTURO" loading="lazy" title="Clique para abrir no visualizador ampliado" decoding="async">
         <figcaption>
           <span>MAPA MENTAL PRINCIPAL</span>
           <em>SYSTEM DESIGN — Projetando Sistemas para o Presente e para o Futuro</em>
@@ -536,14 +536,14 @@ details.alem>summary:hover{background:var(--bg2)}
                 <p class="te-instrucao">Qual é a primeira atitude esperada de um engenheiro sênior antes de propor componentes de banco ou cache?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Dimensionar arquitetura sem decompor QPS em padrões de leitura, escrita e tolerância de consistência é adivinhação, e não engenharia de software.">
-                    <span class="te-letter">A</span> Clarificar os requisitos funcionais e não-funcionais: perguntar qual a razão entre leituras e escritas (Read/Write ratio), tamanho médio de cada comentário, consistência exigida (forte vs eventual) e orçamento de latência p99.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Dimensionar qualquer arquitetura exige primeiro entender o throughput real, perfil de acesso e tolerância de consistência do sistema.">
+                    <span class="te-letter">A</span> Clarificar requisitos funcionais e não-funcionais: volume de leitura versus escrita, latência p99, modelo de consistência e tamanho médio dos payloads.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adicionar ferramentas complexas antes de entender o fluxo de dados é um dos maiores sinais de imaturidade em System Design.">
-                    <span class="te-letter">B</span> Desenhar imediatamente um cluster com 50 instâncias de Redis e 20 servidores Apache Kafka.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adotar ferramentas complexas sem entender os fluxos de leitura e escrita é um dos erros clássicos de superengenharia precoce.">
+                    <span class="te-letter">B</span> Desenhar imediatamente um cluster distribuído com dezenas de instâncias de Redis e filas Kafka particionadas por região geográfica antes mesmo de levantar métricas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 20k QPS é comum em sistemas de média e alta escala bem arquitetados.">
-                    <span class="te-letter">C</span> Dizer que 20.000 QPS é impossível na web moderna.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Comentários em texto puro consomem pouquíssimos kilobytes, exigindo análise de payload completamente distinta de mídias pesadas.">
+                    <span class="te-letter">C</span> Calcular a capacidade de rede assumindo que toda requisição de comentário consome exatamente a mesma largura de banda de um streaming de vídeo.
                   </button>
                 </div>
 
@@ -681,14 +681,14 @@ details.alem>summary:hover{background:var(--bg2)}
                 <p class="te-instrucao">Pela Lei de Little, quantas conexões ativas concorrentes estarão sendo processadas simultaneamente na memória do servidor?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A Lei de Little (L = λ × W) define matematicamente o número de itens simultâneos dentro de qualquer sistema em regime estável.">
-                    <span class="te-letter">A</span> 100 requisições concorrentes (L = 400 * 0,25 = 100). Se a latência média dobrar para 500ms, o número de conexões simultâneas dobrará instantaneamente para 200.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A Lei de Little estabelece multiplicação (L = λ × W), e não divisão entre a taxa de chegada e a latência média.">
+                    <span class="te-letter">A</span> Exatamente 1.600 requisições simultâneas em regime constante (L = 400 / 0,25), calculando a razão entre taxa e tempo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Erro de conversão de unidades (multiplicou por 250 em vez de 0,25 segundos).">
-                    <span class="te-letter">B</span> 40.000 conexões concorrentes.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Pela Lei de Little (L = λ × W), 400 requisições por segundo vezes 0,25 segundos resulta em 100 conexões concorrentes em processamento.">
+                    <span class="te-letter">B</span> Exatamente 100 conexões concorrentes ativas em memória (L = 400 req/s × 0,25 s), dobrando se a latência subir para 500ms.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Um sistema com 400 req/s e 250ms de latência retém 100 requisições em trânsito a cada instante.">
-                    <span class="te-letter">C</span> 1 conexão concorrente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O tempo de resposta deve ser convertido para a mesma unidade de tempo da taxa de chegada (250ms = 0,25s).">
+                    <span class="te-letter">C</span> Aproximadamente 40.000 requisições concorrentes mantidas abertas pela multiplicação direta da taxa de 400 req/s por 250ms.
                   </button>
                 </div>
 
@@ -808,14 +808,14 @@ details.alem>summary:hover{background:var(--bg2)}
                 <p class="te-instrucao">Qual é a falha primária dessa proposta que demonstra falta de senioridade?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ter múltiplas instâncias na camada stateless de API não resolve nada se a camada de dados persistente for um SPOF sem alta disponibilidade nem buffers assíncronos.">
-                    <span class="te-letter">A</span> Ponto Único de Falha (SPOF) e gargalo de concorrência: o banco centralizado é um nó único vulnerável a quedas de hardware e saturação de conexões, sem estratégia de réplicas de failover, particionamento ou desacoplamento assíncrono.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. APIs sem estado são ideais para balanceamento horizontal simplificado.">
+                    <span class="te-letter">A</span> O uso de instâncias de API sem estado (stateless) impede que o balanceador de carga distribua requisições TCP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. PostgreSQL é amplamente usado no mundo inteiro.">
-                    <span class="te-letter">B</span> O PostgreSQL é proibido pela lei internacional de ser usado em comércio eletrônico.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O PostgreSQL é um dos bancos mais robustos do mercado para transações ACID.">
+                    <span class="te-letter">B</span> O PostgreSQL não possui suporte para tipos de dados relacionais complexos em fluxos de e-commerce.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Planilhas Excel não suportam transações de alta concorrência.">
-                    <span class="te-letter">C</span> Deveria ter usado arquivos Excel compartilhados na rede corporativa.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ter 20 instâncias de API é inútil se todas disputarem um único banco relacional sem réplicas de leitura, sharding ou filas de desacoplamento.">
+                    <span class="te-letter">C</span> Ponto Único de Falha (SPOF) e saturação de conexões: o banco centralizado limita a escala vertical e não conta com réplicas de failover nem buffer assíncrono.
                   </button>
                 </div>
 
@@ -949,14 +949,14 @@ details.alem>summary:hover{background:var(--bg2)}
                 <p class="te-instrucao">Qual é a recomendação técnica sensata e de menor custo segundo a Escada de Decisão?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A complexidade operacional e de rede de microsserviços é gigantesca; esgote primeiro otimizações locais e scale-up antes de distribuir sistemas.">
-                    <span class="te-letter">A</span> Avaliar primeiro o perfil das queries (adicionar índices, eliminar N+1) e considerar Escala Vertical temporária (aumentar a VM para 16 vCPUs) ou separar o relatório em réplica de leitura, antes de assumir o custo e complexidade massiva de migrar para microsserviços.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A complexidade operacional e de rede de microsserviços é imensa; deve-se esgotar otimizações locais e particionamento de leitura primeiro.">
+                    <span class="te-letter">A</span> Otimizar índices das consultas, eliminar problemas de N+1 e avaliar réplicas de leitura ou escala vertical antes de migrar para microsserviços.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reescrever do zero por impulso causa atrasos graves e riscos ao negócio.">
-                    <span class="te-letter">B</span> Pausar o negócio por 6 meses para reescrever o sistema do zero em Rust.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A sobrecarga de governança e transações distribuídas costuma aumentar a latência quando o gargalo era apenas query ineficiente.">
+                    <span class="te-letter">B</span> Reescrever todo o monólito imediatamente em arquitetura orientada a microsserviços com Kubernetes para descentralizar o consumo de processamento entre pods.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prejudica diretamente a operação da empresa.">
-                    <span class="te-letter">C</span> Proibir os clientes de solicitarem faturas no final do mês.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sharding introduz complexidade de particionamento e consultas cross-shard desnecessárias antes de tentar réplicas de leitura.">
+                    <span class="te-letter">C</span> Separar o banco de dados em 10 shards geográficos imediatamente para que o processamento do relatório de faturamento não concorra com requisições HTTP normais.
                   </button>
                 </div>
 
@@ -1107,14 +1107,14 @@ SELECT id, criado_em, total FROM pedido
                 <p class="te-instrucao">Por que o banco ignorou o índice existente e como corrigir?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em índices compostos B-Tree, as chaves são ordenadas hierarquicamente; se o primeiro predicado estiver ausente, o otimizador não consegue navegar na árvore ordenada.">
-                    <span class="te-letter">A</span> Regra do Prefixo à Esquerda (Leftmost Prefix): o índice começa com 'cliente_id'. Como a consulta não incluiu o 'cliente_id' na cláusula WHERE, a árvore B-Tree não pode ser percorrida a partir da raiz, forçando um Sequential Scan completo na tabela. A solução é criar um índice dedicado começando por data_pedido.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Índices B-Tree suportam operadores de intervalo perfeitamente, desde que o prefixo à esquerda esteja presente.">
+                    <span class="te-letter">A</span> O índice foi ignorado porque operadores de maior ou igual impedem totalmente a navegação em nós internos de índices compostos em árvores B-Tree ordenadas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comportamento segue estritamente as regras de índices B-Tree.">
-                    <span class="te-letter">B</span> O banco de dados está com vírus e precisa ser reinstalado.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em índices compostos B-Tree, as chaves são ordenadas a partir da primeira coluna; sem ela, o otimizador não pode navegar ordenadamente.">
+                    <span class="te-letter">B</span> Regra do prefixo à esquerda (Leftmost Prefix): o predicado omitiu cliente_id, impedindo a navegação a partir da raiz da B-Tree e forçando Full Table Scan.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. B-Trees são projetadas justamente para suportar dezenas de milhões de registros.">
-                    <span class="te-letter">C</span> Índices B-Tree só funcionam para tabelas com menos de 100 linhas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Um índice composto único é muito mais eficiente do que fazer index merge de índices separados.">
+                    <span class="te-letter">C</span> O otimizador de consultas descartou o índice composto porque consultas com duas cláusulas no WHERE exigem obrigatoriamente a união explícita de dois índices independentes.
                   </button>
                 </div>
 
@@ -1242,14 +1242,14 @@ SELECT id, criado_em, total FROM pedido
                 <p class="te-instrucao">Qual fenômeno comum de arquitetura distribuída com réplicas causou esse comportamento?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A replicação assíncrona introduz consistência eventual entre o Primary e as réplicas de leitura, gerando o Replication Lag.">
-                    <span class="te-letter">A</span> Replication Lag (Atraso de Replicação Assíncrona): o UPDATE da senha foi gravado no Primary, mas o SELECT de autenticação do login foi balanceado para uma Read Replica que ainda não havia aplicado os logs de transação naquele segundo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O login faz apenas consultas de leitura e não foi bloqueado por lock, mas sim por ler dados desatualizados.">
+                    <span class="te-letter">A</span> Contenção de escrita no banco de dados provocada por transações bloqueadas na tabela de credenciais de login.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O atraso sistemático seguido de sucesso comprova a replicação assíncrona.">
-                    <span class="te-letter">B</span> O usuário digitou a senha errada sem perceber.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O segundo login ocorreu em outro navegador/sessão, apontando para inconsistência entre nós do banco.">
+                    <span class="te-letter">B</span> Problema de cache de primeiro nível do Hibernate mantendo a entidade de usuário em memória na VM local.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O hash de senha é calculado em dezenas de milissegundos.">
-                    <span class="te-letter">C</span> O algoritmo de hash BCrypt precisa de 5 segundos para descansar a CPU.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na replicação assíncrona, há uma janela de consistência eventual onde as réplicas leem o estado anterior ao UPDATE.">
+                    <span class="te-letter">C</span> Replication Lag em réplicas de leitura assíncronas, que ainda não haviam recebido os logs WAL do nó primário.
                   </button>
                 </div>
 
@@ -1392,14 +1392,14 @@ SELECT id, criado_em, total FROM pedido
                 <p class="te-instrucao">Por que a proposta da equipe de suporte está tecnicamente equivocada para resolver esse problema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Réplicas adicionam overhead de replicação ao Primary e não aumentam a capacidade de absorção de transações de escrita concorrentes.">
-                    <span class="te-letter">A</span> Porque réplicas de leitura apenas atendem a consultas SELECT. O gargalo é de contenção de escrita (locks em transações concorrentes) no nó Primário; adicionar réplicas consumirá mais recursos de I/O do Primário para propagar o WAL, agravando a saturação.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Réplicas adicionam custo de propagação ao primário e não resolvem contenção em tabelas onde transações concorrentes disputam as mesmas linhas.">
+                    <span class="te-letter">A</span> Réplicas de leitura atendem apenas consultas SELECT; o gargalo é de locks de escrita no Primário e adicionar réplicas aumenta o overhead de replicação WAL.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conexões de banco independem do sistema operacional cliente.">
-                    <span class="te-letter">B</span> Porque réplicas de leitura só aceitam conexões vindas de computadores com Windows.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Réplicas respeitam o nível de isolamento padrão (ex: Read Committed) sem alterar a semântica.">
+                    <span class="te-letter">B</span> As réplicas de leitura exigem que o isolamento transacional seja rebaixado para Read Uncommitted para responderem.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. E-mails não resolvem consistência de banco de dados transacional.">
-                    <span class="te-letter">C</span> Porque o banco de dados deveria converter todas as escritas em e-mails.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Consultas SELECT em réplicas de leitura não demandam consenso com o restante do cluster.">
+                    <span class="te-letter">C</span> O protocolo de replicação do banco exige confirmação de quorum síncrono em todas as réplicas para cada SELECT.
                   </button>
                 </div>
 
@@ -1547,14 +1547,14 @@ shard 3 ~ 33%
                 <p class="te-instrucao">Qual erro clássico de particionamento ocorreu e qual chave distribuiria a carga uniformemente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Chaves de particionamento baseadas em data criam pontos quentes massivos no nó do período atual, anulando o benefício da distribuição do sharding.">
-                    <span class="te-letter">A</span> Hotspot / Hot Partitioning: usar tempo como chave concentra 100% das escritas do dia no mesmo shard físico do mês corrente. A solução é particionar usando um identificador de alta entropia como hash(cliente_id) ou hash(pedido_id), distribuindo a carga igualmente entre todos os shards.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é de distribuição desbalanceada de tráfego (ponto quente), e não de fragmentação física.">
+                    <span class="te-letter">A</span> Fragmentação de páginas em disco: os shards mais recentes sofrem lentidão porque seus arquivos de log ainda não foram compactados pelo processo de vacuum.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Os nós antigos estavam vazios; o problema foi a má distribuição de tráfego.">
-                    <span class="te-letter">B</span> O erro foi não comprar mais servidores para os meses de janeiro e fevereiro.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Particionar por data gera sobrecarga concentrada no nó corrente, enquanto particionar por hash espalha a carga uniformemente.">
+                    <span class="te-letter">B</span> Hot Partitioning: usar tempo como chave concentra 100% das escritas no shard atual; deve-se usar hash de alta entropia como cliente_id ou pedido_id.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sharding é projetado justamente para retenção de grande volume de dados.">
-                    <span class="te-letter">C</span> Sharding só funciona se todos os dados forem excluídos diariamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gravar dados de novembro no shard de fevereiro violaria o predicado básico de particionamento por faixa de data.">
+                    <span class="te-letter">C</span> Falha no algoritmo de roteamento: o proxy de particionamento deveria redirecionar escritas do mês corrente para réplicas dos meses anteriores via balanceamento dinâmico.
                   </button>
                 </div>
 
@@ -1698,14 +1698,14 @@ if (buffer.size() >= 1000 || decorreu(200)) {
                 <p class="te-instrucao">Qual arquitetura resolve essa contagem em escala sem derrubar o banco de dados relacional?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A agregação intermediária em memória absorve centenas de milhares de eventos atômicos e converte em pouquíssimas atualizações no banco de dados persistente.">
-                    <span class="te-letter">A</span> Agregação na borda com buffer em memória (Redis INCR ou Apache Flink): os cliques incrementam um contador volátil ultrarrápido na memória e um worker assíncrono sincroniza a soma agregada no banco relacional em lote a cada 10 ou 30 segundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Consistência forte no documento ainda sofreria concorrência e contenção de escrita massiva em 100k req/s.">
+                    <span class="te-letter">A</span> Substituir a tabela relacional por uma tabela NoSQL orientada a documentos configurada com consistência linearizável estrita em cada clique individual.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A contenção é lógica de locks por linha no banco, não falta de dinheiro em hardware.">
-                    <span class="te-letter">B</span> Comprar um disco SSD de 100 milhões de dólares para aguentar 100k locks por segundo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Persistir cada clique em disco em fila individual sobrecarregaria o broker de mensageria com I/O excessivo.">
+                    <span class="te-letter">B</span> Criar um cluster de filas RabbitMQ dedicadas onde cada clique do usuário é persistido em disco antes de ser consumido por uma thread síncrona.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Funcionalidade central do produto.">
-                    <span class="te-letter">C</span> Desligar a contagem de visualizações do vídeo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Contadores em memória suportam centenas de milhares de operações atômicas por segundo, reduzindo a escrita no banco a lotes periódicos.">
+                    <span class="te-letter">C</span> Agregação na borda com buffer em memória (Redis INCR ou Flink), sincronizando o total acumulado em lote no banco a cada 10 ou 30 segundos.
                   </button>
                 </div>
 
@@ -1854,14 +1854,14 @@ if (buffer.size() >= 1000 || decorreu(200)) {
                 <p class="te-instrucao">Como um Bloom filter posicionado na frente do banco economiza 95% do I/O de consultas no banco de dados?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A garantia matemática de ausência absoluta permite filtrar consultas desnecessárias diretamente na memória RAM.">
-                    <span class="te-letter">A</span> Como o Bloom filter garante zero falso-negativo, se ele disser que o username 'não existe', a aplicação confirma imediatamente que o nome está livre sem precisar fazer nenhuma consulta ao banco de dados. Apenas nos 5% em que ele indicar 'pode existir' o banco é consultado.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A garantia matemática de que elementos ausentes nunca retornam positivo permite filtrar 95% das buscas sem tocar no disco.">
+                    <span class="te-letter">A</span> Com zero falso-negativo garantido, a resposta "não existe" descarta a consulta ao banco com 100% de certeza.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Bloom filter não armazena os dados, apenas marcações de bits de hashes.">
-                    <span class="te-letter">B</span> O Bloom filter armazena o banco de dados inteiro criptografado dentro de um único bit.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Bloom filter não armazena as chaves originais, apenas posições de bits determinadas por funções hash.">
+                    <span class="te-letter">B</span> Armazenando os 200 milhões de nomes de usuários de forma compacta em um índice hash em memória RAM sem colisões.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É uma estrutura probabilística determinística de hashing.">
-                    <span class="te-letter">C</span> O Bloom filter adivinha o futuro e previne o usuário de digitar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Nomes inéditos não estariam no cache LRU de termos recentes, exigindo ida contínua ao banco de dados.">
+                    <span class="te-letter">C</span> Executando um cache LRU clássico que armazena os nomes de usuários pesquisados recentemente em formato de texto.
                   </button>
                 </div>
 
@@ -2001,14 +2001,14 @@ try {
                 <p class="te-instrucao">O que impede que ambos os clientes cadastrem com sucesso o mesmo CPF no sistema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A unicidade é garantida na camada de armazenamento atômico pelo índice exclusivo do banco, e nunca por validações condicionais síncronas na aplicação.">
-                    <span class="te-letter">A</span> Uma restrição de unicidade (UNIQUE Constraint / Unique Index) definida diretamente na coluna do banco de dados relacional: o motor do banco serializa a gravação via locks na B-Tree, permitindo o primeiro INSERT e rejeitando o segundo com violação de integridade.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Balanceadores de carga operam no nível de pacotes ou requisições HTTP e não conhecem regras de negócio do payload.">
+                    <span class="te-letter">A</span> O algoritmo de balanceamento de carga distribuído (Round Robin) detecta chaves repetidas e descarta o segundo pacote TCP na camada de transporte.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Balanceadores apenas encaminham requisições de rede.">
-                    <span class="te-letter">B</span> O balanceador de carga impede requisições no mesmo segundo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A integridade é garantida na camada de persistência com trava de índice exclusivo, gerando erro de chave duplicada no segundo registro.">
+                    <span class="te-letter">B</span> Uma constraint de unicidade (UNIQUE) no banco de dados, que serializa a gravação via locks na B-Tree e rejeita o segundo INSERT.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A aplicação simplesmente recebe uma exceção de integridade e responde com erro de negócio.">
-                    <span class="te-letter">C</span> O primeiro usuário ganha o CPF e o segundo tem seu computador formatado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Blocos synchronized na JVM controlam concorrência apenas localmente na memória do processo daquela máquina específica.">
+                    <span class="te-letter">C</span> A máquina virtual Java intercepta a concorrência através de um bloco synchronized estático compartilhado entre os servidores da rede.
                   </button>
                 </div>
 
@@ -2163,14 +2163,14 @@ try {
                 <p class="te-instrucao">Por que essa consulta por OFFSET demorou 18 segundos mesmo com índice na coluna 'data'?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O OFFSET tem custo computacional O(N): você paga pelo trabalho de ler e descartar todos os registros anteriores ao ponto de corte.">
-                    <span class="te-letter">A</span> Porque o banco de dados precisou varrer e processar 160.020 registros no índice, transferir páginas de disco e descartar em memória as 160.000 linhas anteriores antes de entregar as 20 linhas finais solicitadas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A lentidão é fruto do algoritmo O(N) do OFFSET, e não de corrupção de índice.">
+                    <span class="te-letter">A</span> O índice na coluna data foi corrompido durante a execução de transações simultâneas de clientes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. LIMIT aceita qualquer valor numérico inteiro.">
-                    <span class="te-letter">B</span> Porque a palavra LIMIT só aceita números menores que 5.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O otimizador utiliza índices independentemente do tamanho do LIMIT quando vantajoso.">
+                    <span class="te-letter">B</span> O PostgreSQL desativa automaticamente o uso de índices quando a cláusula LIMIT é menor que 50.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. PostgreSQL é altamente eficiente em ordenação quando utilizada a estrutura adequada.">
-                    <span class="te-letter">C</span> Porque o PostgreSQL não suporta queries ordenadas por data.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O custo do OFFSET é proporcional à distância percorrida: o banco é forçado a ler e descartar todos os registros anteriores.">
+                    <span class="te-letter">C</span> O banco precisou percorrer e ordenar 160.020 entradas no índice B-Tree, descartando em memória as 160.000 anteriores para entregar as 20 solicitadas.
                   </button>
                 </div>
 
@@ -2308,14 +2308,14 @@ try {
                 <p class="te-instrucao">Qual padrão de paginação atende a esse requisito mantendo a consulta em tempo constante O(1) de busca?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Keyset Pagination navega diretamente na estrutura indexada sem ler nem descartar páginas anteriores, garantindo latência constante independente da profundidade.">
-                    <span class="te-letter">A</span> Keyset Pagination (Paginação por Cursor): a aplicação envia o timestamp e o ID da última postagem visível, e a consulta utiliza 'WHERE (criado_em, id) < (:lastDate, :lastId) ORDER BY criado_em DESC, id DESC LIMIT 20', navegando diretamente pelo índice B-Tree.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O cursor ancora a consulta no ponto exato do índice sem varrer nem descartar dados anteriores, garantindo tempo de resposta constante.">
+                    <span class="te-letter">A</span> Keyset Pagination (Paginação por Cursor): filtra por WHERE (criado_em, id) < (:lastDate, :lastId) LIMIT 20, navegando diretamente no índice B-Tree em O(1).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sofrerá degradação severa de performance nas páginas profundas.">
-                    <span class="te-letter">B</span> OFFSET pagination aumentando o offset de 20 em 20 até 10.000.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Window Functions exigem computação sobre todo o conjunto de dados para calcular a numeração das linhas, sendo pesadas.">
+                    <span class="te-letter">B</span> Paginação baseada em Window Functions com a cláusula ROW_NUMBER() particionada por usuário para cachear os números de páginas na camada de visualização distribuída.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esgotaria o plano de dados e a memória do smartphone instantaneamente.">
-                    <span class="te-letter">C</span> Baixar todas as 500 milhões de postagens para o celular do usuário na abertura do aplicativo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O paralelismo consome muita CPU e não altera a complexidade assintótica linear O(N) da varredura de offsets profundos.">
+                    <span class="te-letter">C</span> Aumentar o valor de max_parallel_workers no banco para que múltiplos núcleos de CPU realizem scans paralelos do OFFSET em cada requisição de rolagem de tela.
                   </button>
                 </div>
 
@@ -2445,14 +2445,14 @@ try {
                 <p class="te-instrucao">O que causou essa duplicidade na interface e como a paginação por cursor evitaria isso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A paginação por cursor ancora a busca em uma linha fixa do tempo/ID, sendo imune ao deslocamento provocado por inserções simultâneas no topo da lista.">
-                    <span class="te-letter">A</span> Deslocamento de posições (Page Drift): as 3 novas inserções empurraram todas as linhas para baixo, fazendo os itens das posições 8, 9 e 10 passarem a ocupar as posições 11, 12 e 13. O cursor evitaria isso pois filtraria itens com ID menor que o último ID visto, ignorando inserções mais novas no topo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A duplicidade ocorre no motor de banco de dados pela semântica móvel do OFFSET perante inserções concorrentes.">
+                    <span class="te-letter">A</span> Problema de cache de navegador: o cliente manteve as respostas HTTP no sessionStorage local e mesclou as listas de pedidos na renderização reativa do DOM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O fenômeno ocorre no motor do banco de dados relacional pela semântica do OFFSET.">
-                    <span class="te-letter">B</span> Erro no navegador do usuário que duplicou os dados no cache local.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O OFFSET conta posições ordinais absolutas; novos registros no topo empurram registros já visualizados para a página seguinte.">
+                    <span class="te-letter">B</span> Page Drift: novas inserções empurraram as linhas para baixo, deslocando itens da página 1 para a página 2; o cursor ancora na chave e evita o desvio.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As chaves primárias continuam únicas; a visualização é que sofreu deslocamento de janela.">
-                    <span class="te-letter">C</span> O banco de dados relacional duplicou as chaves primárias dos pedidos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. READ COMMITTED é que permite leituras não repetíveis entre transações distintas; com cursor ancorado por ID, isso não ocorre.">
+                    <span class="te-letter">C</span> Falha no isolamento de transação: o banco permitiu leituras fantasmas por estar configurado com isolamento SERIALIZABLE em vez de READ COMMITTED no pool.
                   </button>
                 </div>
 
@@ -2586,14 +2586,14 @@ try {
                 <p class="te-instrucao">Qual arquitetura moderna de upload elimina completamente a carga de rede e memória dos servidores da API?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Desviar o fluxo pesado de dados para o Object Storage preserva os servidores de aplicação leves, escaláveis e sem consumo de I/O de arquivos.">
-                    <span class="te-letter">A</span> Upload Direto com Pre-Signed URLs e Multipart Upload: o frontend solicita permissão à API, recebe URLs pré-assinadas divididas em partes de 10 MB e faz o upload em paralelo diretamente do navegador para o bucket S3, notificando a API apenas após a conclusão.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reter gigabytes de tráfego na API sobrecarrega memória e satura a largura de banda dos servidores.">
+                    <span class="te-letter">A</span> Aumentar o heap da JVM para 64 GB e configurar buffers assíncronos no Tomcat para reter uploads concorrentes no host.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desperdício financeiro e não resolve a saturação de largura de banda e conexões presas.">
-                    <span class="te-letter">B</span> Aumentar a memória RAM da máquina virtual para 512 GB e manter o tráfego passando pela API.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gravação intermediária em disco local ainda consome I/O e capacidade de armazenamento dos servidores.">
+                    <span class="te-letter">B</span> Configurar um proxy reverso NGINX para gravar os arquivos em disco local antes de disparar o upload ao bucket S3.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Totalmente inviável e incompatível com aplicações modernas.">
-                    <span class="te-letter">C</span> Exigir que os professores enviem os vídeos gravados em DVDs pelos Correios.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Pre-signed URLs permitem upload seguro direto do cliente para o Object Storage, aliviando totalmente CPU e memória da API.">
+                    <span class="te-letter">C</span> Upload direto com Pre-Signed URLs e Multipart Upload: o navegador envia partes diretamente ao S3 sem passar pela API.
                   </button>
                 </div>
 
@@ -2731,14 +2731,14 @@ try {
                 <p class="te-instrucao">Qual arquitetura orientada a eventos atende a esse requisito sem bloquear a interface de upload do usuário?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O processamento assíncrono em quarentena desacopla a segurança da experiência de upload do usuário e impede que arquivos perigosos sejam baixados publicamente.">
-                    <span class="te-letter">A</span> Padrão de Quarentena: o arquivo é salvo em um bucket de quarentena isolado; um evento S3 dispara uma função assíncrona que executa verificação de antivírus; se limpo, o arquivo é promovido para o bucket de produção servido por CDN; se infectado, é deletado e um alarme é gerado.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Isolar arquivos novos em quarentena e analisá-los via eventos garante segurança robusta sem travar o upload do cliente.">
+                    <span class="te-letter">A</span> Padrão de Quarentena com Event-Driven: o arquivo vai para um bucket isolado, um evento dispara varredura assíncrona e, se aprovado, é promovido para o bucket público.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Código no cliente pode ser facilmente adulterado ou ignorado por atacantes.">
-                    <span class="te-letter">B</span> Fazer o antivírus rodar dentro do navegador do usuário usando JavaScript.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Varreduras síncronas bloqueiam conexões HTTP por dezenas de segundos e travam o servidor sob carga.">
+                    <span class="te-letter">B</span> Execução de rotina síncrona de antivírus dentro da thread da API antes de confirmar o recebimento do arquivo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Expõe todos os clientes ao risco de contaminação imediata.">
-                    <span class="te-letter">C</span> Deixar o arquivo público imediatamente e verificar manualmente após 30 dias.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Essa abordagem expõe outros usuários ao risco de infecção por malwares até que uma denúncia ocorra.">
+                    <span class="te-letter">C</span> Disponibilização pública imediata do PDF no bucket final, executando auditoria apenas em arquivos denunciados.
                   </button>
                 </div>
 
@@ -2869,14 +2869,14 @@ try {
                 <p class="te-instrucao">Qual tecnologia de comunicação entrega a melhor combinação de simplicidade, suporte nativo de reconexão e baixo overhead para esse caso de uso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Para fluxos estritamente unidirecionais (server-to-client), o SSE é superior e mais simples de operar que WebSockets, reutilizando a infraestrutura HTTP padrão.">
-                    <span class="te-letter">A</span> Server-Sent Events (SSE): protocolo HTTP leve e unidirecional nativo dos navegadores modernos (EventSource), que mantém uma conexão de streaming com reconexão automática e menor complexidade operacional que WebSockets.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. WebSockets agregam complexidade desnecessária quando a comunicação é estritamente unidirecional (servidor para cliente).">
+                    <span class="te-letter">A</span> WebSockets com canais bidirecionais full-duplex e heartbeat ping-pong a cada 100ms para manter portas efêmeras alocadas continuamente no servidor de borda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Geraria sobrecarga cavalar de handshakes TCP/TLS e cabeçalhos HTTP repetidos.">
-                    <span class="te-letter">B</span> Short Polling fazendo 10 requisições HTTP GET completas por segundo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! SSE opera nativamente sobre HTTP padrão, é perfeitamente suportado por proxies e resolve transmissões unidirecionais com simplicidade.">
+                    <span class="te-letter">B</span> Server-Sent Events (SSE): conexão HTTP unidirecional leve, nativa dos navegadores (EventSource), com reconexão automática e baixo overhead.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Inviável técnica e financeiramente.">
-                    <span class="te-letter">C</span> Enviar um SMS a cada centavo de variação da ação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Short polling frequente gera tempestade de requisições e overhead severo de handshakes TCP e headers HTTP.">
+                    <span class="te-letter">C</span> Short Polling periódico a cada 500ms através de requisições HTTP GET completas com cabeçalhos Cache-Control: no-cache desabilitados nos gateways.
                   </button>
                 </div>
 
@@ -3001,14 +3001,14 @@ try {
                 <p class="te-instrucao">Qual protocolo de comunicação interna reduz drasticamente o consumo de CPU e latência dessas chamadas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! gRPC foi desenhado pelo Google especificamente para comunicação interna entre microsserviços de alto volume, economizando banda e tempo de processamento de CPU.">
-                    <span class="te-letter">A</span> gRPC sobre HTTP/2 com Protocol Buffers (Protobuf): utiliza serialização binária ultra-compacta com tipagem estrita pré-compilada e multiplexação de streams em uma única conexão TCP persistente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. XML e SOAP possuem overhead de parsing e transporte significativamente superior ao JSON.">
+                    <span class="te-letter">A</span> Adotar chamadas SOAP com XML compacto e compactação GZIP habilitada em cada requisição entre os serviços corporativos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. XML é ainda mais verboso e pesado que JSON.">
-                    <span class="te-letter">B</span> Migrar todas as chamadas para arquivos XML gravados em disquetes virtuais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Usar o banco como intermediário síncrono criaria gargalo catastrófico de I/O e locks.">
+                    <span class="te-letter">B</span> Substituir a comunicação de rede por escrita e leitura síncrona em tabelas de staging compartilhadas no banco de dados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Viola normas de segurança e não resolve o overhead de parsing.">
-                    <span class="te-letter">C</span> Forçar todas as chamadas a passarem pela internet pública sem criptografia.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Protobuf reduz significativamente o tamanho das mensagens e o custo de CPU em comparação com a serialização JSON.">
+                    <span class="te-letter">C</span> gRPC sobre HTTP/2 com Protocol Buffers: serialização binária eficiente e multiplexação em conexão TCP persistente.
                   </button>
                 </div>
 
@@ -3137,14 +3137,14 @@ try {
                 <p class="te-instrucao">Qual risco crítico de negócio esse catch ingênuo introduziu na aplicação?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em falhas parciais de rede, o cliente nunca sabe se a requisição atingiu o destino antes do timeout. Retries cegos causam efeitos colaterais duplicados gravíssimos.">
-                    <span class="te-letter">A</span> Risco de cobrança duplicada: se a falha de rede tiver ocorrido apenas no pacote de resposta após o débito ter sido concluído com sucesso pelo gateway, o retry sem chave de idempotência efetuará um segundo débito de R$ 500 no cartão do cliente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em falhas parciais de rede, timeout não significa que a operação falhou na ponta de destino; retries cegos duplicam efeitos colaterais.">
+                    <span class="te-letter">A</span> Risco de cobrança duplicada: se o timeout ocorreu na resposta mas o gateway processou a transação, o retry cego sem chave de idempotência debitará o valor novamente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha resulta em cobrança indevida, não em presente financeiro.">
-                    <span class="te-letter">B</span> O cliente receberá R$ 500 em dinheiro na sua conta bancária de brinde.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha primária crítica é de negócio (cobrança indevida no cartão do cliente).">
+                    <span class="te-letter">B</span> Risco de corrupção do pool de threads locais do servidor HTTP por ausência de tratamento assíncrono.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A internet não possui semântica de cancelamento transacional retroativo.">
-                    <span class="te-letter">C</span> Nenhum risco, pois a internet cancela transações com timeout automaticamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A porta continuaria válida; o problema é a repetição da mesma cobrança sem garantia idempotente.">
+                    <span class="te-letter">C</span> Risco de rejeição imediata da requisição pelo gateway de pagamento por violação de portas seguras TLS.
                   </button>
                 </div>
 
@@ -3271,14 +3271,14 @@ try {
                 <p class="te-instrucao">Qual técnica combinada de resiliência impede essa avalanche de retries e permite que o serviço se recupere?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O backoff com jitter quebra a sincronia das requisições e o Circuit Breaker corta o tráfego para serviços em colapso permitindo sua recuperação.">
-                    <span class="te-letter">A</span> Exponential Backoff com Full Jitter (aumentando o tempo de espera exponencialmente e adicionando aleatoriedade para desincronizar as chamadas) associado a um Circuit Breaker (que abre o circuito e interrompe novas tentativas após sucessivas falhas).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Remover timeouts prende threads consumidoras indefinidamente, propagando indisponibilidade para toda a cadeia de microsserviços.">
+                    <span class="te-letter">A</span> Desativar completamente o timeout HTTP para permitir que cada chamada aguarde o tempo necessário até o serviço de frete responder no cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso aceleraria o colapso total da infraestrutura.">
-                    <span class="te-letter">B</span> Aumentar o número de retries de 3 para 50 tentativas imediatas.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Backoff exponencial com jitter espalha as requisições no tempo, e o Circuit Breaker corta novas chamadas para serviços degradados.">
+                    <span class="te-letter">B</span> Exponential Backoff com Full Jitter combinado com Circuit Breaker, desincronizando tentativas e interrompendo o tráfego sob saturação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Travaria todas as threads dos servidores clientes por exaustão de recursos.">
-                    <span class="te-letter">C</span> Desativar os timeouts e deixar os clientes esperando por horas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Retries imediatos sem espaçamento amplificam o efeito avalanche (retry storm) e aceleram a queda do serviço de destino.">
+                    <span class="te-letter">C</span> Configurar retry linear imediato com até 10 tentativas para garantir que requisições prioritárias obtenham resposta na primeira oportunidade.
                   </button>
                 </div>
 
@@ -3405,14 +3405,14 @@ try {
                 <p class="te-instrucao">Qual erro comum na configuração dos Health Checks causou o reinício em cascata dos contêineres saudáveis?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Liveness deve apenas atestar a saúde interna do processo local. Dependências externas pertencem ao Readiness probe (que apenas suspende tráfego temporário sem reiniciar pods).">
-                    <span class="te-letter">A</span> Configuração incorreta do Liveness Probe: o probe de liveness incluía checagem de dependência externa (banco de dados). Com a lentidão do banco, o Kubernetes interpretou erroneamente que os pods da aplicação estavam mortos e os reiniciou. A dependência de banco deve estar no Readiness Probe, e não no Liveness.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Readiness Probe apenas retira o pod do balanceamento de carga, sem reiniciá-lo.">
+                    <span class="te-letter">A</span> A Readiness Probe estava configurada com failureThreshold: 1, fazendo com que a API saísse do Service no primeiro atraso de pacote na rede corporativa.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trata-se de uma falha de configuração de probes do desenvolvedor.">
-                    <span class="te-letter">B</span> O Kubernetes não gosta de conexões com banco de dados relacionais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentos transitórios dentro do limite não geram SIGTERM; reinícios ocorrem por falha em liveness probes ou OOM.">
+                    <span class="te-letter">B</span> O kubelet detectou aumento transitório no consumo de memória heap da JVM e disparou sinal SIGTERM preventivo nos nós do cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Clusters suportam milhares de pods simultâneos.">
-                    <span class="te-letter">C</span> O limite de pods no Kubernetes é de apenas 3 contêineres.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A Liveness Probe deve testar apenas a saúde do processo local; dependências a jusante devem afetar somente a Readiness Probe.">
+                    <span class="te-letter">C</span> Liveness Probe acoplada a dependências externas: a sonda testava o banco lento e o Kubernetes matou contêineres saudáveis por engano.
                   </button>
                 </div>
 
@@ -3547,14 +3547,14 @@ try {
                 <p class="te-instrucao">Por que a postura do candidato é considerada insuficiente para o nível sênior e qual deveria ter sido o procedimento correto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Projetar caixas antes de compreender requisitos e escala matemática demonstra falta de rigor metódico de engenharia.">
-                    <span class="te-letter">A</span> Porque ele pulou a clarificação de requisitos e o dimensionamento de capacidade: um engenheiro sênior primeiro delimita o escopo (feed cronológico ou ranqueado por algoritmo?), calcula estimativas de leitura/escrita para milhões de usuários ativos, define modelos de consistência e só depois avança para arquitetura e dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Não existe bala de prata em engenharia de software; cada decisão envolve concessões explícitas entre latência, custo e complexidade.">
+                    <span class="te-letter">A</span> Ausência de análise de trade-offs: arquitetura sênior é a arte de escolher concessões conscientes de custo e risco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O LinkedIn é um dos maiores sistemas distribuídos do mundo.">
-                    <span class="te-letter">B</span> Porque o LinkedIn não utiliza computadores para exibir feeds.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O paradigma da linguagem não define a qualidade do desenho arquitetural de sistemas distribuídos.">
+                    <span class="te-letter">B</span> Falta de conhecimento em linguagens funcionais modernas com tipagem estrita recomendadas para grandes projetos web.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. System Design avalia rigor arquitetural e trade-offs técnicos, não habilidades artísticas.">
-                    <span class="te-letter">C</span> Porque ele deveria ter desenhado o logotipo oficial do LinkedIn com cores bonitas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos em grafo atendem a cenários específicos de relacionamento denso e não substituem bancos padrão.">
+                    <span class="te-letter">C</span> Não ter sugerido banco de dados em grafos como repositório primário para todas as entidades transacionais.
                   </button>
                 </div>
 
@@ -3707,14 +3707,14 @@ Throughput = 5.000 × 20 KB = 100.000 KB/s
                 <p class="te-instrucao">Por que essa promessa é fisicamente impossível sob as leis da física de telecomunicações?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A velocidade da luz na fibra óptica impõe limites de latência físicos determinísticos que nenhuma tecnologia de software consegue violar.">
-                    <span class="te-letter">A</span> Porque o tempo de propagação da luz na fibra óptica para um round-trip entre Brasil e Europa é de no mínimo 180ms a 220ms. Cada commit síncrono precisará aguardar a confirmação de Frankfurt, fazendo o tempo mínimo de resposta do checkout ser superior a 200 milissegundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conexões locais ou regionais atingem sub-milissegundos perfeitamente.">
+                    <span class="te-letter">A</span> O protocolo HTTP/2 não suporta conexões com latência menor que 10ms devido ao handshake TLS obrigatório.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A infraestrutura alemã é de altíssimo nível; o obstáculo é a distância física em linha reta.">
-                    <span class="te-letter">B</span> Porque a Alemanha não possui eletricidade suficiente para rodar computadores.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A velocidade da luz impõe limites físicos irredutíveis. Latência intercontinental de ida e volta inviabiliza consistência forte em 2ms.">
+                    <span class="te-letter">B</span> Leis da física e Teorema CAP: o tempo de ida e volta da luz entre NY e Tóquio (~11.000 km) é de pelo menos ~110ms, inviabilizando consistência síncrona em 2ms.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Dados digitais são transmitidos em bits binários padronizados.">
-                    <span class="te-letter">C</span> Porque os dados em português não conseguem atravessar a fronteira europeia.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Backbones globais transportam dados normalmente; a limitação é a latência física da distância.">
+                    <span class="te-letter">C</span> Roteadores de internet internacionais descartam pacotes de replicação de dados entre continentes diferentes.
                   </button>
                 </div>
 
@@ -3920,14 +3920,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual código de status HTTP deve ser utilizado e qual o trade-off envolvido?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O status 302/307 impede que o cliente cacheie o redirecionamento localmente, garantindo que todo clique seja registrado na telemetria da aplicação.">
-                    <span class="te-letter">A</span> HTTP 302 (Temporary Redirect): força o navegador do usuário a bater no servidor do encurtador a cada clique, permitindo coletar métricas e geolocalização completas, ao custo de maior tráfego no backend comparado ao cache de cliente do HTTP 301.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O status 301 é cacheado agressivamente pelo navegador, impedindo que acessos futuros passem pelo encurtador.">
+                    <span class="te-letter">A</span> HTTP 301 (Permanent Redirect), porque o cabeçalho Location instrui o proxy a desativar caches intermediários em todas as rotas e nós de CDN da borda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O 301 é cacheado pelo browser, fazendo com que cliques subsequentes nunca cheguem aos servidores do encurtador.">
-                    <span class="te-letter">B</span> HTTP 301 (Moved Permanently), pois ele avisa o Google e envia o histórico por e-mail.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Redirecionamento via HTML é ineficiente e atrasa a navegação desnecessariamente em comparação com redirects HTTP nativos.">
+                    <span class="te-letter">B</span> HTTP 200 contendo uma tag meta refresh no corpo do documento HTML com temporizador zerado para garantir compatibilidade com bots.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 404 quebraria o redirecionamento de links válidos.">
-                    <span class="te-letter">C</span> HTTP 404 (Not Found), para economizar internet dos usuários.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O 302 força o cliente a consultar o encurtador a cada acesso, viabilizando métricas de cliques em tempo real.">
+                    <span class="te-letter">C</span> HTTP 302 (Found): impede que o navegador cacheie o destino final permanentemente, permitindo rastrear cliques e telemetria.
                   </button>
                 </div>
 
@@ -4042,14 +4042,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Como o Servidor 3 descobre para onde rotear a mensagem em milissegundos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Session Registry distribuído em memória é o componente central que mapeia o identificador do usuário ao servidor específico onde reside o socket TCP ativo.">
-                    <span class="te-letter">A</span> Consultando o Registro de Sessões do Usuário (Session Service em Redis): o Servidor 3 busca a chave 'session:Bob', descobre que Bob está conectado ao Servidor 8 e repassa a mensagem internamente via gRPC ou barramento Pub/Sub para que o Servidor 8 empurre no WebSocket de Bob.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em chats com WebSockets distribuídos, o Session Registry em memória guarda a rota exata de conexão de cada cliente ativo.">
+                    <span class="te-letter">A</span> Consultando o Session Registry distribuído (ex: Redis), que mantém o mapeamento atualizado entre o identificador do usuário e o host do gateway conectado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causaria colapso catastrófico imediato na rede.">
-                    <span class="te-letter">B</span> Fazendo broadcast da mensagem para todos os 50 milhões de usuários para ver quem responde.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Flooding de rede por broadcast degrada o cluster com tráfego desnecessário e não escala em múltiplos nós.">
+                    <span class="te-letter">B</span> Enviando um broadcast UDP simultâneo para todos os nós da rede com flooding de pacotes até que algum servidor confirme.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com software de mensageria.">
-                    <span class="te-letter">C</span> Pedindo para Alice ligar para Bob por telefone comum e falar o conteúdo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Fazer queries relacionais com locks para rotear mensagens de chat em tempo real causaria colapso por contenção de banco.">
+                    <span class="te-letter">C</span> Disparando uma consulta SQL com LOCK IN SHARE MODE na tabela de usuários de um banco relacional centralizado a cada mensagem.
                   </button>
                 </div>
 
@@ -4167,14 +4167,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual arquitetura e estrutura de indexação geoespacial atende a esse requisito de latência em hiper-escala?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Discretizar coordenadas em hexágonos permite que buscas geoespaciais sejam resolvidas com simples lookups de chave em memória com latência inferior a 5ms.">
-                    <span class="te-letter">A</span> Indexação por grade hexagonal (Uber H3 ou Geohash no Redis Geospatial): converte a coordenada do passageiro no ID do hexágono central e busca os motoristas ativos presentes naquele hexágono e nos 6 anéis adjacentes diretamente na memória RAM.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Calcular distâncias trigonométricas para milhões de motoristas em cada busca destruiria a CPU do banco.">
+                    <span class="te-letter">A</span> Executar Full Table Scan contínuo no PostgreSQL calculando a fórmula de Haversine para todos os motoristas cadastrados na cidade.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Varredura completa com cálculos trigonométricos causaria latência de segundos e esgotaria a CPU.">
-                    <span class="te-letter">B</span> Executar um cálculo de distância esférica trigonométrica em todas as linhas de uma tabela MySQL.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Discretizar coordenadas geográficas em células hexagonais transforma buscas espaciais complexas em simples lookups de chave em memória.">
+                    <span class="te-letter">B</span> Indexação por células hexagonais (H3) ou Geohash em Redis: busca motoristas na célula do passageiro e nas vizinhas imediatas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Obviamente inviável.">
-                    <span class="te-letter">C</span> Enviar uma carta com mapa em papel para cada motorista da cidade.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas de mensageria não são estruturas adequadas para consultas espaciais bidimensionais.">
+                    <span class="te-letter">C</span> Armazenar as coordenadas em uma fila Kafka ordenada por latitude e consumir as mensagens sequencialmente.
                   </button>
                 </div>
 
@@ -4286,14 +4286,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual algoritmo e protocolo de streaming permitiram que o vídeo continuasse tocando ininterruptamente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Adaptive Bitrate ajusta dinamicamente a qualidade de cada pequeno bloco de vídeo conforme a capacidade da rede em tempo real.">
-                    <span class="te-letter">A</span> Adaptive Bitrate Streaming (ABR) usando HLS ou DASH: o player detectou a queda na largura de banda da rede e solicitou os próximos chunks de 4 segundos em resolução 1080p ou 720p com menor bitrate, garantindo a reprodução fluida sem congelamento de tela.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O ajuste de qualidade de vídeo ocorre na camada de aplicação pelo player.">
+                    <span class="te-letter">A</span> O protocolo TCP/IP renegociou o tamanho da janela de fluxo nos roteadores do provedor de banda larga.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A Smart TV não possui armazenamento para todo o catálogo do streaming.">
-                    <span class="te-letter">B</span> A Netflix prevê o futuro e baixa todos os filmes da plataforma para a memória da TV antecipadamente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CDNs distribuem segmentos pré-codificados em diferentes resoluções, sem transcodificação on-the-fly.">
+                    <span class="te-letter">B</span> A CDN converteu o arquivo MP4 em tempo real comprimindo os bytes na borda durante o trânsito do streaming.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A velocidade de rede caiu e foi o software de streaming que se adaptou.">
-                    <span class="te-letter">C</span> O cabo de fibra óptica expande fisicamente de tamanho para acomodar os dados.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! HLS/DASH segmenta vídeos em pequenos blocos (ex: 2 a 6s) em múltiplas qualidades, permitindo adaptação em tempo de execução.">
+                    <span class="te-letter">C</span> Adaptive Bitrate Streaming (ABR via HLS/DASH): o player avalia a largura de banda e troca dinamicamente os chunks de vídeo para resoluções menores sem interrupção.
                   </button>
                 </div>
 
@@ -4405,14 +4405,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual conjunto de técnicas de algoritmos e processamento distribuído viabiliza essa resposta instantânea?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de atalhos pré-processados na estrutura do grafo rodoviário com pesos de tráfego dinâmicos permite rotas instantâneas em grafos continentais.">
-                    <span class="te-letter">A</span> Contraction Hierarchies com algoritmo A* em memória (que utiliza atalhos pré-calculados em hierarquias viárias para reduzir a busca no grafo a milissegundos) combinado com ingestão de tráfego em tempo real via stream processing que atualiza os pesos das arestas da malha viária.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Contraction Hierarchies pré-computam atalhos na malha viária, permitindo que o algoritmo A* calcule rotas em milissegundos.">
+                    <span class="te-letter">A</span> Contraction Hierarchies com A* em memória sobre grafos pré-processados, combinados com atualizações dinâmicas de pesos de trânsito em tempo real.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O processo é 100% automatizado por algoritmos computacionais.">
-                    <span class="te-letter">B</span> Uma pessoa no escritório do Google digita a rota manualmente no teclado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O algoritmo clássico de Dijkstra sem heurísticas nem hierarquias pré-calculadas levaria dezenas de segundos em malhas continentais.">
+                    <span class="te-letter">B</span> Algoritmo de Dijkstra tradicional executado diretamente no banco relacional contra tabelas contendo as coordenadas brutas de cada esquina da malha viária.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A malha viária respeita rigorosamente a topografia e a geometria das rodovias.">
-                    <span class="te-letter">C</span> O aplicativo assume que todas as estradas são linhas retas sem curvas ou cruzamentos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CTEs recursivas em grafos rodoviários densos sofrem explosão combinatória e estouram a memória do banco de dados.">
+                    <span class="te-letter">C</span> Consultas recursivas com CTEs no PostgreSQL calculando todas as permutações de rotas possíveis entre os dois pontos geográficos da chamada.
                   </button>
                 </div>
 
@@ -4524,14 +4524,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual algoritmo probabilístico de assinatura de documentos detecta quase-duplicatas em tempo constante O(1)?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Algoritmos Locality-Sensitive Hashing (LSH) como SimHash detectam similaridade textual permitindo deduplicação em altíssima escala.">
-                    <span class="te-letter">A</span> SimHash (ou MinHash com distância de Hamming): gera um hash binário de 64 bits sensível à frequência de termos; documentos quase idênticos diferem em apenas 1 a 3 bits, permitindo descartar páginas espelho sem comparar strings completas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Hashes criptográficos sofrem com o efeito avalanche: alterar uma única letra muda completamente o hash resultante.">
+                    <span class="te-letter">A</span> Criptografia SHA-256 com assinatura digital HMAC para comparar a integridade e identidade exata de caracteres entre os documentos textuais processados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Hashes criptográficos como MD5 possuem efeito avalanche: 1 caractere alterado muda 100% dos bits do hash.">
-                    <span class="te-letter">B</span> MD5 tradicional, pois hashes MD5 de textos parecidos são quase iguais.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O SimHash preserva similaridade: documentos quase idênticos produzem hashes binários que diferem em pouquíssimos bits.">
+                    <span class="te-letter">B</span> SimHash (Locality-Sensitive Hashing): gera assinaturas binárias onde a distância de Hamming reflete a similaridade de conteúdo entre textos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Obviamente inviável para processamento computacional de dados.">
-                    <span class="te-letter">C</span> Ler as páginas em voz alta e comparar o tom de voz.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Codificação de Huffman é um método de compressão de dados, não de detecção de similaridade semântica ou quase-duplicação.">
+                    <span class="te-letter">C</span> Algoritmo de Huffman para compactar os arquivos de texto e calcular a taxa de entropia de Shannon de cada parágrafo avaliado.
                   </button>
                 </div>
 
@@ -4643,14 +4643,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual técnica de concorrência garante a integridade de estoque com latência sub-5ms sem derrubar o banco de dados?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A execução atômica de scripts Lua no Redis é a solução padrão da indústria para absorver concorrência cavalar em memória com zero sobrevenda.">
-                    <span class="te-letter">A</span> Script Lua atômico no Redis (`redis.call('DECR', key)` com verificação condicional `>= 0`): o Redis processa scripts Lua de maneira estritamente sequencial e atômica em memória, garantindo que exatamente 500 requisições recebam token de sucesso e as demais 79.500 sejam rejeitadas com 'Ingressos Esgotados'.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Segurar locks no banco durante chamadas lentas de gateway de pagamento derruba o banco de dados.">
+                    <span class="te-letter">A</span> Uso de lock pessimista SELECT FOR UPDATE no PostgreSQL segurando a linha durante todo o fluxo de pagamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Criaria condição de corrida catastrófica com milhares de vendas duplicadas.">
-                    <span class="te-letter">B</span> Um loop while com SELECT no MySQL verificando se o estoque ainda é maior que zero.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Variáveis em memória não sincronizam entre diferentes instâncias da aplicação distribuída.">
+                    <span class="te-letter">B</span> Validação de estoque na camada de aplicação através de uma variável atômica AtomicInteger no Spring Boot.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Interrompe as operações do festival sem realizar a venda.">
-                    <span class="te-letter">C</span> Desligar o servidor de pagamentos para que ninguém consiga comprar.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Redis executa scripts Lua de forma atômica, garantindo decremento seguro sem race conditions e em altíssima velocidade.">
+                    <span class="te-letter">C</span> Script Lua atômico no Redis validando e decrementando o estoque no mesmo ciclo de execução de thread única.
                   </button>
                 </div>
 
@@ -4762,14 +4762,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual padrão arquitetural resolve o problema da postagem de celebridades sem sobrecarregar as filas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A abordagem híbrida neutraliza o Fanout Bomb ao tratar celebridades como exceções dinâmicas na leitura do feed.">
-                    <span class="te-letter">A</span> Arquitetura Híbrida de Feed: a postagem da celebridade não é propagada para as caixas dos seguidores no momento da escrita; em vez disso, quando um seguidor abre o aplicativo, o sistema faz Fanout-on-Read apenas para as celebridades que ele segue e mescla os resultados em tempo real com o cache de sua timeline.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Postagens de contas gigantescas não devem ser gravadas na timeline de 80 milhões de pessoas; os seguidores puxam sob demanda na leitura.">
+                    <span class="te-letter">A</span> Feed Híbrido: modelo Push (Fanout-on-Write) para usuários comuns e modelo Pull (Fanout-on-Read) para celebridades com milhões de seguidores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria o valor de engajamento da plataforma.">
-                    <span class="te-letter">B</span> Excluir a conta do jogador para que ele não consiga postar fotos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Gravar milhões de entradas a cada tweet de celebridade é inviável em escala e satura o storage.">
+                    <span class="te-letter">B</span> Adicionar filas assíncronas RabbitMQ com 100.000 nós para realizar o fanout-on-write completo de cada postagem.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Obviamente inviável.">
-                    <span class="te-letter">C</span> Pedir que cada seguidor digite a postagem do jogador manualmente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Limitação inaceitável de regras de negócio.">
+                    <span class="te-letter">C</span> Proibir que usuários famosos publiquem conteúdos em horários de pico comercial da plataforma.
                   </button>
                 </div>
 
@@ -4881,14 +4881,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual desenho de arquitetura de mensageria garante que o SMS do código de segurança chegue em menos de 3 segundos no celular do cliente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Isolar filas e pools de workers impede que campanhas volumosas de marketing degradem o SLA crítico de mensagens transacionais de segurança.">
-                    <span class="te-letter">A</span> Separação estrita em Filas de Prioridade Isoladas: mensagens transacionais de OTP são enviadas para uma fila de prioridade máxima com workers dedicados e conexões reservadas com gateways de SMS, totalmente isoladas da fila de mensagens promocionais de marketing em lote.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Acumular mensagens não resolve o tempo de entrega; o SMS continuará no fim da fila aguardando processamento.">
+                    <span class="te-letter">A</span> Aumentar a memória dos servidores de mensageria para permitir que o buffer de mensagens acumule 10 milhões de eventos sem descarte durante os picos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas FIFO processam estritamente por ordem de chegada; o OTP ficaria represado atrás dos 2 milhões de mensagens.">
-                    <span class="te-letter">B</span> Colocar todas as mensagens em uma única fila FIFO e torcer para o OTP passar na frente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Isolar filas e pools de consumidores garante que mensagens transacionais de alta prioridade tenham SLA protegido.">
+                    <span class="te-letter">B</span> Separação estrita em filas de prioridade isoladas com workers dedicados para tráfego transacional de OTP, desacoplados do marketing.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação grave de segurança bancária.">
-                    <span class="te-letter">C</span> Desativar a autenticação de segurança para que ninguém precise de SMS.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Descartar campanhas de marketing em vez de processá-las em velocidade adequada gera prejuízo comercial ao negócio.">
+                    <span class="te-letter">C</span> Configurar a política de Dead Letter Queue para descartar automaticamente mensagens de marketing que ultrapassarem 10 segundos na fila.
                   </button>
                 </div>
 
@@ -5000,14 +5000,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual técnica de sincronização permitiu atualizar o arquivo de 500 MB quase instantaneamente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A sincronização delta com chunking transfere estritamente os blocos binários modificados, minimizando tempo de upload e consumo de largura de banda.">
-                    <span class="te-letter">A</span> Sincronização Delta (Delta Sync) com Chunking: o arquivo foi previamente dividido em blocos de 4 MB; a alteração das 3 palavras modificou o hash de apenas 1 bloco específico, sendo necessário transferir apenas 4 MB pela rede em vez dos 500 MB completos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Compactar 500 MB consome tempo de CPU e ainda transmitiria centenas de megabytes desnecessariamente.">
+                    <span class="te-letter">A</span> Compactação GZIP com taxa de compressão máxima aplicada sobre todo o arquivo binário de 500 MB antes da transmissão completa.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A sincronização baseia-se em hashing criptográfico de blocos.">
-                    <span class="te-letter">B</span> O Google Drive lê o pensamento do usuário antes de ele abrir o arquivo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Enviar 500 MB por UDP ainda esgotaria a banda e não ofereceria garantia de integridade de dados.">
+                    <span class="te-letter">B</span> Transmissão do arquivo inteiro via protocolo UDP para eliminar a latência de confirmação de pacotes TCP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Explicação fictícia sem fundamentação técnica.">
-                    <span class="te-letter">C</span> O laptop do usuário enviou o arquivo inteiro por telepatia quântica.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Dividir o arquivo em blocos e recalcular hashes identifica exatamente qual bloco mudou, transferindo apenas poucos kilobytes.">
+                    <span class="te-letter">C</span> Delta Sync com Chunking: o arquivo é fatiado em blocos indexados por hash, transferindo apenas o bloco de 4 MB alterado.
                   </button>
                 </div>
 
@@ -5123,14 +5123,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual algoritmo de rate limiting suporta naturalmente rajadas (bursts) controladas até o limite máximo configurado?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O algoritmo Token Bucket é amplamente adotado pela AWS e grandes gateways justamente por tolerar rajadas momentâneas mantendo a taxa média sob controle.">
-                    <span class="te-letter">A</span> Token Bucket: permite que requisições consumam tokens acumulados no balde instantaneamente até o limite da capacidade máxima, repondo novos tokens em taxa constante pré-definida ao longo do tempo.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Token Bucket permite que rajadas legítimas sejam consumidas instantaneamente até o limite da capacidade do balde.">
+                    <span class="te-letter">A</span> Token Bucket: acumula tokens na taxa permitida até a capacidade máxima, acomodando rajadas instantâneas com elegância.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma janela anual não protege a API contra picos de tráfego em segundos.">
-                    <span class="te-letter">B</span> Fixed Window Counter reiniciado a cada ano.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Janelas fixas sofrem com o problema de borda (rajadas 2x no limite da virada do minuto).">
+                    <span class="te-letter">B</span> Fixed Window Counter: divide o tempo em blocos rígidos de 1 minuto e reseta o contador de requisições a cada novo ciclo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Inviabilizaria o uso legítimo da plataforma.">
-                    <span class="te-letter">C</span> Bloquear permanentemente qualquer IP que faça mais de 1 requisição na vida.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Leaky Bucket impõe taxa de saída rígida e não acomoda rajadas legítimas de tráfego.">
+                    <span class="te-letter">C</span> Leaky Bucket: força uma vazão estritamente constante e descarta imediatamente requisições que excederem o ritmo.
                   </button>
                 </div>
 
@@ -5244,14 +5244,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual algoritmo de distribuição de chaves garante que apenas uma pequena fração das chaves seja movida para os novos nós sem esvaziar o cache dos nós restantes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Consistent Hashing foi criado especificamente para permitir adicionar e remover servidores em clusters de cache distribuídos minimizando a redistribuição de dados.">
-                    <span class="te-letter">A</span> Consistent Hashing (Hashing Consistente com Nós Virtuais): posiciona servidores e chaves em um anel circular lógico de 360 graus; a adição de novos nós afeta apenas seus vizinhos imediatos no anel, redistribuindo em média apenas K/N chaves sem causar miss generalizado.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mudar N invalida praticamente 100% das chaves existentes no cluster, causando cache avalanche massivo.">
+                    <span class="te-letter">A</span> Modulo Hashing tradicional (hash(key) % N), pois o divisor N é recalculado instantaneamente em todos os servidores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mudar o divisor altera a posição de praticamente todas as chaves existentes no cluster.">
-                    <span class="te-letter">B</span> Operador de resto da divisão matemática padrão (hash(key) % total_servidores).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Consistent Hashing minimiza a redistribuição de chaves ao alterar a topologia de nós, e nós virtuais evitam hotspots.">
+                    <span class="te-letter">B</span> Consistent Hashing com anel e nós virtuais: posiciona chaves e servidores em um anel de 360°, remapeando apenas k/N chaves ao adicionar um nó.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não faz balanceamento de carga distribuído.">
-                    <span class="te-letter">C</span> Armazenar todas as chaves em ordem alfabética no primeiro computador do rack.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Replicação integral anula a vantagem de sharding horizontal de memória e multiplica o custo de armazenamento.">
+                    <span class="te-letter">C</span> Replicação total síncrona de todas as chaves em todos os 8 servidores para que cada nó contenha uma cópia idêntica.
                   </button>
                 </div>
 
@@ -5363,14 +5363,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual estrutura de dados e estratégia de armazenamento em memória entrega essa performance extrema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Pré-armazenar os termos mais frequentes nos próprios nós da Trie transforma a busca em um simples salto de ponteiros O(L) com latência sub-10ms.">
-                    <span class="te-letter">A</span> Árvore Trie (Prefix Tree) serializada em memória com os Top-5 termos mais populares pré-computados e armazenados diretamente em cada nó de prefixo, combinada com cache de prefixos populares no Redis/CDN.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trigramas em SQL são lentos para escala de milhares de buscas simultâneas com digitação em tempo real.">
+                    <span class="te-letter">A</span> Execução de queries SQL do tipo LIKE '%termo%' indexadas por trigramas GIN diretamente na base de dados relacional primária.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Faria varredura sequencial em milhões de registros, levando segundos e saturando a CPU.">
-                    <span class="te-letter">B</span> Uma tabela relacional sem índice rodando SELECT com LIKE '%iph%' a cada letra.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma tabela hash por caractere exigiria varrer listas gigantescas para filtrar prefixos de várias letras.">
+                    <span class="te-letter">B</span> Tabela Hash simples em memória mapeando cada caractere isolado do alfabeto para uma lista com todos os termos do dicionário corporativo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com experiência de autocomplete em tempo real.">
-                    <span class="te-letter">C</span> Enviar um e-mail com as sugestões para o usuário abrir em outra aba.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ao navegar pelos caracteres na Trie, o nó do prefixo já contém a lista pronta dos termos mais frequentes em O(p).">
+                    <span class="te-letter">C</span> Árvore Trie em memória com os Top-K termos mais populares pré-computados e armazenados diretamente em cada nó.
                   </button>
                 </div>
 
@@ -5484,14 +5484,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual erro crítico de projeto de métricas temporais causou o travamento do sistema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! TSDBs são projetados para lidar com milhares de séries temporais de baixa cardinalidade; identificadores únicos por usuário pertencem a logs e traces, nunca a métricas de monitoramento.">
-                    <span class="te-letter">A</span> Explosão de Cardinalidade (High Cardinality): cada valor único de 'user_id' instancia uma nova série temporal isolada em memória; 10 milhões de IDs geraram dezenas de milhões de fluxos temporais simultâneos, estourando a RAM do TSDB.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bancos de séries temporais dependem de baixa cardinalidade em labels; dados de alta entropia devem ir para logs ou tracing.">
+                    <span class="te-letter">A</span> Explosão de Cardinalidade: colocar identificadores únicos de alta entropia (user_id) em labels do Prometheus multiplica séries temporais na memória.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Prometheus roda nativamente em Linux e contêineres modernos.">
-                    <span class="te-letter">B</span> O Prometheus só aceita monitorar servidores com Windows 95.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A sintaxe de nomenclatura aceita letras minúsculas e sublinhados; a falha é de volume astronômico de séries geradas.">
+                    <span class="te-letter">B</span> O Prometheus proíbe métricas com nomes de labels em letras minúsculas ou que utilizem o caractere sublinhado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Explicação fictícia.">
-                    <span class="te-letter">C</span> A memória RAM do servidor evaporou pelo calor dos cabos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não se trata de bug de GC, mas de exaustão real de memória pelo número colossal de séries abertas no TSDB.">
+                    <span class="te-letter">C</span> Problema no garbage collector do Go que não consegue desalocar dados de métricas com mais de três labels.
                   </button>
                 </div>
 
@@ -5603,14 +5603,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual mecanismo arquitetural garante que os R$ 300 sejam debitados exatamente uma única vez da conta bancária?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A chave de idempotência atrelada a transações com consistência forte no banco é a salvaguarda universal contra duplicidade em sistemas de pagamento.">
-                    <span class="te-letter">A</span> Chave de Idempotência (Idempotency Key): o cliente gera um UUID único para a transferência e o envia no cabeçalho; o backend do banco grava a transação sob uma restrição UNIQUE no ledger relacional ACID; requisições repetidas com a mesma chave retornam o recibo existente sem reexecutar o débito.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bloqueios no cliente são facilmente contornados e não protegem contra retries automáticos de rede ou falhas de proxy.">
+                    <span class="te-letter">A</span> Bloquear o botão de clique no frontend utilizando JavaScript para que novos cliques do usuário sejam desativados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sistemas de software operam sob regras lógicas determinísticas, não por intuição moral.">
-                    <span class="te-letter">B</span> O banco de dados detecta que o cliente é uma pessoa honesta e cancela as outras requisições.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A chave de idempotência garante que requisições com o mesmo UUID retornem a resposta já processada sem novo efeito colateral.">
+                    <span class="te-letter">B</span> Chave de Idempotência (UUID) enviada no cabeçalho e validada atomicamente no banco ou Redis antes de autorizar o débito.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Representa arquitetura financeira falha e inaceitável.">
-                    <span class="te-letter">C</span> O cliente é cobrado 3 vezes e deve pedir reembolso por carta.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Read Uncommitted causaria leituras sujas e anomalias graves no saldo financeiro do cliente.">
+                    <span class="te-letter">C</span> Configurar a isolamento do banco como Read Uncommitted para que a segunda requisição enxergue o saldo atualizado antes da transação fechar.
                   </button>
                 </div>
 
@@ -5724,14 +5724,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual arquitetura computacional viabiliza essa velocidade extrema de transcodificação de mídia?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A paralelização massiva via DAG distribuído reduz o tempo de transcodificação de horas para poucos minutos.">
-                    <span class="te-letter">A</span> Processamento paralelo orientado a Grafo Acíclico Dirigido (DAG): o vídeo bruto é fatiado em dezenas de pequenos segmentos independentes processados simultaneamente por centenas de workers em contêineres efêmeros, remontando os chunks e gerando os manifestos adaptativos em paralelo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Processar um vídeo de 1 hora de ponta a ponta em um único processo não atinge latência de minutos.">
+                    <span class="te-letter">A</span> Utilizar uma máquina bare-metal com 128 vCPUs executando o comando ffmpeg sequencialmente em um único arquivo de mídia local.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Um único servidor levaria horas para transcodificar múltiplas resoluções sequencialmente.">
-                    <span class="te-letter">B</span> Uma única máquina com processador Pentium 4 rodando o conversor de vídeo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Fitas magnéticas são projetadas para arquivamento frio de baixo custo e alta latência.">
+                    <span class="te-letter">B</span> Gravar os vídeos diretamente em fitas magnéticas nos data centers para acelerar a gravação física de blocos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O pipeline preserva o áudio e gera múltiplas trilhas de som e legendas.">
-                    <span class="te-letter">C</span> O YouTube remove o áudio do vídeo para deixá-lo mais rápido.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Dividir o vídeo em dezenas de pequenos pedaços processados simultaneamente por centenas de workers reduz drasticamente o tempo total.">
+                    <span class="te-letter">C</span> Processamento paralelo via DAG distribuído: o vídeo é fatiado em blocos, transcodificado em workers e reagrupado no final.
                   </button>
                 </div>
 
@@ -5845,14 +5845,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual técnica do player de áudio viabiliza essa transição imperceptível de reprodução?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O prefetching preditivo antecipa a intenção do usuário aproveitando a largura de banda ociosa para baixar o início da próxima faixa.">
-                    <span class="te-letter">A</span> Prefetching Preditivo e Cache Local: enquanto a faixa atual estava tocando, o player já havia baixado e cacheado previamente os primeiros segundos da próxima música da playlist em background, permitindo a execução imediata da memória local.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Antecipar o download do início da próxima faixa em segundo plano elimina o tempo de espera no momento da transição.">
+                    <span class="te-letter">A</span> Prefetching preditivo e cache local: enquanto a música atual toca, o player baixa previamente os primeiros segundos da próxima.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O streaming é 100% digital via internet.">
-                    <span class="te-letter">B</span> O Spotify transmite o áudio via rádio AM tradicional.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Baixar a playlist inteira consumiria dados e memória em excesso caso o usuário ouvisse apenas uma música.">
+                    <span class="te-letter">B</span> Download integral de todas as músicas da playlist em memória RAM antes de permitir a inicialização da primeira faixa do álbum.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trata-se de arquivo digital de áudio reproduzido do cache.">
-                    <span class="te-letter">C</span> A música é gerada pelo próprio alto-falante do celular sem arquivo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Arquivos FLAC são muito mais pesados e exigiriam ainda mais capacidade de rede e buffering.">
+                    <span class="te-letter">C</span> Streaming via protocolo de compressão sem perda FLAC que dispensa buffers de reprodução nos sistemas operacionais.
                   </button>
                 </div>
 
@@ -5979,14 +5979,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual tecnologia e técnica de engenharia de inferência maximiza a concorrência na GPU aproveitando o processamento em lote dinâmico?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Continuous Batching e PagedAttention são os dois pilares modernos da indústria para inferência de alta eficiência e concorrência em GPUs.">
-                    <span class="te-letter">A</span> Continuous Batching combinado com PagedAttention (usando vLLM ou TensorRT-LLM): agrega novas requisições ao ciclo da GPU a cada passo de geração de token e aloca memória de KV-Cache em páginas não-contíguas, aumentando o throughput em até 10 vezes sem aumentar a latência percebida.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Regex não possui capacidade de raciocínio ou geração de linguagem natural de modelos LLM.">
+                    <span class="te-letter">A</span> Substituir os modelos de linguagem fundacionais por expressões regulares compiladas em C++.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reduziria a capacidade computacional disponível.">
-                    <span class="te-letter">B</span> Desligar 7 das 8 GPUs para economizar energia elétrica.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Continuous Batching evita GPUs ociosas aguardando prompts terminarem e PagedAttention aloca a memória da KV Cache em páginas contíguas virtuais.">
+                    <span class="te-letter">B</span> Continuous Batching combinado com PagedAttention (vLLM): agrupa tokens a cada passo de decodificação e elimina fragmentação de memória da KV Cache.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elimina a funcionalidade de inteligência artificial generativa.">
-                    <span class="te-letter">C</span> Substituir o modelo de IA por um arquivo de texto com 10 respostas fixas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Dedicar uma GPU inteira por usuário simultâneo seria economicamente insustentável e altamente ineficiente.">
+                    <span class="te-letter">C</span> Executar cada chamada de usuário em uma GPU exclusiva sem compartilhar recursos de inferência.
                   </button>
                 </div>
 
@@ -6115,14 +6115,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual mudança na estratégia de recuperação de informação (Retrieval) resolve essa falha de precisão?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A busca híbrida compensa a fraqueza intrínseca de embeddings para strings alfanuméricas exatas através de índices invertidos tradicionais (BM25).">
-                    <span class="te-letter">A</span> Implementar Hybrid Search (Busca Híbrida) combinando busca lexical com BM25 (que garante correspondência exata de termos raros e códigos como '14.133') com busca vetorial densa, aplicando Re-ranking nos resultados combinados.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embeddings densos continuam capturando similaridade semântica probabilística e sofrem com tokens numéricos precisos.">
+                    <span class="te-letter">A</span> Aumentar a dimensão dos vetores de embedding de 1536 para 8192 dimensões para capturar detalhes exatos de números e datas em documentos jurídicos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Destruiria o propósito do sistema jurídico.">
-                    <span class="te-letter">B</span> Excluir todas as leis do banco de dados para simplificar a busca.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se o retriever vetorial inicial não recuperou o documento com o número exato, o reranker não terá o que reordenar.">
+                    <span class="te-letter">B</span> Adicionar uma camada de reranking utilizando um classificador supervisionado treinado com dados de tribunais internacionais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar a temperatura aumentaria as alucinações e não resolveria a recuperação do documento.">
-                    <span class="te-letter">C</span> Aumentar a temperatura do modelo de linguagem para 2.0.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A busca híbrida une o melhor dos dois mundos: precisão lexical em palavras-chave e códigos exatos com riqueza semântica vetorial.">
+                    <span class="te-letter">C</span> Busca Híbrida (Hybrid Search): combina busca lexical BM25 (correspondência exata de termos e números) com busca vetorial densa.
                   </button>
                 </div>
 
@@ -6249,14 +6249,14 @@ p ≈ 1</code>
                 <p class="te-instrucao">Qual arquitetura de cache resolve esse problema de custo reaproveitando respostas anteriores mesmo com palavras diferentes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Caches semânticos identificam equivalência de intenção através de proximidade vetorial, economizando custos e tempo de resposta de inferência.">
-                    <span class="te-letter">A</span> Semantic Caching (Cache Semântico): calcula o embedding vetorial da pergunta do usuário e pesquisa no banco vetorial/Redis; se a similaridade de cosseno com uma pergunta já respondida for superior a um limiar (ex: 0,96), a resposta cacheada é retornada imediatamente sem chamar o LLM.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Variações mínimas de pontuação ou sinônimos mudam o hash MD5 e geram cache miss completo.">
+                    <span class="te-letter">A</span> Cache baseado em chave-valor MD5 da string exata da pergunta do usuário armazenado no Redis com expiração de 24 horas no cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma simples vírgula ou sinônimo diferente faria o hash mudar, resultando em Cache Miss permanente.">
-                    <span class="te-letter">B</span> Cache tradicional por correspondência de string exata (MD5 da frase).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Treinar e distribuir modelos em clientes locais é extremamente caro, complexo e desnecessário para resolução de cache.">
+                    <span class="te-letter">B</span> Treinar um novo modelo de linguagem proprietário para responder perguntas frequentes diretamente no navegador dos operadores de suporte corporativo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Incompatível com atendimento moderno ao cliente.">
-                    <span class="te-letter">C</span> Desativar o atendimento com IA e pedir que os clientes esperem uma carta de resposta.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O cache semântico identifica perguntas conceitualmente idênticas mesmo com redações diferentes, poupando custos de LLM.">
+                    <span class="te-letter">C</span> Semantic Caching: calcula o embedding da pergunta e busca vetores similares no cache; se a proximidade superar o limiar, retorna a resposta salva.
                   </button>
                 </div>
 
@@ -6435,7 +6435,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -6447,5 +6447,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

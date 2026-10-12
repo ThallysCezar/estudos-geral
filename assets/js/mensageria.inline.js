@@ -271,7 +271,17 @@ function onScroll(){
   document.getElementById("tp").style.width=(h>0?window.scrollY/h*100:0)+"%";
   document.getElementById("up").classList.toggle("on",window.scrollY>700);
 }
-document.addEventListener("scroll",onScroll,{passive:true});
+var scrollTicking=false;
+function onScrollThrottled(){
+  if(!scrollTicking){
+    window.requestAnimationFrame(function(){
+      onScroll();
+      scrollTicking=false;
+    });
+    scrollTicking=true;
+  }
+}
+document.addEventListener("scroll",onScrollThrottled,{passive:true});
 document.getElementById("up").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
 document.getElementById("top").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
 /* ================== BUSCA (nós + tópicos) ================== */

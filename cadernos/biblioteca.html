@@ -437,14 +437,14 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
                 <p class="te-instrucao">Qual crítica arquitetural fundamentada nas Leis da Arquitetura de Software deve ser feita a essa proposta?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Arquitetura é sobre adequar a solução às restrições do problema; aplicar soluções de hiper-escala em problemas pequenos gera débito e sobrecarga inútil.">
-                    <span class="te-letter">A</span> A proposta ignora trade-offs e contexto: para 200 usuários, a complexidade operacional, custo de rede, observabilidade distribuída e consistência eventual de 25 microsserviços superam em ordens de grandeza os benefícios de escala, tornando um Monolito Modular incomparavelmente mais eficiente e barato.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A proposta foca em tecnologia da moda em vez de trade-offs reais; o problema central é a inadequação entre o problema de escala e o custo de manutenção.">
+                    <span class="te-letter">A</span> A proposta viola os princípios de custo e operabilidade: para uma carga modesta de 200 usuários, a sobrecarga de gerenciar observabilidade distribuída, particionamento de tópicos no Kafka e serialização gRPC em 25 serviços gera custo desproporcional sem benefício real.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adicionar servidores desnecessários gera desperdício de capital e complexidade operacional.">
-                    <span class="te-letter">B</span> O desenvolvedor está certo, pois quanto mais servidores na nuvem, melhor para a empresa.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Arquitetura é sobre balancear trade-offs; microsserviços trazem complexidade severa que só se justifica quando a escala técnica e organizacional exige.">
+                    <span class="te-letter">B</span> A complexidade operacional e a consistência eventual de 25 microsserviços superam em muito os ganhos de escala para 200 usuários, sendo o Monolito Modular a opção mais eficiente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A decisão depende de trade-offs arquiteturais técnicos e organizacionais, não de leis fiscais.">
-                    <span class="te-letter">C</span> Microsserviços são proibidos para empresas com menos de 1 bilhão de reais de faturamento.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reintroduzir um ESB legado adiciona um ponto único de falha e acoplamento desnecessário, sem resolver a inadequação de escala.">
+                    <span class="te-letter">C</span> O sistema interno deveria adotar arquitetura orientada a serviços (SOA) com barramento corporativo ESB centralizado para garantir governança unificada de mensagens XML.
                   </button>
                 </div>
 
@@ -554,14 +554,14 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
                 <p class="te-instrucao">Qual conflito estrutural clássico entre características arquiteturais está presente nessa exigência?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Características de arquitetura impõem custos e limitações físicas recíprocas; não é possível maximizar todas sem aceitar as restrições financeiras e técnicas.">
-                    <span class="te-letter">A</span> Conflito direto entre Performance/Disponibilidade global e Custo: replicação multi-continente com baixíssima latência exige links dedicados, infraestrutura de borda cara e hardware de alto desempenho incompatíveis com orçamento de R$ 500/mês. As características devem ser priorizadas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A restrição apresentada não envolve portabilidade de SO legado, mas sim viabilidade financeira e leis da física em rede distribuída.">
+                    <span class="te-letter">A</span> Conflito entre Segurança e Portabilidade: transacionar ativos financeiros globais exige suporte a múltiplos sistemas operacionais legados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A velocidade da luz e custos de infraestrutura global não são resolvidos com descontos comerciais simples.">
-                    <span class="te-letter">B</span> Não há conflito algum; basta pedir um desconto para o provedor de nuvem.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Testabilidade pode ser atendida com ambientes isolados de sandbox; o impedimento central é financeiro e físico de infraestrutura.">
+                    <span class="te-letter">B</span> Conflito de Testabilidade: sistemas de alta frequência não permitem simulação com testes de carga automatizados sem afetar livros de ordens.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Afirmação sem fundamento tecnológico.">
-                    <span class="te-letter">C</span> Criptomoedas só podem ser transacionadas em discos de papel perfurado.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Características arquiteturais impõem trade-offs inerentes; não é possível maximizar disponibilidade geográfica e velocidade extrema sem investimento proporcional em infraestrutura.">
+                    <span class="te-letter">C</span> Conflito direto entre Performance/Disponibilidade global e Custo: replicação multi-continente de ultra-baixa latência exige links dedicados e infraestrutura de alta densidade incompatíveis com orçamento restrito.
                   </button>
                 </div>
 
@@ -679,14 +679,14 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
                 <p class="te-instrucao">Qual estilo arquitetural é ideal para acomodar essa volatilidade contínua de regras com alto isolamento?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A arquitetura de Microkernel é perfeita para cenários onde um core estável precisa ser estendido por regras voláteis e customizáveis independentemente.">
-                    <span class="te-letter">A</span> Arquitetura Microkernel (Plugin Architecture): o núcleo gerencia o ciclo de vida da nota e contratos fiscais básicos, enquanto as regras fiscais de cada estado são implementadas como plugins isolados e plugáveis em tempo de execução.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O padrão Microkernel desacopla a lógica central das regras de negócio voláteis e customizáveis por plugin.">
+                    <span class="te-letter">A</span> Arquitetura Microkernel (Plugin): um núcleo estável processa o fluxo comum da nota e delega regras estaduais a módulos plugáveis.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Complexidade absurda sem justificativa arquitetural.">
-                    <span class="te-letter">B</span> Criar 27 bancos de dados Oracle diferentes com tabelas escritas em código morse.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Concentrar regras voláteis na mesma camada de serviço mantém acoplamento no deploy e risco de regressão mútua entre os estados.">
+                    <span class="te-letter">B</span> Arquitetura em Camadas (Layered): consolidar todas as validações fiscais dos 27 estados na camada de serviços (Service Layer) com injeção de dependência estática.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Código altamente frágil, sem coesão e com risco extremo de regressão.">
-                    <span class="te-letter">C</span> Colocar todas as regras dos 27 estados dentro de um único método com 50.000 linhas de IFs aninhados.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Space-Based Architecture foca em escalabilidade massiva e concorrência, não em isolamento de regras de negócio altamente customizáveis.">
+                    <span class="te-letter">C</span> Arquitetura Baseada em Espaço (Space-Based): particionar as instâncias fiscais em memória RAM replicada para isolar transações estaduais em clusters virtuais.
                   </button>
                 </div>
 
@@ -796,14 +796,14 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
                 <p class="te-instrucao">Qual prática de engenharia de software teria evitado esse esquecimento e documentado a justificativa técnica?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ADRs imortalizam a racionalidade das decisões técnicas históricas, impedindo discussões circulares e perda de contexto de engenharia.">
-                    <span class="te-letter">A</span> Uso de Architecture Decision Records (ADRs) versionadas no repositório Git: o documento registraria o contexto da época (ex: necessidade de suportar picos de 80k escritas por segundo com chave primária simples), a decisão pelo DynamoDB e as consequências aceitas, preservando a memória técnica institucional.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Diagramas UML mostram a topologia do sistema, mas não registram o contexto, alternativas descartadas nem a racionalidade da decisão.">
+                    <span class="te-letter">A</span> Manutenção de diagramas UML de implantação atualizados no Confluence a cada sprint de entrega técnica.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Meio arcaico e inacessível para o fluxo diário de desenvolvimento de software.">
-                    <span class="te-letter">B</span> Gravar uma fita cassete com a voz do desenvolvedor e guardar no cofre da diretoria.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ADRs documentam o contexto histórico, opções avaliadas, justificativa e consequências das decisões arquiteturais, evitando perda de memória técnica.">
+                    <span class="te-letter">B</span> Registro de Architecture Decision Records (ADRs) versionadas no repositório Git junto com o código-fonte.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conduta antiética que não resolve a rastreabilidade da documentação técnica.">
-                    <span class="te-letter">C</span> Demitir todos os desenvolvedores que trabalharam no projeto há dois anos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Comentários pontuais em arquivos de infraestrutura são dispersos, difíceis de pesquisar e não seguem padrão estruturado de documentação arquitetural.">
+                    <span class="te-letter">C</span> Inclusão de comentários detalhados no topo de cada arquivo de configuração de banco de dados descrevendo as atas de reunião da diretoria de tecnologia.
                   </button>
                 </div>
 
@@ -940,14 +940,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Pelo conceito de Software Architecture: The Hard Parts, esses 8 serviços representam sistemas independentes ou um único Architecture Quantum?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Um quantum arquitetural é definido pela independência real de deploy e persistência; se o esquema de dados é compartilhado, o acoplamento persiste em nível de quantum único.">
-                    <span class="te-letter">A</span> Eles formam um ÚNICO Architecture Quantum (Monolito Distribuído): o acoplamento estático no esquema de banco compartilhado elimina a independência de implantação, provando que a separação em múltiplos serviços é puramente cosmética e prejudicial.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Um Architecture Quantum é a menor unidade com alta coesão e acoplamento síncrono/estático que pode operar de forma independente; o banco compartilhado os une num único quantum.">
+                    <span class="te-letter">A</span> Formam um único Architecture Quantum: o acoplamento estático ao mesmo esquema de dados compartilhado elimina a independência de deploy e a evolução autônoma dos serviços.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Portas diferentes não eliminam o acoplamento semântico e estrutural de dados.">
-                    <span class="te-letter">B</span> Eles são 8 microsserviços perfeitos porque rodam em portas TCP diferentes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A independência de código ou container é ilusória se a estrutura de persistência força deploys coordenados e acoplamento de esquema.">
+                    <span class="te-letter">B</span> São 8 quanta distintos, pois possuem repositórios Git separados e pipelines de build em containers isolados no cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quantum arquitetural é um conceito fundamental de design de software corporativo.">
-                    <span class="te-letter">C</span> O conceito de Architecture Quantum só se aplica a computadores quânticos da NASA.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Arquitetura hexagonal em nível de aplicação não mitiga o acoplamento no nível de quantum quando múltiplos serviços acessam a mesma base diretamente.">
+                    <span class="te-letter">C</span> Representam uma arquitetura hexagonal bem isolada cujo adaptador de banco centraliza o contrato de integridade referencial.
                   </button>
                 </div>
 
@@ -1057,14 +1057,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual força integradora está presente e qual decisão arquitetural prudente deve ser tomada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A dependência de transações atômicas estritas é a força integradora mais forte da engenharia de software; desrespeitá-la introduz complexidade extrema de transações distribuídas.">
-                    <span class="te-letter">A</span> Força integradora de Atomicidade Transacional (ACID): se a transação imediata entre estoque e faturamento for um requisito rígido e inegociável de negócio, separá-los forçará o uso de Two-Phase Commit ou Sagas complexas; é mais prudente mantê-los juntos no mesmo serviço ou renegociar o negócio para consistência eventual.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Manter transações de banco abertas através de mensageria assíncrona causa esgotamento de conexões, deadlocks e degradação severa de performance.">
+                    <span class="te-letter">A</span> Força integradora de Comunicação Assíncrona: deve-se criar filas intermediárias entre os módulos mantendo o lock de linha aberto no banco durante o processamento da fila.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ausência de rigor técnico.">
-                    <span class="te-letter">B</span> Separar em 10 serviços diferentes e torcer para o banco não falhar.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 2PC é notoriamente lento, frágil e desencorajado em sistemas modernos por criar bloqueios de rede distribuídos e ponto único de falha.">
+                    <span class="te-letter">B</span> Força de Coesão Funcional: deve-se quebrar as foreign keys no banco e implementar transações distribuídas via protocolo XA/Two-Phase Commit entre os microbancos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prejudica a integridade do negócio.">
-                    <span class="te-letter">C</span> Excluir o módulo de estoque para não ter que pensar em transações.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A exigência de transação ACID estrita entre entidades é uma das principais forças que justificam manter módulos no mesmo serviço para evitar a complexidade de sagas distribuídas.">
+                    <span class="te-letter">C</span> Força de Atomicidade Transacional: se a consistência imediata é inegociável, os módulos devem permanecer juntos ou adotar consistência eventual.
                   </button>
                 </div>
 
@@ -1184,14 +1184,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Por que a Orquestração é arquiteturalmente superior à Coreografia para esse fluxo específico?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Fluxos com muitas etapas e dependências de negócio devem ser orquestrados para centralizar o rastreamento da máquina de estados e o controle das transações compensatórias.">
-                    <span class="te-letter">A</span> Porque fluxos longos e complexos coreografados geram perda de controle do estado global e dificuldade extrema de monitoramento ('efeito pinball'); um Orquestrador central mantém a máquina de estados explícita, gerencia timeouts, pausas humanas e coordena compensações de forma determinística.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Coreografia baseada em Kafka é assíncrona; o problema é a falta de visibilidade do estado global e a complexidade de compensações em cadeias longas.">
+                    <span class="te-letter">A</span> Porque a coreografia impõe conexão síncrona HTTP entre os participantes, quebrando o desacoplamento e a reatividade distribuída da arquitetura.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kafka suporta milhões de mensagens por segundo; o gargalo é de modelagem arquitetural da coordenação.">
-                    <span class="te-letter">B</span> Porque o Kafka não suporta mais de 3 mensagens por dia.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em processos longos com muitas etapas e regras de rollback, a orquestração evita o 'efeito pinball' e facilita a gestão de timeouts e transações compensatórias.">
+                    <span class="te-letter">B</span> Porque fluxos longos e ramificados tornam a coreografia opaca e difícil de rastrear, enquanto o orquestrador centraliza estado e compensações.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Explicação fictícia sem sentido técnico.">
-                    <span class="te-letter">C</span> Porque orquestradores são feitos de ferro e não sofrem com calor.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Orquestradores não fornecem transações ACID distribuídas automáticas; eles apenas coordenam chamadas de compensação de forma explícita.">
+                    <span class="te-letter">C</span> Porque orquestradores eliminam a necessidade de compensações ao assegurar transações ACID nativas no broker de mensageria da infraestrutura de TI.
                   </button>
                 </div>
 
@@ -1305,14 +1305,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Pela classificação estratégica do Domain-Driven Design (Learning DDD), qual erro grave de alocação de recursos foi cometido?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Subdomínios genéricos devem ser comprados ou resolvidos com bibliotecas prontas; engenharia interna sob medida deve focar no Core Domain diferenciador.">
-                    <span class="te-letter">A</span> Desperdício de engenharia construindo internamente um Subdomínio Genérico (Generic Subdomain): autenticação e envio de e-mail são commodities de mercado que deveriam ser resolvidas com produtos de terceiros (Keycloak, Auth0, SendGrid), concentrando o esforço técnico de ponta exclusivamente no algoritmo de precificação imobiliária (Core Domain).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No DDD estratégico, subdomínios genéricos (autenticação, e-mail) devem ser resolvidos com ferramentas de terceiros ou bibliotecas prontas, focando energia no Core Domain.">
+                    <span class="te-letter">A</span> Alocação de engenharia estratégica em Subdomínios Genéricos que deveriam usar soluções prontas, negligenciando o Core Domain preditivo do negócio.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Anacrônico e descabido.">
-                    <span class="te-letter">B</span> A equipe deveria ter programado a autenticação em fitas magnéticas perfuradas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Autenticação e envio de e-mail são subdomínios genéricos com soluções de prateleira já consolidadas no mercado, não demandando esforço interno de construção.">
+                    <span class="te-letter">B</span> Falha de modelagem em Subdomínios de Suporte: autenticação deveria ser desenvolvida internamente por juniores enquanto os seniores desenhavam o esquema SQL do modelo de dados imobiliário.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Afirmação falsa sem respaldo regulatório.">
-                    <span class="te-letter">C</span> Imobiliárias são proibidas por lei de usar inteligência artificial.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema principal é estratégico de alocação de tempo e prioridade de negócio no Core Domain, e não meramente sintático de divisão de pacotes.">
+                    <span class="te-letter">C</span> Violação de Bounded Contexts: a equipe misturou a lógica de precificação com o protocolo SMTP na mesma classe de serviço sem criar uma camada anticorrupção (ACL) explícita.
                   </button>
                 </div>
 
@@ -1422,14 +1422,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual conceito fundamental de DDD resolveria esse conflito permitindo que ambos os times evoluam sem atritos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bounded Contexts isolam os modelos semânticos, permitindo que o Marketing tenha seus atributos de SEO e o Estoque mantenha seus identificadores físicos de barras sem acoplamento mútuo.">
-                    <span class="te-letter">A</span> Criação de Bounded Contexts distintos (Contexto de Catálogo/Marketing e Contexto de Armazém/Estoque): cada contexto possui sua própria representação de 'Produto' adaptada às suas necessidades de negócio, traduzindo dados entre si apenas através de contratos explícitos ou eventos de integração.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Forçar um modelo canônico corporativo único restabelece exatamente o conflito semântico entre termos com significados e ciclos distintos.">
+                    <span class="te-letter">A</span> Adoção do padrão Open Host Service com um único modelo canônico corporativo compartilhado por ambos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Inviabilizaria a operação logística da empresa.">
-                    <span class="te-letter">B</span> Obrigar os funcionários do armazém a memorizarem os códigos de SEO mentalmente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bounded Contexts isolam os modelos semânticos: Marketing pode ter Produto com atributos de SEO e Catálogo, enquanto o Armazém mantém SKU e dimensões físicas.">
+                    <span class="te-letter">B</span> Delimitação de Bounded Contexts distintos (Marketing e Estoque), permitindo que cada contexto possua seu próprio modelo conceitual de Produto com linguagem ubíqua adaptada.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prejudica o faturamento da empresa.">
-                    <span class="te-letter">C</span> Desativar o departamento de marketing para evitar alterações de código.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Triggers de banco geram acoplamento oculto e não resolvem a divergência conceitual dos modelos de domínio na aplicação.">
+                    <span class="te-letter">C</span> Criação de uma Camada Anticorrupção no banco através de triggers SQL que sincronizam as tabelas.
                   </button>
                 </div>
 
@@ -1545,14 +1545,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual padrão tático do DDD encapsula essa regra de negócio eliminando duplicação e garantindo integridade imediata?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Value Objects encapsulam dados com suas regras de validação inerentes e auto-contidas, prevenindo o antipadrão Primitive Obsession e eliminando validações redundantes.">
-                    <span class="te-letter">A</span> Value Object (Objeto de Valor imutável): criar uma classe ou record `record Cpf(String valor)` que executa a validação das regras matemáticas e de formatação diretamente em seu construtor compacto; se o objeto foi instanciado, ele é garantidamente válido por definição em qualquer ponto do sistema.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embora centralize a lógica, continua mantendo o CPF como string primitiva vulnerável a estados inválidos se alguém esquecer de chamar o serviço.">
+                    <span class="te-letter">A</span> Domain Service: criar ValidadorCpfService com injeção de dependência e invocar o método validar(cpf) em todos os fluxos de entrada da aplicação web.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação grave do princípio DRY (Don't Repeat Yourself).">
-                    <span class="te-letter">B</span> Copiar e colar o algoritmo de validação em 18 arquivos diferentes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CPF não possui ciclo de vida próprio nem identidade distinta além do seu valor; tratá-lo como entidade adiciona sobrecarga inútil de ORM.">
+                    <span class="te-letter">B</span> Entity com chave de banco: transformar o CPF em entidade persistível com chave primária UUID e tabela própria para assegurar integridade no ORM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conduta amadora e inaceitável em engenharia de dados.">
-                    <span class="te-letter">C</span> Aceitar qualquer texto no campo de CPF e deixar a polícia resolver depois.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Value Objects combatem a Primitive Obsession encapsulando dados e validações em objetos imutáveis cuja igualdade é determinada pelo valor dos seus atributos.">
+                    <span class="te-letter">C</span> Value Object: criar tipo imutável que valida suas invariantes no construtor, assegurando que qualquer instância existente seja válida por definição.
                   </button>
                 </div>
 
@@ -1667,14 +1667,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual deve ser a primeira pergunta do candidato segundo o Framework de 4 Passos de Alex Xu?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Delimitar requisitos funcionais e não-funcionais (escopo e volume) é o passo 1 indispensável antes de qualquer traço de arquitetura.">
-                    <span class="te-letter">A</span> Perguntas de escopo e escala (Passo 1): 'Quais são as funcionalidades essenciais deste MVP (apenas upload e feed, ou também comentários e mensagens privadas)? Qual é a estimativa de usuários ativos diários e a proporção esperada entre visualizações e uploads?'.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Passo 1 do framework consiste em delimitar o problema com clareza, alinhando requisitos funcionais, escala esperada e restrições antes de desenhar soluções.">
+                    <span class="te-letter">A</span> Clarificação de requisitos funcionais e não-funcionais: escopo das funcionalidades essenciais, volume de usuários ativos e proporção de leitura versus escrita.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Demonstra falta de comunicação e de metodologia de requisitos.">
-                    <span class="te-letter">B</span> Começar a desenhar as tabelas de banco de dados na lousa em silêncio.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escolher tecnologias e estratégias de sharding antes de entender o volume e os requisitos do sistema é prematuro e reprova candidatos em entrevistas.">
+                    <span class="te-letter">B</span> Definição imediata do esquema de particionamento e sharding das tabelas de metadados no Cassandra para suportar crescimento linear de conexões simultâneas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Totalmente inadequado e sem relevância técnica.">
-                    <span class="te-letter">C</span> Perguntar quanto o entrevistador ganha de salário mensal.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Detalhes de otimização de imagem pertencem à fase de deep dive e design detalhado (Passos 3 e 4), não à abertura da entrevista.">
+                    <span class="te-letter">C</span> Estimativa de latência na rede de entrega de conteúdo (CDN) e seleção de protocolos de compressão de imagens em formato WebP para otimizar transferência móvel.
                   </button>
                 </div>
 
@@ -1799,14 +1799,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual combinação de padrões arquiteturais universais resolve a ingestão, armazenamento e exibição no mapa?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A composição clássica de Buffer assíncrono + Cache geoespacial em RAM + Persistência em lote resolve integralmente o desafio com componentes padronizados.">
-                    <span class="te-letter">A</span> Ingestão via Gateway de Borda → Buffer de mensagens em Kafka/Queue (para amortecer picos) → Workers consumindo em lote e atualizando coordenadas em Cache Geoespacial em memória (Redis com Geohash/H3) → Histórico persistido em lote assíncrono em banco Time-Series (TSDB).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 50.000 conexões abertas gerando 10.000 inserts/segundo saturariam os locks e pool de conexões do PostgreSQL relacional tradicional instantaneamente.">
+                    <span class="te-letter">A</span> Conexão direta de cada dispositivo via WebSocket no PostgreSQL corporativo, persistindo coordenadas em tabela relacional com triggers síncronos de notificação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Abordagem completamente inoperante e insegura.">
-                    <span class="te-letter">B</span> Cada patinete abre uma conexão SSH direta no servidor central e executa um INSERT individual em arquivo de bloco de notas.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Desacoplar a ingestão em fila protege o sistema de picos, Redis com índices geoespaciais atende leituras do mapa em milissegundos e TSDB arquiva a telemetria.">
+                    <span class="te-letter">B</span> Ingestão em buffer assíncrono (Kafka/Queue), atualização de posição atual em cache geoespacial em memória (Redis) e persistência histórica em banco Time-Series.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elimina a funcionalidade central do produto.">
-                    <span class="te-letter">C</span> Desativar o envio de GPS para economizar a bateria dos patinetes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elasticsearch possui alto custo de indexação para fluxos intensivos de escrita pura a cada 5s por dezenas de milhares de dispositivos.">
+                    <span class="te-letter">C</span> Ingestão distribuída em cluster Elasticsearch com indexação síncrona de documentos JSON a cada ping de telemetria, utilizando réplicas ativas para consulta no mapa.
                   </button>
                 </div>
 
@@ -1939,14 +1939,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Como converter esse algoritmo para complexidade linear O(N) utilizando a estrutura de dados correta?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Substituir varredura sequencial em listas por lookup em Hash Sets O(1) transforma a curva de tempo de execução e resolve gargalos massivos de CPU.">
-                    <span class="te-letter">A</span> Converter a lista de permissões em um HashSet: a busca dentro do HashSet possui complexidade O(1) em média; a verificação dos 50.000 usuários passa a rodar em tempo O(N * 1) = O(N), reduzindo de 1 bilhão de operações para apenas 50 mil operações instantâneas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ordenar a lista reduz o custo se combinado com busca binária O(N log M), mas a varredura sequencial continuaria O(N * M) e o QuickSort adiciona custo inicial.">
+                    <span class="te-letter">A</span> Ordenar previamente as permissões com QuickSort e manter varredura sequencial nos dois loops para garantir acesso contíguo na cache.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não resolve a ineficiência algorítmica quadrática.">
-                    <span class="te-letter">B</span> Aumentar a prioridade da thread no sistema operacional para 999.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Paralelizar um algoritmo O(N * M) apenas mascara a ineficiência algorítmica consumindo mais núcleos sem alterar a complexidade assintótica.">
+                    <span class="te-letter">B</span> Substituir os dois loops por chamadas paralelas em Stream com paralelismo no fork-join pool, dividindo a carga entre núcleos de CPU.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem impacto no número de operações do loop.">
-                    <span class="te-letter">C</span> Substituir os números por letras em ordem decrescente.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O lookup em HashSet tem tempo constante O(1) em média, transformando a verificação de 1 bilhão de comparações em apenas 50.000 operações.">
+                    <span class="te-letter">C</span> Inserir as permissões em uma tabela hash (HashSet), reduzindo o tempo de consulta de cada permissão para O(1) e a complexidade total da verificação para O(N).
                   </button>
                 </div>
 
@@ -2063,14 +2063,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual algoritmo de travessia em grafos descobre o caminho com o menor número de saltos em tempo ótimo?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O algoritmo BFS explora o grafo em ondas concêntricas de distância, sendo o algoritmo padrão para encontrar o caminho com menor número de saltos.">
-                    <span class="te-letter">A</span> Busca em Largura (Breadth-First Search - BFS) utilizando uma Fila (Queue): explora primeiro todos os vizinhos diretos (grau 1), depois os vizinhos dos vizinhos (grau 2), garantindo matematicamente encontrar o menor número de arestas entre dois nós.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em grafos não ponderados, o BFS garante matematicamente encontrar a menor distância em saltos explorando todos os vizinhos de raio k antes do raio k+1.">
+                    <span class="te-letter">A</span> Busca em Largura (BFS): explora os nós nível por nível a partir da origem, garantindo encontrar o caminho com menor número de arestas em grafos não ponderados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O DFS explora ramos inteiros até a folha e não garante o caminho mais curto, podendo entrar em loops infinitos.">
-                    <span class="te-letter">B</span> Busca em Profundidade (DFS) até o fim do grafo sem controle de visitados.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O DFS pode se aprofundar em caminhos excessivamente longos antes de encontrar um vizinho direto, não garantindo o menor caminho sem explorar todo o grafo.">
+                    <span class="te-letter">B</span> Busca em Profundidade (DFS): percorre ramos individuais até as folhas utilizando recursão, acumulando todos os caminhos para posterior ordenação dos dados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A ordem alfabética de nomes não expressa topologia de relacionamentos em grafos.">
-                    <span class="te-letter">C</span> Sort aleatório dos nomes em ordem alfabética.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bellman-Ford possui complexidade O(V * E) e é voltado a grafos ponderados com pesos negativos, sendo desnecessariamente custoso para saltos simples em redes sociais.">
+                    <span class="te-letter">C</span> Algoritmo de Bellman-Ford: avalia relaxamento sucessivo de arestas para calcular distâncias mínimas prevenindo ciclos negativos na rede de contatos corporativa.
                   </button>
                 </div>
 
@@ -2184,14 +2184,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual estratégia prática de estudo maximiza a retenção e o domínio conceitual segundo o Método dos Três Passes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A leitura ativa combinada com sobrevôo prévio e síntese autoral própria (Active Recall) é a metodologia com maior taxa comprovada de fixação de conhecimento denso.">
-                    <span class="te-letter">A</span> Fazer o sobrevôo inicial no índice e nos resumos dos capítulos para construir o mapa mental do livro, ler ativamente destacando os trade-offs centrais e produzir uma síntese própria em uma página explicando com suas palavras os modelos conceituais aprendidos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Grifar e reler passivamente gera ilusão de fluência (falso domínio) com baixa retenção de longo prazo.">
+                    <span class="te-letter">A</span> Grifar todos os parágrafos com marcadores coloridos e reler o livro de capa a capa três vezes consecutivas de forma passiva.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Causa sobrecarga cognitiva extrema com retenção nula em curto prazo.">
-                    <span class="te-letter">B</span> Ler todas as 600 páginas em 48 horas sem dormir e nunca mais tocar no livro.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O método dos três passes constrói um arcabouço mental antes do mergulho profundo, consolidando o aprendizado com síntese autoral e recordação ativa.">
+                    <span class="te-letter">B</span> Realizar sobrevôo estrutural (Passo 1), leitura ativa dos conceitos e trade-offs (Passo 2) e síntese crítica própria aplicando os modelos mentais (Passo 3).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não possui fundamentação científica.">
-                    <span class="te-letter">C</span> Colocar o livro embaixo do travesseiro para aprender por osmose noturna.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Memorizar termos isolados em resumos lineares sem articular os trade-offs e a arquitetura sistêmica não desenvolve critério técnico de engenharia.">
+                    <span class="te-letter">C</span> Transcrever os conceitos teóricos do livro em resumos literais extensos copiando as definições de termos para fixar a terminologia antes de avançar para os capítulos seguintes.
                   </button>
                 </div>
 
@@ -2307,14 +2307,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual contra-argumento arquitetural baseado nos debates clássicos de engenharia de software contesta essa imposição?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em sistemas distribuídos, a autonomia de deploy supera a proibição de duplicação de pequenos DTOs de dados; acoplamento por bibliotecas compartilhadas é uma das maiores armadilhas da arquitetura.">
-                    <span class="te-letter">A</span> Acoplamento de Dependência vs Autonomia: compartilhar uma biblioteca de código de domínio cria acoplamento de release entre os serviços (uma alteração no jar para atender o time A pode quebrar o time B ou forçar deploys coordenados); duplicar o DTO simples isola o ciclo de vida e garante independência real dos times.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em arquiteturas distribuídas, a autonomia dos times supera o princípio DRY em objetos de fronteira; bibliotecas compartilhadas criam acoplamento implícito de release.">
+                    <span class="te-letter">A</span> O compartilhamento de bibliotecas de domínio introduz acoplamento de ciclo de vida e de deploy entre os serviços; tolerar duplicação de pequenos DTOs preserva a autonomia.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Java suporta centenas de dependências JAR.">
-                    <span class="te-letter">B</span> Porque o Java proíbe importar mais de 1 arquivo JAR em microsserviços.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Java compila perfeitamente dependências com classes e pacotes idênticos em serviços isolados.">
+                    <span class="te-letter">B</span> O compilador Java não permite compilar projetos que utilizem classes com os mesmos nomes de pacotes em microsserviços distintos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem relevância com a discussão técnica.">
-                    <span class="te-letter">C</span> Porque endereços não possuem CEP em arquitetura de microsserviços.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O DRY continua válido para lógica interna de cada serviço, mas seu uso dogmático entre fronteiras de serviços distribuídos cria forte acoplamento.">
+                    <span class="te-letter">C</span> O padrão DRY é aplicável exclusivamente a código legado procedural monolítico, sendo proibido por convenção na arquitetura moderna.
                   </button>
                 </div>
 
@@ -2432,14 +2432,14 @@ cobranca-service ──→ banco de cobrança
                 <p class="te-instrucao">Qual é o registro mais valioso que ele deve produzir no repositório de estudos do time?</p>
 
                 <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Uma listagem descritiva de tópicos funciona como sumário, mas não fornece critério prático de tomada de decisão nem análise de trade-offs.">
+                    <span class="te-letter">A</span> Um resumo cronológico detalhando os tópicos abordados em cada capítulo da obra acompanhado de um catálogo descritivo de ferramentas e bibliotecas mencionadas pelo autor.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Tutoriais de implementação ilustram a sintaxe do framework, mas não avaliam os limites arquiteturais nem a aplicabilidade no contexto da empresa.">
+                    <span class="te-letter">B</span> Um tutorial prático de implementação reproduzindo a aplicação de exemplo do livro com scripts de infraestrutura como código para publicação no provedor de nuvem.
+                  </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Documentar as forças, os custos e os limites de aplicabilidade da tese no contexto real da empresa é a verdadeira formação de critério de engenharia.">
-                    <span class="te-letter">A</span> Uma nota estruturada de síntese contendo: a tese central da obra, os trade-offs assumidos (ex: menor custo operacional vs perda de previsibilidade de cold starts e vendor lock-in) e um guia de quando a equipe DEVE e NÃO DEVE adotar essa abordagem nos projetos da empresa.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não constrói critério técnico nem conhecimento institucional.">
-                    <span class="te-letter">B</span> Uma selfie segurando a capa do livro para postar em redes sociais sem nenhuma nota técnica.
-                  </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trabalho mecânico sem síntese crítica ou valor de engenharia.">
-                    <span class="te-letter">C</span> Copiar o livro inteiro linha por linha à mão em um caderno escolar.
+                    <span class="te-letter">C</span> Uma nota de síntese com a tese central, os trade-offs avaliados e diretrizes claras de quando a equipe deve e não deve adotar o padrão nos projetos.
                   </button>
                 </div>
 
@@ -2567,5 +2567,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 </style>
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

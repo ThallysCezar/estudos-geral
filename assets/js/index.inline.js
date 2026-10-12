@@ -354,6 +354,7 @@ if(btnExportar){
     var backup = {
       versao: 1,
       exportadoEm: new Date().toISOString(),
+      origem: "site-estudos",
       dados: {}
     };
     try {
@@ -361,7 +362,7 @@ if(btnExportar){
         var k = localStorage.key(i);
         // Proteção estrita: NUNCA exportar chaves de API, senhas ou tokens
         if(!k || /api_key|token|secret|credential|password|gemini/i.test(k)) continue;
-        if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
+        if(k.startsWith("site.") || k.startsWith("pratica.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.includes("-rev-") || k.startsWith("ml.") || k === "quiz_xp"){
           backup.dados[k] = localStorage.getItem(k);
         }
       }
@@ -399,35 +400,45 @@ if(btnRestaurar && fileInput){
     var reader = new FileReader();
     reader.onload = function(e){
       try {
-        var json = JSON.parse(e.target.result);
-        if(!json || !json.dados || typeof json.dados !== "object"){
-          alert("Arquivo de backup inválido.");
+        var raw = e.target.result;
+        if(typeof raw !== "string" || raw.length > 5000000){
+          alert("Arquivo excede o tamanho máximo seguro suportado (5MB).");
+          return;
+        }
+        var json = JSON.parse(raw);
+        if(!json || typeof json !== "object" || Array.isArray(json) || !json.dados || typeof json.dados !== "object" || Array.isArray(json.dados)){
+          alert("Estrutura do arquivo de backup inválida ou corrompida.");
+          return;
+        }
+        var keys = Object.keys(json.dados);
+        if(keys.length > 2500){
+          alert("Quantidade de registros no arquivo excede o limite aceito.");
           return;
         }
         var count = 0;
-        for(var k in json.dados){
-          if(Object.prototype.hasOwnProperty.call(json.dados, k)){
-            // Blindagem contra Prototype Pollution e injeção de credenciais
-            if(k === "__proto__" || k === "constructor" || k === "prototype") continue;
-            if(/api_key|token|secret|credential|password|gemini/i.test(k)) continue;
-            // Validação de escopo de chaves e tipo primitivo seguro
-            if(k.startsWith("site.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.startsWith("ml.") || k === "quiz_xp"){
-              if(typeof json.dados[k] === "string"){
-                localStorage.setItem(k, json.dados[k]);
-                count++;
-              }
+        for(var i = 0; i < keys.length; i++){
+          var k = keys[i];
+          // Blindagem contra Prototype Pollution e injeção de credenciais
+          if(k === "__proto__" || k === "constructor" || k === "prototype") continue;
+          if(/api_key|token|secret|credential|password|gemini/i.test(k)) continue;
+          // Validação de escopo de chaves e tipo primitivo seguro
+          if(k.startsWith("site.") || k.startsWith("pratica.") || k.includes("-completo-") || k.includes("-trilha-") || k.includes("-conteudo-") || k.includes("-rev-") || k.startsWith("ml.") || k === "quiz_xp"){
+            var val = json.dados[k];
+            if(typeof val === "string" && val.length <= 500000){
+              localStorage.setItem(k, val);
+              count++;
             }
           }
         }
         var msg = q("backupMsg");
         if(msg){
-          msg.textContent = "✓ " + count + " chaves restauradas com validação! Atualizando...";
+          msg.textContent = "✓ " + count + " chaves restauradas com validação de esquema! Atualizando...";
           msg.style.display = "block";
         }
         atualizarProgressoGlobal();
         setTimeout(function(){ location.reload(); }, 1200);
       } catch(err){
-        alert("Erro ao ler arquivo JSON: " + err.message);
+        alert("Erro ao validar e ler arquivo JSON: " + err.message);
       }
     };
     reader.readAsText(file);
@@ -450,6 +461,7 @@ var PALETTE_DATA = [
   {t:"Git em profundidade",sub:"Grafo DAG, reflog, rebase, squash e recuperação",cat:"CADERNO",url:"cadernos/git.html",cor:"var(--pink)"},
   {t:"Inglês técnico completo",sub:"Input compreensível, vocabulário e reuniões",cat:"CADERNO",url:"cadernos/ingles.html",cor:"var(--cyan)"},
   {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"CADERNO",url:"cadernos/oratoria.html",cor:"var(--gold)"},
+  {t:"Governança e segurança de TI",sub:"Governança, risco, controles, IAM, privacidade e continuidade",cat:"CADERNO",url:"cadernos/governanca-seguranca.html",cor:"var(--cyan)"},
   {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"trilhas/mensageria.html#g2",cor:"var(--pink)"},
   {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j2",cor:"var(--rose)"},

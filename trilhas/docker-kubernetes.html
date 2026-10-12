@@ -7,6 +7,9 @@
 <meta name="description" content="Docker e Kubernetes completo: a trilha visual e o conteúdo em profundidade num arquivo só, em tema Dracula. Trilha com 74 nós em 14 marcos (do porquê dos containers ao cluster em produção) e conteúdo com 36 tópicos em 10 partes: namespaces e cgroups, camadas e multi-stage, redes e volumes, Compose, estado desejado, Pod e Deployment, Service e Ingress, probes e recursos, PVC e StatefulSet, rollout, HPA, RBAC e Helm. Tudo pelo terminal Linux.">
 <title>Docker e Kubernetes completo — trilha visual + conteúdo</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
 <style>
 
 /* ===================== DRACULA — tema único ===================== */
@@ -487,243 +490,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 
 </style>
 
-<style id="img-modal-styles">
-
-/* ==================== MODAL DE IMAGEM / LIGHTBOX COM ZOOM ==================== */
-.img-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .22s ease, visibility .22s ease;
-}
-.img-modal.open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.im-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 14, 22, 0.90);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.im-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  overflow: hidden;
-  user-select: none;
-}
-.im-header {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 22px;
-  background: rgba(28, 29, 39, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line2, #44475a);
-  z-index: 10;
-}
-.im-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.im-badge {
-  font: 800 .68rem/1 "Inter", sans-serif;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--brand, #bd93f9);
-  background: var(--brand-s, #332a4e);
-  border: 1px solid var(--brand, #bd93f9);
-  border-radius: 6px;
-  padding: 5px 9px;
-  white-space: nowrap;
-}
-.im-caption {
-  margin: 0;
-  font: 600 .9rem/1.25 "Inter", sans-serif;
-  color: var(--ink, #f8f8f2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.im-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.im-btn {
-  background: var(--card, #2f313f);
-  color: var(--ink, #f8f8f2);
-  border: 1px solid var(--line2, #44475a);
-  border-radius: 8px;
-  padding: 0 11px;
-  font: 700 .86rem "Inter", sans-serif;
-  cursor: pointer;
-  transition: all .15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  min-width: 34px;
-}
-.im-btn:hover {
-  background: var(--brand, #bd93f9);
-  color: #1e1f29;
-  border-color: var(--brand, #bd93f9);
-}
-.im-btn.im-scale-val {
-  min-width: 58px;
-  font-family: "Cascadia Code", monospace;
-  font-size: .78rem;
-}
-.im-btn.im-close {
-  background: rgba(255, 85, 85, 0.16);
-  border-color: rgba(255, 85, 85, 0.4);
-  color: #ff5555;
-  font-size: 1rem;
-  margin-left: 6px;
-}
-.im-btn.im-close:hover {
-  background: #ff5555;
-  border-color: #ff5555;
-  color: #ffffff;
-}
-.im-viewport {
-  flex: 1 1 auto;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-}
-.im-viewport.is-dragging {
-  cursor: grabbing;
-}
-.im-canvas {
-  position: absolute;
-  transform-origin: center center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  will-change: transform;
-}
-.im-canvas img {
-  max-width: 90vw;
-  max-height: 80vh;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-  border: 1px solid var(--line2, #44475a);
-  pointer-events: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  cursor: grab;
-}
-.im-viewport.is-dragging .im-canvas img {
-  cursor: grabbing;
-}
-.im-footer {
-  flex: 0 0 auto;
-  padding: 9px 18px;
-  text-align: center;
-  background: rgba(20, 21, 30, 0.88);
-  border-top: 1px solid var(--line, #343746);
-  z-index: 10;
-}
-.im-hint {
-  font: 400 .78rem "Inter", sans-serif;
-  color: var(--muted, #9aa1c0);
-}
-.im-hint b {
-  color: var(--cyan, #8be9fd);
-}
-
-@media (max-width: 640px) {
-  .im-header { padding: 10px 14px; }
-  .im-badge { display: none; }
-  .im-caption { font-size: .8rem; }
-  .im-btn { height: 30px; min-width: 30px; padding: 0 7px; font-size: .8rem; }
-  .im-hint { font-size: .7rem; }
-}
-
-/* ==================== IMAGENS & MAPAS CONCEITUAIS PADRÃO ==================== */
-.topic-img {
-  margin: 24px 0 28px 0;
-  padding: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--line2, #44475a);
-  background: #1e1f29;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
-  transition: border-color .2s ease, box-shadow .2s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover {
-  border-color: var(--brand, #bd93f9);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
-}
-.topic-img a {
-  display: block;
-  text-decoration: none;
-  cursor: zoom-in;
-}
-.topic-img img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform .3s ease;
-  cursor: zoom-in;
-}
-.topic-img:hover img {
-  transform: scale(1.008);
-}
-.topic-img figcaption {
-  padding: 11px 18px;
-  font: 600 .82rem/1.3 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--muted, #9aa1c0);
-  background: var(--bg2, #21222c);
-  border-top: 1px solid var(--line, #343746);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.topic-img figcaption span {
-  color: var(--cyan, #8be9fd);
-  font-family: "Cascadia Code", Consolas, monospace;
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-}
-.topic-img figcaption em {
-  font-style: normal;
-  color: var(--ink, #f8f8f2);
-  font-weight: 500;
-}
-
-</style>
-<style>
-
-</style>
+<link rel="stylesheet" id="img-modal-styles" href="../assets/css/img-modal.css">
 <style id="v5-5-code-studio-styles">
 /* ==================== V5.5 BALANCED CODE STUDIO ARCHITECTURE ==================== */
 @media (min-width: 1200px) {
@@ -1042,7 +809,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 
       <!-- MAPA MENTAL PRINCIPAL -->
       <figure class="topic-img">
-        <img src="../assets/img/docker-kubernetes/docker_kubernetes_mapa_mental_principal.jpg" alt="Mapa Mental: DOCKER E KUBERNETES - CONTAINERS QUE EMPACOTAM" loading="lazy">
+        <img src="../assets/img/docker-kubernetes/docker_kubernetes_mapa_mental_principal.jpg" alt="Mapa Mental: DOCKER E KUBERNETES - CONTAINERS QUE EMPACOTAM" loading="lazy" decoding="async">
         <figcaption>
           <span>MAPA MENTAL PRINCIPAL</span>
           <em>DOCKER &amp; KUBERNETES — Containers, Imagens, Compose &amp; Orquestração</em>
@@ -1258,14 +1025,14 @@ class OrderRepositoryTest {
                 <p class="te-instrucao">Como o Docker resolve esse atrito quando configurado corretamente na esteira de build?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Contêineres compartilham o kernel da máquina hospedeira. Se houver binários nativos compilados para ARM64 (Apple Silicon), eles falharão em servidores x86_64 sem emulação ou compilação multiplataforma com buildx.">
-                    <span class="te-letter">A</span> Construindo uma imagem OCI multiplataforma (usando docker buildx para arquitetura linux/amd64), garantindo que as dependências nativas sejam compiladas exatamente contra a mesma libc e arquitetura de CPU do ambiente de produção.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A flag no docker run apenas executa o contêiner via emulação (QEMU); a solução robusta para CI/CD de produção é compilar a imagem nativamente na arquitetura de destino.">
+                    <span class="te-letter">A</span> Adicionar a flag --platform=linux/x86_64 no comando docker run para que a JVM execute tradução dinâmica de instruções em runtime.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A tradução exige emuladores como QEMU, que são lentos e precisam ser configurados propositalmente.">
-                    <span class="te-letter">B</span> O Docker converte automaticamente instruções binárias de ARM64 para x86 em tempo de execução sem nenhum custo de CPU.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Como contêineres compartilham o kernel do host, dependências nativas (.so) devem ser compiladas especificamente contra a arquitetura e libc do ambiente de produção.">
+                    <span class="te-letter">B</span> Compilar imagens multiplataforma com docker buildx para a arquitetura linux/amd64 usando o toolchain nativo compatível.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Java carrega bibliotecas nativas perfeitamente via JNI/JNA desde que compatíveis com a arquitetura.">
-                    <span class="te-letter">C</span> A JVM proíbe o uso de bibliotecas nativas .so dentro de contêineres.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Binários ELF já compilados para arquiteturas distintas (ARM64 vs x86_64) não são relinkados em runtime sem recompilação completa do código-fonte.">
+                    <span class="te-letter">C</span> Instalar o pacote build-essential dentro do contêiner para que o binário .so seja relinkado dinamicamente durante o boot da JVM.
                   </button>
                 </div>
 
@@ -1443,14 +1210,14 @@ ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app.jar"]</code></pre>
                 <p class="te-instrucao">O que acontece com o contêiner no exato instante em que ele atinge 1.001MB?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O cgroup memory enforce o teto configurado. Quando a soma de heap + off-heap da JVM excede a cota do cgroup, o kernel Linux intervém sumariamente terminando o processo com status 137.">
-                    <span class="te-letter">A</span> O subsistema cgroup do kernel Linux detecta a violação do limite estrito de memória e envia um sinal SIGKILL (Kill 9) para o processo, encerrando o contêiner imediatamente com Exit Code 137 (OOMKilled).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A terminação por cgroup ocorre externamente no nível do kernel do Linux, sem tempo de a JVM capturar a falha.">
+                    <span class="te-letter">A</span> A JVM dispara uma OutOfMemoryError no log da aplicação e desacelera o garbage collector para liberar páginas de memória.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Limites de cgroups são rígidos e não se auto-expandem dinamicamente sem orquestrador.">
-                    <span class="te-letter">B</span> O Docker expande automaticamente o limite para 32GB usando a memória ociosa da máquina.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quando o limite estrito do cgroup é atingido e não há swap habilitado explicitamente, o kernel aciona o OOM Killer imediatamente.">
+                    <span class="te-letter">B</span> O daemon do Docker reduz a prioridade de CPU do processo e move o excesso de alocação de memória temporariamente para o swap.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A JVM é abortada externamente pelo kernel antes mesmo de capturar qualquer exceção.">
-                    <span class="te-letter">C</span> A JVM lança NullPointerException no console e continua rodando.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O subsistema cgroup memory impõe o teto configurado. Ao ultrapassar o limite sem margem, o kernel envia SIGKILL sumário, gerando o status 137 (OOMKilled).">
+                    <span class="te-letter">C</span> O cgroup do kernel Linux detecta a violação do limite estrito e encerra o processo com SIGKILL (Exit Code 137).
                   </button>
                 </div>
 
@@ -1630,14 +1397,14 @@ docker run -d --name order-service \
                 <p class="te-instrucao">Quanto espaço em disco aproximadamente essas 5 instâncias consumirão para armazenar as camadas base da imagem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Graças ao mecanismo de Copy-on-Write (OverlayFS/UnionFS), camadas imutáveis de imagem são deduplicadas e compartilhadas por todas as instâncias em execução no host.">
-                    <span class="te-letter">A</span> Aproximadamente 180MB no total (e não 900MB), porque o sistema de arquivos UnionFS compartilha as camadas somente-leitura entre todos os contêineres filhos, alocando apenas poucos kilobytes para a camada de escrita efêmera de cada um.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Graças ao mecanismo de Copy-on-Write (OverlayFS/UnionFS), as camadas imutáveis da imagem são deduplicadas em disco no storage driver.">
+                    <span class="te-letter">A</span> Aproximadamente 180MB no host, pois o OverlayFS compartilha camadas somente leitura entre contêineres, alocando apenas camada de escrita efêmera por instância.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A clonagem total de disco ocorre em VMs tradicionais, não em contêineres com UnionFS.">
-                    <span class="te-letter">B</span> Exatamente 900MB (5 x 180MB), pois o Docker clona a imagem inteira para cada processo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A replicação completa do disco é típica de máquinas virtuais pesadas, não de contêineres com sistemas de arquivos em camadas.">
+                    <span class="te-letter">B</span> Exatamente 900MB, pois cada contêiner isola integralmente seu sistema de arquivos em partições separadas no disco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As camadas precisam estar gravadas no disco do storage driver (/var/lib/docker).">
-                    <span class="te-letter">C</span> Zero bytes, porque imagens de contêiner rodam exclusivamente na CPU sem tocar no disco rígido.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Binários e bibliotecas de camadas base são compartilhados em modo somente leitura sem duplicação.">
+                    <span class="te-letter">C</span> Cerca de 360MB, devido à duplicação obrigatória de binários do Node.js entre instâncias concorrentes.
                   </button>
                 </div>
 
@@ -1816,14 +1583,14 @@ docker image inspect order-service:1.0.0 | grep -i io.buildpacks</code></pre>
                 <p class="te-instrucao">Qual a garantia técnica fornecida pelos padrões da OCI (Open Container Initiative)?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A padronização da OCI garantiu a interoperabilidade da indústria. A imagem gerada pelo Docker é um artefato universal compatível com qualquer motor moderno.">
-                    <span class="te-letter">A</span> Compatibilidade total: as imagens geradas pelo Docker seguem a especificação OCI Image Specification; qualquer runtime compatível com OCI (containerd, CRI-O, Podman, runc) é capaz de puxar e executar a imagem sem nenhuma modificação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O padrão OCI Image Specification é universal; cri-dockerd é apenas um adaptador legado de socket, não conversor de imagens.">
+                    <span class="te-letter">A</span> As imagens geradas pelo Docker exigem conversão prévia de formato via cri-dockerd para rodar em runtimes modernos como containerd e CRI-O.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O próprio Docker usa containerd por baixo dos panos.">
-                    <span class="te-letter">B</span> Incompatibilidade total: imagens Docker exigem o dockerd proprietário e não executam no containerd.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O padrão OCI padronizou o formato de manifesto, configuração e camadas tarball, garantindo total portabilidade entre engines.">
+                    <span class="te-letter">B</span> As imagens seguem a OCI Image Specification e rodam em qualquer runtime compatível, como containerd, CRI-O e Podman.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Wasm é outra tecnologia; o padrão OCI cobre contêineres Linux convencionais.">
-                    <span class="te-letter">C</span> Será necessário recompilar todo o código-fonte em formato WebAssembly.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A OCI especifica o formato de empacotamento da imagem (image-spec) e o ciclo de vida do runtime (runtime-spec), não o Dockerfile.">
+                    <span class="te-letter">C</span> A especificação padroniza apenas a sintaxe do Dockerfile, mantendo os formatos binários de camadas proprietários de cada fornecedor.
                   </button>
                 </div>
 
@@ -2024,14 +1791,14 @@ CMD ["node", "server.js"]</code></pre>
                 <p class="te-instrucao">Por que esse Dockerfile é ineficiente em esteiras de desenvolvimento e CI/CD e como corrigi-lo?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Separar a cópia dos manifestos de dependência da cópia do código-fonte permite que o Docker reaproveite a camada de dependências em cache quando apenas a lógica da aplicação mudar.">
-                    <span class="te-letter">A</span> Porque 'COPY . .' copia o código antes do 'npm install'. Qualquer alteração no código invalida o cache, forçando o 'npm install' a baixar todas as bibliotecas da internet novamente a cada build. A correção é fazer 'COPY package*.json .', rodar 'RUN npm install' e só depois fazer 'COPY . .'.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O WORKDIR define o diretório de trabalho corrente e não bloqueia a resolução de dependências locais do npm.">
+                    <span class="te-letter">A</span> O comando npm install falha porque a instrução WORKDIR /app impede que os binários do Node acessem o diretório de módulos globais no Alpine.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A imagem oficial do Node inclui npm pré-instalado.">
-                    <span class="te-letter">B</span> Porque a imagem node:20-alpine não suporta comandos do npm.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema é puramente de invalidação prematura de cache de camadas do Docker durante o processo de build.">
+                    <span class="te-letter">B</span> Copiar todo o repositório antes de rodar os testes unitários corrompe o arquivo package-lock.json e impede a resolução de dependências no cache.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. /app é uma convenção excelente e segura.">
-                    <span class="te-letter">C</span> Porque o WORKDIR deve ser sempre /root/bin.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Separar a cópia dos manifestos de dependência do código-fonte permite que o Docker reaproveite a camada de dependências em cache quando apenas o código mudar.">
+                    <span class="te-letter">C</span> Alterações no código invalidam o cache do COPY; deve-se copiar package*.json, rodar npm install e só então copiar o código restante.
                   </button>
                 </div>
 
@@ -2248,14 +2015,14 @@ ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
                 <p class="te-instrucao">Quais são os dois principais benefícios técnicos obtidos com essa estrutura de Dockerfile?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Multi-Stage Build entrega uma imagem leve (de 900MB para ~180MB) e limpa, contendo apenas o estritamente necessário para execução do binário.">
-                    <span class="te-letter">A</span> Redução drástica do tamanho da imagem final (elimina Maven, JDK e código-fonte, mantendo apenas o JRE e o JAR) e maior segurança operacional (redução da superfície de ataque e execução com usuário não-root).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Multi-Stage Build entrega uma imagem leve e limpa, contendo apenas o runtime necessário para executar o bytecode compilado.">
+                    <span class="te-letter">A</span> Redução drástica do tamanho da imagem final e menor superfície de ataque ao separar o JDK de build do JRE de execução.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A imagem de runtime ainda contém o JRE eclipse-temurin para rodar o bytecode Java.">
-                    <span class="te-letter">B</span> Permite que a aplicação rode sem JVM em modo bare metal nativo.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O paralelismo do Maven é configurado via flags do próprio Maven (-T), e não pela estrutura de estágios do Docker.">
+                    <span class="te-letter">B</span> Permissão para executar compilação concorrente em paralelo de múltiplos módulos Maven sem necessidade de cache local.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos de dados devem rodar em contêineres ou instâncias separadas.">
-                    <span class="te-letter">C</span> Garante que o banco de dados PostgreSQL suba dentro do mesmo contêiner.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A imagem de runtime ainda inclui a JRE Eclipse Temurin para executar o JAR; AOT exigiria GraalVM Native Image.">
+                    <span class="te-letter">C</span> Garantia de compilação Ahead-of-Time automática, dispensando totalmente a presença da máquina virtual Java em tempo de execução.
                   </button>
                 </div>
 
@@ -2454,14 +2221,14 @@ spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
                 <p class="te-instrucao">Qual é a causa raiz da demora de 10 segundos e como resolver?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na forma Exec (com colchetes e aspas duplas), a JVM vira diretamente o PID 1 e recebe o sinal SIGTERM imediatamente, iniciando a rotina de shutdown gracioso em frações de segundo.">
-                    <span class="te-letter">A</span> Foi usada a Forma Shell: o Docker criou um processo '/bin/sh -c' como PID 1. O shell não repassa o sinal SIGTERM para o Java. O Docker aguarda o timeout padrão de 10 segundos e mata o contêiner com SIGKILL. A solução é usar a Forma Exec: ENTRYPOINT ["java", "-jar", "/app/service.jar"].
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A espera de 10 segundos é o timeout padrão do Docker antes de forçar o envio de SIGKILL quando o processo ignora o SIGTERM.">
+                    <span class="te-letter">A</span> O comando docker stop aguarda o descarregamento das conexões de banco de dados ativas antes de emitir a finalização.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A demora é o timeout de tolerância do Docker antes de forçar o SIGKILL.">
-                    <span class="te-letter">B</span> A JVM exige 10 segundos para descarregar o garbage collector do disco.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na forma exec (JSON array), a JVM assume diretamente o PID 1 e recebe o sinal SIGTERM imediatamente, disparando o shutdown gracioso.">
+                    <span class="te-letter">B</span> A forma shell inicia o processo sob /bin/sh como PID 1, que não repassa o sinal SIGTERM para a JVM; a correção é adotar a forma exec com colchetes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 'docker stop' é o comando padrão gracioso; 'docker kill' mata abruptamente.">
-                    <span class="te-letter">C</span> O comando 'docker stop' foi depreciado em favor do 'docker kill'.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O sinal enviado pelo docker stop é o SIGTERM (15), e a causa raiz é o shell intermediário que não o propaga.">
+                    <span class="te-letter">C</span> A JVM trava ao receber o sinal SIGQUIT porque o garbage collector não consegue sincronizar o heap com o disco antes do timeout.
                   </button>
                 </div>
 
@@ -2638,14 +2405,14 @@ ENTRYPOINT ["app.jar"]</code></pre>
                 <p class="te-instrucao">Quais alterações no Dockerfile resolvem ambas as exigências dos auditores?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Rodar com usuário sem privilégios (non-root) impede que falhas na aplicação comprometam o host, e bases mínimas (Alpine/Distroless) eliminam a esmagadora maioria dos pacotes desnecessários que acumulam CVEs.">
-                    <span class="te-letter">A</span> Migrar para uma imagem base mínima e segura (como distroless ou alpine atualizado), criar um usuário não-privilegiado (ex: adduser -u 10001 appuser) e declarar 'USER 10001' antes do ENTRYPOINT.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conceder CAP_SYS_ADMIN aumenta o risco de container breakout e agrava severamente a reprovação de auditoria.">
+                    <span class="te-letter">A</span> Configurar capabilities adicionais com CAP_SYS_ADMIN e habilitar chroot jail na pasta da aplicação mantendo o usuário root no manifesto.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso agrava brutalmente a segurança.">
-                    <span class="te-letter">B</span> Desativar o firewall do Docker para que os scanners não encontrem as portas abertas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Permissões de arquivo não eliminam CVEs de pacotes instalados nem impedem que o processo em execução com UID 0 aja como superusuário.">
+                    <span class="te-letter">B</span> Adicionar uma camada final no Dockerfile executando chmod 700 em todo o sistema de arquivos para restringir o acesso a processos externos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O UID continuaria sendo 0, mantendo privilégios totais de superusuário.">
-                    <span class="te-letter">C</span> Renomear o usuário root para 'admin' no arquivo /etc/passwd.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bases mínimas eliminam centenas de binários vulneráveis e a diretiva USER restringe o processo a privilégios não administrativos.">
+                    <span class="te-letter">C</span> Adotar imagem base mínima como distroless ou alpine atualizado e declarar um usuário non-root com a instrução USER antes do ENTRYPOINT.
                   </button>
                 </div>
 
@@ -2831,14 +2598,14 @@ docker inspect --format='{{index .RepoDigests 0}}' registry.empresa.com/order-se
                 <p class="te-instrucao">Qual foi a causa da regressão e qual a correção arquitetural recomendada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Tags mutáveis violam a previsibilidade e rastreabilidade de deploys. A imutabilidade de tags por commit SHA é indispensável para garantir que o que foi testado seja o que realmente roda em produção.">
-                    <span class="te-letter">A</span> Uso da tag mutável ':latest': um build recente experimental sobrescreveu a tag no registry. Ao reiniciar o pod com imagePullPolicy Always, o Kubernetes baixou a nova imagem que nunca havia sido homologada para produção. A correção é usar tags imutáveis com o hash do commit do Git (ex: :git-7f8a9b).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Tags mutáveis violam o princípio de imutabilidade e rastreabilidade de deploys. Usar o hash do commit garante previsibilidade absoluta.">
+                    <span class="te-letter">A</span> A tag :latest é mutável e puxou um build instável; deve-se utilizar tags imutáveis baseadas no commit SHA do repositório.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não se trata de expiração de licença, mas de sobrescrita de tag mutável.">
-                    <span class="te-letter">B</span> O Docker Hub expirou a licença da imagem durante a madrugada.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Registries não enviam notificações ativas para nós; com :latest, o Kubelet apenas adota imagePullPolicy Always implicitamente.">
+                    <span class="te-letter">B</span> O Kubelet reinicia pods com a política de AlwaysPull por padrão quando o registry notifica alteração no cabeçalho ETag da imagem base.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reinício de pods é rotina normal de orquestradores.">
-                    <span class="te-letter">C</span> O Kubernetes proíbe o reinício de pods que usam Java.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A imagem configurada aponta para um repositório corporativo explícito e foi sobreposta pela publicação de um artefato experimental.">
+                    <span class="te-letter">C</span> O nó perdeu o cache de camadas do containerd durante a rotação de logs e fez fallback para a imagem upstream pública do Docker Hub.
                   </button>
                 </div>
 
@@ -3031,14 +2798,14 @@ docker run -d \\
                 <p class="te-instrucao">Por que o contêiner do Ubuntu parou imediatamente após ser criado?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Um contêiner existe apenas para dar vida ao seu processo PID 1. Sem um processo em primeiro plano consumindo comandos, o processo conclui e o contêiner desliga.">
-                    <span class="te-letter">A</span> Porque o comando padrão da imagem Ubuntu é '/bin/bash'. Como o contêiner foi iniciado sem modo interativo (-it) e sem nenhum script para executar, o bash atingiu EOF (fim do arquivo) imediatamente e encerrou o processo PID 1, fazendo o contêiner transitar para o estado Exited.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Contêineres não rodam seus próprios kernels nem exigem systemd para operar processos em primeiro plano.">
+                    <span class="te-letter">A</span> O kernel Linux do contêiner sofreu kernel panic por ausência de um daemon de systemd ativo gerenciando os serviços.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A imagem de contêiner do Ubuntu consome menos de 30MB de RAM.">
-                    <span class="te-letter">B</span> Porque a imagem Ubuntu precisa de pelo menos 16GB de RAM para inicializar o sistema operacional.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O ciclo de vida do contêiner está atrelado ao seu processo PID 1. Sem comandos recebidos na entrada padrão (stdin), o bash encerra.">
+                    <span class="te-letter">B</span> O comando padrão /bin/bash encerrou seu ciclo ao atingir EOF por não ter sido iniciado com terminal interativo (-it).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Distribuições Linux no Docker são gratuitas e open-source.">
-                    <span class="te-letter">C</span> Porque o Docker exige a compra de licença corporativa para rodar distribuições Linux.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não existe essa exigência; basta fornecer um processo de longa execução ou executar com as flags -it.">
+                    <span class="te-letter">C</span> A imagem oficial do Ubuntu exige a definição prévia de uma variável de ambiente ENTRYPOINT_CMD para permanecer ativa.
                   </button>
                 </div>
 
@@ -3244,14 +3011,14 @@ docker run --rm \\
                 <p class="te-instrucao">Qual comando Docker implementa a persistência correta usando Named Volumes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A diretiva '-v pg_dados:/var/lib/postgresql/data' cria um Named Volume gerenciado pelo Docker. Os dados do banco residem no volume independente do ciclo de vida de contêineres específicos.">
-                    <span class="te-letter">A</span> docker run -d --name meu-postgres -v pg_dados:/var/lib/postgresql/data -e POSTGRES_PASSWORD=segredo postgres:16-alpine
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Montagens tmpfs gravam dados estritamente em memória RAM volátil, perdendo tudo ao parar o contêiner.">
+                    <span class="te-letter">A</span> docker run -d --name meu-pg --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=segredo postgres:16
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem a flag de volume (-v), os dados serão gravados na camada efêmera e perdidos ao remover o contêiner.">
-                    <span class="te-letter">B</span> docker run -d --name meu-postgres --memory=4g postgres:16-alpine
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A opção storage-opt apenas delimita quota do storage driver na camada de escrita efêmera, sem persistir dados.">
+                    <span class="te-letter">B</span> docker run -d --name meu-pg --storage-opt size=20G -e POSTGRES_PASSWORD=segredo -p 5432:5432 postgres:16-alpine
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 'docker commit' é um antipadrão arriscado que não resolve persistência contínua de bancos de dados.">
-                    <span class="te-letter">C</span> docker commit meu-postgres postgres-salvo
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A sintaxe -v pg_dados:/var/lib/postgresql/data cria um Named Volume desacoplado do ciclo de vida efêmero do contêiner.">
+                    <span class="te-letter">C</span> docker run -d --name meu-pg -v pg_dados:/var/lib/postgresql/data -e POSTGRES_PASSWORD=segredo postgres:16-alpine
                   </button>
                 </div>
 
@@ -3442,14 +3209,14 @@ spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/pedidos</code>
                 <p class="te-instrucao">Por que o nome 'db' não foi resolvido e como solucionar?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O servidor DNS interno do Docker só é ativado em redes criadas explicitamente pelo usuário (User-Defined Bridges), onde os nomes dos contêineres são resolvidos automaticamente como aliases de DNS.">
-                    <span class="te-letter">A</span> A rede bridge padrão do Docker não fornece resolução de DNS embutida por nome de contêiner. A solução é criar uma rede customizada ('docker network create rede-app') e conectar ambos os contêineres a ela, ativando o servidor DNS interno do Docker.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O servidor DNS embutido do Docker só é habilitado em redes criadas explicitamente pelo usuário (user-defined networks).">
+                    <span class="te-letter">A</span> A bridge padrão não possui resolução DNS automática por nome de contêiner; deve-se criar uma rede customizada (user-defined bridge) e conectar ambos a ela.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 5432 é a porta padrão oficial do PostgreSQL.">
-                    <span class="te-letter">B</span> Porque o PostgreSQL não aceita conexões na porta 5432 dentro do Docker.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Expor portas no host (-p) permite acesso externo à máquina, mas não resolve a resolução DNS interna entre contêineres.">
+                    <span class="te-letter">B</span> O contêiner do banco precisa expor a porta 5432 no host com a flag -p 5432:5432 para que outros contêineres resolvam o nome.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A resolução é local e interna à rede do Docker.">
-                    <span class="te-letter">C</span> O desenvolvedor precisa registrar o domínio 'db' no Registro.br.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O arquivo /etc/hosts do host físico não afeta a resolução de nomes isolada dentro dos namespaces de rede dos contêineres.">
+                    <span class="te-letter">C</span> Falta configurar uma entrada estática de mapeamento no arquivo /etc/hosts da máquina hospedeira para cada contêiner criado.
                   </button>
                 </div>
 
@@ -3645,14 +3412,14 @@ public class SecretConfig {
                 <p class="te-instrucao">Qual das opções abaixo respeita rigorosamente a boa prática de injeção de configuração em contêineres?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse desacoplamento permite que a exata mesma imagem binária imutável seja promovida por todos os ambientes sem risco de expor credenciais de produção no código.">
-                    <span class="te-letter">A</span> A imagem lê variáveis de ambiente padronizadas (ex: DB_URL, DB_USER, DB_PASSWORD). Ao rodar em homologação, o operador passa '--env-file .env.homolog'; ao rodar em produção, injeta as credenciais de produção via '--env-file' ou segredos do orquestrador.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Embutir credenciais em tempo de build viola o princípio dos 12 Fatores e expõe senhas no histórico das camadas da imagem.">
+                    <span class="te-letter">A</span> Compilar a imagem com perfis do Spring Boot embutidos e alternar o ambiente via argumento de compilação --build-arg PROFILE=prod na esteira.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Grava senhas nas camadas públicas da imagem e viola a imutabilidade do artefato.">
-                    <span class="te-letter">B</span> Criar dois Dockerfiles diferentes: 'Dockerfile.homolog' e 'Dockerfile.prod' contendo as senhas gravadas na instrução ENV.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Configurações que variam por ambiente devem ser injetadas em runtime, mantendo o artefato binário imutável e seguro.">
+                    <span class="te-letter">B</span> Ler variáveis de ambiente padronizadas na aplicação e injetar valores via --env-file ou segredos no momento da execução.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falha grave de segurança perimetral.">
-                    <span class="te-letter">C</span> Criar um endpoint público na API onde o desenvolvedor digita a senha por HTTP sem autenticação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bind mount de caminhos locais cria dependência forte da estrutura de diretórios do host e quebra portabilidade em orquestradores.">
+                    <span class="te-letter">C</span> Mapear arquivos de properties via volume bind mount local sobrescrevendo o arquivo application.yml no diretório de classes da aplicação.
                   </button>
                 </div>
 
@@ -3856,14 +3623,14 @@ curl -v http://localhost:8080/actuator/health</code></pre>
                 <p class="te-instrucao">Qual comando deve ser executado IMEDIATAMENTE como primeiro passo de diagnóstico técnico?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O comando 'docker logs' exibe a saída de erro e inicialização do processo que rodou antes de morrer, revelando instantaneamente se faltou uma variável de ambiente, se houve falha de compilação ou se a porta já estava ocupada.">
-                    <span class="te-letter">A</span> docker logs api-pagamentos
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse campo mostra erros do próprio engine ao subir o contêiner, mas não captura saídas padrão ou falhas internas da aplicação.">
+                    <span class="te-letter">A</span> Executar docker inspect --format={{.State.Error}} api-pagamentos para inspecionar códigos de erro de baixo nível emitidos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse comando apaga todas as imagens e volumes da máquina, destruindo dados de desenvolvimento sem investigar o erro.">
-                    <span class="te-letter">B</span> docker system prune -a --volumes
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando docker top falha quando o contêiner já se encontra no estado Exited.">
+                    <span class="te-letter">B</span> Executar docker top api-pagamentos para inspecionar os identificadores de threads e consumo de descritores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ações cegas sem leitura de telemetria básica atrasam a resolução.">
-                    <span class="te-letter">C</span> Reiniciar o computador físico para resetar a placa de rede.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O comando docker logs recupera a saída stdout/stderr do processo antes de morrer, revelando exceções, portas ocupadas ou variáveis faltantes.">
+                    <span class="te-letter">C</span> Executar docker logs api-pagamentos para inspecionar as mensagens de erro e exceções emitidas durante o boot.
                   </button>
                 </div>
 
@@ -4101,14 +3868,14 @@ docker compose down -v</code></pre>
                 <p class="te-instrucao">Qual garantia técnica é fornecida pela cláusula 'condition: service_healthy' no Compose?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Um contêiner de banco leva alguns segundos para inicializar os arquivos de dados. Aguardar o healthcheck garante que a aplicação não tente conectar antes de o socket estar aberto e operacional.">
-                    <span class="te-letter">A</span> A aplicação só terá seu contêiner iniciado após o PostgreSQL responder com sucesso ao utilitário 'pg_isready' (banco pronto para aceitar conexões SQL), evitando que a aplicação quebre com Connection Refused durante o boot.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A condição service_healthy aguarda que a checagem de integridade do PostgreSQL passe, evitando erros de conexão recusada no boot.">
+                    <span class="te-letter">A</span> Garante que o contêiner da app só iniciará após o teste de prontidão do banco (pg_isready) retornar status de sucesso.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Healthchecks apenas testam prontidão de serviço.">
-                    <span class="te-letter">B</span> Faz o banco de dados rodar em memória RAM sem gravar no disco.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O healthcheck valida apenas que o servidor do banco está ouvindo conexões, não coordenando migrações relacionais.">
+                    <span class="te-letter">B</span> Garante que as migrações de banco (Flyway/Liquibase) sejam executadas de forma atômica antes que o socket TCP receba conexões.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Docker Compose opera de forma autônoma sem Kubernetes.">
-                    <span class="te-letter">C</span> Obriga o Docker Compose a criar um cluster Kubernetes na máquina.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A cláusula afeta estritamente a ordem de inicialização entre os serviços no docker-compose up.">
+                    <span class="te-letter">C</span> Impede o encerramento do serviço do banco caso a aplicação consuma todo o pool de conexões ativas configurado no HikariCP.
                   </button>
                 </div>
 
@@ -4315,14 +4082,14 @@ docker compose down -v</code></pre>
                 <p class="te-instrucao">Qual capacidade arquitetural nativa do Kubernetes resolve automaticamente esse problema de resiliência?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a essência do Kubernetes: reconciliação contínua do estado desejado (Declarative Reconciliation). Ele transforma um pool de dezenas de máquinas físicas em um único computador virtual resiliente a falhas de hardware.">
-                    <span class="te-letter">A</span> Auto-healing e agendamento de nós (Scheduling): o Control Plane do Kubernetes monitora o heartbeat de todos os nós do cluster; se um nó falhar, o Controller Manager detecta a discrepância entre o estado desejado e o atual e agenda os Pods automaticamente em outros nós saudáveis sem intervenção humana.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quando o hardware falha, os processos são perdidos fisicamente; o K8s atua criando novas réplicas em nós remanescentes.">
+                    <span class="te-letter">A</span> Redirecionamento automático de sockets TCP no nível de kernel com failover de rede ativo-passivo sem reiniciar contêineres.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s redistribui as cargas de trabalho sobre as máquinas sobreviventes.">
-                    <span class="te-letter">B</span> O Kubernetes reconstrói o hardware queimado nos data centers da nuvem usando impressoras 3D.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O control plane monitora o heartbeat dos nós e, ao detectar perda de comunicação, reagenda os Pods afetados em servidores disponíveis.">
+                    <span class="te-letter">B</span> Reconciliação declarativa contínua pelo Controller Manager e agendamento automático de novos Pods em nós saudáveis pelo kube-scheduler.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Docker Compose por design não é um orquestrador de clusters distribuídos multi-host.">
-                    <span class="te-letter">C</span> O Docker Compose é capaz de fazer o mesmo desde que atualizado para a versão mais recente.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kubernetes não replica estado de memória volátil em tempo real entre máquinas físicas.">
+                    <span class="te-letter">C</span> Replicação síncrona de snapshots de processos em execução entre cgroups distribuídos para recuperação instantânea do estado.
                   </button>
                 </div>
 
@@ -4534,14 +4301,14 @@ spec:
                 <p class="te-instrucao">O que o Kubernetes faz nos segundos seguintes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a essência do modelo declarativo com auto-healing contínuo: o Control Plane persegue incansavelmente o estado desejado especificado no manifesto.">
-                    <span class="te-letter">A</span> O Kubelet e o ReplicaSet Controller detectam que o estado atual (3 Pods) divergiu do estado desejado (4 Pods) e disparam imediatamente a criação e agendamento de um novo Pod substituto para restaurar a meta de 4 réplicas.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Com a terminação forçada por SIGKILL, o contêiner é destruído e o ciclo de vida é assumido pelo controlador do ReplicaSet.">
+                    <span class="te-letter">A</span> O Kubelet reinicia o processo no mesmo cgroup mantendo o mesmo identificador de PID para preservar a integridade do nó.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s age autonomamente sem intervenção humana.">
-                    <span class="te-letter">B</span> O cluster congela todas as requisições até que o operador humano autorize a recriação.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O modelo declarativo é proativo e automatizado; o Kubernetes reconcilia a diferença imediatamente sem ação humana.">
+                    <span class="te-letter">B</span> O kube-apiserver atualiza a contagem de réplicas ativas no etcd e aguarda nova intervenção de deploy para restabelecer a meta.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O cluster adapta a realidade física ao manifesto, e não o inverso.">
-                    <span class="te-letter">C</span> O manifesto YAML é alterado automaticamente no Git para 'replicas: 3'.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O loop de controle contínuo compara o número de Pods ativos com a especificação e comanda a criação imediata de um substituto.">
+                    <span class="te-letter">C</span> O ReplicaSet Controller detecta a divergência entre estado atual e desejado e agenda um novo Pod para manter as 4 réplicas.
                   </button>
                 </div>
 
@@ -4732,14 +4499,14 @@ kubectl get events --sort-by=.lastTimestamp</code></pre>
                 <p class="te-instrucao">Qual componente valida e grava o manifesto primeiro e qual componente decide a máquina física onde o Pod vai rodar?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse é o pipeline canônico de agendamento do Kubernetes: apiserver → etcd → controller-manager → scheduler → kubelet → container runtime.">
-                    <span class="te-letter">A</span> O kube-apiserver autentica, valida e grava o manifesto no etcd. O Controller Manager cria os objetos Pod pendentes. O kube-scheduler analisa afinidades e recursos e escolhe o Worker Node ideal. O Kubelet daquele nó específico recebe a ordem e instrui o containerd a iniciar os contêineres.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse é o fluxo canônico do Control Plane: apiserver → etcd → controller-manager → scheduler → kubelet → CRI runtime.">
+                    <span class="te-letter">A</span> O kube-apiserver valida e persiste no etcd, o controller-manager cria os pods, o scheduler escolhe o nó e o kubelet instrui o container runtime a iniciar os contêineres.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Toda e qualquer comunicação no Kubernetes passa obrigatoriamente pelo kube-apiserver.">
-                    <span class="te-letter">B</span> O kubectl envia o arquivo YAML diretamente via SSH para o Kubelet sem passar pelo apiserver.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Toda comunicação com o cluster passa obrigatoriamente pelo kube-apiserver; nenhum componente externo fala direto com scheduler ou etcd.">
+                    <span class="te-letter">B</span> O kubectl envia a especificação diretamente ao kube-scheduler, que grava o agendamento no etcd e despacha comandos ao containerd do nó.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. etcd armazena apenas dados de configuração do cluster, nunca roda código de aplicação.">
-                    <span class="te-letter">C</span> O etcd roda o código Java da aplicação na memória RAM do master node.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kubelet só atua após o kube-scheduler definir que aquele nó específico é o alvo do Pod.">
+                    <span class="te-letter">C</span> O Kubelet recebe o manifesto via gRPC do apiserver, aloca volumes no disco local e notifica o controller-manager para validar os limites.
                   </button>
                 </div>
 
@@ -4951,14 +4718,14 @@ spec:
                 <p class="te-instrucao">O que acontece se você alterar 'replicas: 3' para 'replicas: 5' e executar 'kubectl apply -f deployment.yaml'?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Three-way merge do 'kubectl apply' detecta exatamente o delta entre as versões e aplica apenas as mutações necessárias sem recriar objetos inalterados.">
-                    <span class="te-letter">A</span> O apiserver compara a alteração com o last-applied-configuration, atualiza a especificação para 5 réplicas e o Kubernetes agenda 2 novos Pods sem interromper nem reiniciar os 3 Pods existentes.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escalar réplicas não altera o PodTemplateSpec, mantendo o mesmo ReplicaSet ativo sem recriar pods existentes.">
+                    <span class="te-letter">A</span> O ReplicaSet antigo é finalizado e um novo conjunto de 5 pods é provisionado do zero para garantir consistência de versão.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso ocorreria com 'kubectl create', mas 'kubectl apply' é declarativo e idempotente.">
-                    <span class="te-letter">B</span> O comando dá erro de 'DuplicateKeyException' porque o Deployment 'api-pedidos' já existia.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O kubectl apply calcula o delta entre as especificações e aplica apenas a mutação necessária de escala incremental.">
+                    <span class="te-letter">B</span> O controller realiza um three-way merge e agenda 2 novos Pods preservando os 3 Pods existentes sem reinicializá-los.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s preserva as réplicas existentes e apenas escala incrementalmente.">
-                    <span class="te-letter">C</span> O cluster apaga os 3 pods antigos e espera 10 minutos para recriar 5 novos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cada Pod é um objeto independente registrado no etcd com seu próprio ciclo de vida e IP alocado.">
+                    <span class="te-letter">C</span> O Kubelet executa escala horizontal local duplicando os cgroups dos pods ativos sem registrar novas entidades no etcd.
                   </button>
                 </div>
 
@@ -5184,14 +4951,14 @@ spec:
                 <p class="te-instrucao">Como o contêiner do Envoy alcança o contêiner da aplicação de forma mais eficiente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa é a característica fundacional do Pod no Kubernetes: contêineres no mesmo Pod compartilham rede e loopback, conversando via localhost sem overhead de roteamento externo.">
-                    <span class="te-letter">A</span> Fazendo proxy para 'http://localhost:8080'. Como ambos os contêineres residem no mesmo Pod, eles compartilham o mesmo Network Namespace e a mesma interface de rede de loopback.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não é necessário resolver o IP do Pod; contêineres no mesmo Pod comunicam-se diretamente via loopback local.">
+                    <span class="te-letter">A</span> Roteando para o IP da interface eth0 do Pod descoberto através da variável de ambiente KUBERNETES_PORT_8080_TCP_ADDR injetada no cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A comunicação é estritamente local dentro do mesmo namespace de rede do Pod.">
-                    <span class="te-letter">B</span> Consultando o DNS público da internet na AWS.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Services headless são desnecessários para comunicação interna entre contêineres co-alocados no mesmo Pod.">
+                    <span class="te-letter">B</span> Enviando requisições para o DNS interno do Service headless configurado especificamente para o contêiner da aplicação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Tráfego de rede ocorre via sockets TCP normais de kernel.">
-                    <span class="te-letter">C</span> Gravando o tráfego HTTP em disquetes físicos no servidor.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A especificação do Pod garante que todos os seus contêineres compartilhem a mesma pilha de rede e interface localhost.">
+                    <span class="te-letter">C</span> Fazendo proxy para http://localhost:8080, pois contêineres no mesmo Pod compartilham o mesmo Network Namespace e loopback.
                   </button>
                 </div>
 
@@ -5392,14 +5159,14 @@ kubectl get pods --show-labels</code></pre>
                 <p class="te-instrucao">O que acontece imediatamente com o tráfego de rede roteado pelo Service?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Kubernetes, o roteamento é puramente dinâmico baseado em labels. Adicionar ou remover labels altera a filiação a Services em tempo real.">
-                    <span class="te-letter">A</span> O EndpointSlice controller detecta a nova label do Pod e adiciona imediatamente o IP do 'pod-teste-manual' à lista de nós que recebem tráfego do Service, passando a receber requisições de clientes reais de forma instantânea.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A filiação de Pods a Services no Kubernetes é dinâmica e orientada a seletores de rótulos (labels).">
+                    <span class="te-letter">A</span> O EndpointSlice controller detecta o label e inclui imediatamente o IP do Pod na lista de destinos que recebem tráfego do Service.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Labels podem ser alteradas dinamicamente em runtime a qualquer momento.">
-                    <span class="te-letter">B</span> O cluster rejeita o comando porque labels só podem ser aplicadas no momento do boot.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O roteamento é atualizado em milissegundos sem necessidade de reiniciar nenhum controlador ou Pod.">
+                    <span class="te-letter">B</span> O kube-proxy recompila as regras de iptables mas retém o tráfego do Pod até a execução de um rollout restart no Deployment correspondente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s aceita labels adicionais sem destruir o pod.">
-                    <span class="te-letter">C</span> O pod é deletado por violação de conformidade de nomenclatura.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Services não discriminam se o Pod foi criado por Deployment ou manualmente; a seleção baseia-se unicamente nas labels.">
+                    <span class="te-letter">C</span> O comando é aceito no etcd, mas o Service ignora pods rotulados manualmente sem anotação explícita de gerenciamento por controlador.
                   </button>
                 </div>
 
@@ -5607,14 +5374,14 @@ kubectl rollout undo deployment/order-service --to-revision=2</code></pre>
                 <p class="te-instrucao">O que acontece nos bastidores quando você altera a imagem do contêiner para uma versão nova?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cada nova revisão de PodTemplateSpec gera um novo ReplicaSet. O histórico de ReplicaSets antigos é mantido com 0 réplicas justamente para possibilitar o 'kubectl rollout undo' instantâneo.">
-                    <span class="te-letter">A</span> O Deployment cria um SEGUNDO ReplicaSet (ex: auth-api-9c8d7e1a) com a nova imagem e executa uma estratégia de Rolling Update: aumenta o novo e diminui o antigo gradualmente até que todos os 3 pods pertençam à nova versão.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Pods são imutáveis; uma alteração de imagem no Deployment desencadeia a criação de novos Pods geridos por um novo ReplicaSet.">
+                    <span class="te-letter">A</span> O Kubelet reinicia os contêineres nos mesmos pods substituindo os binários em disco sem alterar os identificadores de réplica.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A troca ocorre suavemente no nível de processos.">
-                    <span class="te-letter">B</span> O cluster desinstala o Kubernetes e sobe uma nova máquina física.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Cada revisão de PodTemplateSpec gera um novo ReplicaSet, permitindo atualização progressiva sem indisponibilidade e rollback rápido.">
+                    <span class="te-letter">B</span> O Deployment cria um novo ReplicaSet e realiza Rolling Update, escalando o novo e reduzindo o antigo gradualmente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A estratégia padrão RollingUpdate garante zero downtime sem interrupção de serviço.">
-                    <span class="te-letter">C</span> Todos os 3 pods antigos são deletados no mesmo milissegundo deixando os usuários com erro por 5 minutos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse comportamento seria a estratégia Recreate, e não o padrão de produção RollingUpdate.">
+                    <span class="te-letter">C</span> O kube-scheduler marca os pods antigos como terminating e aguarda todos encerrarem antes de instanciar o novo ReplicaSet.
                   </button>
                 </div>
 
@@ -5807,14 +5574,14 @@ spec:
                 <p class="te-instrucao">Qual é o nome de domínio DNS interno FQDN (Fully Qualified Domain Name) que ele deve utilizar?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A hierarquia do CoreDNS no Kubernetes resolve nomes no formato '<servico>.<namespace>.svc.cluster.local'. Se estiver no mesmo namespace, basta o nome do serviço; para cross-namespace, o nome do namespace é obrigatório.">
-                    <span class="te-letter">A</span> catalogo-service.vendas.svc.cluster.local (ou simplificado: catalogo-service.vendas).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A porta nunca faz parte do nome DNS de host; o formato de resolução é <serviço>.<namespace>.svc.cluster.local.">
+                    <span class="te-letter">A</span> catalogo-service.svc.cluster.local:vendas, pois a especificação do CoreDNS define o namespace como sufixo da porta.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Localhost aponta apenas para o próprio pod.">
-                    <span class="te-letter">B</span> http://localhost/vendas/catalogo
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A hierarquia padrão do CoreDNS no Kubernetes exige o nome do serviço seguido do namespace de destino.">
+                    <span class="te-letter">B</span> vendas.catalogo-service.default.cluster, invertendo o domínio para indicar o contexto de origem da chamada de rede.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A rede do cluster é unificada e acessível a menos que bloqueada por NetworkPolicy.">
-                    <span class="te-letter">C</span> A comunicação entre namespaces diferentes é fisicamente impossível no protocolo TCP.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em chamadas entre namespaces distintos, o nome do namespace é obrigatório para que o CoreDNS resolva o IP do ClusterIP correto.">
+                    <span class="te-letter">C</span> catalogo-service.vendas.svc.cluster.local (ou catalogo-service.vendas), informando o nome do serviço e o namespace.
                   </button>
                 </div>
 
@@ -6021,14 +5788,14 @@ public class CatalogClient {
                 <p class="te-instrucao">Como os outros microsserviços do cluster devem enviar requisições para a API de pagamentos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Service atua como uma fachada estável com balanceamento de carga embutido, isolando o chamador da volatilidade dos IPs individuais de cada réplica.">
-                    <span class="te-letter">A</span> Apontando para a URL 'http://pagamentos-svc:8080'. O kube-proxy e o CoreDNS interceptam o tráfego e distribuem as conexões automaticamente entre os 3 IPs dos Pods saudáveis.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Service provê um IP virtual estável e nome DNS fixo, isolando clientes das constantes trocas de IPs dos Pods efêmeros.">
+                    <span class="te-letter">A</span> Chamando a URL estável http://pagamentos-svc:8080, deixando o balanceamento de carga para o kube-proxy e CoreDNS.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prática manual frágil que quebra na primeira reinicialização de pod.">
-                    <span class="te-letter">B</span> Gravando os 3 IPs em um arquivo de texto no código-fonte e fazendo um random() manual.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Consultar o apiserver em cada requisição sobrecarregaria o Control Plane e quebraria o isolamento arquitetural.">
+                    <span class="te-letter">B</span> Consultando a API do apiserver para obter o IP do Pod com menor consumo de CPU antes de despachar cada chamada.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Acesso SSH em pods é antipadrão operacional severo.">
-                    <span class="te-letter">C</span> Fazendo SSH em cada pod para disparar o comando de pagamento.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A delegação do balanceamento para o Service e kube-proxy elimina a necessidade de controle de topologia no cliente.">
+                    <span class="te-letter">C</span> Configurando round-robin do lado do cliente com os IPs dos Pods descobertos por checagens periódicas no kubelet local.
                   </button>
                 </div>
 
@@ -6263,14 +6030,14 @@ spec:
                 <p class="te-instrucao">Qual é a rota que um cliente externo na internet deve chamar para ser roteado para o 'pedidos-svc'?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Ingress avalia a Camada 7 (HTTP): checa o cabeçalho Host da requisição e o prefixo do path para direcionar o tráfego ao Service correto.">
-                    <span class="te-letter">A</span> Requisições com cabeçalho Host 'app.minhaloja.com' e caminho iniciando por '/api/pedidos' (ex: http://app.minhaloja.com/api/pedidos/listar).
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A regra de roteamento especifica explicitamente o cabeçalho host app.minhaloja.com e o prefixo /api/pedidos.">
+                    <span class="te-letter">A</span> Qualquer requisição HTTP enviada para o IP público do Ingress Controller com a URI /pedidos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ingress opera em HTTP/HTTPS (Camada 7), não em SSH.">
-                    <span class="te-letter">B</span> Qualquer requisição para qualquer domínio na porta 22 via SSH.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Ingress atua na camada de aplicação (HTTP/HTTPS), validando o cabeçalho Host e o path antes de encaminhar ao Service backend.">
+                    <span class="te-letter">B</span> Requisições com cabeçalho Host 'app.minhaloja.com' e caminho iniciado por '/api/pedidos', roteadas na camada 7.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O cliente aponta para o domínio público registrado no DNS.">
-                    <span class="te-letter">C</span> O tráfego só chega se o cliente digitar o IP privado do nó físico.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ingress roteia com base em regras de URI e Host de Camada 7, não por portas diretas de nós com query strings.">
+                    <span class="te-letter">C</span> Requisições TCP encaminhadas para a porta 8080 do nó worker contendo o parâmetro ?service=pedidos.
                   </button>
                 </div>
 
@@ -6478,14 +6245,14 @@ curl http://localhost:8080/actuator/health
                 <p class="te-instrucao">Qual é a causa raiz mais provável desse incidente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Endpoints vazios (<none>) é o diagnóstico clássico de descasamento de labels entre Service e Pods ou reprovação contínua no healthcheck de Readiness.">
-                    <span class="te-letter">A</span> O seletor (selector) declarado no Service não coincide com as labels declaradas no Pod (erro de digitação de etiquetas), ou os Pods estão falhando na verificação de Readiness Probe, fazendo o Kubernetes não cadastrar nenhum IP na lista de alvos do Service.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Falha no kube-proxy causaria perda de encaminhamento nos nós, mas a lista de Endpoints no apiserver é gerida pelo controller-manager.">
+                    <span class="te-letter">A</span> O kube-proxy falhou ao carregar as tabelas do IPVS no nó mestre, impedindo o registro de rotas virtuais no cluster gerenciado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se os pods estão Running, a infraestrutura básica está de pé.">
-                    <span class="te-letter">B</span> O cabo de rede físico do data center da Amazon foi cortado por uma âncora de navio.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. targetPort e port podem ser diferentes, e targetPort aceita tanto nomes simbólicos quanto números.">
+                    <span class="te-letter">B</span> A porta do targetPort no manifesto do Service deve ser obrigatoriamente um valor numérico idêntico à porta do ClusterIP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A maioria esmagadora de APIs opera perfeitamente sobre TCP.">
-                    <span class="te-letter">C</span> O Kubernetes exige que todos os services sejam convertidos para UDP.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Endpoints vazios (<none>) indicam que nenhum Pod atende simultaneamente aos seletores de rótulo e à aprovação na Readiness Probe.">
+                    <span class="te-letter">C</span> Descompasso entre o selector do Service e as labels dos Pods, ou os Pods estão falhando na verificação de Readiness Probe.
                   </button>
                 </div>
 
@@ -6710,14 +6477,14 @@ kubectl get secret order-secret -o jsonpath='{.data.DB_PASSWORD}' | base64 -d</c
                 <p class="te-instrucao">Como o dado da chave 'senha_root' que está salvo na Secret 'banco-segredos' é entregue para a aplicação?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A diretiva valueFrom.secretKeyRef instrui o Kubelet a injetar o valor seguro diretamente no ambiente de execução do contêiner sem expor senhas em texto puro no manifesto do Deployment.">
-                    <span class="te-letter">A</span> O Kubelet decodifica o valor Base64 da Secret e o injeta como uma variável de ambiente convencional do sistema operacional chamada 'DB_PASSWORD' para o processo dentro do contêiner.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A diretiva valueFrom.secretKeyRef instrui o Kubelet a obter a Secret, decodificar os bytes e disponibilizá-la no env do contêiner.">
+                    <span class="te-letter">A</span> O Kubelet decodifica o valor Base64 da Secret no nó e o injeta como uma variável de ambiente tradicional do sistema operacional (DB_PASSWORD) para o processo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A aplicação lê a variável de ambiente local padrão do SO.">
-                    <span class="te-letter">B</span> A aplicação precisa fazer uma requisição gRPC autenticada para o etcd a cada consulta SQL.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O manifesto apresentado injeta o valor diretamente como variável de ambiente (env), e não como volume montado.">
+                    <span class="te-letter">B</span> O processo da aplicação lê a chave criptografada via volume montado em /run/secrets e executa descriptografia com chave assimétrica.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação grotesca de segurança.">
-                    <span class="te-letter">C</span> O valor é impresso na tela do terminal do administrador do cluster a cada 5 segundos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O apiserver não interage em tempo real com drivers de banco de dados ou processos internos dos contêineres.">
+                    <span class="te-letter">C</span> O kube-apiserver mantém um canal gRPC aberto injetando a senha em memória RAM sempre que a aplicação abre conexão JDBC.
                   </button>
                 </div>
 
@@ -6955,14 +6722,14 @@ management.health.readinessstate.enabled=true
                 <p class="te-instrucao">O que acontecerá com o Pod durante a inicialização no Kubernetes?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Se a Liveness Probe for avaliada antes do término da inicialização da aplicação, o Kubelet a considerará morta por engano e a matará em loop. A solução é usar uma Startup Probe ou aumentar o initialDelaySeconds.">
-                    <span class="te-letter">A</span> Entrará no infame estado 'CrashLoopBackOff'! Aos 20 segundos de boot, a Liveness Probe terá falhado 3 vezes consecutivas; o Kubelet mata o contêiner e tenta reiniciar do zero, repetindo o ciclo de mortes infinitamente sem que a aplicação consiga terminar de subir.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kubelet não monitora o heap da JVM; ele apenas executa a sonda configurada rigidamente nos intervalos definidos.">
+                    <span class="te-letter">A</span> A aplicação inicia normalmente porque o Kubelet suspende as checagens de liveness enquanto houver alocação crescente de heap JVM.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s não tem capacidade mágica de acelerar clock de processador.">
-                    <span class="te-letter">B</span> O Kubernetes acelera o processador do servidor para que o Spring Boot suba em 4 segundos.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Como o boot leva 45s e o probe atinge 3 falhas aos 20s, o Kubelet conclui que a aplicação travou e a reinicia perpetuamente.">
+                    <span class="te-letter">B</span> O Pod entrará em CrashLoopBackOff: a liveness falha antes do boot terminar e o Kubelet mata o contêiner repetidamente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Kubelet executa os probes com rigor cego indiferente à linguagem.">
-                    <span class="te-letter">C</span> A Liveness Probe é ignorada automaticamente quando detecta Java.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Marcar como Unready é responsabilidade da Readiness Probe; a falha na Liveness Probe causa o reinício sumário do contêiner.">
+                    <span class="te-letter">C</span> O Kubelet marca o Pod como Unready e roteia o tráfego apenas quando as métricas de CPU estabilizarem abaixo do limite estipulado.
                   </button>
                 </div>
 
@@ -7170,14 +6937,14 @@ management.health.readinessstate.enabled=true
                 <p class="te-instrucao">O que acontece tecnicamente se o contêiner tentar usar: 1. 1.200m de CPU; e 2. 1.100Mi de memória RAM?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! CPU é compressível (gera lentidão/throttling); memória é incompressível (se não houver bytes disponíveis, o SO mata o processo para proteger a integridade do nó).">
-                    <span class="te-letter">A</span> 1. No caso da CPU (recurso compressível), o processo sofre Throttling (tem seus ciclos de clock estrangulados temporariamente pelo kernel Linux, mas continua vivo). 2. No caso da Memória (recurso incompressível), o contêiner sofre OOMKill imediato e é abortado com Exit Code 137.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CPU é um recurso compressível e seu consumo excessivo nunca gera OOMKill nem encerramento forçado do processo.">
+                    <span class="te-letter">A</span> O contêiner é terminado com SIGKILL tanto para CPU quanto para memória, gerando reinício com código 137.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Excesso de CPU nunca causa reinício nem OOMKill.">
-                    <span class="te-letter">B</span> O contêiner é reiniciado em ambos os casos sem nenhuma distinção entre CPU e memória.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quando o limite de memória do cgroup é violado sem swap permissivo, o OOM Killer entra em ação imediatamente.">
+                    <span class="te-letter">B</span> O processo sofre degradação de I/O em ambos os casos, mantendo-se ativo enquanto houver memória swap no nó.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O K8s opera dentro das restrições do nó alocado.">
-                    <span class="te-letter">C</span> O Kubernetes expande o hardware físico da máquina alugando mais memória na Nuvem.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Limites de CPU resultam em estrangulamento de tempo de CPU no CFS; limites de memória causam encerramento imediato pelo kernel.">
+                    <span class="te-letter">C</span> Para CPU (compressível), o processo sofre Throttling de ciclos; para Memória (incompressível), o contêiner sofre OOMKill (Exit Code 137).
                   </button>
                 </div>
 
@@ -7401,14 +7168,14 @@ spec:
                 <p class="te-instrucao">O que o Kubernetes faz automaticamente graças ao Dynamic Volume Provisioning?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O provisionamento dinâmico automatiza a criação de infraestrutura de armazenamento sob demanda sem necessidade de os administradores criarem discos manuais previamente.">
-                    <span class="te-letter">A</span> O provisionador da StorageClass 'gp3' (CSI Driver da AWS) intercepta o PVC, chama a API da AWS, cria um volume físico EBS gp3 de 50GB, cria um objeto PersistentVolume (PV) no cluster e faz o bind automático com o PVC.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Dynamic Volume Provisioning aciona o driver CSI configurado para provisionar o disco na nuvem e vincular o PV ao PVC automaticamente.">
+                    <span class="te-letter">A</span> O provisionador da StorageClass chama a API do EBS, cria o disco de 50GB, registra o PersistentVolume e faz o bind.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. PVs são discos de bloco duráveis gerenciados pelo provedor de nuvem.">
-                    <span class="te-letter">B</span> O cluster grava os 50GB na memória RAM de um dos nós do Control Plane.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A StorageClass gp3 provisiona volumes de bloco em rede da AWS (EBS), e não armazenamento efêmero local do nó.">
+                    <span class="te-letter">B</span> O Kubelet formata 50GB no disco rígido local do nó worker e monta o diretório no contêiner com acesso ReadWriteOnce.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não há limite arbitrário de 10GB; volumes podem ter centenas de terabytes.">
-                    <span class="te-letter">C</span> O comando falha porque o Kubernetes proíbe o uso de mais de 10GB por PVC.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O etcd armazena apenas metadados e o estado do cluster, nunca arquivos de dados de aplicações.">
+                    <span class="te-letter">C</span> O etcd aloca 50GB em seu banco de dados distribuído para servir de armazenamento compartilhado entre os nós do cluster.
                   </button>
                 </div>
 
@@ -7625,14 +7392,14 @@ spec:
                 <p class="te-instrucao">Qual controlador do Kubernetes é tecnicamente obrigatório para esse cenário?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! StatefulSet foi concebido especificamente para cargas de trabalho stateful que exigem identidade de rede estável e volumes persistentes exclusivos por nó.">
-                    <span class="te-letter">A</span> StatefulSet: ele garante nomes DNS previsíveis e ordenados (kafka-0, kafka-1, kafka-2), inicialização sequencial e alocação de um volume de dados exclusivo para cada broker através do volumeClaimTemplates.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Volumes RWX compartilhados não fornecem isolamento de dados por broker e Deployments geram nomes de réplicas aleatórios.">
+                    <span class="te-letter">A</span> Deployment associado a um PersistentVolumeClaim compartilhado configurado com o modo de acesso ReadWriteMany (RWX).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. DaemonSet serve para agentes de infraestrutura (logs/monitoramento) em todos os nós.">
-                    <span class="te-letter">B</span> DaemonSet, porque o DaemonSet roda exatamente 1 pod em cada container da máquina.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O StatefulSet é o controlador projetado para workloads distribuídos que dependem de identidade persistente e discos dedicados por réplica.">
+                    <span class="te-letter">B</span> StatefulSet, garantindo ordinais de rede previsíveis, inicialização ordenada e volumeClaimTemplates exclusivo por réplica.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. CronJob é para tarefas efêmeras periódicas, não para brokers de mensageria contínuos.">
-                    <span class="te-letter">C</span> CronJob com agendamento de 5 em 5 minutos.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. HostPath cria dependência fixa do hardware físico e DaemonSet não provê gestão de identidade ordenada de brokers.">
+                    <span class="te-letter">C</span> DaemonSet configurado com restrição de afinidade de nós e diretórios do tipo hostPath mapeados manualmente no sistema de arquivos local de cada máquina.
                   </button>
                 </div>
 
@@ -7823,14 +7590,14 @@ kubectl rollout undo deployment/order-service</code></pre>
                 <p class="te-instrucao">O que esses parâmetros garantem durante a atualização de uma aplicação com 4 réplicas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação maxUnavailable: 0 com maxSurge garante que a capacidade de atendimento do sistema nunca diminua durante deploys de novas versões.">
-                    <span class="te-letter">A</span> Garantem zero downtime absoluto: o cluster nunca terá menos de 4 réplicas ativas (maxUnavailable: 0) e criará no máximo 1 pod novo extra por vez (maxSurge: 1), só desligando um pod antigo após o novo ser aprovado pela Readiness Probe.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. maxUnavailable: 0 impede que pods antigos sejam desligados antes que as réplicas substitutas estejam saudáveis.">
+                    <span class="te-letter">A</span> Garante atualização instantânea terminando 1 pod por ciclo e promovendo a nova versão sem validação de probes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O rollout ocorre imediatamente no momento do apply.">
-                    <span class="te-letter">B</span> O cluster faz o deploy apenas na madrugada entre 02:00 e 04:00.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Como maxUnavailable é 0, a capacidade contratada de 4 réplicas ativas nunca é reduzida durante o processo.">
+                    <span class="te-letter">B</span> Permite que a capacidade de atendimento diminua temporariamente em até 25% durante a fase de download da nova imagem nos nós do cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Pods antigos são destruídos após a conclusão do ciclo.">
-                    <span class="te-letter">C</span> Todos os pods antigos são convertidos em contêineres Docker locais.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de maxUnavailable: 0 e maxSurge: 1 assegura transição suave sem perda de capacidade de atendimento.">
+                    <span class="te-letter">C</span> Garante zero downtime: mantém no mínimo 4 réplicas ativas e sobe no máximo 1 pod extra, só removendo o antigo após readiness.
                   </button>
                 </div>
 
@@ -8016,14 +7783,14 @@ spring.datasource.hikari.idle-timeout=300000</code></pre>
                 <p class="te-instrucao">Investigando os logs, você nota 'HikariPool: Connection is not available, request timed out'. Qual é o diagnóstico arquitetural?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O HPA escala apenas contêineres; se o banco de dados for centralizado, o excesso de réplicas pode transformá-lo em ponto de falha. A arquitetura deve prever poolers (como PgBouncer) ou limites máximos de pods.">
-                    <span class="te-letter">A</span> Esgotamento da dependência a jusante (banco de dados): os 30 Pods novos abriram centenas de conexões simultâneas no PostgreSQL, saturando a capacidade máxima do pool do banco. Escalar pods não resolve gargalos de persistência e exige limite no maxReplicas ou connection poolers externos (PgBouncer).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O HPA multiplica o número de instâncias da aplicação. Se o banco de dados central não suportar o volume de conexões, a arquitetura entra em colapso.">
+                    <span class="te-letter">A</span> Esgotamento da dependência a jusante: os 30 Pods saturaram o pool de conexões do banco de dados relacional; escalar contêineres sem pooler externo (ex: PgBouncer) transfere o gargalo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha é puramente saturação de conexões de banco por excesso de concorrência.">
-                    <span class="te-letter">B</span> O HPA foi atacado por um vírus que desconfigurou as portas de rede.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A mensagem explícita do HikariPool aponta exaustão de conexões JDBC com o PostgreSQL, e não contenção no Redis.">
+                    <span class="te-letter">B</span> O HPA gerou contenção de locks na tabela de sessões do Redis devido ao alto número de threads concorrentes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cada pod consome sua própria cota de recursos isolados.">
-                    <span class="te-letter">C</span> A JVM consome menos memória quando há mais de 10 pods.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Throttling de CPU causa latência, mas o erro de timeout do Hikari indica que o banco recusou novas conexões por limite atingido.">
+                    <span class="te-letter">C</span> O Kubelet aplicou throttling de CPU nos pods novos, impedindo que o handshake TLS com o banco completasse.
                   </button>
                 </div>
 
@@ -8232,14 +7999,14 @@ kubectl auth can-i delete pods \\
                 <p class="te-instrucao">Qual configuração de RBAC implementa esse requisito com o menor privilégio possível?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa Role concede privilégios de leitura estritamente no namespace 'producao' e no recurso 'pods', bloqueando qualquer ação de mutação (create, delete, patch) e isolando outros namespaces.">
-                    <span class="te-letter">A</span> Criar uma Role no namespace 'producao' com 'apiGroups: [""]', 'resources: ["pods"]' e 'verbs: ["get", "list", "watch"]', associando-a à ServiceAccount do pod via RoleBinding.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conceder permissão em nível de cluster viola o princípio do menor privilégio quando o requisito exige apenas um namespace.">
+                    <span class="te-letter">A</span> ClusterRoleBinding associando a ServiceAccount à ClusterRole view com acesso amplo de leitura a todos os recursos em todos os namespaces do cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Violação catastrófica de segurança: daria poder de destruir o cluster inteiro para o pod.">
-                    <span class="te-letter">B</span> Vincular o pod à ClusterRole 'cluster-admin' para simplificar o manifesto.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Uma Role restrita ao namespace com verbos de leitura concede apenas o estritamente necessário para o monitoramento funcionar.">
+                    <span class="te-letter">B</span> Role no namespace 'producao' com verbs: ['get', 'list', 'watch'] em resources: ['pods'], associada via RoleBinding.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Elimina a segurança e abre o cluster para a internet.">
-                    <span class="te-letter">C</span> Desativar a autenticação TLS do kube-apiserver.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Impersonation e liberação irrestrita de verbos violam os padrões básicos de segurança operacional de RBAC.">
+                    <span class="te-letter">C</span> ServiceAccount com anotação de impersonate-user vinculada a uma Role padrão com todos os verbos liberados.
                   </button>
                 </div>
 
@@ -8420,14 +8187,14 @@ helm rollback order-service 2 -n producao</code></pre>
                 <p class="te-instrucao">Como o Helm resolve essa variação sem duplicar dezenas de arquivos de manifestos?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse é o propósito essencial do Helm: parametrizar manifestos através de variáveis de contexto, viabilizando o reuso limpo de arquitetura entre múltiplos ambientes.">
-                    <span class="te-letter">A</span> Criando um único Chart com templates reutilizáveis (deployment.yaml) que leem variáveis como '{{ .Values.replicaCount }}' e '{{ .Values.resources.limits.memory }}', aplicando 'values-dev.yaml' no ambiente de dev e 'values-prod.yaml' no ambiente de produção.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A questão pergunta especificamente como o Helm soluciona esse problema através de parametrização de templates.">
+                    <span class="te-letter">A</span> Utilizando Kustomize com patches JSON pontuais aplicados diretamente nos arquivos de manifesto de cada branch de infraestrutura do repositório.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O ecossistema é baseado em Go e a solução adotada pelo mercado é o Helm.">
-                    <span class="te-letter">B</span> Reescrevendo o Kubernetes em PHP para suportar variáveis globais.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ConfigMaps não mutam as definições de spec.replicas ou spec.resources de manifestos de Deployment no Kubernetes.">
+                    <span class="te-letter">B</span> Configurando ConfigMaps dinâmicos no cluster que sobrescrevem os limites de recursos dos pods em tempo de agendamento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Prática manual e propensa a erros catastróficos.">
-                    <span class="te-letter">C</span> Obrigando os desenvolvedores a alterarem manualmente os arquivos com o comando sed antes de cada commit.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Helm separa a estrutura estática dos manifestos (templates) dos valores que variam por ambiente (values files).">
+                    <span class="te-letter">C</span> Definindo um Chart com templates parametrizados que leem valores customizados de arquivos values-dev.yaml e values-prod.yaml.
                   </button>
                 </div>
 
@@ -8624,14 +8391,14 @@ helm rollback order-service 2 -n producao</code></pre>
                 <p class="te-instrucao">Qual das opções abaixo reúne os requisitos essenciais de produção de padrão industrial?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Essa especificação consolida as melhores práticas de segurança, resiliência, observabilidade e alta disponibilidade aprendidas ao longo de toda a trilha de Docker & Kubernetes.">
-                    <span class="te-letter">A</span> Imagem Multi-stage Distroless rodando como usuário non-root; Deployment com no mínimo 3 réplicas em zonas diferentes, maxUnavailable: 0 e maxSurge: 1; requests e limits de CPU e memória rigorosamente definidos; Liveness e Readiness probes apontando para o Actuator; e segredos injetados via Secret/CSI Driver.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Esse conjunto reúne as melhores práticas de confiabilidade, segurança perimetral e resiliência exigidas em aplicações de missão crítica.">
+                    <span class="te-letter">A</span> Imagem distroless com usuário non-root, réplicas distribuídas em multi-AZ com maxUnavailable: 0, requests/limits estritos, health probes e secrets injetadas com segurança.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Fórmula certa para colapso e invasão do cluster em produção.">
-                    <span class="te-letter">B</span> Um único pod com privileged: true e tag :latest sem healthcheck nem limites de memória.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Rodar como root e sem limites de CPU são antipadrões que geram instabilidade severa e riscos de invasão do host.">
+                    <span class="te-letter">B</span> Contêineres com permissão root para acesso a sockets de log, limites ilimitados de CPU para rajadas e scaling baseado em latência.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Anula todos os benefícios de isolamento e orquestração do Kubernetes.">
-                    <span class="te-letter">C</span> Rodar a aplicação diretamente no terminal do master node sem contêiner.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A estratégia Recreate derruba o serviço durante o deploy e volumes hostPath amarram o Pod a uma única máquina física.">
+                    <span class="te-letter">C</span> Deployment com estratégia Recreate para limpar sessões antigas, volumes locais hostPath e variáveis em texto claro no manifesto.
                   </button>
                 </div>
 
@@ -9000,7 +8767,7 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
     </header>
     <div class="im-viewport" id="imViewport">
       <div class="im-canvas" id="imCanvas">
-        <img id="imImg" src="" alt="Imagem ampliada" draggable="false">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
       </div>
     </div>
     <footer class="im-footer">
@@ -9013,5 +8780,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 </body>
 </html>

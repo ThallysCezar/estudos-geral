@@ -1,0 +1,77 @@
+name: Deploy Static Site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  test-and-verify:
+    name: Verification Harness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Regression contract tests
+        run: node --test scripts/tests/regression-contracts.test.mjs
+
+      - name: Verify broken links and anchors
+        run: node scripts/check-links.mjs
+
+      - name: Verify structural tags balance
+        run: node scripts/check-tags.mjs
+
+      - name: Audit chassi
+        run: node scripts/audit-chassi.mjs
+
+      - name: Diff snapshot against baseline
+        run: node scripts/diff-snapshot.mjs
+
+      - name: Headless browser DOM render check
+        run: node scripts/tests/render-check.mjs
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: test-and-verify
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Stage production static files
+        run: |
+          mkdir -p _site
+          cp -r index.html acervo.html assets cadernos trilhas ferramentas lab _site/
+          cp index.html _site/404.html
+          cp .nojekyll _site/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

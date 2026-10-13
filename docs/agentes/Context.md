@@ -4,7 +4,7 @@
 
 ## Pomodoro compartilhado (2026-10-12)
 
-Widget opcional em todas as páginas HTML ativas, criado por `assets/js/pomodoro.js`; `assets/css/pomodoro.css` fornece o estilo comum. Sem configuração, o widget mostra apenas “Técnica Pomodoro”; salvar etapas em `ferramentas/pomodoro.html` habilita o timer. Sugestões: quatro focos de 25 min, pausas de 5 min e pausa longa de 15 min após o quarto foco. Preferências e sessão usam `site.pomodoro.config.v1` e `site.pomodoro.session.v1`. A sessão usa `endsAt`, avança as etapas automaticamente e mantém a contagem ao navegar entre páginas no mesmo perfil/origem. Sinais de início e término são sintetizados com Web Audio após gesto explícito; não há áudio remoto nem backend. `localStorage` não sincroniza entre notebooks.
+Widget opcional em todas as páginas HTML ativas, criado por `assets/js/pomodoro.js`; `assets/css/pomodoro.css` fornece o estilo comum. Sem configuração, o widget mostra apenas “Técnica Pomodoro”; salvar etapas em `ferramentas/pomodoro.html` habilita o timer. Sugestões: quatro focos de 25 min, pausas de 5 min e pausa longa de 15 min após o quarto foco. Preferências e sessão usam `site.pomodoro.config.v1` e `site.pomodoro.session.v1`. A sessão usa `endsAt`, avança as etapas automaticamente e mantém a contagem ao navegar entre páginas no mesmo perfil/origem. Sinais sintetizados com Web Audio marcam início, fim e começo automático da etapa seguinte; a configuração oferece “Testar som” e informa quando o navegador bloqueia áudio. A posição do widget sobe quando a página também exibe os botões “Início” e “voltar ao topo”. `localStorage` não sincroniza entre notebooks.
 
 ## Performance: corrigida (2026-10-09)
 

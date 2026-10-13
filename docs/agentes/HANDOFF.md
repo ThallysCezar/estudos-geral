@@ -7,6 +7,8 @@
 - Backup de 21 HTML preexistentes criado em `Arquivados/2026-10-12-antes-pomodoro-global/`; widget compartilhado foi incluído nas 20 páginas sem ele. São 22 HTML ativos no total, sem arquivos de `Arquivados/` modificados.
 - Página de configuração em `ferramentas/pomodoro.html`; Home, README, DOCS do Acervo, paletas e contrato de inventário incluem a ferramenta. O widget foi posicionado acima do botão “voltar ao topo”.
 - Verificações concluídas: sintaxe JS do widget, da configuração e do contrato; `check-links` (289 alvos, sem quebras); 22/22 páginas ativas carregam o widget e as 21 cópias de backup existem.
+- Refinamento pedido em 2026-10-12: quando há o botão flutuante “Início”, o timer sobe para empilhar acima dele e do botão “voltar ao topo”; sem esse botão, conserva a posição inferior. Cada conclusão toca a sequência suave de término e um toque de início da nova etapa, que começa automaticamente.
+- Áudio refinado após relato de silêncio: ganho Web Audio aumentado sem sair do timbre senoidal suave; agora há mensagem se o navegador não liberar o áudio e um botão “Testar som” na configuração. Confira no navegador/dispositivo do usuário após atualizar a página.
 - Não foi executada a suíte de testes nem revisão visual no navegador. Não regravar baseline automaticamente. A configuração e sessão ficam no navegador local; não sincronizam com outro notebook.
 
 Para o próximo agente. Escrito para ser lido frio, sem acesso à conversa anterior. Última atualização: 2026-10-12.

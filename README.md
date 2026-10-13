@@ -43,6 +43,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | [Formatador de Texto](ferramentas/refinador.html) | Refinador multi-provedor (Gemini, Groq, OpenRouter) para tasks, PRs e e-mails |
 | [Técnica Pomodoro](ferramentas/pomodoro.html) | Configuração de etapas para o timer flutuante compartilhado pelo site |
 | [Guia de APIs](ferramentas/tutorial-api.html) | Passo a passo para obter chaves gratuitas sem necessidade de cartão de crédito |
+| [Documentações IA (docs-md)](https://thallyscezar.github.io/docs-md/) | Repositório de documentações Markdown, modelos de Context e regras de IA |
 
 ---
 

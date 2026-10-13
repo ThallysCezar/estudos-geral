@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Configure as etapas do timer Pomodoro do seu site de estudos.">
+<meta name="color-scheme" content="dark">
+<title>Técnica Pomodoro · Estudos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cascadia+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/pomodoro.css">
+</head>
+<body style="--bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--line:#44475a66;--line2:#44475a;--cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b">
+<main class="pom-config">
+  <nav aria-label="Navegação principal"><a href="../index.html">Início</a><a href="../acervo.html">Acervo</a></nav>
+  <header class="pom-config-hero"><span class="pom-config-kick">ferramenta de estudo</span><h1>Técnica Pomodoro</h1><p>Defina seus períodos de foco e descanso. Os valores ficam salvos neste navegador. O timer aparece nas páginas do site, mas só mostra a contagem depois que você salvar as etapas e iniciar uma sessão.</p></header>
+  <section class="pom-config-card" aria-labelledby="pomSettingsTitle">
+    <h2 id="pomSettingsTitle">Etapas da sessão</h2>
+    <p>Você pode ajustar as sugestões para o seu ritmo. Cada pausa começa automaticamente ao terminar o foco anterior.</p>
+    <form id="pomodoroSettingsForm" novalidate>
+      <div class="pom-config-grid">
+        <div class="pom-config-field"><label for="pomFocus">Período de foco</label><div class="pom-config-input-wrap"><input id="pomFocus" name="focusMinutes" type="number" min="1" max="120" step="1" required inputmode="numeric"><span>minutos</span></div><small>De 1 a 120 minutos por bloco de estudo.</small></div>
+        <div class="pom-config-field"><label for="pomShort">Pausa curta</label><div class="pom-config-input-wrap"><input id="pomShort" name="shortBreakMinutes" type="number" min="1" max="60" step="1" required inputmode="numeric"><span>minutos</span></div><small>De 1 a 60 minutos entre os períodos de foco.</small></div>
+        <div class="pom-config-field"><label for="pomLong">Pausa prolongada</label><div class="pom-config-input-wrap"><input id="pomLong" name="longBreakMinutes" type="number" min="1" max="60" step="1" required inputmode="numeric"><span>minutos</span></div><small>De 1 a 60 minutos ao completar o ciclo.</small></div>
+        <div class="pom-config-field"><label for="pomCycle">Períodos de foco antes da pausa longa</label><div class="pom-config-input-wrap"><input id="pomCycle" name="focusesPerCycle" type="number" min="2" max="12" step="1" required inputmode="numeric"><span>focos</span></div><small>De 2 a 12 focos por ciclo completo.</small></div>
+      </div>
+      <div class="pom-config-actions"><button class="pom-config-save" type="submit">Salvar etapas</button><button id="pomodoroSettingsSuggested" type="button">Restaurar sugestões</button><a href="../index.html">Voltar ao início</a></div>
+      <p class="pom-config-status" id="pomodoroSettingsStatus" role="status" aria-live="polite"></p>
+    </form>
+    <p class="pom-config-footnote">Sugestão inicial: 25 minutos de foco, pausas curtas de 5 minutos e uma pausa prolongada de 15 minutos após quatro períodos de foco. Restaurar sugestões apenas preenche o formulário; clique em “Salvar etapas” para aplicá-las.</p>
+  </section>
+</main>
+<aside id="pomodoro"></aside>
+<script defer src="../assets/js/pomodoro-settings.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
+</body>
+</html>

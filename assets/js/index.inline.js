@@ -447,6 +447,7 @@ if(btnRestaurar && fileInput){
 
 /* ================= UNIVERSAL COMMAND PALETTE (Ctrl+K) ================= */
 var PALETTE_DATA = [
+  {t:"Técnica Pomodoro",sub:"Configurar períodos de foco, pausas e ciclo",cat:"FERRAMENTA",url:"ferramentas/pomodoro.html",cor:"var(--cyan)"},
   {t:"Java completo (7 Pilares)",sub:"Java 21, JMM, Virtual Threads, HikariCP, GC e simulador de concorrência",cat:"TRILHA",url:"trilhas/java.html",cor:"var(--cyan)"},
   {t:"Spring Boot 3 (7 Pilares)",sub:"Spring Boot 3, arquitetura interna, Testcontainers e observabilidade",cat:"TRILHA",url:"trilhas/spring.html",cor:"var(--purple)"},
   {t:"Mensageria e RabbitMQ (7 Pilares)",sub:"Topologia AMQP, Dead Letter Queue, Outbox Pattern e resiliência",cat:"TRILHA",url:"trilhas/mensageria.html",cor:"var(--pink)"},

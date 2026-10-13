@@ -34,7 +34,7 @@ trilhas/          os documentos grandes: java, spring, arquitetura, docker-kuber
 cadernos/         apoio: conceitos-backend, biblioteca, linux, git, ingles, oratoria,
                   governanca-seguranca
 lab/              projetos.html (a bancada)
-ferramentas/      prompt-studio, refinador, tutorial-api
+ferramentas/      prompt-studio, refinador, tutorial-api, pomodoro
 assets/           css, js e img compartilhados
 Arquivados/       versões anteriores e backups
 docs/             documentação histórica e planos
@@ -53,6 +53,7 @@ README.md, SECURITY.md, Agent.md, Spec.md, Context.md
 - **Público.** Só documento de estudo curado; nada pessoal.
 - **Nuvem sem vendor:** conceito primeiro, com mapa de tradução entre provedores.
 - Chaves de `localStorage` **únicas por documento** (trilha, modo teste, fila de revisão, exercícios).
+- O timer Pomodoro é um widget opcional compartilhado nas páginas ativas: começa identificado como “Técnica Pomodoro”, sem mostrar minutos ou iniciar sozinho; a configuração é salva em `ferramentas/pomodoro.html` (`site.pomodoro.config.v1`) e a sessão usa `site.pomodoro.session.v1`. Som local só após gesto explícito.
 - Na semana: dia sem documento (domingo) não é link; dia de dois documentos (terça, sábado) abre a escolha, não um deles no chute.
 - Chave de API de terceiros (MicroLearning) fica só no `localStorage`, nunca no código nem em backup exportado (ver `SECURITY.md`).
 

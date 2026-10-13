@@ -486,6 +486,11 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <article class="topic" id="a1">
         <div class="th"><h3>A corrente arrebenta no elo mais fraco</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o primeiro passo</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma fintech dobrou a quantidade de pods do backend de 10 para 20 para aguentar um pico de cadastros na Black Friday. A latência média, em vez de cair, subiu de 180ms para 4.200ms porque o gargalo real era o pool de conexões do banco relacional, que saturou com 800 conexões concorrentes bloqueando locks em tabelas. O time aprendeu que escalar o que não é o gargalo apenas desloca e amplifica a pressão sobre o recurso mais frágil.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> gargalo é o recurso que satura antes de todos os outros e limita o sistema inteiro. Enquanto ele não for resolvido, melhorar qualquer outra coisa não muda o número que o usuário sente — e é por isso que a primeira pergunta nunca é "como escalo?", e sim "o que está saturando?".</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como uma fila de supermercado.</b> Abrir mais portas de entrada não faz ninguém sair mais rápido se há cinco caixas funcionando. A fila apenas muda de lugar: em vez de esperar na calçada, todo mundo espera lá dentro, com o corredor cheio. Quem olha só a porta conclui que "o problema é o fluxo de entrada".</p></div>
         <div class="duo o">
@@ -603,6 +608,11 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <article class="topic" id="a2">
         <div class="th"><h3>As seis alavancas de escala, na ordem de tentar</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um time de engenharia gastou 3 meses fragmentando um monolito em microsserviços para tentar resolver a lentidão de uma rota de listagem de pedidos. Após o deploy distribuído, a lentidão continuava idêntica porque a query SQL executava um `SELECT *` sem paginação trazendo 120.000 linhas da tabela. A simples adição de um índice composto e paginação (`LIMIT 20`) reduziu o tempo de resposta de 6 segundos para 14 milissegundos, provando que otimização de consulta e índice deve vir antes de escala arquitetural complexa.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> quando o gargalo está identificado, existem seis respostas conhecidas — e elas têm uma ordem de custo e risco. Tentar na ordem errada é como shardear um banco que precisava de um índice.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como resolver uma cozinha lotada.</b> Primeiro você organiza o preparo (índice e consulta). Depois deixa pronto o que dá para adiantar (cache). Depois contrata mais gente (escala horizontal). Só num restaurante muito grande você abre uma segunda cozinha em outro bairro (sharding) — e quem faz isso cedo demais gasta uma fortuna para servir as mesmas cem pessoas.</p></div>
         <div class="duo o">
@@ -729,6 +739,11 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
 
       <article class="topic" id="a3">
         <div class="th"><h3>Connection pooling: a conta que quase ninguém faz</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java/Spring</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor configurou o pool HikariCP com 200 conexões máximas por réplica em um cluster de 15 pods, imaginando que mais conexões gerariam mais paralelismo. Com 3.000 conexões ativas disputando um banco PostgreSQL de 8 vCPUs, a CPU do banco bateu 100% consumida exclusivamente por chaveamento de contexto de threads (context switching), derrubando a API. A redução do pool para a fórmula recomendada (`pool_size = (vCPU * 2) + spindle_count = 18`) derrubou a CPU do banco para 22% e aumentou a vazão em 4x.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o banco aceita um número limitado de conexões simultâneas, e cada uma custa memória nele. Quando a aplicação escala, o número de conexões pedidas cresce junto — e o teto é atingido muito antes do que se imagina, com a aplicação parecendo lenta enquanto o banco parece ocioso.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como caixas num supermercado, de novo.</b> É literalmente o mesmo problema do primeiro tópico, uma camada abaixo — e é por isso que ele engana tanta gente: você resolveu o gargalo da aplicação e ele reapareceu, idêntico, na conexão com o banco.</p></div>
         <div class="duo o">
@@ -882,6 +897,11 @@ teto de réplicas:    <span class="n">15</span>
 
       <article class="topic" id="b1">
         <div class="th"><h3>A janela entre ler e escrever</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o clássico</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma API de cupons de desconto executava duas operações separadas: primeiro lia se o cupom ainda estava ativo (`SELECT used_count FROM coupons WHERE code = 'DESC50'`) e, em caso afirmativo, incrementava o contador. Durante uma transmissão com 5.000 cliques simultâneos no mesmo milissegundo, 3.200 requisições leram que o cupom de uso único ainda estava livre antes que a primeira escrita ocorresse, gerando um rombo de R$ 160.000 em descontos indevidos. A atomicidade com `UPDATE coupons SET used_count = used_count + 1 WHERE code = 'DESC50' AND used_count = 0` eliminou a janela de corrida.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o padrão perigoso é sempre o mesmo: <b>ler o estado → decidir com base nele → escrever</b>. Entre a leitura e a escrita existe uma janela, e nela outro processo pode ter mudado o mundo. O resultado passa a depender de quem chegou primeiro — que é a definição de race condition.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como dois porteiros vendendo o último ingresso.</b> Os dois olham o mapa e veem uma poltrona livre. Os dois dizem "pode vender". Os dois vendem. Nenhum dos dois errou olhando — eles erraram por não terem combinado nada entre olhar e vender.</p></div>
         <div class="duo o">
@@ -1026,6 +1046,11 @@ teto de réplicas:    <span class="n">15</span>
 
       <article class="topic" id="b2">
         <div class="th"><h3>As cinco saídas, da mais barata à mais cara</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um arquiteto implementou um lock distribuído pesado no Redis com Redlock para coordenar o saldo de estoque de camisetas. A complexidade do TTL e a latência de rede no Redis limitaram a vazão a 120 compras por segundo. O problema foi resolvido substituindo o lock distribuído por uma simples restrição única de banco (`UNIQUE CONSTRAINT`) combinada com update atômico condicional (`WHERE saldo >= :qtd`), multiplicando a capacidade por 25 a custo computacional quase zero.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> existem cinco formas conhecidas de resolver a disputa pelo último item, e elas têm custos muito diferentes. A regra é escolher a mais barata que resolve o seu caso — não a mais poderosa disponível.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como controlar entrada num evento.</b> Dá para pôr uma catraca que conta sozinha (instrução atômica), dar senha e conferir na entrada (versionamento), colocar um segurança que só deixa um passar por vez (lock pessimista), reservar o lugar por 10 minutos (reserva com TTL) ou formar uma fila única (fila). Todas funcionam; escolher a mais pesada para um evento de vinte pessoas é desperdício.</p></div>
         <div class="duo o">
@@ -1150,6 +1175,11 @@ teto de réplicas:    <span class="n">15</span>
 
       <article class="topic" id="b3">
         <div class="th"><h3>Concorrência vs Paralelismo: Seção Crítica, Deadlock, Livelock e Starvation</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">fundamento</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Dois processos concorrentes atualizavam contas em transferências bancárias: o processo A bloqueava a Conta 1 e tentava bloquear a Conta 2, enquanto o processo B bloqueava a Conta 2 e tentava a Conta 1. Em um horário de pico de TED/PIX, ambas as threads entraram em Deadlock permanente no banco de dados, congelando o pool e gerando 4.500 transações pendentes com timeout. A imposição mandatória de ordenação consistente de locks (sempre travar a conta com menor ID primeiro) erradicou a possibilidade de deadlocks.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> <b>concorrência</b> é lidar com múltiplas coisas ao mesmo tempo (composição e estrutura); <b>paralelismo</b> é fazer múltiplas coisas fisicamente ao mesmo tempo (hardware multicore). Seção crítica é o trecho de código que toca recurso compartilhado mutável — e sem sincronização adequada, surgem as três anomalias clássicas: deadlock, livelock e starvation.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>O Malabarista vs Vários Malabaristas.</b> Um único malabarista com 4 bolas no ar é concorrência: ele só tem duas mãos (núcleos de CPU), mas alterna entre as bolas com tanta velocidade que todas parecem progredir juntas. Quatro malabaristas jogando bolas simultaneamente é paralelismo real. A seção crítica é o ponto em que duas bolas precisam passar pela mesma cesta ao mesmo tempo.</p></div>
@@ -1320,6 +1350,11 @@ teto de réplicas:    <span class="n">15</span>
 
       <article class="topic" id="c1">
         <div class="th"><h3>Pessimista x otimista: a aposta que você faz</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um sistema de reservas de passagens aéreas utilizava lock otimista (`@Version`) para a reserva de assentos em voos promocionais de fim de ano. Como 400 usuários disputavam os mesmos 10 assentos promocionais simultaneamente, 98% das transações falhavam repetidamente com `OptimisticLockingFailureException`, forçando retries furiosos que destruíram a CPU da aplicação. A adoção de lock pessimista pontual (`SELECT ... FOR UPDATE`) com fila de espera curta garantiu atendimento determinístico com tempo de resposta estável de 45ms.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> a diferença não é técnica, é de <em>aposta</em>. O lock pessimista assume que vai haver conflito e paga o preço de bloquear antes. O otimista assume que não vai e paga o preço de refazer quando erra. Escolher errado não quebra o sistema — deixa ele lento de um jeito que ninguém entende.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como uma sala de reunião.</b> Pessimista é reservar a sala antes: ninguém mais entra, e se você demorar, todo mundo espera na porta. Otimista é ir direto e, se encontrar gente lá, procurar outra. Numa empresa com salas sobrando, reservar tudo é burocracia inútil. Numa com disputa constante, ir direto faz você perder a viagem toda hora.</p></div>
         <div class="duo o">
@@ -1467,6 +1502,11 @@ Optional&lt;Produto&gt; <span class="a">findParaAtualizar</span>(<span class="a"
 
       <article class="topic" id="c2">
         <div class="th"><h3>Lock distribuído: quando o recurso não é uma linha</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma rotina de geração de faturas mensais rodava em 3 instâncias de background workers. Cada instância disparava a geração automática das faturas no dia 1º à meia-noite. Sem lock distribuído, as três instâncias executaram o lote ao mesmo tempo, gerando cobranças triplicadas no cartão de 18.000 clientes. A introdução de um lock distribuído no Redis via Redisson com tempo de concessão (lease time) de 30 minutos garantiu que estritamente uma única réplica executasse o fechamento.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> quando o que precisa de exclusão não está no banco — um job que não pode rodar duas vezes, uma chamada a um sistema externo, um arquivo — o lock precisa viver fora, num lugar que todas as réplicas enxergam. Na prática, quase sempre o Redis.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a chave física de uma sala.</b> Só existe uma; quem está com ela entra. O problema é o mundo real: se a pessoa que pegou a chave sumir, ninguém mais entra nunca. Por isso toda chave precisa de um prazo — depois de trinta minutos, a portaria libera. É exatamente o TTL.</p></div>
         <div class="duo o">
@@ -1614,6 +1654,11 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
 
       <article class="topic" id="c3">
         <div class="th"><h3>Lock não é Promise: desfazendo a confusão</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor Node.js assumiu que, por ser uma linguagem baseada em Promises e event loop assíncrono single-thread, a aplicação estaria imune a race conditions em acessos ao banco de dados. Um endpoint de débito em conta fazia `await getSaldo()` e depois `await debitar()`. Durante um teste de carga concorrente, o saldo de um cliente ficou negativo em R$ 8.000 porque múltiplas Promises intercalaram operações I/O na fila de microtasks. O time aprendeu que assincronismo não substitui controle de concorrência e isolamento transacional.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> Promise (ou Future, ou <code class="i">CompletableFuture</code>) é sobre <b>quando</b> um valor fica pronto — é assincronia. Lock é sobre <b>quem</b> pode mexer num recurso — é exclusão mútua. São eixos independentes, e confundi-los leva a código assíncrono cheio de race condition que ninguém consegue explicar.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como pedir comida e usar o banheiro do restaurante.</b> A Promise é o número do pedido: você não fica parado no balcão, e o número te avisa quando ficou pronto. O lock é a chave do banheiro: só um por vez, ponto. Ter o número do pedido não te dá acesso ao banheiro, e ter a chave não faz a comida chegar mais rápido. São coisas diferentes que apenas convivem no mesmo lugar.</p></div>
         <div class="duo o">
@@ -1730,6 +1775,11 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
 
       <article class="topic" id="c4">
         <div class="th"><h3>A Matriz Prática de Locks: Bancos Relacionais, ORMs e Coordenadores Distribuídos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">ecossistema</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor utilizou `@Lock(LockModeType.PESSIMISTIC_WRITE)` em uma consulta JPA que carregava uma árvore de entidades com múltiplos relacionamentos `@OneToMany`. O Hibernate executou locks de linha em todas as tabelas filhas desnecessariamente, travando inserções globais na tabela de histórico de clientes por 40 segundos. O time criou uma matriz de governança técnica para direcionar a escolha precisa entre isolamento transacional, lock explícito de linha única e locks distribuídos em memória.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> a escolha da ferramenta de lock deve acompanhar a fronteira física onde a disputa acontece. Disputa por linha de banco resolve-se no motor relacional com <code>SELECT FOR UPDATE</code> ou no ORM via <code>@Version</code>. Disputa entre múltiplos microsserviços ou jobs agendados sem estado compartilhado exige coordenadores distribuídos (Redis/ShedLock/etcd) com <b>fencing tokens</b> para neutralizar pausas de GC e clock drift.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>A Tranca da Gaveta vs A Chave da Sede da Empresa.</b> Trancar uma única pasta suspensa de cliente é o lock de linha do banco (rápido, barato, escopo mínimo). Se o documento for público mas ninguém pode reescrever sem conferir a data do carimbo, é o lock otimista. Já impedir que duas filiais assinem o mesmo contrato em cidades diferentes sem comunicação direta exige uma autoridade cartorial centralizada com prazo estrito (lock distribuído).</p></div>
@@ -1892,6 +1942,11 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
 
       <article class="topic" id="d1">
         <div class="th"><h3>Idempotency key: o padrão que resolve na prática</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">obrigatório</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um usuário clicou 4 vezes no botão de Finalizar Pagamento de R$ 1.200 porque a conexão 4G do celular oscilou e a tela não mostrou indicador de carregamento. Como o backend não exigia cabeçalho de idempotência (`Idempotency-Key`), foram debitados R$ 4.800 no cartão do cliente. A inclusão mandatória de uma chave de idempotência gravada em tabela com constraint de chave única e TTL de 24 horas bloqueou qualquer requisição repetida instantaneamente.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> a rede vai falhar depois que o servidor processou e antes de a resposta chegar. O cliente não tem como saber, e vai repetir. Sem idempotência, isso é cobrança dupla. A solução é o cliente mandar um identificador único da tentativa, e o servidor gravá-lo <em>na mesma transação</em> do efeito.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como um número de protocolo.</b> Você liga de novo porque a ligação caiu, informa o mesmo protocolo, e o atendente vê que aquilo já foi resolvido — em vez de abrir um segundo chamado. O que faz funcionar não é a memória do atendente: é o número existir antes da segunda ligação.</p></div>
         <div class="duo o">
@@ -2039,6 +2094,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="d2">
         <div class="th"><h3>Rate limiting, throttle e circuit breaker</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um gateway de pagamento parceiro sofreu lentidão severa e passou a demorar 25 segundos para rejeitar requisições. Como a aplicação não tinha Circuit Breaker configurado, todas as 200 threads do servidor Tomcat ficaram presas aguardando I/O bloqueante na rede externa, paralisando até mesmo rotas estáticas e o health check da aplicação. A configuração do Resilience4j com Circuit Breaker abrindo após 50% de falhas e fallback rápido com mensagem amigável manteve a aplicação responsiva.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> três defesas com propósitos diferentes. <b>Rate limiting</b> recusa o que passa do limite. <b>Throttling</b> atrasa para manter um ritmo. <b>Circuit breaker</b> para de chamar uma dependência que está falhando. As duas primeiras protegem você de quem chama; a terceira protege você de quem você chama.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como controlar a entrada de uma casa de shows.</b> Rate limit é a lotação máxima: cheio, não entra mais. Throttle é liberar de dez em dez para não tumultuar a portaria. E o disjuntor é o oposto — é o segurança percebendo que a saída de emergência está bloqueada e parando de mandar gente para lá, em vez de continuar empurrando.</p></div>
         <div class="duo o">
@@ -2162,6 +2222,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="d3">
         <div class="th"><h3>Defesas Distribuídas: Idempotência em Mensageria, Gateways e Semântica Segura</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um broker RabbitMQ sofreu uma reinicialização de nó e reenviou 30.000 mensagens com a flag `redelivered = true` para uma fila de processamento de reembolsos. O consumidor processou todas as mensagens novamente, realizando R$ 450.000 em estornos duplicados na conta dos clientes. A implementação do padrão de verificação de idempotência no consumidor, checando o ID do evento em uma tabela de controle antes de executar a lógica de estorno, blindou a mensageria contra duplicidades de rede.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> em sistemas distribuídos, a rede e os brokers de mensageria operam sob a semântica <b>at-least-once</b>: mensagens <em>serão</em> entregues mais de uma vez em caso de reconexão ou rebalanceamento. Idempotência não é um detalhe de API HTTP — é o único mecanismo que garante que reentregas de mensagens, webhooks duplicados e retentativas em API Gateways não corrompam o saldo ou gerem duplicidade no banco.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>O Carimbo de Registro na Alfândega.</b> Um contêiner de mercadoria chega ao porto. Se a conexão de rádio oscilar, a transportadora pode reenviar o aviso de chegada. Em vez de abrir um novo processo e cobrar imposto duas vezes, o fiscal bate o olho no número de registro lacrado (Idempotency Key / Message ID): se o carimbo já existe no livro oficial, ele apenas entrega a liberação já emitida sem reprocessar as caixas.</p></div>
@@ -2321,6 +2386,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="e1">
         <div class="th"><h3>Índice: a B-tree e o preço dela</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um time de engenharia criou 18 índices diferentes em uma tabela de eventos de telemetria que recebia 12.000 inserções por segundo, buscando acelerar relatórios analíticos esporádicos. O throughput de inserção despencou de 12.000 para 850 inserts/s e o volume de disco do banco explodiu em 4x devido ao custo de manutenção de nós da B-Tree a cada escrita. A remoção de 14 índices redundantes normalizou a taxa de ingestão imediatamente.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> sem índice, achar uma linha significa ler a tabela inteira. Com índice, o banco desce por uma árvore ordenada e chega em três ou quatro saltos. O preço é que todo índice ocupa espaço e precisa ser atualizado a cada escrita — então indexar tudo deixa a escrita lenta sem deixar a leitura rápida.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como o índice remissivo de um livro.</b> Sem ele, achar "idempotência" significa folhear as 400 páginas. Com ele, você vai direto. E o índice tem custo real: ocupa páginas e, a cada edição do livro, precisa ser refeito. Um índice para cada palavra deixaria o livro com o dobro do tamanho e insuportável de atualizar.</p></div>
         <div class="duo o">
@@ -2438,6 +2508,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="e2">
         <div class="th"><h3>JOINs: quem sobra e quem some</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um relatório financeiro de comissão de vendas utilizava um `INNER JOIN` entre a tabela de Vendedores e a tabela de Metas. Vendedores novos que ainda não tinham meta cadastrada no mês foram silenciosamente excluídos da query, deixando 42 colaboradores sem pagamento no fim do mês. A substituição pelo `LEFT JOIN` correto com tratamento de valores nulos corrigiu o relatório e restituiu as comissões devidas.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> os dados ficam separados em tabelas para não repetir informação; o JOIN é o que os junta na hora da consulta. <b>INNER JOIN</b> traz só quem tem par nas duas. <b>LEFT</b> traz todos da esquerda, com <code class="ic">NULL</code> onde não houve par. <b>RIGHT</b> faz o mesmo pela direita. "Esquerda" é a tabela do <code class="ic">FROM</code>.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como cruzar a lista de convidados com a de presentes.</b> INNER lista quem veio <em>e</em> trouxe presente. LEFT lista todos os convidados, marcando "nada" para quem veio de mãos abanando — e é justamente essa lista que costuma ser o objetivo da consulta. RIGHT lista todos os presentes, inclusive o que ninguém sabe quem trouxe.</p></div>
         <div class="duo o">
@@ -2576,6 +2651,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="e3">
         <div class="th"><h3>SQL ou NoSQL: escolher pelo padrão de acesso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um e-commerce armazenou o catálogo de produtos e seus relacionamentos hierárquicos de categorias em um banco NoSQL documental (MongoDB). Quando foi necessário calcular relatórios contábeis de inventário agregando compras, fornecedores e impostos por categoria, o sistema precisou fazer centenas de queries manuais em loop na aplicação, demorando 45 minutos por relatório. A migração do catálogo e financeiro para PostgreSQL com modelo relacional e constraints ACID normalizou as consultas analíticas em 2 segundos.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> a escolha não é por volume nem por modernidade — é pelo <em>padrão de acesso</em>. Consultas variadas, com junção e transação forte, pedem relacional. Acesso sempre pela mesma chave, com volume extremo, pede chave-valor. E a resposta certa, para a grande maioria dos sistemas, continua sendo relacional.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como escolher meio de transporte.</b> Ninguém decide "vou de avião" antes de saber para onde vai. Três quarteirões pede caminhada; outro continente pede avião. Escolher o banco antes de saber como os dados serão lidos é comprar a passagem sem destino.</p></div>
         <div class="duo o">
@@ -2698,6 +2778,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="f1">
         <div class="th"><h3>Polling, long polling, SSE e WebSocket</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um aplicativo de rastreamento de entregas fazia polling HTTP a cada 500ms a partir do celular de 150.000 usuários ativos para atualizar a posição do motoboy no mapa. O volume de 300.000 requisições HTTP por segundo saturou os balanceadores de carga com tráfego inútil (99% das respostas eram sem alteração). A substituição de polling por Server-Sent Events (SSE) unidirecional reduziu as requisições em 98% e derrubou o uso de CPU dos servidores de 92% para 6%.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> quatro degraus para o cliente saber que algo mudou. <b>Polling</b> pergunta de tempos em tempos. <b>Long polling</b> pergunta e o servidor segura a resposta até ter novidade. <b>SSE</b> é um canal aberto do servidor para o cliente. <b>WebSocket</b> é bidirecional e persistente.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como saber se a encomenda chegou.</b> Polling é descer até a portaria de dez em dez minutos. Long polling é ficar na portaria esperando. SSE é o porteiro te avisar quando chegar. WebSocket é ter um interfone aberto nos dois sentidos. Cada degrau economiza viagens e custa mais infraestrutura.</p></div>
         <div class="duo o">
@@ -2814,6 +2899,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="f2">
         <div class="th"><h3>Upload: MinIO, multipart e URL pré-assinada</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma funcionalidade de upload de vídeos de 500 MB transferia o arquivo inteiro do navegador para o servidor da aplicação em memória antes de repassar para o bucket S3. Três uploads simultâneos consumiram 1.5 GB de Heap da JVM, causando OutOfMemoryError no pod e derrubando a API. A reformulação gerando URLs pré-assinadas (Presigned URLs) permitiu que o navegador enviasse os arquivos diretamente para o MinIO/S3 sem trafegar bytes pela aplicação backend.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> arquivo não vai para o disco da aplicação — vai para storage de objeto. O <b>MinIO</b> implementa a API do S3, então o mesmo código funciona local e na nuvem. Arquivo grande vai em <b>partes</b>, e o ideal é que os bytes <b>nem passem pela sua API</b>: o cliente envia direto, com uma URL assinada.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como receber uma mudança.</b> Você não carrega os móveis pessoalmente pela recepção do prédio: autoriza a entrada e o caminhão vai direto ao apartamento. A recepção registra e libera, sem virar gargalo. A URL pré-assinada é essa autorização — vale para aquele endereço, por um tempo, e só.</p></div>
         <div class="duo o">
@@ -2948,6 +3038,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="f3">
         <div class="th"><h3>Multiplexação: várias conversas no mesmo cano</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma aplicação de microsserviços utilizava HTTP/1.1 para comunicação interna. Sob pico de carga, as requisições entraram em Head-of-Line Blocking porque o HTTP/1.1 exige uma conexão TCP dedicada para cada requisição simultânea, esgotando portas efêmeras e sockets do sistema operacional em estado `TIME_WAIT`. A atualização para gRPC sobre HTTP/2 com multiplexação de múltiplos fluxos lógicos dentro de uma única conexão TCP persistente resolveu o gargalo de rede.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> multiplexar é enviar várias requisições simultâneas por uma <em>única</em> conexão, sem esperar uma terminar para começar a próxima. É o que o HTTP/2 faz com streams — e é a mesma ideia dos channels do AMQP: transporte caro compartilhado, sessões lógicas baratas dentro dele.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como uma rodovia com faixas.</b> Uma pista única obriga todo mundo a andar na velocidade do caminhão da frente — se ele para, para todo mundo atrás. Várias faixas no mesmo asfalto deixam cada veículo seguir no seu ritmo. Não se construiu uma rodovia nova: dividiu-se melhor a que existia.</p></div>
         <div class="duo o">
@@ -3068,6 +3163,11 @@ criarPedido(clienteId, valor);
 
       <article class="topic" id="g1">
         <div class="th"><h3>Autenticação, autorização e a falha nº 1 do mundo real</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais explorado</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um endpoint de perfil de usuário `/api/users/{id}/faturas` validava corretamente que o cliente estava autenticado com token JWT, mas não verificava se o `{id}` da URL correspondia ao ID do usuário autenticado no token (vulnerabilidade BOLA / IDOR). Um usuário alterou o ID na requisição e conseguiu visualizar as faturas e dados de cartão de crédito de outros 50.000 clientes da plataforma. A inclusão de autorização estrita baseada em contexto do token bloqueou o vazamento.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> <b>autenticação</b> prova quem você é e acontece uma vez. <b>Autorização</b> decide o que você pode fazer e precisa ser verificada <em>a cada requisição</em>, no servidor. Confundir as duas produz o <b>Broken Access Control</b> — a categoria de falha mais comum em aplicações web, e a mais fácil de explorar: basta trocar um número na URL.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como o crachá num prédio.</b> A recepção confere o documento e emite o crachá — isso é autenticação, e acontece na entrada. Mas o crachá de visitante não abre a sala do servidor, e a fechadura de cada porta precisa conferir isso <em>toda vez</em>. Um prédio que confere só na recepção e deixa todas as portas destrancadas está confiando que ninguém vai tentar a maçaneta.</p></div>
         <div class="duo o">
@@ -3211,6 +3311,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="g2">
         <div class="th"><h3>Sessão ou JWT: onde guardar o "estou logado"</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa utilizava tokens JWT sem estado com prazo de expiração de 30 dias gravados no frontend. Um funcionário do setor financeiro teve o notebook roubado com credenciais ativas. O time de segurança tentou revogar o acesso do usuário no backend e descobriu que era impossível invalidar um JWT válido sem criar uma lista de revogação centralizada em memória (Redis). O incidente forçou a redução do TTL do JWT para 15 minutos com uso de Refresh Tokens controlados no banco.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> na <b>sessão</b>, o estado fica no servidor e o cliente carrega só um identificador — revogar é apagar uma linha. No <b>JWT</b>, o estado viaja assinado com o cliente e o servidor não consulta nada — em troca, você perde a revogação imediata. A escolha é essa, e não é sobre modernidade.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a pulseira de um evento.</b> A sessão é a lista na portaria: seu nome está lá, e riscar tira o acesso na hora. O JWT é a pulseira lacrada com data impressa: o segurança confere sem consultar ninguém, o que é rápido e funciona em qualquer portão — mas se você precisar barrar alguém, a pulseira dele continua válida até vencer.</p></div>
         <div class="duo o">
@@ -3335,6 +3440,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="g3">
         <div class="th"><h3>OAuth 2.0, PKCE e OIDC: o login social explicado</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um aplicativo móvel implementou o fluxo OAuth 2.0 Authorization Code padrão sem utilizar PKCE (Proof Key for Code Exchange). Um aplicativo malicioso instalado no mesmo celular interceptou o código de autorização através do Custom URL Scheme do sistema operacional e trocou o código pelo token de acesso, sequestrando a conta da vítima. A adoção mandatória de PKCE com verificação de `code_verifier` e `code_challenge` eliminou o vetor de interceptação.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> OAuth 2.0 é sobre <b>autorização delegada</b> — dar a um aplicativo acesso limitado a algo seu em outro serviço, sem entregar a senha. Ele <em>não</em> é um protocolo de login. Quem faz login é o <b>OIDC</b>, a camada construída em cima dele.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como a chave do manobrista.</b> Você entrega uma chave que liga o carro e abre a porta, mas não abre o porta-malas nem o porta-luvas. O manobrista não recebe a sua chave principal, o acesso é limitado e você pode cancelar. OAuth é isso: um acesso restrito e revogável a uma parte do que é seu.</p></div>
         <div class="duo o">
@@ -3472,6 +3582,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="h1">
         <div class="th"><h3>Observabilidade e o método de cinco passos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante um incidente com clientes reclamando de lentidão intermitente, os desenvolvedores começaram a alterar configurações às cegas no banco de dados e na memória da JVM sem dados concretos, piorando a instabilidade por 4 horas. Um engenheiro de confiabilidade aplicou o método de 5 passos (Identificar sintoma -> Isolar camada -> Analisar métricas -> Correlacionar logs e traces -> Hipótese e teste controlado), descobrindo em 8 minutos que um lock de linha em uma tabela secundária era a única causa raiz.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> três sinais respondem perguntas diferentes — <b>métrica</b> diz "está ruim?", <b>log</b> diz "o que aconteceu naquela requisição?", <b>rastreamento</b> diz "por onde passou e onde demorou?". E quando algo quebra, existe um método que evita a tarde inteira de tentativa e erro.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como investigar um atraso de voo.</b> A métrica é o painel de partidas: 30% atrasados hoje. O log é o registro do seu voo: decolou às 14h37. O rastreamento é o caminho da mala: saiu da esteira, foi ao raio-X, ficou 40 minutos parada. Nenhum dos três responde a pergunta dos outros dois.</p></div>
         <div class="duo o">
@@ -3603,6 +3718,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="h2">
         <div class="th"><h3>O seu pipeline: Azure DevOps para a AWS</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o seu caso real</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um pipeline de CI/CD utilizava chaves estáticas de acesso da AWS salvas como variáveis de ambiente no Azure DevOps. Durante um build de dependências com script malicioso em uma biblioteca npm de terceiro, a chave foi extraída e postada em um servidor externo, permitindo a invasão da conta AWS. A substituição de chaves estáticas por autenticação OIDC federada (OpenID Connect com IAM Role de confiança temporária) eliminou credenciais estáticas do pipeline.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> repositório e esteira no Azure DevOps, execução na AWS. Duas nuvens no mesmo fluxo. Isso funciona bem e cria uma característica própria: quando algo trava, o problema quase sempre está numa das <em>fronteiras</em> — credencial entre nuvens, versão do artefato ou verificação de saúde.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como uma fábrica e uma loja em cidades diferentes.</b> A produção acontece num lugar, a venda em outro, e o caminhão liga os dois. Quando o produto não chega na prateleira, o problema é a fábrica, o caminhão ou a doca de recebimento — e saber isso já elimina dois terços das hipóteses.</p></div>
         <div class="duo o">
@@ -3737,6 +3857,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="h3">
         <div class="th"><h3>Rollback e GMUD: voltar atrás sem drama</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um deploy de release em produção aplicou uma migration de banco de dados que apagava uma coluna legada (`DROP COLUMN telefone`). A versão nova do backend continha um bug crítico e precisou de rollback imediato, mas a versão antiga não conseguiu subir porque dependia da coluna que havia sido deletada. A GMUD entrou em pânico com 6 horas de downtime. O time adotou a regra de mudanças retrocompatíveis em duas fases (Expand and Contract), onde colunas nunca são removidas no mesmo release que o código.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> <b>rollback</b> é voltar rapidamente à última versão boa conhecida. Se voltar não é um comando, todo deploy vira evento de risco e o time passa a publicar menos — o que piora tudo. <b>GMUD</b> é o processo formal que registra o que muda, o risco e justamente o plano de volta.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como o botão de desfazer.</b> Você escreve com mais coragem porque sabe que pode voltar. Sem desfazer, cada alteração é ponderada por minutos e você acaba escrevendo menos e pior. O rollback confiável é o que torna o deploy frequente possível — não o contrário.</p></div>
         <div class="duo o">
@@ -3868,6 +3993,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="h4">
         <div class="th"><h3>Git squash e hooks: histórico limpo, erro pego cedo</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor cometeu acidentalmente um arquivo de credenciais de produção `private.key` em um commit intermediário local. Embora ele tenha apagado o arquivo no commit seguinte, o commit com a chave foi enviado para o repositório remoto Git e vazou no histórico. A implementação de hooks locais pré-commit (git-secrets/trufflehog) e a padronização de squash commits nos merges impediram a persistência de segredos no repositório.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> <b>squash</b> junta vários commits num só, para que a branch entre na principal como uma unidade lógica. <b>Hooks</b> disparam scripts em momentos do git — antes do commit, antes do push — pegando formatação e teste rápido em segundos, em vez de minutos de esteira.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como entregar um texto revisado.</b> Ninguém quer ler os vinte rascunhos com "ajuste", "ajuste 2" e "agora vai". Quer a versão final, com uma linha explicando o que mudou. O squash é passar a limpo; o hook é o corretor ortográfico que roda antes de você enviar.</p></div>
         <div class="duo o">
@@ -4029,6 +4159,11 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
       <article class="topic" id="j1">
         <div class="th"><h3>Incidente 01 · O "OOMKilled" fantasma: Exit 137 sem Heap Dump</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">k8s + jvm</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um Pod Kubernetes rodando Spring Boot com `-Xmx2g` em um container com limite de 2.5 GB sofria OOMKilled com Exit Code 137 diariamente, mas nenhum arquivo de Heap Dump era gerado. A investigação com Native Memory Tracking (NMT) revelou que a biblioteca Netty do Spring WebFlux alocava buffers de I/O em memória nativa (Off-Heap) fora da gestão do Garbage Collector, estourando o cgroup do container Linux. O ajuste de limites do cgroup e calibração de memória nativa estabilizou o container.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o Pod do Kubernetes morre com status <code class="i">OOMKilled</code> e código de saída 137, mas a JVM não lançou <code class="i">OutOfMemoryError</code> e o log não mostra nada. O assassino não foi a JVM: foi o <b>Linux Kernel OOM Killer</b> via cgroup, porque a memória <em>Off-Heap</em> (Metaspace, thread stacks, Netty buffers) ultrapassou o teto do container.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como alugar um caminhão pelo tamanho da caçamba.</b> Você mediu que a carga ocupa 800 kg e alugou um caminhão com teto de 1000 kg. Mas esqueceu que o peso do próprio motor, do combustível e do motorista somam 350 kg. Na balança da rodovia (o cgroup do Linux), o total deu 1150 kg — o caminhão é apreendido imediatamente pela polícia rodoviária, mesmo com espaço sobrando na caçamba.</p></div>
         <div class="duo o">
@@ -4161,6 +4296,11 @@ java -XX:MaxRAMPercentage=70.0 \
 
       <article class="topic" id="j2">
         <div class="th"><h3>Incidente 02 · Connection Starvation: o pool asfixiado por I/O externo</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">spring + hikaricp</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma rota `@Transactional` de processamento de pagamentos abria uma conexão com o PostgreSQL, executava uma query rápida, e em seguida fazia uma chamada HTTP síncrona para uma API antifraude externa que demorava 4 segundos para responder. Como a transação manteve a conexão do HikariCP presa durante toda a chamada HTTP externa, todas as 50 conexões do pool foram consumidas em 2 segundos por apenas 50 requisições simultâneas, travando todas as outras rotas do sistema. A remoção da chamada externa de dentro da transação atômica liberou o pool imediatamente.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> sob carga moderada de apenas 50 req/s, a API de Checkout colapsa com <code class="i">SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms</code>. O PostgreSQL tem CPU em 3% e zero lentidão. O vilão foi uma <b>chamada HTTP externa síncrona feita dentro de um método anotado com <code class="i">@Transactional</code></b>.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como segurar a chave do banheiro enquanto vai ao supermercado.</b> Você entra na fila do banco, pega a única chave do cofre e, com a chave no bolso, sai do prédio para tomar café na esquina. Os outros cem clientes que só precisam de um depósito rápido de dois segundos ficam parados na porta esperando você voltar.</p></div>
         <div class="duo o">
@@ -4307,6 +4447,11 @@ Sob carga de 50 req/s, a aplicação lança `ConnectionTimeoutException: Connect
 
       <article class="topic" id="j3">
         <div class="th"><h3>Incidente 03 · A avalanche do RabbitMQ: Poison Pill e loop de Requeue</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">mensageria</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma mensagem com payload malformado provocou um `NullPointerException` durante a deserialização em um `@RabbitListener`. Como a configuração padrão utilizava `requeue = true` sem limite de tentativas, a mensagem era devolvida para o topo da fila e relida no milissegundo seguinte em loop infinito, consumindo 100% de CPU e gerando 500.000 logs de erro por minuto. A configuração de uma Dead Letter Exchange (DLQ) com descarte após 3 tentativas encerrou a avalanche.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o cluster RabbitMQ atinge o alarme de memória (<code class="i">vm_memory_high_watermark</code>), bloqueia todas as publicações (<code class="i">connection.blocked</code>) e paralisa os pagamentos. A fila acumula milhares de mensagens em estado <em>Unacked</em> e a CPU do broker vai a 100%. A causa: uma <b>mensagem malformada (poison pill) recebendo <code class="i">basic.nack(requeue=true)</code> em loop infinito sem DLQ</b>.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como devolver uma carta endereçada a lugar nenhum para a esteira dos correios.</b> O carteiro não consegue entregar a carta rasgada, recoloca na esteira imediatamente; o próximo carteiro pega, falha e devolve. Em minutos, milhares de carteiros passam o dia repassando a mesma carta rasgada de mão em mão, sem entregar nenhuma das correspondências legítimas.</p></div>
         <div class="duo o">
@@ -4790,5 +4935,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
   <script defer src="../assets/js/instant-nav.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
 </body>
 </html>

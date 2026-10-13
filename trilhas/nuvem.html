@@ -803,6 +803,11 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <!-- a1 -->
       <article class="topic" id="a1">
         <div class="th"><h3>Nuvem é o datacenter de outra pessoa — com uma API na frente</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um script automatizado de CI/CD criava e destruía instâncias via API sem tratar rate limiting de requisições na AWS CloudControl API. Durante um deploy com falha em loop na madrugada, o script disparou 85.000 requisições em 12 minutos, atingindo o throttling da conta inteira. Todas as chamadas de API da nuvem foram bloqueadas com erro `429 Too Many Requests`, impedindo o Auto Scaling de subir novas máquinas durante um pico matinal e causando 45 minutos de indisponibilidade geral. A implementação de Exponential Backoff com Jitter e verificação de concorrência normalizou as chamadas.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1017,6 +1022,11 @@ public class CloudDiscoveryService {
       <!-- a2 -->
       <article class="topic" id="a2">
         <div class="th"><h3>IaaS, PaaS e SaaS: quanto trabalho você delega</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">níveis de abstração</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma startup hospedou sua aplicação core em máquinas IaaS (EC2) puras para economizar R$ 1.200/mês comparado ao PaaS. Seis meses depois, uma vulnerabilidade crítica de Kernel Linux (Dirty Pipe) foi descoberta e explorada, sequestrando duas instâncias que estavam com patching defasado há 90 dias. O resgate e a auditoria custaram R$ 180.000. A migração das cargas de trabalho de backend para PaaS gerenciado (Cloud Run / App Runner) transferiu a responsabilidade de patching do SO e runtime diretamente ao provedor.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1222,6 +1232,11 @@ management.endpoint.health.probes.enabled=true</code></pre>
       <!-- a3 -->
       <article class="topic" id="a3">
         <div class="th"><h3>Responsabilidade compartilhada: a linha que define de quem é a culpa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">segurança</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um banco de dados gerenciado em nuvem teve dados corrompidos após um script de migração com `DROP TABLE` incorreto executado por um estagiário. O CTO abriu chamado no suporte do provedor esperando restauração imediata, mas descobriu que a retenção de snapshots automatizados estava desativada por configuração manual do time. O provedor comprovou pelo modelo de responsabilidade compartilhada que backups lógicos e controle de acesso são de total responsabilidade do cliente, gerando 36 horas de paralisação para reconstruir o banco via logs de auditoria.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1418,6 +1433,11 @@ public class SecureS3Factory {
       <!-- a4 -->
       <article class="topic" id="a4">
         <div class="th"><h3>Regiões, zonas e o que "alta disponibilidade" significa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia física</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um e-commerce colocou 4 réplicas de sua API em duas instâncias EC2, ambas alocadas na mesma zona de disponibilidade (`us-east-1a`). Durante uma tempestade com falha no gerador elétrico do datacenter dessa zona, ambas as instâncias caíram simultaneamente, tirando a loja do ar por 4 horas no meio da Black Friday. A reconfiguração da infraestrutura distribuindo os nós em Multi-AZ (`us-east-1a`, `us-east-1b`, `us-east-1c`) por trás de um Application Load Balancer eliminou o ponto único de falha zonal.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1615,6 +1635,11 @@ public class DatabaseConfig {
       <!-- a5 -->
       <article class="topic" id="a5">
         <div class="th"><h3>O mapa de tradução: os mesmos conceitos, cinco vocabulários</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a chave do documento</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante uma migração de infraestrutura da AWS para o GCP, um time de DevOps traduziu um Security Group diretamente para uma regra de Firewall de VPC sem perceber que na AWS os grupos de segurança são stateful por padrão no tráfego de retorno, enquanto criaram regras no GCP que bloquearam o tráfego de saída efêmero. 12 microsserviços ficaram inacessíveis por 3 horas até que a equipe mapeou os conceitos de firewall e rotas entre os provedores.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1829,6 +1854,11 @@ public class AzureBlobStorageAdapter implements StoragePort {
       <!-- b1 -->
       <article class="topic" id="b1">
         <div class="th"><h3>A régua do compute: da VM ao serverless</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa colocou um processamento batch de fechamento contábil que rodava 14 horas seguidas em uma AWS Lambda com timeout máximo de 15 minutos. A função era abortada violentamente a cada 15 minutos, deixando transações pela metade e gerando 1.200 execuções repetidas com faturas infladas. A equipe reestruturou a carga transferindo o processamento longo para containers em instâncias sob demanda com ECS Fargate / VMs Spot, reservando Lambda apenas para eventos curtos de menos de 30 segundos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2036,6 +2066,11 @@ gcloud run deploy orders-service \\
       <!-- b2 -->
       <article class="topic" id="b2">
         <div class="th"><h3>Escala automática: elasticidade de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">elasticidade</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um Auto Scaling Group foi configurado para escalar baseado exclusivamente no uso médio de CPU (> 70%). Durante uma liquidação relâmpago, o tráfego aumentou em 10.000 requisições por segundo em 40 segundos. Como a aplicação Java demorava 2 minutos para aquecer a JVM (warm-up) e baixar arquivos de modelo, as novas instâncias chegavam tarde demais, e as existentes já tinham caído por esgotamento de conexões TCP. A mudança para métricas de latência P99 e contagem de requisições no ALB, somada à otimização do startup e pré-aquecimento de instâncias, estabilizou a elasticidade.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2230,6 +2265,11 @@ public class OrderProcessingMetrics {
       <!-- b3 -->
       <article class="topic" id="b3">
         <div class="th"><h3>Serverless: o que é ótimo e o que ninguém conta</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">funções & eventos</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma API pública em Lambda em Node.js com conexão direta ao PostgreSQL sofreu cold starts de 3.200ms a cada surto de novos usuários após períodos de calmaria. Além disso, quando o tráfego subiu para 2.000 requisições simultâneas, 2.000 Lambdas independentes abriram 2.000 conexões de rede simultâneas no banco de dados, derrubando a CPU do Postgres para 100% por exaustão de pool. A adição de Provisioned Concurrency para eliminar cold starts e a instalação de um RDS Proxy / PgBouncer intermediário salvaram a operação.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2419,6 +2459,11 @@ public class OrderValidationHandler implements RequestHandler<APIGatewayProxyReq
       <!-- b4 -->
       <article class="topic" id="b4">
         <div class="th"><h3>Kubernetes gerenciado: o que o provedor tira das suas costas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">orquestração pronta</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um time operando um cluster Kubernetes autogerenciado em VMs puras perdeu o quorum do etcd após dois nós do control plane sofrerem falha de disco em sequência. O cluster inteiro entrou em estado somente-leitura e a restauração manual do snapshot do etcd demorou 14 horas de estresse com engenharia de plantão. A migração para EKS/GKE transferiu a gestão, replicação multi-AZ e recuperação automática do control plane e etcd para o provedor com SLA contratual de 99.95%.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2634,6 +2679,11 @@ spec:
       <!-- c1 -->
       <article class="topic" id="c1">
         <div class="th"><h3>A rede virtual: seu pedaço privado da nuvem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação da rede</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Duas equipes de engenharia criaram VPCs separadas para pagamentos e compras, mas ambas utilizaram o mesmo bloco CIDR padrão `10.0.0.0/16`. Quando a diretoria exigiu interconectar as duas VPCs via VPC Peering para sincronização de dados interna, a sobreposição de IPs inviabilizou o roteamento e exigiu reconstruir e reendereçar toda a rede de um dos ambientes, consumindo 3 semanas de trabalho de migração. O planejamento prévio com blocos CIDR não conflitantes (`10.10.0.0/16` e `10.20.0.0/16`) tornou-se obrigatório.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2837,6 +2887,11 @@ spring.datasource.hikari.maximum-pool-size=20</code></pre>
       <!-- c2 -->
       <article class="topic" id="c2">
         <div class="th"><h3>Sub-rede pública e privada: a distinção que quase ninguém entende</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um banco de dados MongoDB com dados sensíveis de cartões foi provisionado em uma sub-rede que possuía rota direta para um Internet Gateway (sub-rede pública) com IP público atribuído acidentalmente. Em menos de 48 horas, bots de varredura na internet descobriram a porta 27017 aberta e vazaram 120.000 registros de clientes. A correção isolou todos os bancos de dados em sub-redes puramente privadas sem rota para Internet Gateway, roteando tráfego de saída apenas através de um NAT Gateway controlado.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3099,6 +3154,11 @@ public class PaymentGatewayClient {
       <!-- c3 -->
       <article class="topic" id="c3">
         <div class="th"><h3>Grupos de segurança: o firewall que segue o recurso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor para testar um endpoint temporário adicionou uma regra no Security Group abrindo a porta 22 (SSH) para `0.0.0.0/0`. A regra foi esquecida por 3 meses até que um ataque de força bruta comprometeu uma máquina EC2, transformando-a em nó de botnet para mineração de criptomoedas. A adoção de regras referenciando IDs de Security Groups de origem (`sg-xxxx`) em vez de blocos de IP e a revogação de SSH público via AWS Systems Manager Session Manager (SSM) blindaram os acessos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3325,6 +3385,11 @@ try (Socket socket = new Socket()) {
       <!-- c4 -->
       <article class="topic" id="c4">
         <div class="th"><h3>Balanceador de carga: a porta de entrada</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um Application Load Balancer teve o health check configurado para a rota raiz `/`, que batia no banco de dados para validar a home page inteira. Quando o banco de dados ficou ligeiramente lento, os health checks começaram a dar timeout em 5 segundos. O ALB marcou todas as 16 instâncias saudáveis como 'Unhealthy' ao mesmo tempo e removeu todo o tráfego, gerando indisponibilidade total enquanto as instâncias estavam na verdade funcionais. O apontamento do health check para um endpoint leve dedicado `/health` em memória sem dependências externas resolveu o falso positivo.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3533,6 +3598,11 @@ try (Socket socket = new Socket()) {
       <!-- c5 -->
       <article class="topic" id="c5">
         <div class="th"><h3>DNS, CDN e a borda: encurtando a distância</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um site de streaming de vídeo servia todas as imagens e assets estáticos diretamente de um único bucket S3 em `us-east-1` (Norte da Virgínia). Usuários na América Latina e Europa enfrentavam tempo de carregamento de 2.800ms por página, e a fatura de data transfer out de S3 atingiu R$ 42.000 no mês. A ativação do CloudFront com cache nas bordas (Edge Locations) reduziu a latência percebida para 180ms e derrubou o custo de transferência em 68%.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3719,6 +3789,11 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
       <!-- c6 -->
       <article class="topic" id="c6">
         <div class="th"><h3>Conectar a nuvem ao que você já tem: VPN e link dedicado</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa interconectou seu datacenter on-premise à AWS através de um único túnel VPN IPsec sobre internet pública. Durante um rompimento de fibra óptica na operadora de telecomunicações, o túnel caiu por 9 horas, interrompendo a emissão de notas fiscais integradas com o mainframe legado. A reestruturação da topologia implementou redundância com Direct Connect / ExpressRoute dedicado e failover automático para túneis VPN secundários com BGP dinâmico.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3945,6 +4020,11 @@ public class ItemBatchRepository {
       <!-- d1 -->
       <article class="topic" id="d1">
         <div class="th"><h3>Objeto, bloco e arquivo: escolher errado dói por anos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe montou um bucket de armazenamento de objetos (S3) como sistema de arquivos local nas máquinas EC2 usando s3fs para salvar arquivos de log e banco de dados SQLite. Como armazenamento de objetos não suporta escritas atômicas por append nem lock de arquivos POSIX, as transações corromperam os bancos locais e a latência de IOPS destruiu a performance do sistema. A separação clara entre armazenamento em bloco (EBS) para banco de dados e armazenamento de arquivos distribuído (EFS/NFS) para múltiplos nós normalizou o IOPS.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4161,6 +4241,11 @@ public class DocumentStorageService {
       <!-- d2 -->
       <article class="topic" id="d2">
         <div class="th"><h3>Classes de armazenamento e ciclo de vida: o dinheiro esquecido</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma plataforma gerava 500 GB de gravações de chamadas por dia e mantinha tudo na classe S3 Standard perpétua. Após 3 anos acumulando 550 TB de dados que quase nunca eram consultados após 30 dias, a conta de armazenamento atingiu R$ 68.000 mensais. A implementação de uma regra de ciclo de vida (Lifecycle Rule) migrando objetos para Standard-IA aos 30 dias, Glacier Instant Retrieval aos 90 dias e Glacier Deep Archive aos 365 dias reduziu a fatura para R$ 9.200/mês, economizando mais de R$ 700.000 ao ano.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4382,6 +4467,11 @@ Custo mensal no Deep Archive: US$ 49,50 / mês (Redução de 95,7%!)</code></pre
       <!-- d3 -->
       <article class="topic" id="d3">
         <div class="th"><h3>Durabilidade não é disponibilidade — e nenhuma das duas é backup</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe contava com a durabilidade de 99,999999999% (11 noves) do S3 como garantia de segurança dos dados. Uma falha de lógica em um script de limpeza executou um comando `aws s3 rm --recursive` que deletou 400.000 fotos de perfil de usuários da noite para o dia. O S3 apagou os dados com total fidelidade e durabilidade. O time aprendeu da pior forma que durabilidade não protege contra deleção acidental; a ativação de Versionamento, S3 Object Lock e replicação para bucket de backup em conta separada protegeu os ativos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4583,6 +4673,11 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
       <!-- e1 -->
       <article class="topic" id="e1">
         <div class="th"><h3>Banco gerenciado: o que você deixa de fazer</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe ativou a janela de manutenção automática padrão do Amazon RDS sem definir horário específico. Às 14h de uma terça-feira em pleno pico de vendas, o provedor aplicou um patch de SO secundário e reiniciou a instância primária do banco. Como a réplica Multi-AZ precisou promover e os pools de conexão da aplicação não tinham retry nem backoff, todos os 3.000 checkouts ativos falharam com erro 500. O agendamento da janela de manutenção para a madrugada de domingo com failover testado em homologação evitou novos sustos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4787,6 +4882,11 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
       <!-- e2 -->
       <article class="topic" id="e2">
         <div class="th"><h3>Relacional, documento, chave-valor e coluna: escolher pelo padrão de acesso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma rede social em crescimento modelou os feeds de atividades e histórico de visualizações de 5 milhões de usuários em tabelas relacionais com múltiplos JOINs pesados no MySQL. A latência de consulta ultrapassava 12 segundos e o banco esgotou IOPS e CPU. A migração do feed para um banco chave-valor NoSQL de altíssima escala (DynamoDB / Cassandra) com particionamento por usuário derrubou a latência para 6 milissegundos mesmo sob picos de 40.000 requisições por segundo.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4982,6 +5082,11 @@ SELECT * FROM pedidos WHERE detalhes_customizados @> '{"canal": "mobile", "cupom
       <!-- e3 -->
       <article class="topic" id="e3">
         <div class="th"><h3>Conexões: o gargalo invisível entre a aplicação e o banco</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java/Spring</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante uma campanha de marketing, o Auto Scaling subiu 80 instâncias de containers. Cada container estava configurado com um pool HikariCP de 50 conexões máximas com o PostgreSQL. O total de 4.000 conexões excedeu o parâmetro `max_connections = 500` do banco. O PostgreSQL passou a recusar novas conexões com `FATAL: remaining connection slots are reserved`, derrubando toda a aplicação. A introdução de um RDS Proxy / PgBouncer centralizado multiplexou as 4.000 conexões da aplicação em apenas 80 conexões reais no banco.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5184,6 +5289,11 @@ Teto máximo do Auto-Scaling:       15 réplicas
       <!-- e4 -->
       <article class="topic" id="e4">
         <div class="th"><h3>Cache: a otimização mais eficaz e mais perigosa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um cluster Redis em nuvem que fazia cache de todo o catálogo de produtos reiniciou abruptamente após uma falha de hardware. No segundo seguinte, todas as 25.000 requisições simultâneas que bateram no cache e receberam cache miss foram repassadas diretamente ao banco de dados relacional primário (efeito manada / cache avalanche). O banco entrou em colapso em 10 segundos com CPU a 100%. A adição de TTLs aleatórios (jitter) e padrões de Circuit Breaker com proteção de mutex/lock para repopulação de cache protegeu o banco de dados.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5395,6 +5505,11 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
       <!-- f1 -->
       <article class="topic" id="f1">
         <div class="th"><h3>Identidade é o novo perímetro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma conta de desenvolvedor corporativo na nuvem não tinha autenticação multifator (MFA) ativada. A senha foi vazada em um dump de credenciais públicas na internet. Criminosos logaram no console AWS na madrugada, criaram 80 instâncias EC2 do tipo GPU para mineração de criptomoedas em 5 regiões diferentes e geraram uma dívida de US$ 48.000 em 48 horas. A imposição mandatória de MFA via SCP (Service Control Policy) e alerta imediato de GuardDuty no AWS Organizations bloqueou o vetor de invasão.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5610,6 +5725,11 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
       <!-- f2 -->
       <article class="topic" id="f2">
         <div class="th"><h3>Identidade de recurso: como acabar com a chave no código</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um programador cometeu o erro de incluir um par de chaves estáticas de acesso (`AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`) em um repositório público no GitHub. Em menos de 9 minutos, bots automatizados vasculharam o commit e utilizaram as credenciais com privilégios de Admin para criar recursos maliciosos. A revogação imediata das credenciais e a adoção de IAM Roles para instâncias EC2 / Workload Identity no Kubernetes eliminaram 100% das credenciais estáticas do código.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5841,6 +5961,11 @@ public class DatabaseSecretConfig {
       <!-- f3 -->
       <article class="topic" id="f3">
         <div class="th"><h3>Criptografia: em repouso, em trânsito, e quem guarda a chave</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa configurou a criptografia de seus volumes EBS e bancos de dados usando uma chave gerenciada pelo cliente (CMK) no AWS KMS. Durante uma faxina de governança, um engenheiro deletou a chave KMS acreditando que ela não estava em uso. Imediatamente, todas as instâncias que precisavam reiniciar falharam e o banco de dados ficou inacessível, pois era impossível descriptografar os dados em repouso sem a chave. A proteção contra deleção com período de espera de 30 dias e políticas estritas de uso de KMS tornaram-se padrão obrigatório.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6043,6 +6168,11 @@ resource "aws_kms_alias" "pedidos_alias" {
       <!-- f4 -->
       <article class="topic" id="f4">
         <div class="th"><h3>Organizar contas: a fronteira mais forte que existe</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa mantinha os ambientes de desenvolvimento, homologação e produção dentro da mesmíssima conta AWS, separados apenas por tags e nomes de recursos. Durante um teste de carga em homologação, o script consumiu todo o limite de cota de rede e IOPS da conta, afetando diretamente as instâncias de produção que compartilhavam os mesmos limites. A segregação em contas AWS separadas sob o AWS Organizations isolou totalmente o raio de explosão (blast radius) entre ambientes.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6262,6 +6392,11 @@ resource "aws_kms_alias" "pedidos_alias" {
       <!-- g1 -->
       <article class="topic" id="g1">
         <div class="th"><h3>Fila e tópico: a diferença que muda o desenho inteiro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe utilizou uma fila SQS direta no envio de eventos de novos cadastros de clientes. Quando os times de marketing e de análise de crédito precisaram consumir os mesmos dados, o primeiro serviço que lia a mensagem a consumia e apagava da fila, deixando os outros times no escuro. A reestruturação da arquitetura para o padrão Fanout publicando os eventos em um tópico SNS conectado a múltiplas filas SQS independentes permitiu que cada consumidor tivesse sua própria fila desacoplada.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6491,6 +6626,11 @@ public class PedidosQueueConsumer {
       <!-- g2 -->
       <article class="topic" id="g2">
         <div class="th"><h3>Entrega ao menos uma vez: por que idempotência não é opcional</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais esquecido</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma fila SQS configurada com visibilidade padrão de 30 segundos disparava o processamento de pedidos que demorava 45 segundos para finalizar. Como a mensagem reaparecia na fila antes de ser deletada, um segundo consumidor lia a mesma mensagem e disparava uma nova cobrança no cartão do cliente, gerando 1.500 cobranças duplicadas em um final de semana. O ajuste do Visibility Timeout para cobrir o pior caso somado à verificação estrita de chave de idempotência no banco de dados sanou o problema.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6706,6 +6846,11 @@ public class IdempotencyRepository {
       <!-- g3 -->
       <article class="topic" id="g3">
         <div class="th"><h3>Fila de mensagens mortas e reprocessamento</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma mensagem com payload JSON malformado travou o consumidor de uma fila SQS em produção: a cada leitura, a aplicação sofria erro fatal, a mensagem retornava para a fila e era consumida de novo no segundo seguinte, gerando 800.000 erros em 3 horas e bloqueando o processamento de mensagens normais. A vinculação de uma Dead Letter Queue (DLQ) com `maxReceiveCount = 3` isolou a mensagem venenosa automaticamente na terceira tentativa e manteve o fluxo em operação normal.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6900,6 +7045,11 @@ public void consumirPedido(String payload) {
       <!-- g4 -->
       <article class="topic" id="g4">
         <div class="th"><h3>Gateway de API: a porta de entrada dos serviços</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um serviço de backend interno foi exposto diretamente na internet sem proteção de rate limiting. Um cliente parceiro teve um bug em seu sistema e disparou 40.000 requisições por segundo para a API, esgotando todas as threads do servidor e gerando queda do serviço. A colocação de um API Gateway gerenciado na frente do microsserviço com políticas de throttling, rate limiting de 100 req/s por API Key e autenticação centralizada protegeu a estabilidade do backend.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7116,6 +7266,11 @@ public class SecurityHeaderFilter implements GlobalFilter, Ordered {
       <!-- h1 -->
       <article class="topic" id="h1">
         <div class="th"><h3>Log, métrica e rastreamento: três perguntas diferentes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante um incidente com chamadas falhando entre 6 microsserviços distribuídos, o time de engenharia gastou 5 horas abrindo painéis de logs de cada serviço individualmente tentando cruzar horários para entender onde a requisição havia quebrado. A ausência de distributed tracing impedia descobrir a causa raiz. A implementação de OpenTelemetry com injeção de Trace ID e Span ID em todos os cabeçalhos HTTP permitiu rastrear o caminho exato de cada requisição em menos de 10 segundos no painel de observabilidade.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7337,6 +7492,11 @@ public class ProcessadorPagamentoService {
       <!-- h2 -->
       <article class="topic" id="h2">
         <div class="th"><h3>Alarme que serve: sintoma, não causa</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe de infraestrutura configurou 45 alarmes baseados em causas pontuais ('CPU acima de 85% por 1 minuto', 'disco a 80%', 'uso de memória a 75%'). Os engenheiros recebiam mais de 120 mensagens no PagerDuty e Slack por dia, criando fadiga de alertas extrema. Durante uma queda real onde a taxa de erro 5xx subiu para 18% e as vendas zeraram, o alerta real foi ignorado no meio do ruído. A reestruturação de alarmes focando nos 4 sinais de ouro (taxa de erro, latência P99, tráfego e saturação de cliente) eliminou falsos positivos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7545,6 +7705,11 @@ Resultado: Dispara apenas quando o cliente sofre. Resposta imediata em 5 minutos
       <!-- h3 -->
       <article class="topic" id="h3">
         <div class="th"><h3>Custo da observabilidade: o serviço que vira o mais caro</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa configurou todos os microsserviços para emitir logs no nível `DEBUG` com retenção ilimitada no Amazon CloudWatch Logs. Em um único mês, o volume de ingestão de logs ultrapassou 45 Terabytes, resultando em uma fatura de CloudWatch de R$ 38.000, que superou o custo de todas as instâncias de computação da empresa somadas. A redução do nível para `INFO` em produção, a exclusão de rotas de health check da coleta e o ciclo de retenção configurado para 14 dias derrubaram a fatura em 82%.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7741,6 +7906,11 @@ public ResponseEntity&lt;OrderDTO&gt; buscarPedido(@PathVariable Long id) {
       <!-- i1 -->
       <article class="topic" id="i1">
         <div class="th"><h3>Por que clicar no painel não escala</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe de infraestrutura configurou manualmente todas as regras de VPC, sub-redes, rotas e balanceadores de carga clicando no console da AWS para lançar um produto. Um ano depois, foi necessário criar um ambiente espelho para homologação e desastre em outra região. Nenhum engenheiro lembrava quais portas e flags haviam sido configuradas, gerando 6 semanas de tentativas e erros e falhas inexplicáveis. A adoção de Terraform para declarar 100% da topologia como código permitiu recriar ambientes inteiros em 12 minutos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7959,6 +8129,11 @@ public class InfrastructureHealthCheckConfig {
       <!-- i2 -->
       <article class="topic" id="i2">
         <div class="th"><h3>Ferramentas: agnóstica ou nativa do provedor</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa adotou uma ferramenta de IaC proprietária com templates altamente acoplados a um provedor específico. Quando a diretoria assinou um contrato estratégico exigindo hospedar réplicas de contingência em um segundo provedor de nuvem, toda a equipe precisou descartar os templates e reescrever a automação do zero. A padronização em ferramentas agnósticas da indústria como Terraform/OpenTofu permitiu reutilizar módulos, boas práticas de revisão e pipelines de validação consistentes entre provedores.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -8148,6 +8323,11 @@ public class InfrastructureHealthCheckConfig {
       <!-- i3 -->
       <article class="topic" id="i3">
         <div class="th"><h3>Esteira de entrega: do commit ao ambiente</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor realizou deploy manual conectando por SSH no servidor de produção e rodando `git pull` e `mvn package`. O build falhou por falta de memória RAM durante a compilação, deixando o processo Java antigo morto e a pasta de produção com arquivos inconsistentes. O serviço ficou fora do ar por 2 horas. A implantação de uma esteira de CI/CD automatizada com compilação isolada, execução de testes unitários e deploy blue/green sem intervenção humana eliminou falhas manuais.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -8386,6 +8566,11 @@ class PedidoIntegrationTest {
       <!-- i4 -->
       <article class="topic" id="i4">
         <div class="th"><h3>Marcação e governança: como saber o que é de quem</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma auditoria financeira na nuvem identificou R$ 45.000 mensais em custos de instâncias de máquinas virtuais, discos de snapshot órfãos e clusters abandonados, mas ninguém na empresa sabia a qual projeto ou equipe aqueles recursos pertenciam. Com medo de derrubar serviços em produção, ninguém autorizava deletar nada. A criação de políticas de marcação mandatória (Tags obrigatórias de `Environment`, `Owner`, `Project`) impediu a criação de recursos sem dono e viabilizou a faxina de custos.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -8600,6 +8785,11 @@ public class EnvironmentTagLoader {
       <!-- j1 -->
       <article class="topic" id="j1">
         <div class="th"><h3>Virtualização: a camada que tornou tudo isso possível</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma aplicação de banco de dados rodando em uma VM com alocação compartilhada sofria picos periódicos inexplicáveis de latência de 80ms para 1.400ms em horários aleatórios. A investigação revelou o problema do vizinho barulhento (noisy neighbor): outra VM hospedada no mesmo servidor físico de hardware estava consumindo 100% dos barramentos de I/O de disco. A migração da carga de trabalho para instâncias com hardware dedicado ou instâncias com suporte a Nitro/SR-IOV com I/O isolado estabilizou o throughput.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -8800,6 +8990,11 @@ java -XX:+UseContainerSupport \\
       <!-- j2 -->
       <article class="topic" id="j2">
         <div class="th"><h3>Nuvem privada e o papel real da VMware</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma instituição financeira tentou construir uma 'nuvem privada' interna mantendo processos burocráticos manuais: para cada nova VM solicitada, um analista precisava preencher uma planilha e provisionar o ambiente manualmente no VMware vCenter em até 5 dias úteis. As equipes de desenvolvimento burlavam o processo e contratavam nuvem pública no cartão de crédito corporativo para não atrasar entregas. O incidente provou que virtualização local só vira nuvem quando acompanhada de automação por API e autoatendimento.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -9016,6 +9211,11 @@ public class HybridInfrastructureConfig {
       <!-- j3 -->
       <article class="topic" id="j3">
         <div class="th"><h3>Híbrida e multi-nuvem: separando o real do discurso</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um arquiteto projetou uma aplicação para rodar o frontend no GCP e o banco de dados na AWS, realizando chamadas síncronas a cada requisição de usuário pela internet pública. A latência de rede entre os provedores adicionou 65ms a cada consulta, e os custos de transferência de saída (egress fees) atingiram R$ 28.000 no primeiro mês. O time aprendeu que arquiteturas multi-nuvem síncronas através da internet são contraproducentes; cada serviço deve manter sua autonomia de dados dentro do mesmo ecossistema regional.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -9237,6 +9437,11 @@ cloud:
       <!-- j4 -->
       <article class="topic" id="j4">
         <div class="th"><h3>Migrar: as estratégias e a ordem certa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa tentou migrar uma aplicação monolítica de 15 anos para a nuvem usando a abordagem 'Rehost' (Lift and Shift) cego, copiando uma VM de 64 GB de RAM com banco de dados e arquivos locais compartilhados sem nenhuma adaptação. A fatura mensal subiu em 400% em relação ao datacenter próprio e a aplicação caía toda vez que a instância era reciclada pelo provedor. A reestruturação da migração separando o banco de dados para um serviço gerenciado e os arquivos para S3 estabilizou os custos e a resiliência.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -9446,6 +9651,11 @@ public class MigracaoDualWriteService {
       <!-- k1 -->
       <article class="topic" id="k1">
         <div class="th"><h3>Por que a conta veio maior: os quatro eixos de cobrança</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um microsserviço de replicação de dados entre regiões (`us-east-1` e `eu-west-1`) enviava 20 Terabytes de logs brutos descompactados por dia. O time monitorou os custos de CPU e memória das instâncias EC2, que pareciam baixos, mas foi surpreendido por uma cobrança de US$ 14.000 em taxa de transferência de dados de saída entre regiões (Cross-Region Data Transfer). A ativação de compressão Zstandard nos payloads e o agrupamento de tráfego dentro da mesma região derrubaram o custo de rede em 78%.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -9646,6 +9856,11 @@ public class MigracaoDualWriteService {
       <!-- k2 -->
       <article class="topic" id="k2">
         <div class="th"><h3>Modelos de compra: sob demanda, compromisso e capacidade ociosa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa utilizava 100% de suas instâncias de banco de dados e servidores de produção essenciais no modelo Sob Demanda (On-Demand) pagando valor integral por 3 anos seguidos. A contratação de Savings Plans e Instâncias Reservadas com compromisso de 1 a 3 anos para a capacidade base estável gerou um desconto imediato de 42% na conta mensal sem alterar uma única linha de código ou infraestrutura.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -9847,6 +10062,11 @@ spring:
       <!-- k3 -->
       <article class="topic" id="k3">
         <div class="th"><h3>Colocar o custo no fluxo de engenharia</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor alterou um pipeline de processamento em lote para rodar a cada 5 minutos em vez de 1 vez ao dia, gerando 288 execuções diárias de instâncias de alto custo. O erro só foi descoberto 45 dias depois quando o departamento financeiro recebeu a fatura com um estouro orçamentário de R$ 60.000. A inclusão da ferramenta Infracost no pull request do CI e a ativação de alarmes de AWS Budgets diários alertaram variações anômalas de custo antes do fechamento do mês.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -10041,6 +10261,11 @@ public class OrderCheckoutService {
       <!-- k4 -->
       <article class="topic" id="k4">
         <div class="th"><h3>OrderFlow na nuvem: o capstone dos cinco documentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o fechamento</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>O sistema OrderFlow enfrentou um apagão de 3 horas durante uma grande campanha promocional: o frontend caiu por saturação de conexões, a API falhou por cold start de funções serverless sem limite de concorrência, o banco relacional travou por exaustão de pool e as mensagens de faturamento se perderam porque foram enviadas sem fila persistente. A arquitetura de produção foi reconstruída unindo CDN na borda, API Gateway com rate limiting, banco gerenciado com pooler, e mensageria assíncrona com DLQ, suportando 50.000 usuários simultâneos com estabilidade.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -10980,5 +11205,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
   <script defer src="../assets/js/instant-nav.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
 </body>
 </html>

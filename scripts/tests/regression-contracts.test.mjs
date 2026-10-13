@@ -48,7 +48,8 @@ const DOCUMENTOS_ESPERADOS = [
   'cadernos/ingles.html',
   'cadernos/oratoria.html',
   'cadernos/governanca-seguranca.html',
-  'lab/projetos.html'
+  'lab/projetos.html',
+  'ferramentas/pomodoro.html'
 ];
 
 test('1. Existência e integridade de todos os 18 documentos fundamentais', () => {
@@ -56,7 +57,8 @@ test('1. Existência e integridade de todos os 18 documentos fundamentais', () =
     const abs = path.join(RAIZ, doc);
     assert.ok(fs.existsSync(abs), `Documento obrigatório não encontrado: ${doc}`);
     const stat = fs.statSync(abs);
-    assert.ok(stat.size > 5000, `Documento ${doc} parece truncado ou vazio (${stat.size} bytes)`);
+    const tamanhoMinimo = doc === 'ferramentas/pomodoro.html' ? 3000 : 5000;
+    assert.ok(stat.size > tamanhoMinimo, `Documento ${doc} parece truncado ou vazio (${stat.size} bytes)`);
   }
 });
 
@@ -322,7 +324,7 @@ test('11. Inventário de documentos consistente entre Acervo, busca global e REA
   };
 
   const documentos = DOCUMENTOS_ESPERADOS.filter((doc) =>
-    doc.startsWith('trilhas/') || doc.startsWith('cadernos/') || doc.startsWith('lab/')
+    doc.startsWith('trilhas/') || doc.startsWith('cadernos/') || doc.startsWith('lab/') || doc.startsWith('ferramentas/')
   );
   const acervo = lerComScripts('acervo.html');
   const index = lerComScripts('index.html');

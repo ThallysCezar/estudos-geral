@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Governança de TI e segurança da informação — trilha visual e conteúdo</title>
+<meta name="description" content="O décimo primeiro documento, unificando os quatro roadmaps de Git do vault. Trilha visual em 9 marcos, mais 15 tópicos em 9 partes — commit como snapshot e o DAG, blob/tree/commit/tag, working tree e index, merge contra rebase, conflito como decisão, cherry-pick com -x, stash e worktree, bisect, restore/reset/revert, reflog e fsck, rebase interativo, force-with-lease, segredo vazado, pull request, SemVer, trunk-based, blame e pickaxe, packfiles e assinatura. Tema Dracula.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/img-modal.css">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{white-space:nowrap;width:1%}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px;white-space:nowrap}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
+<link rel="stylesheet" href="../assets/css/responsive-drawer.css">
+  <link rel="stylesheet" href="../assets/css/pratica.css">
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>§</i><b>Governança e Segurança</b></div>
+    <p class="sub">Quem decide, quem responde, e o que sobra de risco.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (risco, IAM, LGPD)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Governança e Segurança · outubro 2026</span>
+      <h1>Quem <em>decide</em>, quem <em>responde</em>, e o que sobra de risco.</h1>
+      <p class="lede">Governança não é burocracia: é tornar explícito quem decide, qual risco a organização aceita e como isso é verificado. Segurança é o resultado contínuo que vem disso. Em cima, a <b>trilha visual</b>. Embaixo, o <b>conteúdo</b> em partes, com o mesmo compromisso dos outros cadernos: <b>nenhum conceito sem o caso que o obriga a existir</b> — a credencial que vazou, o acesso de administrador que virou permanente, o endereço do cliente que foi parar no log.</p>
+
+      <figure class="topic-img">
+        <img src="../assets/img/governanca/governanca_ti_mapa_mental.png" alt="Mapa mental: governança de TI e segurança da informação" loading="lazy" title="Clique para abrir no visualizador ampliado" onclick="openImgModal(this.src, this.alt, 'MAPA MENTAL PRINCIPAL')" decoding="async">
+        <figcaption>
+          <span>MAPA MENTAL PRINCIPAL</span>
+          <em>GOVERNANÇA DE TI E SEGURANÇA DA INFORMAÇÃO</em>
+        </figcaption>
+      </figure>
+
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>da decisão ao incidente</a>
+      </div>
+      <div class="legenda">
+        <div><b>Sempre com caso</b><span>Cada tópico abre com a situação concreta que exige aquele controle.</span></div>
+        <div><b>Risco antes de controle</b><span>Primeiro o que pode acontecer e quanto dói; só então a salvaguarda.</span></div>
+        <div><b>Educacional, não jurídico</b><span>LGPD e normas aparecem para orientar conversa, não como parecer.</span></div>
+        <div><b>Onde a teoria mora</b><span>Link para o documento que aprofunda, em vez de reexplicar.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: da decisão ao incidente</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+    <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>O que é governança, e por que ela existe</h2><p>Direção, gestão e segurança são três coisas diferentes. Confundi-las é a origem de quase toda discussão improdutiva.</p></div></div>
+
+      <article class="topic" id="a1">
+        <div class="th"><h3>Governança, gestão e segurança são três coisas diferentes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Governança determina direção, limites e prestação de contas. Gestão planeja e executa dentro desses limites. Segurança é o resultado contínuo: reduzir a chance e o impacto de uso indevido, indisponibilidade, alteração ou exposição de informação. Confundir os três é o que faz reunião de segurança virar discussão sem dono.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um serviço de pedidos cai por três horas numa sexta-feira. Na reunião seguinte, alguém pergunta "de quem é a culpa?". A pergunta certa é outra, em três camadas: <b>a direção</b> já tinha dito qual indisponibilidade era aceitável para esse serviço? <b>A gestão</b> traduziu isso em orçamento, redundância e plantão? <b>A engenharia</b> implementou e mediu? Sem a primeira resposta, as outras duas são chute — e ninguém é responsável porque nunca ficou escrito quem era.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre o conselho de uma escola, a direção e os professores. O conselho decide que a escola aceita turmas de no máximo 30 alunos e que isso é inegociável. A direção contrata, monta as salas e o horário. O professor dá a aula. Quando uma turma chega a 42 alunos, o problema não é do professor — é que alguém furou o limite que o conselho tinha fixado, e ninguém verificou.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>TI passou de suporte local a dependência central de operação, receita e obrigação legal. Enquanto era "o pessoal da informática", a decisão sobre risco ficava dispersa e implícita. Quando uma indisponibilidade passou a custar receita e uma exposição de dados passou a ter consequência jurídica, foi preciso dizer, no papel, quem decide o quê.</p>
+            <div class="repl"><b>Veio substituir:</b> o modelo em que segurança era um assunto técnico, resolvido por quem entendia de firewall, sem ninguém do negócio precisar opinar. Isso funcionava enquanto o pior caso era um computador parado; deixou de funcionar quando o pior caso passou a ser o negócio parado.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>O arranjo tem quatro níveis, e cada um produz um artefato diferente. A <b>política</b> expressa intenção e regra ("acesso administrativo é temporário"). O <b>padrão</b> define o requisito obrigatório ("máximo de 8 horas, com aprovação registrada"). O <b>procedimento</b> descreve a execução ("peça por este formulário; o dono do serviço aprova"). A <b>evidência</b> registra que aconteceu: o ticket, o log, a configuração.</p>
+            <p>Exceção não é falha do sistema — é parte dele. Mas precisa de justificativa, aprovador nomeado, prazo e plano de volta ao padrão. Exceção sem prazo é mudança de política feita pela porta dos fundos.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">da intenção à evidência</text><rect x="8" y="34" width="72" height="30" rx="8" class="b2"/><text x="44" y="53" class="bs">política</text><path d="M82,49 L104,49" class="l"/><path d="M104,49 L97,45 L97,53 Z" class="h"/><rect x="106" y="34" width="72" height="30" rx="8" class="b2"/><text x="142" y="53" class="bs">padrão</text><path d="M180,49 L202,49" class="l"/><path d="M202,49 L195,45 L195,53 Z" class="h"/><rect x="204" y="34" width="86" height="30" rx="8" class="b2"/><text x="247" y="53" class="bs">procedimento</text><rect x="106" y="86" width="128" height="30" rx="8" class="b1"/><text x="170" y="105" class="bs">evidência</text><path d="M247,66 L186,86" class="l"/><path d="M186,86 L194,84 L191,92 Z" class="h"/><text x="170" y="138" class="bs">sem evidência, a cadeia não fecha</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Transformar "alguém deveria cuidar disso" em "esta pessoa decide, neste fórum, com este critério, e a evidência fica aqui". Sem isso, todo risco vira responsabilidade difusa, e responsabilidade difusa é o mesmo que nenhuma.</p></div>
+          <div><h4>Por que é importante</h4><p>Decisão de risco tem custo de reversão alto. Quando a direção não fixa o apetite a risco, a engenharia decide por omissão — normalmente escolhendo o caminho mais rápido, que é o menos protegido. E quando dá errado, a conversa acontece sem critério, porque nunca houve um.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">o que o NIST CSF 2.0 acrescentou, e o que ele não é</span></summary>
+          <div class="alem-body"><p>O NIST Cybersecurity Framework 2.0 organiza resultados em seis funções: <b>Govern</b>, Identify, Protect, Detect, Respond e Recover. O <i>Govern</i> entrou como função própria na versão 2.0, justamente para separar "decidir e prestar contas" de "proteger e detectar".</p><p>O que ele <b>não</b> é: não é certificação, não é lista universal de controles e não é norma com requisito auditável no sentido da ISO. É um vocabulário comum de resultados esperados, para que áreas diferentes consigam conversar sobre a mesma coisa. Usar como checklist de conformidade é o erro mais comum.</p><small class="alem-src">NIST CSF 2.0. Confirme a versão vigente antes de citar em documento formal.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>A disciplina de decidir sob restrição e registrar a decisão está em <a href="../trilhas/arquitetura.html">Arquitetura completo</a> (ADR e trade-offs) e em <a href="../trilhas/system-design.html">System Design completo</a> (contrato, SLO e o que o negócio aceita perder). Aqui interessa só quem tem autoridade para aceitar o risco residual.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Tratar conformidade como segurança.</b> Auditoria aprovada diz que, na data da amostragem, os requisitos verificados estavam atendidos. Não diz que o ambiente está seguro hoje.</li>
+            <li><b>Criar comitê antes de criar responsabilidade.</b> Empresa pequena não precisa de fórum mensal; precisa saber quem aprova acesso, mudança crítica e exceção. O arranjo mínimo é esse.</li>
+            <li><b>Escrever política que ninguém consegue cumprir.</b> Regra que a operação contorna todo dia não protege nada e ainda ensina o time a ignorar o conjunto.</li>
+            <li><b>Confundir dono do sistema com dono do risco.</b> Quem opera não é necessariamente quem tem autoridade para aceitar a consequência de uma falha.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: direção, gestão e o que sobra de risco</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Três papéis, três artefatos</b>
+                    <p>Direção fixa apetite a risco e prioridade; gestão traduz em política, padrão e orçamento; engenharia implementa e mede. Cada camada produz evidência verificável.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Política → padrão → procedimento → evidência</b>
+                    <p>A cadeia só vale se terminar em evidência. Política sem evidência é intenção; evidência sem política é coleta sem critério.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Exceção é parte do sistema</b>
+                    <p>Precisa de justificativa, aprovador, prazo e plano de retorno. Exceção sem prazo vira mudança de política não declarada.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Achar que passar na auditoria significa estar seguro:</b><p>Auditoria verifica requisitos definidos, numa amostra, numa data. Um ambiente pode passar na auditoria e ter uma credencial de serviço sem rotação há dois anos, porque ninguém definiu esse requisito.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Autoridade sobre risco residual</strong>. Para qualquer risco relevante, pergunte: quem tem autoridade para aceitá-lo? Se a resposta for "ninguém sabe" ou "o time de segurança", o arranjo de governança ainda não existe — segurança orienta, mas quem aceita risco é quem responde pelo resultado.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-a1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #a1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de governança: uma equipe precisa de acesso de administrador em produção para depurar um incidente recorrente. A política da empresa exige acesso temporário e auditável. O time alega que pedir aprovação a cada vez atrasa o diagnóstico e pede acesso permanente.</strong></p>
+                <p class="te-instrucao">Qual é a resposta que respeita a governança sem travar o trabalho?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Acesso permanente amplia o impacto de uma credencial comprometida e, pior, a decisão foi tomada por quem não tem autoridade para aceitar esse risco residual.">
+                    <span class="te-letter">A</span> Conceder o acesso permanente ao time, registrando em ata que a engenharia assumiu a decisão por se tratar de pessoal sênior e de um incidente que já se repetiu três vezes.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. Exceção com prazo e dono resolve o problema imediato sem virar mudança de política; e atacar a causa raiz remove a necessidade de repetir a exceção.">
+                    <span class="te-letter">B</span> Aprovar uma exceção com prazo, aprovador nomeado e trilha de auditoria, tratando a causa raiz do incidente recorrente como item separado, com dono e data de conclusão.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Política que impede o trabalho sem oferecer caminho é a que o time aprende a contornar. Governança existe para habilitar com limite, não para bloquear.">
+                    <span class="te-letter">C</span> Negar o pedido citando a política vigente e orientar que o diagnóstico seja concluído apenas com os logs já existentes, sem elevação de privilégio em nenhuma hipótese.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Qual a diferença entre risco inerente e risco residual, e por que ela importa na prática?</div>
+              <div class="tf-resposta">Risco inerente é o risco antes dos controles; residual é o que permanece depois deles. A distinção importa porque "temos controle" não significa "o risco foi eliminado": é preciso validar desenho, cobertura e operação do controle. E alguém com autoridade precisa aceitar explicitamente o residual — se ninguém aceita, ele foi aceito por omissão.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="a1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="a2">
+        <div class="th"><h3>Risco é um cenário com dono, não um adjetivo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Risco combina um cenário de ameaça, uma fraqueza explorável, um impacto e uma probabilidade. A avaliação orienta decisão; ela não prevê o futuro com precisão matemática. Dizer "risco alto" sem descrever o que pode acontecer é não ter dito nada.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Uma planilha de riscos classifica dezessete itens como "alto". Nenhum deles tem cenário escrito. Na hora de priorizar orçamento, ninguém consegue defender um contra o outro, e a decisão acaba sendo por quem falou mais alto na reunião. Reescritos como cenário, dois viram prioridade óbvia: <i>"credencial de serviço vazada no build permite exportar a base de clientes"</i> e <i>"backup nunca foi testado para restauração"</i>. Os outros quinze viram itens de rotina.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre o médico dizer "você está mal" e dizer "sua pressão está em 16 por 10, e nesse patamar o risco de um evento cardíaco nos próximos cinco anos sobe tanto". O segundo permite decidir o que fazer hoje. O primeiro só gera ansiedade sem direção.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>As primeiras abordagens eram listas fixas de controles, iguais para todo mundo. Funcionavam quando o parque era homogêneo. Com sistemas de criticidade muito diferente convivendo na mesma empresa, a lista fixa passou a tratar um laptop de estagiário e um sistema de pagamentos como se tivessem o mesmo risco — gastando o mesmo esforço nos dois.</p>
+            <div class="repl"><b>Veio substituir:</b> o checklist universal de controles. A abordagem baseada em risco não eliminou os catálogos, mas inverteu a ordem: primeiro o cenário e o impacto, depois qual controle do catálogo faz sentido ali.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Para avaliar, descreva um cenário concreto e identifique: ativo, ameaça, vulnerabilidade, controles existentes, impacto, probabilidade e o grau de incerteza da sua estimativa. Esse último item é o mais esquecido — assumir precisão que você não tem é como dar um número de latência sem ter medido.</p>
+            <p>As opções de tratamento são quatro: <b>evitar</b> (retirar a atividade), <b>reduzir</b> (controle preventivo, detectivo ou corretivo), <b>compartilhar</b> (contrato ou seguro reparte a consequência, mas não transfere a responsabilidade) e <b>aceitar</b> (decisão explícita, com dono e data de revisão).</p>
+            <p>Controle é a medida que altera o risco. Preventivo: MFA. Detectivo: alerta de exportação incomum. Corretivo: revogar chave e rotacionar segredo. Evidência é o que prova que o controle opera: configuração, log, ticket aprovado, resultado de teste.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 152" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">risco é cenário, não adjetivo</text><rect x="10" y="32" width="90" height="34" rx="8" class="b5"/><text x="55" y="46" class="bs">ameaça +</text><text x="55" y="60" class="bs">fraqueza</text><path d="M102,49 L126,49" class="l"/><path d="M126,49 L119,45 L119,53 Z" class="h"/><rect x="128" y="32" width="92" height="34" rx="8" class="b2"/><text x="174" y="46" class="bs">impacto +</text><text x="174" y="60" class="bs">probabilidade</text><path d="M222,49 L246,49" class="l"/><path d="M246,49 L239,45 L239,53 Z" class="h"/><rect x="248" y="32" width="84" height="34" rx="8" class="b1"/><text x="290" y="53" class="bs">decisão</text><text x="170" y="92" class="bs">evitar · reduzir · compartilhar · aceitar</text><text x="170" y="120" class="bs">residual sem dono = aceito por omissão</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Permitir comparar riscos entre si para decidir onde gastar o próximo real e a próxima hora de engenharia. Sem cenário, não há comparação possível — e sem comparação, a priorização é política, não técnica.</p></div>
+          <div><h4>Por que é importante</h4><p>Orçamento e tempo de engenharia são finitos. Tratar tudo como crítico é a forma mais confiável de não proteger nada bem. E, no sentido inverso, um risco descrito com cenário concreto costuma se defender sozinho na conversa com quem decide o orçamento.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">por que somar notas de 1 a 5 engana</span></summary>
+          <div class="alem-body"><p>A matriz "probabilidade × impacto" com notas de 1 a 5 é popular porque é fácil. O problema é que ela trata escalas ordinais como se fossem numéricas: a distância entre 4 e 5 não é igual à distância entre 1 e 2, e multiplicar posições de ranking não produz grandeza com significado.</p><p>Na prática isso causa dois efeitos conhecidos: riscos muito diferentes caem na mesma célula, e a faixa do meio incha até virar a maioria dos itens. Alternativas usam faixas de perda em dinheiro e intervalos de probabilidade declarados, o que força a explicitar a incerteza em vez de escondê-la num número.</p><p>Para um caderno de estudo o ponto é modesto: a matriz serve para organizar conversa, não para ranquear com precisão. Se duas pessoas discordam de uma nota, o útil é discutir o cenário, não negociar o número.</p><small class="alem-src">Crítica bem documentada na literatura de análise quantitativa de risco; confirme as fontes antes de citar em discussão formal.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>A conta que decide entre uma alternativa e outra, e o hábito de medir antes de afirmar, estão em <a href="../trilhas/system-design.html">System Design completo</a>. Aqui o foco é a decisão de aceitar ou não o que sobra.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Usar "risco alto" sem cenário.</b> Não é avaliação, é adjetivo. Exija a frase completa: o que acontece, com qual ativo, por qual caminho, com qual impacto.</li>
+            <li><b>Confundir compartilhar com eliminar.</b> Seguro e contrato repartem consequência financeira. A responsabilidade perante o titular do dado e perante o cliente continua sua.</li>
+            <li><b>Aceitar risco por omissão.</b> Não decidir é decidir aceitar — só que sem dono, sem prazo e sem revisão.</li>
+            <li><b>Medir controle pela existência, não pela operação.</b> O MFA está configurado para todos ou só para quem se lembrou de ativar? Cobertura e operação são parte do controle.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: do adjetivo ao cenário com dono</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Cenário, não rótulo</b>
+                    <p>Risco se descreve como frase completa: ativo, ameaça, vulnerabilidade, impacto, probabilidade e incerteza. "Alto" não é descrição.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Quatro tratamentos</b>
+                    <p>Evitar, reduzir, compartilhar, aceitar. Compartilhar reparte consequência financeira, não responsabilidade.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Controle sem evidência não conta</b>
+                    <p>Preventivo, detectivo ou corretivo — o que prova que opera é configuração, log, ticket ou teste. Existir não é operar.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Tratar a matriz 5×5 como se o produto das notas fosse uma grandeza:</b><p>Notas ordinais multiplicadas não produzem número com significado: riscos muito diferentes caem na mesma célula e a faixa do meio incha. A matriz organiza conversa; ela não ranqueia com precisão.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Frase completa de risco</strong>. Antes de classificar qualquer coisa, complete: "se [ameaça] explorar [fraqueza] em [ativo], acontece [impacto], e eu estimo [probabilidade] com [grau de confiança]". O que não couber nessa frase ainda não foi entendido.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-a2">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #a2</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de avaliação: o inventário aponta que um token de serviço com permissão de leitura ampla está fixo no repositório há oito meses. O time classificou como "risco médio" porque "o repositório é privado".</strong></p>
+                <p class="te-instrucao">Qual a crítica mais pertinente a essa avaliação?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. &quot;Repositório é privado&quot; é um controle cuja cobertura e operação não foram validadas, e sem cenário não há como comparar este risco com os outros nem decidir o tratamento.">
+                    <span class="te-letter">A</span> A avaliação apoia-se num controle não verificado e não descreve cenário: quem acessou o repositório nesses oito meses, o que o token alcança, e o efeito de um clone, fork ou backup.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. É controle válido, mas único — e a avaliação não considera histórico de acesso, cópias locais, backups, nem o impacto do que o token alcança se a barreira falhar.">
+                    <span class="te-letter">B</span> A avaliação está adequada: repositório privado é controle preventivo legítimo, reduz a probabilidade de exposição e justifica a classificação média atribuída pelo time.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Trocar um rótulo por outro não resolve: o problema é que a avaliação não descreve cenário, impacto nem o que acontece se o repositório deixar de ser privado.">
+                    <span class="te-letter">C</span> A classificação deveria ser "alta" em vez de "média", porque segredo versionado em repositório é sempre crítico, independentemente de o repositório ser público ou privado.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que "compartilhar o risco" com um contrato ou seguro não encerra a responsabilidade?</div>
+              <div class="tf-resposta">Porque o contrato reparte a consequência financeira entre as partes, mas não transfere a obrigação perante quem foi afetado. Se dados de clientes vazam por falha de um fornecedor, a relação com o titular do dado e com o cliente continua sendo da organização que coletou. O contrato muda quem paga a conta, não quem responde.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="a2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Risco: nomear antes de controlar</h2><p>Controle sem cenário é ritual. Primeiro o que pode acontecer, para quem dói e quanto.</p></div></div>
+
+      <article class="topic" id="b1">
+        <div class="th"><h3>Defesa em profundidade: nenhuma barreira única</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Não dependa de uma só barreira. Camadas independentes — endpoint, rede, identidade, aplicação, dados, monitoramento e recuperação — fazem com que ultrapassar uma não entregue o resto. É o oposto de "temos firewall, estamos protegidos".</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um atacante consegue a senha de um desenvolvedor por phishing. Com uma barreira só, acabou: ele entra na VPN e alcança tudo que está "dentro da rede". Com camadas, o estrago para no primeiro degrau — o MFA bloqueia o login; se passar, a conta só tem permissão de leitura no seu próprio serviço; se escalar, o acesso ao banco exige credencial de outro cofre; e a exportação em volume incomum dispara alerta. Nenhuma camada é perfeita. O conjunto é que segura.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre um cofre e um banco. O cofre é uma barreira boa — e única: aberto o cofre, acabou. O banco tem porta giratória, detector, câmera, caixa-forte com temporizador, limite de saque e auditoria. Nenhum desses elementos sozinho impede um assalto; a combinação torna o assalto caro, lento e visível.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O modelo antigo era o perímetro: uma muralha separando "dentro" (confiável) de "fora" (hostil). Funcionava quando todo mundo trabalhava no escritório e os servidores ficavam na sala ao lado. Nuvem, trabalho remoto, SaaS e integrações entre empresas dissolveram a fronteira — não existe mais um "dentro".</p>
+            <div class="repl"><b>Veio substituir:</b> o modelo de perímetro, em que estar dentro da rede era prova suficiente de confiança. Zero Trust não substitui as camadas: ele remove a confiança implícita de uma delas, a rede, e exige que cada acesso seja decidido por identidade, recurso e contexto.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Privilégio mínimo limita <b>permissão</b> e <b>duração</b>. As duas dimensões importam: uma conta com acesso amplo por cinco minutos é um risco diferente de uma com acesso estreito por dois anos. Acesso temporário com aprovação registrada resolve a maior parte dos casos de "preciso de admin para depurar".</p>
+            <p>Numa aplicação, as camadas aparecem assim: a API valida token e escopo; a regra de domínio verifica se <i>aquele</i> usuário pode agir sobre <i>aquele</i> pedido; o serviço acessa apenas o próprio banco; segredos vêm de um gestor, não do repositório; e operações críticas geram log protegido.</p>
+            <p>Zero Trust <b>não</b> é produto nem "não confiar em ninguém" literalmente. É a estratégia de reduzir confiança implícita e tornar cada decisão de acesso explícita e reavaliável. A arquitetura descrita no NIST SP 800-207 gira em torno de recursos, identidades e políticas — não de segmentos de rede.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 164" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">camadas que falham por motivos diferentes</text><rect x="20" y="30" width="300" height="20" rx="6" class="b2"/><text x="170" y="44" class="bs">identidade (MFA, escopo)</text><rect x="20" y="56" width="300" height="20" rx="6" class="b2"/><text x="170" y="70" class="bs">aplicação (autorização no domínio)</text><rect x="20" y="82" width="300" height="20" rx="6" class="b2"/><text x="170" y="96" class="bs">dados (segredo, cifra, minimização)</text><rect x="20" y="108" width="300" height="20" rx="6" class="b1"/><text x="170" y="122" class="bs">detecção e recuperação</text><text x="170" y="150" class="bs">se duas caem pelo mesmo motivo, é uma só</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Limitar o que um invasor consegue fazer <i>depois</i> de passar pela primeira barreira. Toda camada individual vai falhar algum dia; o desenho em profundidade garante que a falha de uma não seja a falha do sistema.</p></div>
+          <div><h4>Por que é importante</h4><p>Credenciais vazam e redes são comprometidas — isso é premissa, não hipótese remota. A diferença entre um incidente contido e uma exposição completa quase sempre está em quantas camadas independentes existiam entre a entrada e o dado.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">por que "independentes" é a palavra que faz o trabalho</span></summary>
+          <div class="alem-body"><p>Camadas só multiplicam proteção se falharem por motivos diferentes. Três controles que dependem do mesmo diretório de identidade não são três camadas: são uma, desenhada três vezes. Se o diretório cai ou é comprometido, os três caem juntos.</p><p>O teste prático é perguntar, para cada par de camadas: existe uma falha única que derruba as duas? Credencial compartilhada, mesma dependência de rede, mesmo provedor, mesma conta de administração — todos criam esse acoplamento invisível.</p><small class="alem-src">NIST SP 800-207 trata da arquitetura Zero Trust; o raciocínio sobre independência de camadas é geral de engenharia de confiabilidade.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>Falha parcial, degradação e o que acontece quando um componente cai estão em <a href="../trilhas/system-design.html">System Design completo</a>; isolamento de rede e identidade na nuvem, em <a href="../trilhas/nuvem.html">Nuvem completo</a>. Aqui interessa só como as camadas se combinam contra um adversário.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Chamar de camada o que depende da mesma raiz.</b> Três controles ligados ao mesmo diretório caem juntos. Camada só conta se falhar por motivo diferente.</li>
+            <li><b>Tratar Zero Trust como produto.</b> Nenhuma ferramenta "implementa Zero Trust". É estratégia de decisão de acesso, e exige política, identidade e telemetria.</li>
+            <li><b>Esconder botão no front-end e chamar de autorização.</b> Se a API aceita a chamada, a proteção não existe. Toda autorização relevante é verificada no servidor.</li>
+            <li><b>Privilégio mínimo só na permissão, nunca na duração.</b> Acesso amplo "temporário" que ninguém revoga é acesso permanente com outro nome.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: camadas que falham por motivos diferentes</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Nenhuma barreira única</b>
+                    <p>Endpoint, rede, identidade, aplicação, dados, monitoramento e recuperação. O conjunto segura o que a peça isolada não segura.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Privilégio mínimo tem duas dimensões</b>
+                    <p>Permissão e duração. Acesso estreito por dois anos e acesso amplo por cinco minutos são riscos diferentes.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Zero Trust remove confiança implícita</b>
+                    <p>Não é produto nem desconfiança literal: é decidir cada acesso por identidade, recurso e contexto, de forma reavaliável.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Contar como camadas controles que compartilham a mesma raiz de falha:</b><p>Três verificações que dependem do mesmo diretório de identidade são uma camada desenhada três vezes. Se o diretório for comprometido, as três caem no mesmo instante.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Teste do par de camadas</strong>. Para cada duas camadas, pergunte: existe uma única falha que derruba as duas? Credencial compartilhada, mesma dependência de rede, mesmo provedor ou mesma conta de administração revelam o acoplamento que anula a profundidade.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-b1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #b1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de arquitetura: um serviço Spring expõe uma API interna. O time argumenta que não precisa validar autorização no domínio, porque a API só é alcançável pela rede privada e o gateway já valida o token JWT na borda.</strong></p>
+                <p class="te-instrucao">Qual é a crítica correta a esse desenho?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Troca a tecnologia e mantém o defeito: continua havendo uma única verificação, na borda, sem autorização sobre o recurso no domínio.">
+                    <span class="te-letter">A</span> O problema está no formato do token: JWT assinado pode ser reaproveitado se vazar, então o correto seria adotar TLS mútuo entre os serviços em lugar da validação feita na borda.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esse é exatamente o raciocínio de perímetro: ele trata &quot;estar na rede privada&quot; como prova de confiança, e colapsa duas camadas numa só.">
+                    <span class="te-letter">B</span> O argumento procede: com a rede privada isolando o tráfego externo e o gateway validando a assinatura do token, repetir a verificação no domínio seria duplicação de esforço sem ganho real.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. Autenticação na borda não substitui autorização no domínio, e confiar na rede privada é confiança implícita — a premissa que Zero Trust remove.">
+                    <span class="te-letter">C</span> O desenho tem uma camada só. Validar o token prova quem é o chamador, não que ele pode agir sobre aquele recurso — e qualquer serviço comprometido na rede alcança a API sem nova verificação.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que autenticar na borda não substitui autorizar no domínio?</div>
+              <div class="tf-resposta">Porque são perguntas diferentes. A autenticação responde "quem é você" e termina ali; a autorização responde "você pode fazer isto, neste recurso, agora". Um token válido prova identidade, não permissão sobre um pedido específico — e se qualquer serviço dentro da rede puder chamar a API, a borda deixa de ser barreira. Por isso a verificação relevante acontece onde a regra de negócio conhece o recurso.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="b1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Identidade e acesso</h2><p>A maior parte dos incidentes passa por uma credencial que podia menos do que podia.</p></div></div>
+
+      <article class="topic" id="c1">
+        <div class="th"><h3>IAM: autenticação responde quem, autorização responde o quê</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Autenticação responde "quem é você?". Autorização responde "o que você pode fazer neste recurso, agora?". São decisões separadas, em momentos separados, e confundi-las é a origem da maior parte das falhas de acesso em aplicação.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um endpoint administrativo esconde o botão no front-end para quem não é <code class="i">ADMIN</code>. Um usuário comum abre o painel de rede do navegador, copia a chamada e a repete com o próprio token válido. A API responde 200. O token estava correto — ele <i>era</i> quem dizia ser. Ninguém nunca perguntou se ele <i>podia</i>.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O crachá prova que você trabalha na empresa; ele não decide em quais andares o elevador para. Autenticação é o crachá. Autorização é a leitora de cada porta — e ela precisa saber qual porta é, não só que o crachá é legítimo.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>No começo, aplicação e usuários viviam no mesmo servidor, e "login" bastava: autenticado significava autorizado a tudo que o sistema fazia. Com múltiplos serviços, integrações entre empresas e acesso de máquinas a máquinas, a identidade passou a atravessar fronteiras, e a decisão de permissão teve de ser tomada separadamente, perto do recurso.</p>
+            <div class="repl"><b>Veio substituir:</b> o modelo de sessão única em que estar logado era sinônimo de poder tudo. Papéis e escopos surgiram para quebrar isso, e atributos de contexto surgiram depois, quando "qual papel" deixou de ser suficiente para decidir.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>A identidade é comprovada por fatores; a autenticação estabelece uma sessão ou emite um token; a autorização avalia papel, escopo, recurso, ação e contexto. O IAM governa o ciclo de vida inteiro: entrada, mudança de função, revisão periódica e remoção — e é na mudança de função que o acesso se acumula, porque quase ninguém tira o que não é mais necessário.</p>
+            <p><b>RBAC</b> decide por papel e resolve bem quando as permissões seguem o cargo. <b>ABAC</b> decide por atributos — organização, propriedade do recurso, horário, origem — e é o que você precisa quando a resposta depende do caso concreto, não do cargo.</p>
+            <p>Em Spring: o Spring Security valida identidade e escopos na borda, mas o serviço ainda precisa verificar autorização no domínio. Um papel <code class="i">ADMIN</code> não deveria, sozinho, permitir alterar qualquer pedido se a regra real depende de organização, propriedade ou estado do pedido.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">duas perguntas, dois momentos</text><rect x="14" y="34" width="134" height="38" rx="8" class="b2"/><text x="81" y="50" class="bs">AUTENTICAÇÃO</text><text x="81" y="65" class="bs">quem é você?</text><rect x="192" y="34" width="134" height="38" rx="8" class="b1"/><text x="259" y="50" class="bs">AUTORIZAÇÃO</text><text x="259" y="65" class="bs">pode nisto, agora?</text><path d="M150,53 L190,53" class="l"/><path d="M190,53 L183,49 L183,57 Z" class="h"/><text x="170" y="96" class="bs">a borda prova identidade</text><text x="170" y="114" class="bs">o domínio decide sobre o recurso</text><text x="170" y="134" class="bs">papel filtra quem tenta; atributo decide</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Garantir que uma credencial comprometida alcance o mínimo possível, e que o acesso de cada pessoa acompanhe a função que ela realmente exerce hoje — não a soma de tudo que ela já exerceu.</p></div>
+          <div><h4>Por que é importante</h4><p>Permissão excessiva é o multiplicador de impacto de todo incidente de credencial. A diferença entre "um atacante leu os pedidos de um cliente" e "um atacante exportou a base inteira" normalmente não está em como ele entrou, mas no que a conta podia depois de entrar.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">contas de serviço, o ponto cego do IAM</span></summary>
+          <div class="alem-body"><p>Boa parte do esforço de IAM vai para contas humanas — MFA, revisão, offboarding. Contas de serviço costumam ficar de fora: não têm dono claro, não participam de revisão, a credencial não expira e ninguém sabe quem a criou.</p><p>O mínimo razoável é tratá-las como identidades de primeira classe: dono nomeado, credencial com rotação, escopo estreito, e inventário que permita responder "o que esta credencial alcança?" sem abrir o código. Um segredo fixo no repositório há meses é o caso extremo desse ponto cego.</p><small class="alem-src">Prática consolidada em gestão de identidade; confirme os requisitos específicos do seu provedor de nuvem.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>O mecanismo de filtros, proxies e o <code class="i">@PreAuthorize</code> está detalhado em <a href="../trilhas/spring.html">Spring completo</a>; o modelo de permissões na nuvem, em <a href="../trilhas/nuvem.html">Nuvem completo</a>. Aqui interessa a separação entre as duas perguntas.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Esconder o botão e chamar de autorização.</b> O front-end melhora a experiência; ele não protege nada. Se a API aceita, a proteção não existe.</li>
+            <li><b>Papel que decide sozinho.</b> <code class="i">ADMIN</code> raramente deveria autorizar qualquer ação sobre qualquer recurso. A regra quase sempre depende de propriedade, organização ou estado.</li>
+            <li><b>Acesso que só acumula.</b> Mudança de função sem remoção do acesso antigo é como o time inteiro vira privilegiado em três anos, sem ninguém ter decidido isso.</li>
+            <li><b>Conta de serviço sem dono.</b> Credencial que ninguém reivindica é credencial que ninguém rotaciona nem revoga.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: duas perguntas, dois momentos</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Quem ≠ o quê</b>
+                    <p>Autenticação estabelece identidade e termina. Autorização decide ação sobre recurso, com contexto, e acontece perto da regra de negócio.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>RBAC e ABAC resolvem casos diferentes</b>
+                    <p>Papel serve quando a permissão segue o cargo; atributos servem quando a resposta depende de propriedade, organização ou estado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>O ciclo de vida é onde o acesso vaza</b>
+                    <p>Entrada, mudança de função, revisão e remoção. É na mudança de função que a permissão se acumula sem ninguém decidir.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Confiar que o front-end protege a API:</b><p>Esconder o botão muda a experiência, não a superfície. Qualquer pessoa repete a chamada com o próprio token válido; se a API não verifica autorização, ela responde normalmente.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Pergunta sobre o recurso, não sobre o cargo</strong>. Antes de autorizar, formule: "este sujeito pode executar esta ação sobre este recurso específico, neste estado, agora?". Se a sua verificação consegue responder sem olhar o recurso, ela está decidindo cedo demais.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-c1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #c1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de implementação: num serviço de pedidos, a regra é que um gerente só pode cancelar pedidos da própria filial, e apenas enquanto o pedido não tiver sido faturado. A equipe implementou a verificação com uma anotação de papel no controller: apenas quem tem o papel GERENTE alcança o endpoint.</strong></p>
+                <p class="te-instrucao">O que falta nessa implementação?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O papel responde &quot;quem&quot;, mas a regra depende de dois atributos do recurso — filial e estado do faturamento — que a anotação de papel não consegue avaliar.">
+                    <span class="te-letter">A</span> Nada de essencial: o papel GERENTE já restringe quem alcança o endpoint, e a verificação do estado de faturamento pertence à camada de persistência, junto com a regra transacional.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. É um caso de ABAC: a decisão depende de propriedade e estado do recurso, que só a regra de negócio conhece. O papel apenas filtra quem pode tentar.">
+                    <span class="te-letter">B</span> Falta a autorização sobre o recurso: verificar, no domínio, se o pedido pertence à filial daquele gerente e se ainda não foi faturado. O papel é condição necessária, não suficiente.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. MFA fortalece a autenticação, que não é o problema aqui: mesmo com identidade garantida, o gerente continuaria podendo cancelar pedido de outra filial.">
+                    <span class="te-letter">C</span> Falta exigir reautenticação com MFA no endpoint, já que cancelar pedido é operação sensível e irreversível, e um token de sessão longa não deveria autorizá-la sozinho.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Quando RBAC não basta e ABAC passa a ser necessário?</div>
+              <div class="tf-resposta">Quando a decisão depende de atributos do caso concreto, e não apenas do cargo de quem pede. Se a regra é "gerente cancela pedido da própria filial, antes do faturamento", o papel responde só a primeira parte: filial e estado são atributos do recurso. RBAC filtra quem pode tentar; ABAC decide se aquela ação, naquele recurso, naquele estado, é permitida.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="c1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Dados: menos é mais seguro</h2><p>O dado que você não guarda é o único que não vaza.</p></div></div>
+
+      <article class="topic" id="d1">
+        <div class="th"><h3>Dados: o que você não guarda é o que não vaza</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Descubra quais dados existem, para que servem e quem os acessa. Colete o necessário, proteja durante todo o ciclo de vida e elimine quando não houver justificativa para manter. Minimização é o único controle que reduz risco e custo ao mesmo tempo.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O pedido precisa do endereço para a entrega. Alguém copia o endereço para o log de depuração "só para investigar um bug". Seis meses depois esse campo está no log, no sistema de análise, no backup de 90 dias e nas fixtures de teste que todo desenvolvedor tem na máquina. Mascarar o endereço na tela não remove nenhuma dessas cópias — e, quando chega um pedido de exclusão do titular, ninguém sabe dizer onde o dado está.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre guardar uma chave reserva e espalhar dez cópias pela casa "por via das dúvidas". Cada cópia é um lugar a mais para perder, um lugar a mais para alguém achar, e um lugar a mais para lembrar quando você trocar a fechadura.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Armazenamento ficou barato e a cultura virou "guarde tudo, pode ser útil depois". Funcionou enquanto o dado era só custo de disco. Passou a não funcionar quando dado pessoal ganhou obrigação legal, prazo de resposta ao titular e consequência em caso de exposição — aí cada cópia esquecida virou passivo.</p>
+            <div class="repl"><b>Veio substituir:</b> o hábito de coletar por precaução e reter indefinidamente. A lógica se inverteu: cada campo guardado precisa de finalidade declarada e prazo, e o padrão passou a ser descartar, não acumular.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Inventarie dados e fluxos, não apenas tabelas: coleta, uso, compartilhamento, armazenamento, backup, exportação, retenção e descarte. Classifique a sensibilidade, restrinja acesso, proteja transporte e armazenamento, e trate cópias e ambientes de teste como parte do escopo — eles quase sempre ficam de fora e são onde o dado mais circula.</p>
+            <p>Sobre a LGPD, sem simplificação enganosa: ela regula o tratamento de dados pessoais e atribui papéis e obrigações conforme a atuação. "Controlador" e "operador" são definidos pelo que a parte <i>faz</i> no tratamento, não pelo nome que o contrato usa. Base legal, transparência, direitos do titular, segurança e comunicação de incidentes exigem avaliação do caso com quem é competente para isso.</p>
+            <p>Criptografia ajuda e não substitui o resto. Dado cifrado com a chave acessível ao mesmo serviço comprometido continua exposto; e cifrar não resolve acesso indevido de quem tem permissão legítima, nem dispensa minimização e descarte.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 154" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">ciclo de vida do dado</text><rect x="8" y="34" width="68" height="28" rx="8" class="b5"/><text x="42" y="52" class="bs">coleta</text><path d="M78,48 L98,48" class="l"/><path d="M98,48 L91,44 L91,52 Z" class="h"/><rect x="100" y="34" width="68" height="28" rx="8" class="b2"/><text x="134" y="52" class="bs">uso</text><path d="M170,48 L190,48" class="l"/><path d="M190,48 L183,44 L183,52 Z" class="h"/><rect x="192" y="34" width="68" height="28" rx="8" class="b2"/><text x="226" y="52" class="bs">retenção</text><path d="M262,48 L282,48" class="l"/><path d="M282,48 L275,44 L275,52 Z" class="h"/><rect x="284" y="34" width="48" height="28" rx="8" class="b1"/><text x="308" y="52" class="bs">descarte</text><text x="170" y="94" class="bs">backup e log seguem outra retenção</text><text x="170" y="122" class="bs">o campo não coletado é o que não vaza</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Reduzir superfície e custo ao mesmo tempo: menos dados e menos cópias significam menos lugares para proteger, menos exposição em caso de incidente e menos esforço para atender um pedido de exclusão ou de portabilidade.</p></div>
+          <div><h4>Por que é importante</h4><p>É o único capítulo em que a decisão técnica tem consequência jurídica direta, e o único em que a melhor proteção é não ter o dado. Também é onde a engenharia decide sozinha, todos os dias, em cada campo que copia para um log sem pensar.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">por que backup e log são o calcanhar da retenção</span></summary>
+          <div class="alem-body"><p>Política de retenção costuma ser escrita pensando no banco de dados principal. Backup e log seguem outra lógica: o backup guarda o estado completo por semanas ou meses, e o log retém o que a aplicação imprimiu, não o que o modelo de dados declarou.</p><p>Consequência prática: apagar um registro do banco não o apaga dos backups do período nem dos logs. Qualquer promessa de exclusão precisa considerar os dois, e o caminho realista é não deixar o dado chegar lá — filtrando na origem — em vez de tentar removê-lo depois.</p><small class="alem-src">A ANPD mantém guia orientativo de segurança e material para agentes de tratamento de pequeno porte. Este caderno é educacional; confirme requisitos com privacidade e jurídico.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>Onde o dado fica, como se replica e o custo de cada camada de armazenamento estão em <a href="../trilhas/nuvem.html">Nuvem completo</a>; o desenho de retenção e paginação sobre volume, em <a href="../trilhas/system-design.html">System Design completo</a>.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Mascarar na tela e achar que resolveu.</b> A máscara é de apresentação. O dado continua no log, no backup, na exportação e nas fixtures.</li>
+            <li><b>Tratar contrato como definidor de papel.</b> Controlador e operador decorrem da atuação no tratamento, não do nome escrito no contrato.</li>
+            <li><b>Usar dado real em ambiente de teste.</b> É a cópia com menos controle e mais acesso de toda a organização.</li>
+            <li><b>Prometer exclusão sem olhar backup e log.</b> Apagar do banco principal não apaga das cópias que sobrevivem semanas.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: minimizar é o controle mais barato</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Inventário é de fluxo, não de tabela</b>
+                    <p>Coleta, uso, compartilhamento, backup, exportação, retenção e descarte. Teste e analytics fazem parte do escopo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Papel decorre da atuação</b>
+                    <p>Controlador e operador são definidos pelo que a parte faz no tratamento, não pelo rótulo do contrato.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Criptografia não substitui acesso e descarte</b>
+                    <p>Cifrar não resolve uso indevido por quem tem permissão legítima, nem dispensa minimizar e eliminar.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Acreditar que apagar do banco cumpre um pedido de exclusão:</b><p>O backup guarda o estado completo por semanas ou meses e o log retém o que a aplicação imprimiu. O caminho realista é impedir que o dado chegue lá, filtrando na origem.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Cada campo precisa de finalidade e prazo</strong>. Para qualquer dado pessoal que o sistema toque, responda: por que está sendo coletado, por quanto tempo fica e quem acessa. Campo sem as três respostas é passivo, não ativo.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-d1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #d1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de engenharia: para investigar uma falha intermitente no checkout, um desenvolvedor adiciona ao log o payload completo do pedido, que inclui nome, endereço e os quatro últimos dígitos do cartão. O log vai para a ferramenta central, com retenção de 90 dias e acesso para todo o time de engenharia.</strong></p>
+                <p class="te-instrucao">Qual é o problema principal e o encaminhamento correto?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. A finalidade é diagnosticar, e para isso basta o identificador e o estado relevante. O log herdou retenção e acesso que ninguém decidiu para aquele dado.">
+                    <span class="te-letter">A</span> O payload inteiro ampliou a superfície sem finalidade: registre só o identificador do pedido e o estado necessário ao diagnóstico, e trate os 90 dias já coletados como exposição a tratar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Cifrar dentro do log adiciona complexidade e gestão de chave sem remover a cópia desnecessária; a decisão certa é não registrar o que não é preciso.">
+                    <span class="te-letter">B</span> O correto é cifrar os campos sensíveis dentro da própria linha de log, mantendo o payload completo para não perder capacidade de investigar a falha intermitente mais adiante.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema não é só o cartão: nome e endereço são dados pessoais que acabaram de ganhar mais 90 dias de retenção e uma audiência muito maior do que a necessária.">
+                    <span class="te-letter">C</span> Não há problema relevante: são apenas os quatro últimos dígitos, que isoladamente não reconstroem o número do cartão, e o log fica numa ferramenta interna com acesso restrito à engenharia.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que minimização de dados é considerada o controle mais eficiente?</div>
+              <div class="tf-resposta">Porque é o único que reduz risco e custo ao mesmo tempo. Todo outro controle protege um dado que continua existindo, e portanto continua precisando de acesso, cifragem, backup, auditoria e resposta a pedidos do titular. O dado que não foi coletado não vaza, não precisa ser protegido, não aparece em backup e não entra num pedido de exclusão.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="d1">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Construir e operar com segurança</h2><p>Do requisito ao postmortem, sem transformar segurança em portão no fim da esteira.</p></div></div>
+
+      <article class="topic" id="e1">
+        <div class="th"><h3>Secure SDLC: segurança cedo, não como portão no fim</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Identificar abuso e requisitos cedo, reduzir vulnerabilidade no código e nas dependências, e manter controles no pipeline e em produção. Segurança no fim da esteira só consegue reprovar — e reprovar tarde é caro demais para ser feito com frequência.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Uma funcionalidade de exportação de relatórios entra em revisão de segurança na véspera do lançamento. O revisor aponta que qualquer usuário autenticado consegue exportar dados de outra organização. A correção exige mudar o modelo de consulta, que já está em três telas. O time escolhe lançar com um filtro no front-end e "corrigir na próxima sprint". O filtro vai para produção; a próxima sprint tem outras prioridades.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre o engenheiro que acompanha a obra e o fiscal que aparece no dia da entrega. O fiscal só pode aprovar ou reprovar o que já está construído — e reprovar significa demolir. Quem acompanha desde a planta consegue mudar uma viga quando isso ainda custa uma borracha.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Enquanto o ciclo era longo e o lançamento acontecia duas vezes por ano, cabia uma auditoria antes de cada entrega. Com entrega contínua, o portão no fim virou gargalo: ou ele atrasa tudo, ou é contornado. A saída foi distribuir a verificação pelo ciclo, em vez de concentrá-la num ponto.</p>
+            <div class="repl"><b>Veio substituir:</b> a revisão de segurança como etapa final de aprovação. Ela não desapareceu, mas deixou de ser o único momento — e deixou de ser o momento em que se descobre que o desenho está errado.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>O fluxo prático: requisitos de segurança e privacidade → modelagem de ameaças → desenho de controles → implementação → revisão e testes → publicação com proveniência → monitoramento → correção e aprendizado. Cada etapa produz algo verificável, e a modelagem de ameaças é a que mais economiza retrabalho porque acontece antes de existir código.</p>
+            <p>Controles por camada: validação e codificação de saída contra entrada maliciosa; consultas parametrizadas; autorização no servidor; segredo fora do repositório; dependências inventariadas e atualizadas; testes proporcionais ao risco, com revisão humana; e log sem senha, token ou dado pessoal desnecessário.</p>
+            <p>Em Java e Spring: configuração explícita do Spring Security, validação de entrada, limite de tamanho de payload, autorização nos endpoints <i>e</i> nos serviços, dependências corrigidas, e proteção do actuator e dos endpoints administrativos. Transação e validação de negócio não substituem autorização.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">o custo cresce com a distância</text><rect x="8" y="34" width="76" height="28" rx="8" class="b2"/><text x="46" y="52" class="bs">requisito</text><path d="M86,48 L104,48" class="l"/><path d="M104,48 L97,44 L97,52 Z" class="h"/><rect x="106" y="34" width="76" height="28" rx="8" class="b2"/><text x="144" y="52" class="bs">ameaças</text><path d="M184,48 L202,48" class="l"/><path d="M202,48 L195,44 L195,52 Z" class="h"/><rect x="204" y="34" width="60" height="28" rx="8" class="b2"/><text x="234" y="52" class="bs">código</text><path d="M266,48 L284,48" class="l"/><path d="M284,48 L277,44 L277,52 Z" class="h"/><rect x="286" y="34" width="46" height="28" rx="8" class="b1"/><text x="309" y="52" class="bs">prod</text><text x="46" y="86" class="bs">barato</text><text x="309" y="86" class="bs">caro</text><text x="170" y="118" class="bs">portão no fim só consegue reprovar</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Fazer com que a correção aconteça quando ela ainda é barata — no requisito e no desenho — em vez de virar dívida negociada contra prazo na véspera do lançamento.</p></div>
+          <div><h4>Por que é importante</h4><p>O custo de corrigir cresce com a distância entre o erro e a descoberta. Uma falha de autorização encontrada na modelagem custa uma conversa; encontrada em produção custa incidente, correção às pressas e, às vezes, comunicação a titulares.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">o que o OWASP Top 10 é, e o que ele não é</span></summary>
+          <div class="alem-body"><p>O OWASP Top 10 é um documento de conscientização sobre categorias de risco frequentes em aplicações web. Ele organiza a conversa e dá vocabulário comum.</p><p>O que ele <b>não</b> é: não é norma, não é lista completa de controles e não é critério suficiente para declarar uma aplicação segura. "Passamos no Top 10" não é afirmação verificável — as categorias são amplas e dependem do contexto do sistema. Use-o para orientar modelagem de ameaças e revisão, combinado com requisitos próprios e critérios testáveis.</p><small class="alem-src">OWASP Top 10. Confirme a edição vigente antes de citar; as categorias mudam entre versões.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>A configuração de filtros e o <code class="i">@PreAuthorize</code> estão em <a href="../trilhas/spring.html">Spring completo</a>; o pipeline, a proveniência da imagem e os segredos em cluster, em <a href="../trilhas/docker-kubernetes.html">Docker e Kubernetes completo</a>.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Tratar o Top 10 como checklist de aprovação.</b> É conscientização, não norma. Nenhuma aplicação fica segura por "cobrir as dez".</li>
+            <li><b>Segurança como portão no fim.</b> Quem só pode reprovar na véspera acaba sendo contornado — e vira filtro no front-end "até a próxima sprint".</li>
+            <li><b>Confiar no scanner e dispensar revisão humana.</b> Ferramenta encontra padrão conhecido; falha de autorização e de regra de negócio quase sempre escapa.</li>
+            <li><b>Dependência atualizada só quando quebra.</b> Inventário e atualização precisam de cadência própria, não do acaso de um build falhar.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: o custo cresce com a distância</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Verificação distribuída pelo ciclo</b>
+                    <p>Requisito, modelagem de ameaças, desenho, implementação, teste, publicação, monitoramento e aprendizado. Cada etapa produz evidência.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Autorização é do servidor</b>
+                    <p>Validação, consulta parametrizada e autorização no endpoint e no serviço. Transação e regra de negócio não substituem permissão.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Modelagem de ameaças economiza mais</b>
+                    <p>Acontece antes de existir código, e é onde uma decisão de desenho custa uma conversa em vez de um refactor.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Declarar a aplicação segura porque "cobrimos o OWASP Top 10":</b><p>O Top 10 é conscientização sobre categorias frequentes, com escopo amplo e dependente de contexto. Não é norma nem lista completa, e não produz afirmação verificável sobre um sistema específico.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Distância entre o erro e a descoberta</strong>. Para qualquer controle que você for adicionar, pergunte em que etapa ele descobriria o problema. Quanto mais perto do requisito, mais barata a correção; quanto mais perto de produção, maior a chance de virar dívida negociada contra prazo.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-e1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #e1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de pipeline: o time propõe adicionar um scanner de dependências que falha o build quando encontra vulnerabilidade de severidade alta. Em duas semanas, o build passa a falhar várias vezes por dia por causa de bibliotecas transitivas sem correção disponível, e o time adiciona uma exceção global para não travar as entregas.</strong></p>
+                <p class="te-instrucao">Qual leitura desse resultado é a correta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Só registrar converte o controle em relatório que ninguém lê. O problema não é a severidade da reação, é a ausência de triagem, dono e prazo.">
+                    <span class="te-letter">A</span> O resultado mostra que falhar o build por vulnerabilidade de dependência é reação excessiva; o correto seria apenas publicar o relatório e revisá-lo numa cadência periódica combinada.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema não é a ferramenta: é que o controle foi ligado sem política de tratamento, sem dono e sem prazo para o que ele encontra.">
+                    <span class="te-letter">B</span> O scanner foi mal escolhido: trocar por uma ferramenta com menos falsos positivos e melhor resolução de dependências transitivas resolveria sem precisar de exceção global no pipeline.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. Controle sem processo de tratamento produz alarme que a equipe aprende a ignorar — e a exceção global é o sintoma previsível disso.">
+                    <span class="te-letter">C</span> O controle entrou sem processo: falta critério de severidade no contexto, dono para triagem, prazo por faixa e exceção com validade. Sem isso o portão vira ruído e acaba desligado.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que mover segurança para o início do ciclo reduz custo, e não apenas antecipa trabalho?</div>
+              <div class="tf-resposta">Porque o custo de corrigir cresce com a distância entre o erro e a descoberta. Uma falha de autorização identificada na modelagem de ameaças muda um diagrama; a mesma falha encontrada na véspera do lançamento exige alterar código já espalhado por várias telas, e costuma ser negociada contra o prazo — virando um paliativo no front-end que fica em produção indefinidamente.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="e1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="e2">
+        <div class="th"><h3>Incidente: conter, preservar, recuperar e aprender</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Incidente é um evento que exige coordenação para conter impacto, preservar evidência, recuperar o serviço e cumprir as comunicações cabíveis. O improviso custa caro justamente no momento em que ninguém tem cabeça para improvisar.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Um token de serviço aparece num repositório público. O relógio começa a correr, e a ordem importa: revogar e rotacionar a credencial; identificar o que ela alcançava e o que foi usado desde a exposição; limitar o acesso afetado; preservar os logs <i>antes</i> que a retenção os apague; corrigir a origem — o segredo que entrou no build; e avaliar, com quem é competente, as obrigações de comunicação. Fazer isso sem um runbook, às onze da noite, é como aprender a dirigir na estrada.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o extintor e o plano de evacuação. Ninguém lê o manual do extintor com fogo na sala. O valor do plano está em ter sido escrito e ensaiado antes — quando dava para pensar devagar e discordar sem urgência.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Enquanto a resposta era "reinstalar o servidor", a prática informal bastava. Com sistemas distribuídos, obrigações de comunicação e a necessidade de dizer depois o que exatamente aconteceu, a resposta virou processo com papéis, porque descobrir quem decide no meio do incidente é tarde demais.</p>
+            <div class="repl"><b>Veio substituir:</b> a cultura de culpa, em que a revisão terminava em um nome. A revisão sem culpa surgiu porque punir quem reporta ensina o time a não reportar — e um incidente escondido é mais caro que um incidente conhecido.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>O ciclo: preparar papéis e runbooks; detectar e classificar; conter; erradicar a causa; recuperar com segurança; comunicar as partes interessadas; e fazer revisão sem culpa, com ações que têm dono e prazo e são acompanhadas até o fim.</p>
+            <p>Observabilidade segura é o que torna o resto possível: métricas, logs e traces permitem perceber o comportamento e reconstruir a sequência. Para servirem de evidência, precisam de integridade protegida, acesso controlado, relógio sincronizado, dado sensível limitado e retenção pelo período justificado. Um log é indício, não verdade completa.</p>
+            <p>Para medir e melhorar: tempo até detectar e até conter, cobertura dos ativos críticos, vulnerabilidades fora do prazo, testes de restauração realizados e ações de postmortem vencidas. Métrica serve para orientar decisão, não para punir quem reportou o problema.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 152" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">decidir antes, executar depois</text><rect x="6" y="34" width="62" height="26" rx="8" class="b2"/><text x="37" y="51" class="bs">preparar</text><rect x="74" y="34" width="62" height="26" rx="8" class="b2"/><text x="105" y="51" class="bs">detectar</text><rect x="142" y="34" width="56" height="26" rx="8" class="b1"/><text x="170" y="51" class="bs">conter</text><rect x="204" y="34" width="66" height="26" rx="8" class="b2"/><text x="237" y="51" class="bs">recuperar</text><rect x="276" y="34" width="58" height="26" rx="8" class="b2"/><text x="305" y="51" class="bs">aprender</text><text x="170" y="88" class="bs">preservar evidência briga com restaurar</text><text x="170" y="116" class="bs">a ordem se define em tempo de paz</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Transformar um momento de pânico em sequência conhecida, de modo que as decisões difíceis já tenham sido tomadas antes e o time possa executar em vez de deliberar.</p></div>
+          <div><h4>Por que é importante</h4><p>A diferença entre um incidente de duas horas e um de dois dias raramente está na competência técnica. Está em saber quem decide, onde está o runbook, se a evidência foi preservada antes de a retenção passar, e se alguém já pensou em qual é o caminho de volta.</p></div>
+        </div>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">por que preservar evidência conflita com restaurar rápido</span></summary>
+          <div class="alem-body"><p>Os dois objetivos legítimos brigam. Restaurar o serviço quer derrubar e recriar a instância comprometida agora; preservar evidência quer capturar memória, disco e estado antes que isso aconteça. Quem decide no calor do momento costuma escolher restaurar, e a investigação depois fica sem material.</p><p>A saída é decidir antes, por classe de incidente: em quais casos a captura precede a recriação, quem tem autoridade para pedir a captura, e qual é o tempo máximo aceitável para ela. Decidido antes, vira execução; decidido durante, vira discussão com o serviço fora do ar.</p><small class="alem-src">Prática consolidada em resposta a incidentes; os critérios específicos dependem das obrigações aplicáveis à organização.</small></div>
+        </details>
+        <div class="ver"><b>onde a teoria mora</b>Métricas, traces e o que observar em produção estão em <a href="../trilhas/nuvem.html">Nuvem completo</a>; timeout, disjuntor e degradação, em <a href="../trilhas/system-design.html">System Design completo</a>. Aqui interessa a coordenação sob pressão.</div>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Recriar a instância antes de capturar evidência.</b> Resolve o serviço e encerra a investigação junto. Decida a ordem por classe de incidente, antes.</li>
+            <li><b>Runbook que nunca foi ensaiado.</b> Documento não lido sob pressão é documento que não existe.</li>
+            <li><b>Revisão que termina num nome.</b> Punir quem reporta ensina o time a esconder, e incidente escondido custa mais.</li>
+            <li><b>Postmortem sem dono e sem prazo.</b> Ação registrada e não acompanhada é a forma educada de não corrigir.</li>
+          </ul>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: decidir antes para executar depois</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O ciclo tem sete passos</b>
+                    <p>Preparar, detectar, conter, erradicar, recuperar, comunicar e aprender. Cada um com papel definido antes do incidente.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Log é indício, não verdade</b>
+                    <p>Para servir de evidência precisa de integridade, acesso controlado, relógio sincronizado e retenção justificada.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Revisão sem culpa, ação com dono</b>
+                    <p>A revisão busca causa, não culpado; mas a ação resultante precisa de responsável e prazo, ou não acontece.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Derrubar e recriar a instância comprometida antes de preservar evidência:</b><p>Restaurar rápido e investigar depois são objetivos que brigam. Recriada a instância, memória e disco se foram — e a investigação fica sem material para dizer o que aconteceu.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Decisão difícil pertence ao tempo de paz</strong>. Toda escolha que exigiria deliberação durante o incidente — capturar ou recriar, comunicar ou aguardar, quem autoriza o quê — deve estar decidida antes. No incidente, o time executa; se precisar decidir, já é tarde.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-gov-e2">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #e2</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de resposta: às 23h, um alerta indica exportação atípica de dados por uma conta de serviço. O time de plantão identifica a credencial, revoga o token e recria o contêiner afetado para restaurar o serviço. Na manhã seguinte, a investigação quer saber o que foi exportado e para onde.</strong></p>
+                <p class="te-instrucao">Que erro de processo esse plantão revela?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conter foi certo, mas recriar o contêiner antes de capturar estado eliminou a evidência que a investigação agora precisa — e isso era previsível.">
+                    <span class="te-letter">A</span> Nenhum erro relevante: diante de exportação em curso às 23h, revogar a credencial e restabelecer o serviço é exatamente a prioridade que se espera de um plantão bem treinado.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato. A ordem entre preservar e restaurar precisa estar definida em tempo de paz; no incidente o time executa. Sem essa definição, a escolha recai sempre sobre restaurar.">
+                    <span class="te-letter">B</span> Faltava decidir antes, por classe de incidente, quando a captura de evidência precede a recriação e quem pode pedi-la. Conter foi correto; perder a evidência veio de decisão não tomada.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Conter rápido é prioridade legítima diante de exportação em curso; observar um atacante ativo exige preparo específico e raramente compensa o risco de mais dados saírem.">
+                    <span class="te-letter">C</span> O erro foi revogar o token de imediato: isso alertou o atacante e eliminou a chance de observar o comportamento dele por algum tempo para dimensionar o alcance real da intrusão.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que a revisão pós-incidente é feita sem culpa, e o que ela não dispensa?</div>
+              <div class="tf-resposta">Sem culpa porque punir quem reporta ensina o time a esconder incidentes, e incidente escondido é descoberto tarde e custa mais. O que ela não dispensa é a responsabilidade pelas ações corretivas: cada item que sai da revisão precisa de dono nomeado e prazo, acompanhado até concluir. Buscar causa em vez de culpado não é abrir mão de consequência, é escolher a consequência que melhora o sistema.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="e2">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Governança é a área em que é mais fácil decorar sigla e não saber decidir nada.</p></div></div>
+
+      <article class="topic" id="f1">
+        <div class="th"><h3>O ciclo, as fontes e como praticar</h3><div class="badges"><span class="badge b-ess">método</span></div></div>
+        <p class="direto"><b>Direto:</b> Governança é a área em que é mais fácil decorar sigla e não saber decidir nada. O ciclo que fixa é o mesmo dos outros cadernos — ler, ver, conferir na fonte, praticar, escrever — com uma diferença: aqui a prática é defender uma decisão, não rodar um comando.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você lê sobre Zero Trust, assiste a um vídeo e consegue explicar o conceito. Na primeira reunião real, alguém pergunta: "e o que muda no nosso serviço de pedidos na segunda-feira?". Reconhecer o conceito não respondeu nada. O que responde é ter escrito, para um sistema concreto, quais acessos deixam de ser implícitos e o que isso custa.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a diferença entre saber as regras do xadrez e jogar uma partida. As regras se aprendem numa tarde; decidir sob restrição, com relógio correndo e um adversário do outro lado, é outra habilidade — e só se adquire jogando.</p></div>
+        <p><b>O ciclo.</b> Ler este caderno → ver um vídeo que dê o mapa → conferir na fonte oficial (NIST, ANPD, OWASP) → fazer o laboratório → escrever a nota do que mudou de ideia → repetir. A volta é a parte que fixa, e é a que quase todo mundo pula.</p>
+        <p><b>Canais e cursos em português.</b> Não listo nomes aqui sem ter verificado que existem e tratam do tema. Esta parte está deliberadamente incompleta: <b>pesquise e preencha com fontes reais em PT-BR</b>, conferindo que o canal trata de governança, risco e segurança aplicada — não apenas de certificação. Inventar nome de canal é pior que deixar a seção vazia.</p>
+        <p><b>Como pesquisar.</b> Busque pelo nome do mecanismo, não pela sigla: "controle compensatório exemplo", "modelagem de ameaças STRIDE exemplo prático", "retenção de log dado pessoal". Cruze sempre com a fonte primária — o site do NIST, o da ANPD, o do OWASP — porque resumo de terceiro envelhece e perde a ressalva.</p>
+        <figure class="dg"><svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="62" height="28" rx="8" class="b2"/><text x="41" y="52" class="bs">ler</text><path d="M74,48 L92,48" class="l"/><path d="M92,48 L85,44 L85,52 Z" class="h"/><rect x="94" y="34" width="62" height="28" rx="8" class="b2"/><text x="125" y="52" class="bs">vídeo</text><path d="M158,48 L176,48" class="l"/><path d="M176,48 L169,44 L169,52 Z" class="h"/><rect x="178" y="34" width="68" height="28" rx="8" class="b2"/><text x="212" y="52" class="bs">fonte</text><path d="M248,48 L266,48" class="l"/><path d="M266,48 L259,44 L259,52 Z" class="h"/><rect x="268" y="34" width="62" height="28" rx="8" class="b1"/><text x="299" y="52" class="bs">decidir</text><path d="M299,64 L176,98" class="l dash"/><text x="170" y="114" class="bs">escrever a decisão é a volta que fixa</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Transformar vocabulário em capacidade de decidir. O teste não é explicar o que é risco residual; é apontar, num sistema real, qual é o risco residual e quem o aceitou.</p></div>
+          <div><h4>Por que é importante</h4><p>Esta é a área em que o estudo superficial engana mais, porque as siglas dão a sensação de domínio. Saber dizer "defesa em profundidade" não é o mesmo que saber apontar as camadas do seu sistema e dizer qual delas falha pelo mesmo motivo que a outra.</p></div>
+        </div>
+        <div class="cs"><b>Mini-projeto na sua stack.</b> Pegue o serviço de pedidos em Spring do acervo e faça três coisas, nesta ordem:<br>1. <b>Modele a ameaça</b> de um fluxo só — o cancelamento de pedido. Quem pode abusar, como, e o que acontece.<br>2. <b>Implemente a autorização no domínio</b>, não só na borda: o gerente só cancela pedido da própria filial, antes do faturamento.<br>3. <b>Escreva um ADR de meia página</b> dizendo qual risco você aceitou e por quê. Esse é o entregável que mais ensina — e o único que se parece com o trabalho real.</div>
+        <div class="ver"><b>onde a teoria mora</b>O mesmo ciclo, aplicado aos outros assuntos, está no fim de cada documento do acervo. O laboratório onde essas decisões viram prática fica em <a href="../lab/projetos.html">Laboratório de projetos</a>.</div>
+        <button class="done" type="button" data-k="f1">marcar dominado</button>
+      </article>
+    </section>
+
+<footer class="foot">
+      <p>Governança de TI e segurança da informação · outubro de 2026 · caderno de apoio do acervo, em tema Dracula. Governança define quem decide e qual risco a organização aceita; segurança é o resultado contínuo disso. Material educacional: não substitui parecer jurídico nem avaliação de conformidade. Os pares deste arquivo são <code class="i">Arquitetura completa</code>, <code class="i">Nuvem completo</code> e <code class="i">System Design completo</code>.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script defer src="../assets/js/governanca-seguranca.inline.js"></script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script defer src="../assets/js/img-modal.js"></script>
+<script src="../assets/js/responsive-drawer.js" defer></script>
+  <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
+</body>
+</html>

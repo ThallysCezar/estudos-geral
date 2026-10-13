@@ -1,5 +1,14 @@
 # HANDOFF.md — passagem de bastão
 
+## Pomodoro compartilhado (2026-10-12)
+
+- Solicitação atual: widget “Técnica Pomodoro” discreto em todas as páginas, configuração dedicada, minutos escondidos antes de configuração e início, e sinais sonoros suaves no início e fim.
+- Já preparado: plano e especificação em `C:\Workspace\Agentes\widgets\pomodoro-estudos\plan.md` e `spec.md`; página de configuração, script compartilhado e estilo comum.
+- Backup de 21 HTML preexistentes criado em `Arquivados/2026-10-12-antes-pomodoro-global/`; widget compartilhado foi incluído nas 20 páginas sem ele. São 22 HTML ativos no total, sem arquivos de `Arquivados/` modificados.
+- Página de configuração em `ferramentas/pomodoro.html`; Home, README, DOCS do Acervo, paletas e contrato de inventário incluem a ferramenta. O widget foi posicionado acima do botão “voltar ao topo”.
+- Verificações concluídas: sintaxe JS do widget, da configuração e do contrato; `check-links` (289 alvos, sem quebras); 22/22 páginas ativas carregam o widget e as 21 cópias de backup existem.
+- Não foi executada a suíte de testes nem revisão visual no navegador. Não regravar baseline automaticamente. A configuração e sessão ficam no navegador local; não sincronizam com outro notebook.
+
 Para o próximo agente. Escrito para ser lido frio, sem acesso à conversa anterior. Última atualização: 2026-10-12.
 
 **Mantenha este arquivo vivo.** Ao terminar uma tarefa, atualize "Onde paramos" e "O que vem a seguir". Ele existe porque uma sessão pode acabar de repente.

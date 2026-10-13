@@ -718,6 +718,11 @@ details.alem>summary:hover{background:var(--bg2)}
 
       <article class="topic" id="a3">
         <div class="th"><h3>Os quatro erros que eliminam candidato</h3><div class="badges"><span class="badge b-imp">reconhecer</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>No design de um sistema de leilões online, a equipe assumiu de antemão a adoção de Kafka, micro-sharding e Cassandra sem antes quantificar o tráfego esperado e sem perguntar se os lances exigiam consistência ACID imediata. O resultado em produção foi um sistema com consistência eventual onde dois compradores arremataram o mesmo lote por lances simultâneos. A falha custou R$ 380.000 em indenizações. O incidente provou que assumir requisitos e escolher tecnologias antes de fechar o contrato funcional elimina a solução.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o entrevistador não avalia o desenho final, avalia o <b>raciocínio</b>. Quatro padrões derrubam a avaliação independentemente de o desenho estar certo.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É uma prova de matemática em que vale mais o desenvolvimento do que o resultado. Chegar ao número certo sem mostrar o caminho não prova que você saberia chegar de novo num problema diferente.</p></div>
@@ -1284,6 +1289,11 @@ SELECT id, criado_em, total FROM pedido
 
       <article class="topic" id="c1">
         <div class="th"><h3>Por que escrita é mais difícil que leitura</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma plataforma de votação aguentava facilmente 50.000 leituras/segundo via réplicas de banco e cache Redis. Porém, durante a final de um programa ao vivo, 25.000 votos de escrita por segundo bateram diretamente no nó primário do PostgreSQL. Os locks de linha na tabela de contagem saturaram a CPU a 100% e causaram crash do banco em 40 segundos. A solução exigiu bufferizar as escritas em partições de fila Kafka e agregar votos em memória em janelas de 1 segundo antes de persistir no banco.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> leitura você duplica — réplica, cache, CDN. Escrita precisa ir ao dono do dado, virar durável e atualizar todo índice. Duplicar o banco <b>não multiplica</b> capacidade de escrita: multiplica o trabalho.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Ler um livro numa biblioteca escala fotocopiando: mil pessoas leem mil cópias ao mesmo tempo. Escrever no livro, não. Se mil pessoas escrevem em mil cópias, você não tem um livro atualizado — tem mil livros diferentes, e agora um problema muito pior de reconciliar.</p></div>
@@ -2200,6 +2210,11 @@ try {
 
       <article class="topic" id="e2">
         <div class="th"><h3>O cursor é contrato de API</h3><div class="badges"><span class="badge b-prof">profundidade</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma API de feed de notícias expunha paginação por offset numérico (`/feed?page=1000`). Em páginas profundas, o banco de dados executava `OFFSET 50000`, escaneando e descartando 50.000 linhas no disco a cada clique, elevando a latência da query para 8.400ms e derrubando o banco. A migração do contrato de API para paginação por cursor opaco criptografado permitiu queries determinísticas com `WHERE (created_at, id) < (:ts, :id) LIMIT 20` executadas em 3ms.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o cursor que você devolve vira parte pública da sua API. Ele precisa ser <b>opaco</b>, <b>versionado</b> e ter <b>erros nomeados</b> — senão você congela a sua implementação para sempre.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a senha do caixa. Ela não precisa dizer nada ao cliente sobre como o sistema organiza a fila por dentro — e justamente por não dizer, a gerência pode reorganizar a fila amanhã sem que ninguém precise trocar de senha.</p></div>
@@ -2623,6 +2638,11 @@ try {
 
       <article class="topic" id="f2">
         <div class="th"><h3>Quarentena, CDN e o evento do storage</h3><div class="badges"><span class="badge b-prof">profundidade</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma rede social permitia upload de imagens diretamente para o bucket público de produção sem etapa de quarentena. Um atacante enviou arquivos disfarçados de imagem contendo malware e conteúdo ilícito que foram imediatamente distribuídos para a CDN e cacheados globalmente. A exclusão manual dos caches demorou 18 horas de crise de relações públicas. A reestruturação isolou o upload em um bucket de quarentena privado acoplado a notificações de storage para escaneamento e redimensionamento antes da publicação.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> o que acontece <b>depois</b> do upload é onde mora o risco. O objeto chega numa área de quarentena, dispara um evento, é verificado — e só então é promovido.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a doca de recebimento de um armazém. Nada vai direto para a prateleira: descarrega na doca, confere a nota, inspeciona, e só aí entra no estoque que os clientes acessam. Quem entrega não decide o que chega à prateleira.</p></div>
@@ -2906,6 +2926,11 @@ try {
 
       <article class="topic" id="g2">
         <div class="th"><h3>SOAP, REST, GraphQL e gRPC: escolher pelo problema</h3><div class="badges"><span class="badge b-imp">trade-off</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa utilizou REST com payloads JSON massivos para comunicação síncrona interna entre 30 microsserviços sob carga de 80.000 RPS. O overhead de serialização e deserialização de strings JSON consumia 45% do tempo de CPU de todos os nós da empresa. A migração das comunicações internas entre microsserviços para gRPC com Protocol Buffers binários sobre HTTP/2 reduziu o consumo de CPU em 60% e a latência de rede P99 caiu de 75ms para 8ms.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> quatro estilos com contratos e custos diferentes. Nenhum é melhor — cada um paga um preço distinto, e o erro é adotar por padrão da casa em vez de por problema.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a escolha entre carta registrada, cardápio, pedido sob medida e telefone interno. A carta registrada tem formulário rígido e comprovante. O cardápio tem pratos fixos que qualquer um entende. O pedido sob medida deixa o cliente montar o prato. O telefone interno é rápido e só funciona entre quem está no prédio.</p></div>
@@ -4206,6 +4231,11 @@ p ≈ 1</code>
       <!-- 4. NETFLIX / YOUTUBE -->
       <article class="topic" id="k4">
         <div class="th"><h3>04 · Netflix e YouTube (streaming de vídeo em escala global)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">streaming &amp; cdn</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma plataforma de vídeo corporativo transmitiu uma conferência ao vivo para 500.000 espectadores simultâneos servindo os arquivos de vídeo diretamente de instâncias de aplicação em nuvem. A banda de rede da região saturou em 3 minutos e o custo de transferência de dados (egress) atingiu US$ 95.000 em uma única manhã, com 80% dos usuários sofrendo congelamentos. A adoção de streaming adaptativo (HLS/DASH) segmentando vídeos em chunks de 6 segundos distribuídos por CDNs com cache na borda reduziu a carga nos servidores de origem em 99.4%.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> entregar petabytes de vídeo em 4K/1080p sem engasgos (buffering), adaptando-se instantaneamente à qualidade da rede do usuário.</p>
         <div class="duo">
           <div><h4>Pipeline de Transcodificação &amp; Chunking</h4>
@@ -4325,6 +4355,11 @@ p ≈ 1</code>
       <!-- 5. GOOGLE MAPS -->
       <article class="topic" id="k5">
         <div class="th"><h3>05 · Google Maps e serviços de proximidade (Yelp)</h3><div class="badges"><span class="badge b-prof">grafos &amp; mapas</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um aplicativo de entrega calculava os motoristas mais próximos executando consultas SQL com fórmula trigonométrica de Haversine varrendo 2 milhões de localizações a cada segundo. A CPU do banco bateu 100% e as buscas de motoristas demoravam 14 segundos. A reestruturação geoespacial indexando as coordenadas em Geohash e células H3 no Redis em memória reduziu a busca de vizinhos para uma consulta de conjunto de 2ms, viabilizando o pareamento em tempo real.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> renderizar mapas globais com rolagem suave e calcular a rota de menor tempo em grafos com bilhões de interseções sob tráfego variável.</p>
         <div class="duo">
           <div><h4>Renderização em Map Tiles</h4>
@@ -4444,6 +4479,11 @@ p ≈ 1</code>
       <!-- 6. GOOGLE SEARCH / CRAWLER -->
       <article class="topic" id="k6">
         <div class="th"><h3>06 · Google Search e web crawler distribuído</h3><div class="badges"><span class="badge b-prof">busca &amp; big data</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um crawler web distribuído entrou em um loop infinito ao encontrar armadilhas de URLs infinitas em calendários dinâmicos. O crawler gerou 12 milhões de requisições inúteis em 4 horas, esgotando o espaço em disco do banco de fronteira de URLs e sofrendo bloqueio de IP por centenas de provedores. A introdução de um Bloom Filter para deduplicação de URLs já visitadas e um módulo de polidez com rate limit por domínio estabilizou a ingestão.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> varrer a web inteira, indexar centenas de bilhões de páginas em estruturas invertidas e devolver resultados relevantes em menos de 100ms.</p>
         <div class="duo">
           <div><h4>URL Frontier &amp; Deduplicação SimHash</h4>
@@ -4563,6 +4603,11 @@ p ≈ 1</code>
       <!-- 7. E-COMMERCE FLASH SALE -->
       <article class="topic" id="k7">
         <div class="th"><h3>07 · Amazon e-commerce e flash sale (Black Friday / ingressos)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">alta concorrência</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante a venda relâmpago de 5.000 ingressos de um show internacional, 150.000 fãs clicaram em comprar no mesmo segundo. O banco de dados recebeu 150.000 transações concorrentes com lock pessimista na tabela de assentos, gerando deadlock generalizado e travamento da aplicação, enquanto o estoque final ficou com 200 ingressos vendidos a mais que a lotação física. A solução introduziu uma sala de espera virtual (Virtual Waiting Room), reserva atômica de estoque em Redis via scripts Lua e processamento assíncrono do checkout em fila.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> vender 1.000 itens promocionais com 100.000 pessoas tentando comprar no mesmo milissegundo, garantindo <b>zero sobrevenda (overselling)</b>.</p>
         <div class="duo">
           <div><h4>Controle de Concorrência de Estoque</h4>
@@ -4682,6 +4727,11 @@ p ≈ 1</code>
       <!-- 8. TWITTER FEED -->
       <article class="topic" id="k8">
         <div class="th"><h3>08 · Twitter e Instagram (feed social)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fanout</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma rede social adotava abordagem de Fanout-on-Write pura duplicando cada novo post para a timeline de todos os seguidores. Quando uma celebridade com 40 milhões de seguidores publicou uma foto, o backend tentou inserir 40 milhões de registros em tabelas de feed simultaneamente, gerando fila de espera de 35 minutos e travando o banco de dados. A adoção do modelo híbrido (Fanout-on-Write para usuários comuns e Fanout-on-Read com merge em memória para contas com mais de 50.000 seguidores) resolveu o gargalo da celebridade.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> gerar e exibir feeds cronológicos e algorítmicos para centenas de milhões de usuários com latência de carregamento sub-100ms.</p>
         <div class="duo">
           <div><h4>Fanout-on-Write (Push Model)</h4>
@@ -4801,6 +4851,11 @@ p ≈ 1</code>
       <!-- 9. NOTIFICAÇÕES -->
       <article class="topic" id="k9">
         <div class="th"><h3>09 · Sistema de notificações distribuído em grande escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">resiliência</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um sistema de notificações de push mobile para alertas de emergência disparou 10 milhões de mensagens simultaneamente para a API do Apple APNs e Google FCM sem controle de concorrência. As APIs da Apple bloquearam o IP da empresa por rate limiting excessivo e as notificações críticas de evacuação atrasaram em 4 horas. A reestruturação implementou particionamento por canal, filas dedicadas por prioridade com algoritmo Leaky Bucket e agrupamento de alertas em lote.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> disparar bilhões de alertas push, SMS e e-mails garantindo prioridade crítica (2FA) e impedindo mensagens duplicadas.</p>
         <div class="duo">
           <div><h4>Gateway Multi-Canal &amp; Filas com Prioridade</h4>
@@ -4920,6 +4975,11 @@ p ≈ 1</code>
       <!-- 10. GOOGLE DRIVE / DROPBOX -->
       <article class="topic" id="k10">
         <div class="th"><h3>10 · Google Drive e Dropbox (armazenamento e sincronização)</h3><div class="badges"><span class="badge b-prof">storage &amp; deduplicação</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um serviço de sincronização de arquivos na nuvem enviava o arquivo inteiro de 2 GB novamente a cada alteração de uma única linha em um documento de texto. A largura de banda dos clientes e o custo de upload do storage na nuvem explodiram em 800%. A implementação de chunking de arquivos em blocos de 4 MB com hash SHA-256 e sincronização diferencial (Sync Delta enviando apenas os blocos cujos hashes mudaram) reduziu o tráfego de dados em 92%.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> sincronizar arquivos de gigabytes economizando banda e tempo quando apenas pequenos trechos sofrem alteração.</p>
         <div class="duo">
           <div><h4>Chunking de 4MB &amp; Deduplicação SHA-256</h4>
@@ -5039,6 +5099,11 @@ p ≈ 1</code>
       <!-- 11. RATE LIMITER -->
       <article class="topic" id="k11">
         <div class="th"><h3>11 · Distributed rate limiter</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">proteção de api</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um limitador de taxa implementado com contadores simples no banco de dados sofreu race conditions sob ataque de força bruta: entre o `SELECT` do contador e o `UPDATE`, 200 requisições simultâneas passavam despercebidas antes do bloqueio, permitindo ataques de credential stuffing. A migração para Sliding Window Log em Redis com script Lua atômico garantiu limitação precisa de 100 req/min por IP sem concorrência e com latência de resposta menor que 2ms.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> limitar chamadas por IP, API Key ou usuário em cluster distribuído sem criar race conditions nem sobrecarregar o Redis.</p>
         <div class="duo">
           <div><h4>Comparação dos 5 Algoritmos</h4>
@@ -5162,6 +5227,11 @@ p ≈ 1</code>
       <!-- 12. DISTRIBUTED CACHE -->
       <article class="topic" id="k12">
         <div class="th"><h3>12 · Cache distribuído de alta performance (Redis / Memcached)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma empresa configurou um cluster Redis distribuído sem sharding adequado e armazenou uma chave gigante contendo o catálogo de produtos inteiro (`catalog_all = 450 MB`). A leitura dessa chave saturou a placa de rede de 1 Gbps do nó Redis a 100%, gerando timeouts em cascata para todos os outros serviços que compartilhavam o cluster. A fragmentação da chave em chaves granulares por categoria e o particionamento por hash ring consistente normalizou o throughput.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> manter dezenas de servidores de cache em memória sem perder chaves em caso de queda e sem sofrer catástrofes de saturação.</p>
         <div class="duo">
           <div><h4>Consistent Hashing com Nós Virtuais</h4>
@@ -5283,6 +5353,11 @@ p ≈ 1</code>
       <!-- 13. AUTOCOMPLETE / TYPEAHEAD -->
       <article class="topic" id="k13">
         <div class="th"><h3>13 · Autocomplete e typeahead (Google Suggest)</h3><div class="badges"><span class="badge b-prof">estruturas de dados</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma barra de busca de e-commerce disparava uma consulta SQL com `WHERE name LIKE '%termo%'` no banco relacional a cada caractere digitado pelo usuário. Com 25.000 usuários digitando ao mesmo tempo, o banco executou 100.000 buscas textuais por segundo, entrando em colapso. A criação de uma estrutura de dados Trie (árvore de prefixos) serializada em memória com cache dos 10 termos mais populares por prefixo reduziu a latência de sugestão para 4ms.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> prever e sugerir os 5 termos mais buscados enquanto o usuário digita letras em um campo de busca em menos de 30ms.</p>
         <div class="duo">
           <div><h4>Estrutura de Dados Trie (Prefix Tree)</h4>
@@ -5402,6 +5477,11 @@ p ≈ 1</code>
       <!-- 14. MÉTRICAS E TSDB -->
       <article class="topic" id="k14">
         <div class="th"><h3>14 · Métricas e observabilidade em tempo real (Prometheus / Datadog)</h3><div class="badges"><span class="badge b-prof">observabilidade</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um time de microsserviços adicionou o `user_id` de cada cliente como label em uma métrica do Prometheus (`http_requests_total{user_id="12345"}`). Com 3 milhões de usuários ativos, a cardinalidade da métrica explodiu para 30 milhões de séries temporais na memória do Prometheus, causando crash por OutOfMemory repetido e apagão de monitoramento. A eliminação de IDs de alta cardinalidade das labels e o uso de métricas agregadas por status code e rota salvaram a observabilidade.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> ingerir dezenas de milhões de pontos de métricas por segundo e responder consultas agregadas de monitoramento sem estourar o disco.</p>
         <div class="duo">
           <div><h4>Push vs Pull &amp; TSDB Architecture</h4>
@@ -5523,6 +5603,11 @@ p ≈ 1</code>
       <!-- 15. STRIPE / LEDGER FINANCEIRO -->
       <article class="topic" id="k15">
         <div class="th"><h3>15 · Stripe e ledger financeiro de pagamentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">consistência crítica</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma fintech calculava o saldo das contas executando `UPDATE contas SET saldo = saldo + valor`. Um bug de concorrência e uma falha de rollback parcial deixaram o saldo de 400 clientes divergente do extrato de transações, com R$ 1,2 milhão de diferença contábil inexplicável. A reconstrução da arquitetura adotou um Livro-Razão Imutável de Partidas Dobradas (Double-Entry Ledger), onde o saldo é estritamente derivado da soma imutável de lançamentos de débito e crédito, garantindo auditoria à prova de fraudes.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> processar movimentações financeiras com garantia absoluta de que nenhum centavo será duplicado, criado ou perdido na rede.</p>
         <div class="duo">
           <div><h4>Princípio da Partida Dobrada (Double-Entry Bookkeeping)</h4>
@@ -5642,6 +5727,11 @@ p ≈ 1</code>
       <!-- 16. YOUTUBE / VIDEO UGC & DAG -->
       <article class="topic" id="k16">
         <div class="th"><h3>16 · YouTube: ingestão de vídeo UGC, DAG de transcodificação e sharding Vitess</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">video ugc &amp; dag</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma plataforma de vídeos gerados por usuários (UGC) transcodificava arquivos de vídeo sequencialmente em um único worker por vídeo. Vídeos em 4K demoravam 3 horas para processar, criando uma fila represada de 45.000 vídeos pendentes. A reestruturação da ingestão fragmentou o vídeo em pedaços de 10 segundos processados em paralelo via DAG no Kubernetes e particionou os metadados de comentários e canais no banco de dados MySQL usando Vitess, reduzindo o tempo de publicação para 90 segundos.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> ingerir mais de 500 horas de vídeo por minuto enviadas por criadores do mundo todo (UGC), fatiar e transcodificar em paralelo via DAGs e gerenciar metadados massivos com Vitess sharding.</p>
         <div class="duo">
           <div><h4>Upload Resumível, Slicing GOP &amp; Transcoding DAG</h4>
@@ -5763,6 +5853,11 @@ p ≈ 1</code>
       <!-- 17. SPOTIFY / AUDIO STREAMING & REAL-TIME SYNC -->
       <article class="topic" id="k17">
         <div class="th"><h3>17 · Spotify: streaming de áudio de baixa latência, cache local e Spotify Connect</h3><div class="badges"><span class="badge b-prof">streaming &amp; sync</span><span class="badge b-caso">tempo real</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um aplicativo de streaming de música tocava faixas baixando o arquivo de áudio MP3 completo a cada reprodução. Usuários em redes móveis instáveis enfrentavam pausas constantes de buffering e o consumo de dados móveis gerou milhares de reclamações. A implementação de pré-busca inteligente (prefetching da próxima faixa na playlist), chunking com formato Ogg Vorbis comprimido e cache local criptografado no dispositivo reduziu a latência de início de reprodução para zero milissegundos.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> iniciar a reprodução de áudio em menos de 200ms após o clique, economizar banda e bateria com cache local criptografado e sincronizar múltiplos dispositivos em tempo real com Spotify Connect.</p>
         <div class="duo">
           <div><h4>Prefetch de 10s, Formato Ogg/AAC &amp; Cache Criptografado</h4>
@@ -6154,6 +6249,11 @@ p ≈ 1</code>
       <!-- 12.3 MCP & AGENTES -->
       <article class="topic" id="l3">
         <div class="th"><h3>Protocolo MCP, Sistemas de Agentes &amp; Caching Semântico</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">mcp &amp; agentes</span><span class="badge b-caso">arquitetura moderna</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um sistema corporativo baseado em agentes de IA disparava chamadas repetidas para um modelo LLM externo pagando US$ 0,03 por consulta para responder perguntas frequentes de políticas internas. A fatura mensal de tokens atingiu US$ 24.000, e a latência de resposta aos clientes ultrapassava 4 segundos por pergunta. A implementação de Caching Semântico com banco vetorial (pgvector) buscando embeddings com threshold de similaridade de cosseno de 0.92 interceptou 68% das consultas na borda, respondendo em 15 milissegundos e reduzindo a fatura de IA em US$ 16.000/mês.</p>
+        </div>
+
         <p class="direto"><b>Direto:</b> agentes de IA em produção exigem contratos formais de ferramentas via <b>MCP (Model Context Protocol)</b>, guardrails estritos e otimização radical de custo com <b>Prompt &amp; Semantic Caching</b>.</p>
 
         <div class="ver"><b>onde a teoria mora</b>O que o MCP é, a arquitetura Client-Host-Server, o loop ReAct e os guardrails de validação e injeção de prompt estão detalhados em <a href="ia.html#t5-mcp">Inteligência Artificial completo</a> — o protocolo em <a href="ia.html#t5-mcp">MCP e guardrails</a>, o loop em <a href="ia.html#t5-react">o loop agêntico</a>. Aqui interessa só o que eles cobram do sistema: cada passo do loop é uma ida à rede e um contexto reenviado.</div>
@@ -6448,5 +6548,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
   <script defer src="../assets/js/instant-nav.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
 </body>
 </html>

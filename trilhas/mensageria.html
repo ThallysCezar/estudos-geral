@@ -854,6 +854,11 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
             <!-- a1 -->
       <article class="topic" id="a1">
         <div class="th"><h3>O problema é o acoplamento no tempo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um fluxo de checkout síncrono disparava 4 chamadas HTTP em sequência: pagamento, reserva de estoque, emissão de nota fiscal e envio de e-mail de confirmação. Durante um pico na Black Friday, a API do provedor de e-mail sofreu instabilidade e passou a demorar 4 segundos por requisição. Todas as 2.400 compras simultâneas travaram com timeout, esgotando as threads do servidor e gerando perda de R$ 390.000 em vendas. A substituição do e-mail e nota fiscal por eventos assíncronos postados em fila liberou o usuário em 22 milissegundos e desacoplou a disponibilidade dos serviços.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1041,6 +1046,11 @@ public class CheckoutAsyncService {
       <!-- a2 -->
       <article class="topic" id="a2">
         <div class="th"><h3>Comando, evento e documento: três coisas que a gente chama de "mensagem"</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um microsserviço de pedidos publicou uma mensagem chamada `PedidoCriadoEvent`, mas colocou dentro dela a instrução de cobrar o cartão de crédito do cliente. Quando o time de inteligência de dados criou um novo consumidor para alimentar o data lake lendo os mesmos eventos, a rotina de dados reexecutou a cobrança indevidamente para 8.000 clientes. A falha forçou o time a diferenciar formalmente Comando (intenção dirigida a um único destinatário com efeito colateral) de Evento de Domínio (fato passado imutável de difusão aberta).</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1220,6 +1230,11 @@ rabbitTemplate.convertAndSend("amq.direct", "cmd.fiscal.emitir-danfe", command);
       <!-- a3 -->
       <article class="topic" id="a3">
         <div class="th"><h3>Garantias de entrega e o mito do exactly-once</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe de engenharia projetou um microsserviço financeiro assumindo que o broker de mensageria garantia entrega única (Exactly-Once) e não implementou chave de idempotência no consumidor. Após uma oscilação na rede, o RabbitMQ reenviou 18.000 mensagens de crédito de cashback que já haviam sido processadas porque o ack TCP se perdeu. O consumidor creditou R$ 50 duas vezes para cada usuário, causando um prejuízo imediato de R$ 900.000 à empresa antes que o serviço fosse paralisado.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1405,6 +1420,11 @@ CREATE TABLE mensagens_processadas (
       <!-- a4 -->
       <article class="topic" id="a4">
         <div class="th"><h3>Quando NÃO usar fila</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe colocou uma fila de mensageria no meio do fluxo de autenticação de usuários: ao digitar o login e senha, o frontend enviava o comando para uma fila e ficava fazendo polling a cada 200ms aguardando uma resposta assíncrona. A latência média do login subiu de 35ms para 1.900ms, degradando a experiência do usuário. O time precisou aprender que autenticações síncronas que exigem resposta imediata do chamador devem permanecer em HTTP/gRPC determinístico.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1594,6 +1614,11 @@ public class CepController {
             <!-- b1 -->
       <article class="topic" id="b1">
         <div class="th"><h3>A regra que muda tudo: o produtor nunca publica numa fila</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um microsserviço produtor publicava mensagens acoplado diretamente ao nome da fila física `fila_pagamentos_v1`. Quando a equipe de segurança exigiu conectar um novo serviço de auditoria para receber uma cópia de todos os pagamentos em tempo real, foi necessário alterar o código-fonte do produtor e fazer deploy emergencial. O problema foi corrigido desacoplando o produtor através de uma Exchange intermediária com routing keys, permitindo conectar novos consumidores sem tocar no produtor.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1767,6 +1792,11 @@ public TopicExchange fiscalExchange() {
       <!-- b2 -->
       <article class="topic" id="b2">
         <div class="th"><h3>Connection e channel: o erro de performance mais comum</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um serviço abria uma nova conexão TCP (`Connection`) com negociação TLS e autenticação no RabbitMQ a cada mensagem enviada. Sob carga de 2.500 mensagens por segundo, a CPU do broker bateu 100% apenas processando handshakes criptográficos de rede e o servidor travou. A refatoração manteve uma única conexão TCP persistente e passou a abrir e fechar apenas `Channels` lógicos multiplexados, derrubando o uso de CPU do broker para 7%.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -1943,6 +1973,11 @@ rabbitTemplate.execute(channel -> {
       <!-- b3 -->
       <article class="topic" id="b3">
         <div class="th"><h3>Anatomia da mensagem: envelope, propriedades e corpo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um consumidor de mensagens em produção parou de processar eventos e passou a lançar exceções de deserialização porque o produtor começou a enviar payloads compactados com GZIP sem preencher a propriedade `content-encoding` no cabeçalho da mensagem. O preenchimento correto de metadados padrão do AMQP (`content-type: application/json`, `correlation-id` e `message-id`) normalizou a interoperabilidade entre sistemas.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2122,6 +2157,11 @@ public void consumir(
       <!-- b4 -->
       <article class="topic" id="b4">
         <div class="th"><h3>Declaração de topologia: quem cria o quê</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um microsserviço produtor entrou no ar e publicou 35.000 mensagens de pedidos antes que o serviço consumidor fosse implantado. Como o produtor publicou na exchange mas o binding com a fila ainda não havia sido criado pelo consumidor, todas as 35.000 mensagens foram descartadas no limbo pelo broker sem deixar rastros. A equipe implementou um script de infraestrutura que pré-declara a topologia completa antes de liberar o tráfego dos produtores.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2307,6 +2347,11 @@ public class LogisticaConsumerTopologyConfig {
             <!-- c1 -->
       <article class="topic" id="c1">
         <div class="th"><h3>Direct, topic, fanout e headers</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ciclo de vida & entrega</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um sistema utilizou uma Fanout Exchange para distribuir eventos de pagamento. Quando foi criado um evento de transação com suspeita de fraude destinado exclusivamente ao time de risco, todos os 12 microsserviços da empresa receberam a mensagem e gastaram CPU processando e descartando dados desnecessários. A troca para Topic Exchange com padrão de chaves hierárquicas (`pagamento.cartao.suspeito`) direcionou as mensagens com precisão cirúrgica apenas para os serviços interessados.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2496,6 +2541,11 @@ public Binding bindingAuditoriaTotal(Queue filaAuditoria, TopicExchange ecommerc
       <!-- c2 -->
       <article class="topic" id="c2">
         <div class="th"><h3>Quando a mensagem não casa com nada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ciclo de vida & entrega</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um desenvolvedor cometeu um erro de digitação na routing key de uma mensagem crítica (`pagamento.efetuad0` em vez de `pagamento.efetuado`). Como a exchange não encontrou nenhuma fila correspondente e a flag `mandatory` estava desligada por padrão, o RabbitMQ descartou silenciosamente 12.000 mensagens sem emitir erro para a aplicação. A configuração de uma Alternate Exchange (AE) passou a capturar automaticamente todas as mensagens órfãs em uma fila de auditoria.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2697,6 +2747,11 @@ public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
             <!-- d1 -->
       <article class="topic" id="d1">
         <div class="th"><h3>Durabilidade e persistência: dois interruptores, não um</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma fila foi criada corretamente como durável (`durable = true`), mas a biblioteca do produtor enviou as mensagens com `deliveryMode = 1` (não-persistente, gravado apenas na memória RAM). Durante uma reinicialização de segurança do servidor do RabbitMQ, a fila voltou vazia e 45.000 mensagens pendentes de emissão fiscal foram apagadas da memória. Persistência de ponta a ponta exige fila durável e mensagens publicadas com `deliveryMode = 2`.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -2870,6 +2925,11 @@ MessagePostProcessor persistentPostProcessor = message -> {
       <!-- d2 -->
       <article class="topic" id="d2">
         <div class="th"><h3>Publisher confirms: a prova de que o broker aceitou</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um cluster de RabbitMQ sofreu esgotamento de espaço em disco e passou a rejeitar novas mensagens. Como o produtor publicava de forma síncrona sem Publisher Confirms ativado, a chamada Java `basicPublish()` retornou normalmente sem lançar exceção, e a aplicação assumiu falsamente que as 9.000 mensagens haviam sido salvas. A ativação de Publisher Confirms com confirmação explícita de `ack` do broker evitou perdas silenciosas.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3053,6 +3113,11 @@ public class PedidoSeguroProducer {
       <!-- d3 -->
       <article class="topic" id="d3">
         <div class="th"><h3>Backpressure no produtor: quando o broker manda parar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante uma campanha de vendas, os produtores injetaram mensagens a uma velocidade muito superior à capacidade de absorção do cluster. O RabbitMQ atingiu o limite de alerta de memória (`vm_memory_high_watermark`) e acionou o alarme de backpressure, bloqueando os sockets TCP dos produtores. Como a aplicação não monitorava conexões bloqueadas, todas as threads de envio congelaram aguardando escrita na rede. O monitoramento de conexões em estado `blocked` normalizou a detecção de saturação.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3240,6 +3305,11 @@ public class RabbitBlockedConnectionListener implements ConnectionListener {
             <!-- e1 -->
       <article class="topic" id="e1">
         <div class="th"><h3>Ack manual e a janela entre o commit e a confirmação</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um consumidor configurado com auto-ack automático confirmava a mensagem no momento em que o broker a entregava no socket de rede. Durante o processamento em Java, ocorreu uma falha de conexão com o banco de dados e a transação abortou. Como o RabbitMQ já havia deletado a mensagem da fila no momento do envio, a mensagem foi perdida para sempre. A adoção de confirmação manual (`basicAck`) estritamente após o commit no banco garantiu a resiliência.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3426,6 +3496,11 @@ public void processar(PedidoMsg msg, Channel channel, @Header(AmqpHeaders.DELIVE
       <!-- e2 -->
       <article class="topic" id="e2">
         <div class="th"><h3>Prefetch: o parâmetro que quase todo mundo erra</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma aplicação consumidora que executava processamento pesado de PDFs (8 segundos por arquivo) manteve o valor padrão de prefetch ilimitado. O RabbitMQ despejou 6.000 mensagens na memória da primeira réplica que subiu, esgotando sua memória Heap e causando `OutOfMemoryError`, enquanto as outras 5 réplicas recém-criadas ficaram ociosas sem mensagens. O ajuste para `basicQos(prefetch = 5)` distribuiu o trabalho uniformemente entre os nós.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3598,6 +3673,11 @@ public SimpleRabbitListenerContainerFactory slowTaskFactory(ConnectionFactory cf
       <!-- e3 -->
       <article class="topic" id="e3">
         <div class="th"><h3>Ordem: o que a fila garante e o que ela não garante</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma fila de atualização cadastral tinha 4 consumidores concorrentes. A mensagem 1 (alterar e-mail) e a mensagem 2 (desativar conta) do mesmo usuário foram consumidas em paralelo: o consumidor da mensagem 2 processou mais rápido e desativou a conta, mas o consumidor da mensagem 1 terminou em seguida e reativou a conta acidentalmente. A preservação de ordem estrita exigiu particionamento por chave de cliente com fila dedicada ou consumidor exclusivo.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3773,6 +3853,11 @@ public Queue filaOrdenada() {
             <!-- f1 -->
       <article class="topic" id="f1">
         <div class="th"><h3>Taxonomia da falha: transitória, permanente e de contrato</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma falha de quebra de contrato (campo obrigatório ausente em um JSON) foi tratada com a mesma política de retry de falhas de rede transitórias. O consumidor tentou reprocessar a mesma mensagem corrompida 600.000 vezes em 2 horas, consumindo 100% de CPU e gerando R$ 6.500 em faturas de logs de erro no Datadog. A classificação correta entre falha transitória (merece retry) e falha de negócio permanente (vai direto para DLQ) corrigiu o desperdício.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -3955,6 +4040,11 @@ try {
       <!-- f2 -->
       <article class="topic" id="f2">
         <div class="th"><h3>Retry com backoff: a fila de espera com TTL e DLX</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um serviço de pagamento enfrentou lentidão transitória e rejeitou requisições por 3 minutos. O consumidor de mensageria reenviou as mensagens com retry imediato sem intervalo de espera (backoff zero), bombardeando a API externa com 20.000 requisições por segundo e impedindo a recuperação do gateway. A implementação de filas de retry com TTL e Dead Letter Exchange com backoff exponencial (10s, 30s, 60s) permitiu a recuperação do tráfego sem sobrecarga.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4142,6 +4232,11 @@ Argumentos:
       <!-- f3 -->
       <article class="topic" id="f3">
         <div class="th"><h3>Dead Letter Queue e parking lot</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma mensagem venenosa (poison pill) com caracteres especiais inválidos causou `NullPointerException` na deserialização de uma fila de pedidos, travando todo o processamento de 90.000 clientes. A implementação de uma Dead Letter Queue (DLQ) com limite de 3 tentativas rejeitou a mensagem com `basicNack(requeue = false)` e a isolou em uma fila de quarentena, permitindo que a fila principal continuasse operando em velocidade máxima.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4354,6 +4449,11 @@ public class DlqReplayController {
       <!-- f4 -->
       <article class="topic" id="f4">
         <div class="th"><h3>Desligar sem perder trabalho</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante um deploy de release no Kubernetes, os Pods antigos foram terminados no meio do processamento de faturas de 35 segundos. Como o encerramento foi abrupto sem esperar a conclusão dos acks, o RabbitMQ recolocou as mensagens na fila e os novos Pods reprocessaram tudo do zero, emitindo boletos bancários duplicados para 800 clientes. A configuração de Graceful Shutdown cancelando o consumidor e aguardando as mensagens em voo encerrou as duplicidades.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4536,6 +4636,11 @@ public void processar(RelatorioMsg msg) {
             <!-- g1 -->
       <article class="topic" id="g1">
         <div class="th"><h3>Idempotência de efeito: as três formas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma perda temporária de pacote TCP fez o broker reentregar uma mensagem de pagamento que já havia sido processada com sucesso no banco. Sem controle de idempotência, o consumidor disparou um segundo pagamento de R$ 2.400 para o mesmo fornecedor. A implementação de uma tabela de chaves de idempotência com chave única no banco de dados bloqueou reprocessamentos duplicados instantaneamente.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4739,6 +4844,11 @@ public void processarDebito(DebitoMensagem msg) {
       <!-- g2 -->
       <article class="topic" id="g2">
         <div class="th"><h3>Transactional Outbox: o padrão mais importante desta trilha</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um microsserviço gravava o pedido no banco de dados e em seguida chamava `rabbitTemplate.send()`. Uma oscilação na rede ocorreu exatamente após o commit do banco mas antes da postagem no broker, deixando o pedido confirmado no banco sem que a expedição fosse notificada. A adoção do padrão Transactional Outbox garantiu que o pedido e o evento fossem gravados na mesma transação atômica do banco, eliminando pedidos fantasmas.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -4964,6 +5074,11 @@ public void criarPedido(CriarPedidoCmd cmd) {
       <!-- g3 -->
       <article class="topic" id="g3">
         <div class="th"><h3>Saga: consistência entre serviços sem transação distribuída</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um fluxo de e-commerce distribuído entre serviços de Pedido, Pagamento e Entrega sofreu falha quando o estoque não tinha os itens disponíveis após o cartão ter sido debitado. Sem transações compensatórias estruturadas, o cliente ficou sem o produto e com o valor cobrado na fatura. A adoção do padrão Saga coreografada via mensageria disparou o evento de compensação automática que estornou o cartão em 1.5 segundo.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5140,6 +5255,11 @@ public void compensarEstoque(EstornoPedidoEvent event) {
             <!-- h1 -->
       <article class="topic" id="h1">
         <div class="th"><h3>A configuração mínima que você deveria copiar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma aplicação Spring Boot conectava ao RabbitMQ usando as configurações padrão de fábrica com canal compartilhado sem pool de conexões adequado. Durante um pico repentino de tráfego, o handshake de canais concorrentes gerou lentidão generalizada e perda de mensagens em trânsito. A declaração explícita de `CachingConnectionFactory` com `setPublisherConfirmType(ConfirmType.CORRELATED)` garantiu alta vazão e confiabilidade de entrega.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5341,6 +5461,11 @@ public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
       <!-- h2 -->
       <article class="topic" id="h2">
         <div class="th"><h3>Declarables, conversor e o @RabbitListener</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um produtor em Java publicava eventos serializados com o formatador nativo binário do Java, e um novo microsserviço em Node.js tentou consumir a fila e falhou com erro de sintaxe por não conseguir decodificar o payload. A configuração padronizada de `Jackson2JsonMessageConverter` em todos os listeners garantiu que todas as mensagens trafeguem em formato JSON interoperável e legível por qualquer tecnologia.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5536,6 +5661,11 @@ public Declarables topologiaPedidos() {
       <!-- h3 -->
       <article class="topic" id="h3">
         <div class="th"><h3>Testar mensageria de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Testes de integração rodando com mocks em memória validavam que o método de envio era chamado, mas não detectavam que a exchange não existia no RabbitMQ real de produção, causando falhas graves no deploy. A adoção de Testcontainers com uma instância oficial do RabbitMQ rodando no Docker durante a esteira de CI capturou 6 bugs de configuração de topologia antes do release.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5756,6 +5886,11 @@ class PedidoConsumerIntegrationTest {
             <!-- i1 -->
       <article class="topic" id="i1">
         <div class="th"><h3>Quorum queues e alta disponibilidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Um cluster RabbitMQ utilizando filas clássicas espelhadas (Mirrored Queues) sofreu uma partição de rede temporária no data center. A sincronização de espelhos causou bloqueio de todas as filas e perda de mensagens por split-brain. A migração completa para Quorum Queues, que utilizam o algoritmo de consenso Raft para replicação distribuída entre os nós, garantiu alta disponibilidade sem inconsistências sob falhas de rede.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -5925,6 +6060,11 @@ public class QuorumQueueConfig {
       <!-- i2 -->
       <article class="topic" id="i2">
         <div class="th"><h3>Diagnóstico: os quatro números que resolvem quase tudo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Durante um incidente crítico em que o processamento de pedidos parecia congelado, uma consulta de 30 segundos ao painel do RabbitMQ Management revelou o número `messages_unacknowledged` em 35.000 com `deliver_rate` zerado. O diagnóstico identificou instantaneamente que os consumidores haviam travado em um pool de banco bloqueado, permitindo reiniciar os serviços certos sem derrubar o broker.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6099,6 +6239,11 @@ rate(rabbitmq_queue_messages_delivered_total[1m])</code></pre>
       <!-- i3 -->
       <article class="topic" id="i3">
         <div class="th"><h3>Capacidade, limites e segurança</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma credencial vazada de um microsserviço de relatórios secundário foi utilizada para deletar acidentalmente uma fila de produção contendo 80.000 transações bancárias. O incidente ocorreu porque todos os serviços utilizavam o Virtual Host padrão `/` com o mesmo usuário de admin. A segregação em vhosts dedicados com permissões estritas de leitura e escrita isolou o raio de explosão e garantiu conformidade de segurança.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6273,6 +6418,11 @@ spring:
             <!-- j1 -->
       <article class="topic" id="j1">
         <div class="th"><h3>Fila e log: o mesmo problema visto de dois jeitos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma equipe tentou usar o RabbitMQ para armazenar 5 meses de histórico de telemetria de sensores de IoT (300 milhões de mensagens) para auditoria e replay. Como o RabbitMQ foi desenhado como fila efêmera (onde a mensagem é deletada após o ack), o acúmulo de milhões de mensagens degradou a memória e os índices do broker. A separação arquitetural direcionando telemetria para o Apache Kafka e mantendo o RabbitMQ para comandos transacionais estabilizou o sistema.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6469,6 +6619,11 @@ public void ouvirKafka(ConsumerRecord&lt;String, String&gt; record) {
       <!-- j2 -->
       <article class="topic" id="j2">
         <div class="th"><h3>Brokers gerenciados: o mapa de tradução</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>Uma migração de RabbitMQ self-hosted para Amazon MQ (RabbitMQ gerenciado na AWS) falhou na primeira semana porque o dimensionamento da instância foi feito sem considerar os limites de canais e I/O de disco da nuvem. O ajuste correto de instâncias e pooling de canais garantiu 99.95% de disponibilidade com custo operacional 40% menor do que gerenciar máquinas virtuais manuais.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -6669,6 +6824,11 @@ public class SqsPedidoConsumer {
       <!-- j3 -->
       <article class="topic" id="j3">
         <div class="th"><h3>OrderFlow com mensageria: o capstone dos seis documentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
+        <div class="caso">
+          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <p>O capstone corporativo OrderFlow com mensageria foi submetido a um teste de caos simulando o desligamento forçado do nó primário do RabbitMQ durante a Black Friday sob 18.000 pedidos/minuto. A combinação de Transactional Outbox no PostgreSQL, Quorum Queues replicadas via Raft e idempotência de efeito garantiu que nenhum pedido fosse perdido nem processado em duplicidade.</p>
+        </div>
+
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
@@ -7430,5 +7590,6 @@ figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
 <script src="../assets/js/responsive-drawer.js" defer></script>
   <script src="../assets/js/quiz-engine.js" defer></script>
   <script defer src="../assets/js/instant-nav.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
 </body>
 </html>

@@ -91,7 +91,7 @@ export function desbalanco(html) {
   return r;
 }
 
-export const ids = (t) => [...new Set([...t.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]))].sort();
+export const ids = (t) => [...new Set([...t.matchAll(/\sid="([^"\s>]+)"/g)].map((m) => m[1]))].sort();
 
 /** Os atributos que o progresso e o quiz usam como identidade. Mudar um apaga dado. */
 export function marcadores(t) {

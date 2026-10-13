@@ -71,7 +71,12 @@ var DOCS=[
    meta:"18 projetos em 6 oficinas · 18 aquecimentos de 20 a 40 min",radar:false,
    desc:"A bancada: a única peça que não se lê, se constrói. Seis oficinas — Java puro, Spring, Cloud agnóstica, AWS, RabbitMQ e IA — com problema real, arquitetura, etapas, critérios de aceite, falhas para injetar de propósito e evidências no repositório. Cada projeto liga de volta ao documento que explica a teoria dele.",
    tags:["18 projetos","aquecimentos","OrderFlow"],
-   chaves:"projeto projetos prática práticas laboratório lab bancada workshop missão missões exercício exercícios aquecimento capstone orderflow outbox inbox relay cofre cli bigdecimal ledger jdbc importador extrato virtual threads api orçamento keyset transferência corrida idempotência sala de incidente actuator toxiproxy presigned s3 localstack eventbridge sqs terraform opentofu efêmera teardown budget storage porta adapter minio ports and adapters runtime portátil segredo secret 12-factor kind kubernetes probes rag ollama pgvector embeddings citação classificador saída estruturada json schema evals guardrails prompt injection topologia exchange binding prefetch ack dlq quorum queue testcontainers game day runbook adr"}
+   chaves:"projeto projetos prática práticas laboratório lab bancada workshop missão missões exercício exercícios aquecimento capstone orderflow outbox inbox relay cofre cli bigdecimal ledger jdbc importador extrato virtual threads api orçamento keyset transferência corrida idempotência sala de incidente actuator toxiproxy presigned s3 localstack eventbridge sqs terraform opentofu efêmera teardown budget storage porta adapter minio ports and adapters runtime portátil segredo secret 12-factor kind kubernetes probes rag ollama pgvector embeddings citação classificador saída estruturada json schema evals guardrails prompt injection topologia exchange binding prefetch ack dlq quorum queue testcontainers game day runbook adr"},
+ {n:"17",nome:"Técnica Pomodoro",curto:"Pomodoro",file:"ferramentas/pomodoro.html",cor:"var(--cyan)",hex:"#8be9fd",nos:0,top:0,radar:false,
+  meta:"Ferramenta · timer flutuante e etapas configuráveis",
+  desc:"Configure os períodos de foco, as pausas curtas e a pausa prolongada do timer compartilhado nas páginas do site de estudos.",
+  tags:["foco","pausas","timer"],
+  chaves:"pomodoro técnica timer foco estudo estudos produtividade pausa curta pausa longa ciclo etapas cronômetro contagem regressiva"}
 ];
 
 var FIO=[
@@ -349,6 +354,7 @@ if(btnRestaurar && fileInput){
 
 /* ================= UNIVERSAL COMMAND PALETTE (Ctrl+K) ================= */
 var PALETTE_DATA = [
+  {t:"Técnica Pomodoro",sub:"Configurar períodos de foco, pausas e ciclo",cat:"FERRAMENTA",url:"ferramentas/pomodoro.html",cor:"var(--cyan)"},
   {t:"Java completo (V1)",sub:"Plataforma, JMM, concorrência, JDBC sem ORM e JVM (Vault)",cat:"DOC",url:"trilhas/java.html",cor:"var(--cyan)"},
   {t:"Java completo (V2 - 7 Pilares)",sub:"Java 21, JMM, Virtual Threads, HikariCP, GC e simulador de concorrência",cat:"DOC V2",url:"trilhas/java.html",cor:"var(--cyan)"},
   {t:"Spring completo (V1)",sub:"IoC, proxies CGLIB, @Transactional, MVC e Actuator (Vault)",cat:"DOC",url:"trilhas/spring.html",cor:"var(--purple)"},

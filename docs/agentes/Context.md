@@ -2,6 +2,10 @@
 
 Última atualização: 2026-10-12. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
 
+## Pomodoro compartilhado (2026-10-12)
+
+Widget opcional em todas as páginas HTML ativas, criado por `assets/js/pomodoro.js`; `assets/css/pomodoro.css` fornece o estilo comum. Sem configuração, o widget mostra apenas “Técnica Pomodoro”; salvar etapas em `ferramentas/pomodoro.html` habilita o timer. Sugestões: quatro focos de 25 min, pausas de 5 min e pausa longa de 15 min após o quarto foco. Preferências e sessão usam `site.pomodoro.config.v1` e `site.pomodoro.session.v1`. A sessão usa `endsAt`, avança as etapas automaticamente e mantém a contagem ao navegar entre páginas no mesmo perfil/origem. Sinais de início e término são sintetizados com Web Audio após gesto explícito; não há áudio remoto nem backend. `localStorage` não sincroniza entre notebooks.
+
 ## Performance: corrigida (2026-10-09)
 
 **A causa era o JS inline bloquear a renderização, e a correção é tirá-lo do caminho crítico.** Medido com instrumentação por bloco: num documento típico, um único bloco de ~84 KB responde por ~83% do tempo até interativo.

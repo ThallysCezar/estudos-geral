@@ -41,6 +41,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 |---|---|
 | [Prompt Studio](ferramentas/prompt-studio.html) | Engenharia de prompt em 5 princípios e compactação de contexto para LLMs |
 | [Formatador de Texto](ferramentas/refinador.html) | Refinador multi-provedor (Gemini, Groq, OpenRouter) para tasks, PRs e e-mails |
+| [Técnica Pomodoro](ferramentas/pomodoro.html) | Configuração de etapas para o timer flutuante compartilhado pelo site |
 | [Guia de APIs](ferramentas/tutorial-api.html) | Passo a passo para obter chaves gratuitas sem necessidade de cartão de crédito |
 
 ---
@@ -48,6 +49,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 ## ⚡ Recursos & Inovações da Plataforma
 
 - **⚡ Pílula de MicroLearning Diário (3 Minutos)**: Desafio prático no dashboard (`index.html`) sincronizado com o cronograma semanal de estudos e contador de streak (dias seguidos).
+- **Pomodoro Flutuante**: Timer recolhível nas páginas ativas com ciclos de foco e pausas salvos localmente.
 - **📱 Responsividade Mobile-First com Drawer Navigation**: Menu off-canvas deslizante (`☰ Tópicos`), tabelas adaptativas e rolagem horizontal suave em snippets de código para celulares e tablets.
 - **🏠 Botão Flutuante 'Voltar ao Início'**: Botão elegante com estética Dracula Glassmorphism fixado no canto inferior direito em todas as páginas para navegação direta ao dashboard principal.
 - **🎯 Fixação Ativa & Exercícios**:

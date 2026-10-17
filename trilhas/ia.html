@@ -375,6 +375,25 @@ table.didatica tr:hover{background:rgba(255,255,255,0.02)}
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
 <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="alem-css">
+/* "Para ir alem": formula e detalhe interno profundo ficam recolhidos, para o
+   corpo do topico manter 2 a 4 frases visiveis (Spec.md, secao 4). */
+details.alem{margin:18px 0 0;border:1px dashed var(--line2);border-radius:12px;background:var(--card);overflow:hidden}
+details.alem>summary{list-style:none;cursor:pointer;padding:12px 17px;display:flex;flex-wrap:wrap;gap:9px;align-items:baseline}
+details.alem>summary::-webkit-details-marker{display:none}
+details.alem>summary::after{content:"+";margin-left:auto;color:var(--soft);font:700 1rem/1 "Inter",sans-serif}
+details.alem[open]>summary::after{content:"–"}
+details.alem>summary:hover{background:var(--bg2)}
+.alem-tag{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.alem-opt{color:var(--soft);font:400 .78rem/1.4 Georgia,serif}
+.alem-body{padding:2px 17px 15px;font-size:.9rem;color:var(--muted);min-width:0}
+.alem-body>p{margin:0 0 10px}
+.alem-f{display:block;margin:0 0 10px;padding:11px 14px;border-radius:10px;background:var(--code);border:1px solid var(--line2);font:600 .88rem/1.6 "Cascadia Code",monospace;color:var(--teal);white-space:pre-wrap;overflow-x:auto}
+.alem-src{display:block;margin-top:4px;font:400 .78rem/1.5 Georgia,serif;color:var(--soft)}
+/* Em impressao o navegador nao revela details fechado; o script de impressao
+   abre todos antes de imprimir (ver o listener de beforeprint). */
+@media print{details.alem{break-inside:avoid}details.alem>summary::after{content:""}}
+</style>
 </head>
 <body>
 
@@ -2602,31 +2621,81 @@ table.didatica tr:hover{background:rgba(255,255,255,0.02)}
         <button class="done" type="button" data-k="t2-tokens">marcar dominado</button>
       </article>
 
-      <!-- 2.3 TEMPERATURA E TOP-P -->
+      <!-- 2.3 TEMPERATURA, TOP-K E TOP-P -->
       <article class="topic" id="t2-temperatura">
-        <div class="th"><h3>2.3 Temperatura e Top-p: O Controle de Estocasticidade</h3><div class="badges"><span class="badge b-prof">parâmetros</span><span class="badge b-caso">código seguro</span></div></div>
-        <div class="direto">🎯 <b>O que são:</b> Os dois controles matemáticos fundamentais sobre a aleatoriedade da camada Softmax durante a inferência do LLM.</div>
-        
+        <div class="th"><h3>2.3 Temperatura, top-k e top-p: como o modelo escolhe a próxima palavra</h3><div class="badges"><span class="badge b-prof">parâmetros</span><span class="badge b-caso">código seguro</span></div></div>
+        <div class="direto"><b>O que é:</b> Temperatura, top-k e top-p são os três controles que decidem <b>como o modelo escolhe cada token</b> da resposta. A cada passo, o LLM dá uma nota de probabilidade para todos os tokens possíveis; esses parâmetros mexem nessa lista antes do sorteio. A <b>temperatura</b> deixa as diferenças entre as notas mais fortes ou mais fracas. O <b>top-k</b> guarda só os K tokens mais prováveis. O <b>top-p</b> guarda os mais prováveis até a soma deles chegar a uma porcentagem. Juntos, decidem se a resposta sai previsível, boa para JSON e código, ou variada, boa para texto criativo.</div>
+
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um serviço gera descrições de produto para uma loja. Com <code>temperature = 1.0</code> e nenhum outro filtro, a maioria dos textos sai boa, mas em torno de 1 a cada 40 aparece uma palavra que não tem nada a ver com o produto. Não é falta de conhecimento do modelo: é o sorteio pegando, de vez em quando, um token da <strong>cauda</strong> — os milhares de tokens com probabilidade minúscula que, somados, ainda pesam. Baixar a temperatura deixaria os textos repetitivos. A saída é cortar a cauda com top-p (ou top-k) e manter a variedade só entre as opções razoáveis.</p>
+        </div>
+
         <div class="duo">
           <div>
-            <h4>🚀 Para que serve</h4>
-            <p>Garantir respostas previsíveis, sintaticamente perfeitas e reprodutíveis para código, SQL e JSON, ou incentivar riqueza vocabular para geração de ideias e redação.</p>
+            <h4>Como funciona por baixo dos panos</h4>
+            <p>Para gerar cada token, o modelo calcula uma nota (logit) para cada token do vocabulário e transforma as notas em probabilidades. Antes do sorteio, três etapas mexem nessa lista, nesta ordem na maioria das implementações: a <b>temperatura</b> deixa as probabilidades mais concentradas (abaixo de 1) ou mais espalhadas (acima de 1); o <b>top-k</b> descarta tudo fora dos K primeiros; o <b>top-p</b> descarta tudo depois que a soma dos primeiros atinge P. Sobra uma lista curta, que é renormalizada, e o token sai sorteado dela.</p>
           </div>
           <div class="o">
-            <h4>⚙️ Como funciona a Matemática</h4>
-            <ul>
-              <li><b>Temperatura:</b> Divide os logits antes da Softmax. Próxima de 0.0, torna o modelo puramente ganancioso (<i>greedy</i>), escolhendo sempre o token mais provável.</li>
-              <li><b>Top-p (Nucleus Sampling):</b> Considera apenas o menor conjunto de tokens cuja soma acumulada de probabilidades atinja o percentual <i>p</i> (ex: 0.9 = 90%), descartando a cauda de tokens absurdos.</li>
-            </ul>
+            <h4>Para que serve</h4>
+            <p>Ajustar o grau de previsibilidade conforme a tarefa. Extração de dados, SQL, código e JSON precisam de saída estável, sem tokens improváveis que quebram a sintaxe. Resumo técnico aceita pouca variação. Texto criativo, nomes de produto e brainstorming ficam melhores com variedade, desde que a cauda absurda esteja cortada.</p>
           </div>
         </div>
 
+        <table class="didatica">
+          <thead><tr><th>Parâmetro</th><th>O que faz</th><th>Valor típico</th><th>Quando mexer</th></tr></thead>
+          <tbody>
+            <tr><td><b>Temperatura</b></td><td>Concentra ou espalha as probabilidades. Em 0, o modelo pega quase sempre o token mais provável.</td><td>0 a 0.3 (estruturado); 0.7 a 1.0 (criativo)</td><td>É o controle principal: comece por ele.</td></tr>
+            <tr><td><b>Top-k</b></td><td>Mantém só os K tokens mais prováveis. Número fixo, não importa a forma da distribuição.</td><td>20 a 50</td><td>Para um limite duro de opções. Nem todo provedor aceita.</td></tr>
+            <tr><td><b>Top-p</b></td><td>Mantém os mais prováveis até a soma chegar a P. A quantidade muda a cada passo.</td><td>0.9 a 0.95</td><td>Para cortar a cauda sem perder variedade; costuma substituir o top-k.</td></tr>
+          </tbody>
+        </table>
+
         <div class="caso">
-          <b>💻 GUIA PRÁTICO DE CONFIGURAÇÃO PARA DESENVOLVEDORES</b>
-          <p>• <b>Geração de Código, DTOs, Testes e SQL:</b> <code>temperature = 0.0</code>, <code>top_p = 0.1</code> (Determinismo absoluto, zero quebras sintáticas).</p>
-          <p>• <b>Resumos de Logs e Documentações Técnicas:</b> <code>temperature = 0.2</code>, <code>top_p = 0.8</code>.</p>
-          <p>• <b>Brainstorming e Redação Criativa:</b> <code>temperature = 0.7</code>, <code>top_p = 0.95</code>.</p>
+          <b>Como usar (Spring AI)</b>
+          <p>Os três ficam nas opções da chamada. Para extração estruturada, só a temperatura importa:</p>
+          <pre><code>// Extração de nota fiscal para um record: saída estável
+NotaFiscal nf = chatClient.prompt()
+    .user(textoDaNota)
+    .options(ChatOptions.builder()
+        .temperature(0.0)
+        .build())
+    .call()
+    .entity(NotaFiscal.class);
+
+// Descrição de produto: variedade, com a cauda cortada
+String texto = chatClient.prompt()
+    .user("Descreva o produto: " + produto)
+    .options(ChatOptions.builder()
+        .temperature(0.8)
+        .topP(0.92)
+        .build())
+    .call()
+    .content();</code></pre>
+          <p>Pontos de partida, não regras: código, SQL e JSON com temperatura 0 a 0.2; resumos técnicos com 0.2 a 0.3; texto criativo com 0.7 a 0.9 e top-p entre 0.9 e 0.95. Mude um parâmetro por vez e compare com casos de teste. O <code>topK(...)</code> existe nas opções, mas só tem efeito nos provedores que aceitam o parâmetro.</p>
         </div>
+
+        <div class="duo">
+          <div>
+            <h4>O que veio substituir</h4>
+            <p>Antes, a geração era por <b>busca gulosa</b> (sempre o token mais provável) ou <b>beam search</b> (explorar algumas sequências e ficar com a mais provável). Em texto aberto, as duas produzem frases repetitivas e voltas em círculo. O sorteio puro resolve a repetição, mas pega tokens absurdos da cauda. O top-k veio cortar a cauda com um número fixo; o top-p corrigiu o defeito do top-k, que corta demais quando há muitas opções boas e de menos quando há poucas.</p>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>Na prática, é a diferença entre um endpoint que devolve JSON válido sempre e um que falha em uma parte das chamadas, gera retentativas e custo. Também explica por que a mesma pergunta dá respostas diferentes. Em entrevista, aparece como "por que o modelo inventou isso?" e "como deixar a saída reprodutível?". E temperatura 0 não garante resposta idêntica em toda execução: alguns provedores variam por detalhes de processamento em paralelo.</p>
+          </div>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span> A conta da temperatura e um exemplo dos filtros <span class="alem-opt">opcional</span></summary>
+          <div class="alem-body">
+            <p>A temperatura T divide as notas (logits) antes de virarem probabilidade:</p>
+            <span class="alem-f">P(token i) = exp(z_i / T) / soma de exp(z_j / T) para todos os tokens j</span>
+            <p>Com T menor que 1, as diferenças entre as notas aumentam e o primeiro token concentra a probabilidade; com T maior que 1, elas diminuem e a distribuição fica mais plana.</p>
+            <p>Exemplo de filtros com cinco tokens de probabilidades 0.50, 0.20, 0.15, 0.10 e 0.05. Com top-k = 3, sobram os três primeiros, renormalizados para cerca de 0.59, 0.24 e 0.18. Com top-p = 0.8, a soma acumulada é 0.50, 0.70 e 0.85; o menor grupo que passa de 0.8 também tem três tokens. Se a distribuição fosse mais plana, o top-p guardaria mais tokens e o top-k continuaria com três.</p>
+            <span class="alem-src">Fontes: Fan, Lewis e Dauphin, "Hierarchical Neural Story Generation" (2018), sobre top-k; Holtzman et al., "The Curious Case of Neural Text Degeneration" (2019), sobre top-p.</span>
+          </div>
+        </details>
 
         <div class="analogia">
           <i class="ic">≈</i>
@@ -2638,6 +2707,8 @@ table.didatica tr:hover{background:rgba(255,255,255,0.02)}
           <ul>
             <li><b>Temperatura Alta em Pipelines de Dados Estruturados:</b> Usar temperatura 0.7 ou 0.9 em endpoints que geram SQL, código ou JSON Schema. A chance de chaves inexistentes ou erros de sintaxe aumenta dramaticamente. Para JSONs e chamadas de ferramentas, mantenha a temperatura sempre em 0.0 a 0.2.</li>
             <li><b>Ignorar o Efeito Combinado de Top-p e Temperatura:</b> Ajustar temperatura para 0.1 e deixar Top-p em 1.0, ou vice-versa, sem entender que Top-p (Nucleus Sampling) filtra o conjunto cumulativo antes da divisão da temperatura. Mantenha um deles fixo ao testar o outro para manter reprodutibilidade científica.</li>
+            <li><b>Top-k ignorado sem aviso:</b> nem todo provedor aceita top-k; em alguns ele é recusado, em outros simplesmente não tem efeito. Antes de contar com ele, confira na documentação do provedor e teste.</li>
+            <li><b>Achar que temperatura 0 é determinismo garantido:</b> ela escolhe sempre o token mais provável, mas detalhes de processamento podem mudar a resposta entre execuções. Para teste reprodutível, compare a estrutura e o conteúdo esperado, não o texto exato.</li>
           </ul>
         </div>
 
@@ -4196,9 +4267,183 @@ Saída: TransferenciaResponse(transacaoId, status, timestamp)</code></pre>
         <button class="done" type="button" data-k="t4-toolcalling">marcar dominado</button>
       </article>
 
-      <!-- 4.3 RAG COM PGVECTOR -->
+      <!-- 4.3 TOKENS, SENTENÇAS E CHUNKS -->
+      <article class="topic" id="t4-chunks">
+        <div class="th"><h3>4.3 Tokens, sentenças e chunks: como dividir o texto para o RAG</h3><div class="badges"><span class="badge b-prof">rag</span><span class="badge b-caso">qualidade da busca</span></div></div>
+        <div class="direto"><b>O que é:</b> São três medidas diferentes de texto, e confundi-las estraga um RAG. O <b>token</b> é o menor pedaço que o modelo lê: um pedaço de palavra, e é nele que se medem limites e custo. A <b>sentença</b> é a frase, a menor unidade com sentido completo. O <b>chunk</b> é o pedaço de documento que você corta para indexar: cada chunk vira um embedding e é a unidade que a busca devolve. Um bom chunk tem tamanho medido em tokens, é feito de sentenças inteiras e carrega contexto suficiente para fazer sentido sozinho.</div>
+
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um time indexou um manual de 300 páginas cortando o texto a cada 1.000 caracteres. A busca por "prazo de devolução" passou a devolver trechos como "...de 30 dias corridos, contados a partir" — a frase cortada ao meio, sem dizer de qual regra os 30 dias eram. O modelo respondia com o número errado ou dizia não saber. Trocar o corte por seções e sentenças inteiras, repetindo o título da seção em cada chunk e com uma pequena sobreposição entre eles, fez a busca voltar a trazer a regra completa.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como funciona por baixo dos panos</h4>
+            <p>O documento passa por quatro etapas antes da busca: o texto é extraído; é dividido em unidades com sentido (seções, parágrafos, sentenças); essas unidades são agrupadas até um limite de tokens, com uma sobreposição entre um chunk e o seguinte; e cada chunk recebe um embedding e metadados (documento, seção, página). Na pergunta, a busca traz os chunks mais parecidos, que entram no prompt. O tamanho é medido em tokens porque é em tokens que o modelo de embedding e a janela de contexto têm limite.</p>
+          </div>
+          <div class="o">
+            <h4>Para que serve</h4>
+            <p>Fazer o RAG achar o trecho certo e entregá-lo inteiro. Chunk pequeno demais perde o contexto (o "30 dias" sem a regra); chunk grande demais mistura assuntos, piora a busca e gasta tokens no prompt. O chunking decide a qualidade da resposta tanto quanto o modelo.</p>
+          </div>
+        </div>
+
+        <table class="didatica">
+          <thead><tr><th>Estratégia</th><th>Como corta</th><th>Bom para</th><th>Cuidado</th></tr></thead>
+          <tbody>
+            <tr><td><b>Tamanho fixo por tokens</b></td><td>Pedaços de N tokens, com sobreposição</td><td>Ponto de partida simples</td><td>Pode cortar frases e tabelas ao meio</td></tr>
+            <tr><td><b>Por sentença ou parágrafo</b></td><td>Junta sentenças inteiras até o limite</td><td>Texto corrido</td><td>Chunks de tamanhos irregulares</td></tr>
+            <tr><td><b>Recursivo</b></td><td>Tenta seção, depois parágrafo, depois sentença</td><td>Documentação, Markdown, manuais</td><td>Depende de separadores no texto</td></tr>
+            <tr><td><b>Semântico</b></td><td>Corta quando o assunto muda entre sentenças vizinhas</td><td>Textos longos que mudam de tema</td><td>Mais caro: calcula embedding por sentença</td></tr>
+          </tbody>
+        </table>
+
+        <div class="caso">
+          <b>Como usar</b>
+          <p>No Spring AI, a leitura e o corte ficam antes de gravar no vector store:</p>
+          <pre><code>// Ler o PDF, cortar em chunks por tokens e indexar
+List&lt;Document&gt; paginas = new TikaDocumentReader(manualPdf).get();
+List&lt;Document&gt; chunks = new TokenTextSplitter().apply(paginas);
+chunks.forEach(c -&gt; c.getMetadata().put("fonte", "manual-devolucao"));
+vectorStore.add(chunks);</code></pre>
+          <p>Comece com chunks de algumas centenas de tokens e sobreposição de 10% a 20%, e ajuste medindo: separe 20 a 30 perguntas reais com o trecho que deveria voltar e confira se ele aparece entre os primeiros resultados. Para manuais e Markdown, prefira cortar por seção.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>O que veio substituir</h4>
+            <p>Mandar o documento inteiro no prompt, que estoura a janela de contexto, fica caro e piora a atenção do modelo no meio do texto ("lost in the middle"); ou buscar só por palavra-chave, que não acha sinônimos. O chunking com embeddings permite buscar por sentido e mandar só o necessário.</p>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>A maior parte dos problemas de RAG em produção vem do corte, não do modelo: resposta incompleta, número sem contexto, trecho certo que nunca aparece. Também é custo: cada token do chunk vai para o prompt e é cobrado. E todo modelo de embedding tem um limite de tokens por entrada; alguns recusam o excesso, outros cortam sem avisar.</p>
+          </div>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span> A conta de tokens de um manual <span class="alem-opt">opcional</span></summary>
+          <div class="alem-body">
+            <p>Em inglês, a regra prática é de cerca de 4 caracteres por token; em português, o mesmo texto costuma gerar mais tokens, porque o vocabulário dos tokenizadores é dominado pelo inglês. Um manual de 300 páginas com cerca de 500 palavras por página tem 150 mil palavras, o que dá na faixa de 200 a 300 mil tokens. Com chunks de 500 tokens, são algumas centenas de chunks — e cada pergunta manda só os poucos mais relevantes para o modelo.</p>
+            <span class="alem-src">A proporção exata depende do tokenizador; meça com a ferramenta do provedor antes de dimensionar.</span>
+          </div>
+        </details>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia:</b> cortar um livro em fichas de estudo. Uma ficha que começa no meio de uma frase e não diz de qual capítulo veio não ajuda ninguém. Uma ficha com o título da seção e frases completas pode ser lida sozinha — é isso que a busca precisa encontrar.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas de produção</b>
+          <ul>
+            <li><b>Cortar por caracteres:</b> frases, tabelas e blocos de código partidos ao meio; a busca devolve pedaços sem sentido.</li>
+            <li><b>Chunk sem contexto:</b> "o prazo é de 30 dias" sem dizer de quê. Repita o título da seção ou um resumo curto do documento em cada chunk.</li>
+            <li><b>Sobreposição exagerada:</b> com 50% de sobreposição, os primeiros resultados viram quase o mesmo texto repetido e ocupam o espaço do prompt.</li>
+            <li><b>Passar do limite do modelo de embedding:</b> o texto excedente é recusado ou cortado sem aviso, e a parte final do chunk nunca é buscável.</li>
+            <li><b>Trocar a estratégia de corte sem reindexar:</b> chunks antigos e novos convivem no índice com tamanhos e formatos diferentes.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>Conexões</b>
+          <span>Veja também: <a href="#t2-tokens">2.2 Tokens e janela de contexto</a> para o que é um token, e <a href="#t4-rag">4.4 RAG com pgvector</a> para a busca que usa esses chunks.</span>
+        </div>
+<!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: tokens, sentenças e chunks</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Token</b>
+                    <p>Pedaço de palavra que o modelo lê. Limites e custo são medidos em tokens, não em caracteres.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Sentença</b>
+                    <p>A menor unidade com sentido. Um bom chunk junta sentenças inteiras.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Chunk</b>
+                    <p>O pedaço indexado e devolvido pela busca: medido em tokens, com contexto e uma pequena sobreposição.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: cortar a cada N caracteres</b>
+                    <p>Parece neutro, mas parte frases e tabelas ao meio. A busca acha o pedaço, e o pedaço não responde.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: o chunk precisa se explicar sozinho</b>
+                    <p>Se alguém lesse só aquele trecho, entenderia de que regra ele fala? Se não, o chunk está cortado no lugar errado ou sem título.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t4-chunks">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t4-chunks</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um RAG de manual interno devolve trechos como "...de 30 dias corridos, contados a partir" e responde prazos errados. Os chunks foram feitos cortando a cada 1.000 caracteres, sem sobreposição.</p>
+                <p class="te-instrucao">Qual mudança ataca a causa do problema?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O problema é o corte: frases partidas e trechos sem contexto. Respeitar a estrutura do texto e carregar o título resolve na origem.">
+                    <span class="te-letter">A</span> Cortar por seções e sentenças inteiras, repetir o título da seção em cada chunk e usar uma sobreposição de 10% a 20%.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Nenhum modelo de embedding recupera uma informação que o chunk não contém; o trecho cortado continua sem a regra.">
+                    <span class="te-letter">B</span> Trocar o modelo de embedding por um maior, que entende melhor trechos curtos e incompletos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mais chunks gastam tokens e trazem ruído; os pedaços continuam partidos e o modelo pode juntar os errados.">
+                    <span class="te-letter">C</span> Aumentar o número de chunks devolvidos pela busca de 5 para 30, para o modelo juntar os pedaços.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Qual a diferença entre token, sentença e chunk num RAG?</p>
+                  <span class="tf-hint">Dica: um é unidade do modelo, outro de sentido, outro de busca →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Token é o pedaço de palavra que o modelo lê; limites e custo são contados nele. Sentença é a frase, a menor unidade com sentido. Chunk é o pedaço de documento indexado e devolvido pela busca: medido em tokens, formado por sentenças inteiras e com contexto suficiente para ser entendido sozinho.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <button class="done" type="button" data-k="t4-chunks">marcar dominado</button>
+      </article>
+
+      <!-- 4.4 RAG COM PGVECTOR -->
       <article class="topic" id="t4-rag">
-        <div class="th"><h3>4.3 RAG (Retrieval-Augmented Generation) com pgvector, Busca Híbrida &amp; Chunking</h3><div class="badges"><span class="badge b-ess">rag</span><span class="badge b-prof">pgvector</span><span class="badge b-caso">busca híbrida</span></div></div>
+        <div class="th"><h3>4.4 RAG (Retrieval-Augmented Generation) com pgvector, Busca Híbrida &amp; Chunking</h3><div class="badges"><span class="badge b-ess">rag</span><span class="badge b-prof">pgvector</span><span class="badge b-caso">busca híbrida</span></div></div>
         <div class="direto">🎯 <b>O que é:</b> A arquitetura corporativa que busca trechos semântica e textualmente relevantes da base privada da empresa, injetando-os dinamicamente no prompt do LLM para responder com precisão cirúrgica e fontes citadas.</div>
 
         <!-- MODELO MENTAL: A PROVA COM LIVRO ABERTO -->
@@ -4430,9 +4675,9 @@ Saída: TransferenciaResponse(transacaoId, status, timestamp)</code></pre>
         <button class="done" type="button" data-k="t4-rag">marcar dominado</button>
       </article>
 
-      <!-- 4.4 STREAMING & MEMÓRIA -->
+      <!-- 4.5 STREAMING & MEMÓRIA -->
       <article class="topic" id="t4-streaming">
-        <div class="th"><h3>4.4 Streaming Reativo (SSE) e Memória Conversacional com Redis</h3><div class="badges"><span class="badge b-prof">ux &amp; latência</span><span class="badge b-caso">redis</span></div></div>
+        <div class="th"><h3>4.5 Streaming Reativo (SSE) e Memória Conversacional com Redis</h3><div class="badges"><span class="badge b-prof">ux &amp; latência</span><span class="badge b-caso">redis</span></div></div>
         <div class="direto">🎯 <b>O que é:</b> <b>Streaming Reativo</b> via Server-Sent Events (SSE) é a transmissão contínua token por token da resposta conforme ela é gerada pela GPU. <b>Memória Conversacional</b> é o armazenamento estruturado do histórico de turnos de diálogo em cache rápido de chave-valor (Redis).</div>
         
         <div class="duo">
@@ -5484,7 +5729,189 @@ Saída: TransferenciaResponse(transacaoId, status, timestamp)</code></pre>
 
         <button class="done" type="button" data-k="t5-topologias">marcar dominado</button>
       </article>
-    </section>
+      <!-- 5.6 FRAMEWORKS DE AGENTES -->
+      <article class="topic" id="t5-frameworks">
+        <div class="th"><h3>5.6 Frameworks de agentes: Agno, LangChain, LangGraph e Spring AI</h3><div class="badges"><span class="badge b-prof">ferramentas</span><span class="badge b-caso">escolha de stack</span></div></div>
+        <div class="direto"><b>O que é:</b> Frameworks de agentes são bibliotecas que implementam o <b>loop agêntico</b> por você: mandar o pedido ao modelo, executar a ferramenta que ele pede, devolver o resultado e repetir até terminar. Eles também oferecem memória, conexão com bases de conhecimento e coordenação de vários agentes. Os mais citados hoje são o <b>LangChain</b> (muitas integrações prontas), o <b>LangGraph</b> (fluxo explícito em grafo, com estado), o <b>Agno</b> (agentes, times e workflows em Python com pouco código, mais um runtime para servi-los) e, no mundo Java, o <b>Spring AI</b>. Todos resolvem o mesmo problema; mudam o estilo e o quanto escondem.</div>
+
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um time montou um agente de suporte em poucos dias, encadeando várias abstrações prontas de um framework. Funcionou na demonstração. Em produção, quando o agente chamou a ferramenta errada, ninguém conseguia ver qual prompt final tinha ido ao modelo nem por que aquela decisão foi tomada. O time reescreveu o fluxo com os passos explícitos (cada etapa como um nó, com o estado registrado) e passou a depurar lendo o histórico de cada execução. O problema não era o framework escolhido, e sim usá-lo sem entender o loop que ele escondia.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como funciona por baixo dos panos</h4>
+            <p>Por baixo, todos fazem o mesmo ciclo do ReAct: o modelo recebe o pedido e a lista de ferramentas, responde pedindo uma ferramenta com argumentos, o framework executa a função, devolve o resultado ao modelo e repete até ele dar a resposta final. O que muda entre eles é como você descreve as ferramentas, onde fica a memória, como o fluxo é controlado (livre pelo modelo, em grafo ou em passos fixos) e como o agente é servido e observado.</p>
+          </div>
+          <div class="o">
+            <h4>Para que serve</h4>
+            <p>Evitar reescrever, em todo projeto, o loop de chamada de ferramenta, o histórico da conversa, a integração com vector stores e a coordenação entre agentes. E ter, de saída, recursos que dão trabalho fazer à mão: estado persistente, retomada depois de falha, aprovação humana no meio do fluxo e observabilidade.</p>
+          </div>
+        </div>
+
+        <table class="didatica">
+          <thead><tr><th>Framework</th><th>Linguagem</th><th>Forte em</th><th>Atenção</th></tr></thead>
+          <tbody>
+            <tr><td><b>LangChain</b></td><td>Python, JavaScript</td><td>Muitas integrações prontas (modelos, bancos, ferramentas)</td><td>Camadas de abstração podem esconder o prompt real</td></tr>
+            <tr><td><b>LangGraph</b></td><td>Python, JavaScript</td><td>Fluxo explícito em grafo, estado com checkpoint, humano no meio</td><td>Mais código para casos simples</td></tr>
+            <tr><td><b>Agno</b></td><td>Python</td><td>Agent, Team e Workflow com pouco código; o AgentOS serve os agentes por API e MCP</td><td>Projeto mais novo (ex-Phidata); confira na doc o que é SDK e o que é plataforma</td></tr>
+            <tr><td><b>Spring AI</b></td><td>Java</td><td>Integração com o Spring: ChatClient, ferramentas com @Tool, vector stores, MCP</td><td>Menos exemplos prontos de multiagente que no Python</td></tr>
+          </tbody>
+        </table>
+
+        <div class="caso">
+          <b>Como usar</b>
+          <p>Na sua stack, o mesmo agente com ferramenta fica assim no Spring AI:</p>
+          <pre><code>class PedidoTools {
+    @Tool(description = "Consulta o status de um pedido pelo número")
+    String statusPedido(String numero) {
+        return pedidos.buscarStatus(numero);
+    }
+}
+
+String resposta = chatClient.prompt()
+    .user("Onde está o pedido 4521?")
+    .tools(new PedidoTools())
+    .call()
+    .content();</code></pre>
+          <p>E no Agno, em Python, a ideia é a mesma: uma função comum vira ferramenta.</p>
+          <pre><code>from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+def status_pedido(numero: str) -&gt; str:
+    """Consulta o status de um pedido pelo número."""
+    return buscar_status(numero)
+
+agente = Agent(model=OpenAIChat(id="SEU_MODELO"), tools=[status_pedido])
+agente.print_response("Onde está o pedido 4521?")</code></pre>
+          <p>Para escolher: na stack Java/Spring, comece pelo Spring AI. Em Python, use LangGraph quando precisar controlar o fluxo passo a passo e retomar execuções, e Agno quando quiser agentes e times simples, já servidos por API. Os nomes e a API dos frameworks mudam rápido: confira a documentação da versão que for usar.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>O que veio substituir</h4>
+            <p>Chamar a API do modelo na mão: escrever o próprio loop, interpretar o pedido de ferramenta, guardar o histórico e tratar erros em cada projeto. Funciona para um caso, mas cada time reinventa as mesmas peças, com os mesmos bugs.</p>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>A escolha prende o código, então vale decidir pelo problema e pela stack, não pela popularidade. E o mais importante não é o framework: é entender o loop que ele implementa. Quem entende o loop troca de framework em dias; quem só conhece a abstração fica preso a ela. Em entrevista, a pergunta costuma ser "por que esse framework e não outro?".</p>
+          </div>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia:</b> frameworks web. Spring, Quarkus e Micronaut resolvem o mesmo problema — receber requisições e chamar o seu código — com estilos diferentes. Quem entende HTTP aprende qualquer um deles rápido. Com agentes é igual: o HTTP aqui é o loop de modelo, ferramenta e resultado.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas de produção</b>
+          <ul>
+            <li><b>Escolher pelo hype:</b> adotar o framework do momento sem medir se ele resolve o seu caso, e depois carregar abstrações que o projeto não usa.</li>
+            <li><b>Não ver o prompt final:</b> sem registrar o que realmente foi enviado ao modelo, é impossível explicar por que o agente errou.</li>
+            <li><b>Regra de negócio dentro do framework:</b> validação de valor, permissão e limites ficam no seu código (na ferramenta), não em instruções do prompt.</li>
+            <li><b>Trocar de framework por um recurso que a API já oferece:</b> structured output e tool calling, por exemplo, já vêm do próprio provedor.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>Conexões</b>
+          <span>Veja também: <a href="#t5-react">5.1 O loop agêntico</a>, que todos os frameworks implementam, e <a href="#t5-topologias">5.5 Topologias multi-agente</a>, onde o LangGraph aparece com checkpoint.</span>
+        </div>
+<!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: frameworks de agentes</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O mesmo loop por baixo</b>
+                    <p>Modelo pede ferramenta, framework executa, resultado volta, repete. Todos fazem isso.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Estilos diferentes</b>
+                    <p>LangChain: integrações. LangGraph: fluxo em grafo com estado. Agno: agentes e times em Python com runtime. Spring AI: Java.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Escolha pelo problema</b>
+                    <p>Stack, necessidade de controlar o fluxo, estado durável e como o agente vai ser servido.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: achar que o framework entende o domínio</b>
+                    <p>Ele organiza chamadas. Regras de negócio, permissões e limites continuam sendo responsabilidade do seu código.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: aprenda o loop, não só a biblioteca</b>
+                    <p>Se você consegue escrever o loop na mão em 30 linhas, escolhe e troca de framework sem medo.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t5-frameworks">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t5-frameworks</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um time Java/Spring precisa colocar em produção um agente que consulta pedidos e abre chamados, dentro da aplicação Spring Boot que já existe. Alguém sugere montar um serviço Python separado só porque "os frameworks de agente são em Python".</p>
+                <p class="te-instrucao">Qual decisão faz mais sentido?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring AI tem tool calling, memória, vector stores e MCP. Um serviço novo em outra linguagem traz deploy, observabilidade e time a mais sem necessidade.">
+                    <span class="te-letter">A</span> Criar o serviço Python com LangGraph para todo agente, porque o ecossistema de agentes em Java não tem tool calling.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Trocar a stack inteira por um recurso que o caso não exige é custo alto sem ganho; o problema é um agente com duas ferramentas.">
+                    <span class="te-letter">B</span> Reescrever toda a aplicação em Python para usar o Agno, que tem times e workflows prontos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A stack existente atende o caso: ferramentas como métodos Java, mesmas transações, segurança e observabilidade da aplicação.">
+                    <span class="te-letter">C</span> Usar o Spring AI dentro da aplicação, com as ferramentas como métodos @Tool, e só considerar outro framework se surgir uma necessidade que ele não atenda.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que todo framework de agentes faz por baixo, e o que muda entre eles?</p>
+                  <span class="tf-hint">Dica: pense no loop do ReAct →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Todos repetem o mesmo loop: o modelo pede uma ferramenta, o framework executa, devolve o resultado e repete até a resposta final. Muda o estilo: como as ferramentas são declaradas, onde fica a memória, como o fluxo é controlado (livre, grafo ou passos fixos) e como o agente é servido e observado.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <button class="done" type="button" data-k="t5-frameworks">marcar dominado</button>
+      </article>
+
+          </section>
 
     <!-- ===================== NÍVEL 6 ===================== -->
     <section class="part" id="p6">
@@ -6326,7 +6753,179 @@ Saída: TransferenciaResponse(transacaoId, status, timestamp)</code></pre>
 
         <button class="done" type="button" data-k="t6-metricas-defesa">marcar dominado</button>
       </article>
-    </section>
+      <!-- 6.6 COMO AVALIAR UM AGENTE -->
+      <article class="topic" id="t6-avaliar-agentes">
+        <div class="th"><h3>6.6 Como avaliar um agente: resultado, trajetória e Ragas</h3><div class="badges"><span class="badge b-prof">evals</span><span class="badge b-caso">qualidade em produção</span></div></div>
+        <div class="direto"><b>O que é:</b> Avaliar um agente é medir, com um conjunto fixo de casos de teste, se ele <b>cumpre a tarefa</b>, por um <b>caminho aceitável</b> e com <b>custo e tempo aceitáveis</b>. É mais do que avaliar uma resposta: o agente toma várias decisões — quais ferramentas chamar, com quais argumentos, em que ordem, quando parar — e cada uma pode errar mesmo quando a resposta final parece boa. Por isso a avaliação olha três camadas: o resultado final, a trajetória (os passos) e a operação (tokens, latência, número de passos). O <b>Ragas</b> é uma biblioteca open source em Python com métricas prontas para isso, várias delas usando um modelo como juiz.</div>
+
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um agente de reembolso acertava a resposta final em 90% dos casos de teste, e foi para produção. Uma semana depois, apareceram clientes reembolsados duas vezes: quando a ferramenta demorava, o agente chamava <code>emitirReembolso</code> de novo. Os testes só comparavam o texto final ("seu reembolso foi emitido"), que estava certo. Quando o time passou a avaliar a trajetória — quantas vezes cada ferramenta foi chamada e com quais argumentos —, o defeito apareceu em 6% dos casos e foi corrigido com uma chave de idempotência na ferramenta.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como funciona por baixo dos panos</h4>
+            <p>Você monta um conjunto de casos: a entrada, o objetivo, as ferramentas e argumentos esperados e, quando houver, uma resposta de referência. O agente roda cada caso, e o trace (cada passo, cada chamada de ferramenta) é gravado. Em seguida, dois tipos de métrica: as determinísticas, conferidas por código (chamou a ferramenta certa? com o argumento certo? terminou em até N passos?), e as de juiz, em que outro modelo avalia o que não dá para conferir com igualdade (o objetivo foi atingido? a resposta é fiel aos documentos?). O resultado é comparado com a versão anterior, a cada mudança de prompt, modelo ou ferramenta.</p>
+          </div>
+          <div class="o">
+            <h4>Para que serve</h4>
+            <p>Trocar de modelo, mudar o prompt ou acrescentar uma ferramenta sem medo de quebrar o que funcionava. Sem avaliação, a regressão aparece em produção, como no caso do reembolso. Também serve para comparar opções com número: um modelo mais barato que mantém a taxa de acerto é economia; um que cai 10 pontos não é.</p>
+          </div>
+        </div>
+
+        <table class="didatica">
+          <thead><tr><th>Métrica (Ragas)</th><th>Pergunta que responde</th><th>Camada</th></tr></thead>
+          <tbody>
+            <tr><td><b>Agent Goal Accuracy</b></td><td>O agente atingiu o objetivo do usuário?</td><td>Resultado</td></tr>
+            <tr><td><b>Tool Call Accuracy</b></td><td>Chamou as ferramentas certas, com os argumentos certos, na ordem certa?</td><td>Trajetória</td></tr>
+            <tr><td><b>Tool Call F1</b></td><td>Quantas das chamadas esperadas aconteceram, e quantas sobraram?</td><td>Trajetória</td></tr>
+            <tr><td><b>Topic Adherence</b></td><td>Ficou nos assuntos permitidos?</td><td>Comportamento</td></tr>
+            <tr><td><b>Faithfulness</b></td><td>A resposta está apoiada nos documentos recuperados?</td><td>RAG</td></tr>
+            <tr><td><b>Context Precision / Recall</b></td><td>A busca trouxe os trechos certos, e todos os necessários?</td><td>RAG</td></tr>
+          </tbody>
+        </table>
+
+        <div class="caso">
+          <b>Como usar</b>
+          <p>O que dá para conferir com código vira teste comum, no seu projeto Java (as classes abaixo são suas, que gravam o trace da execução):</p>
+          <pre><code>@Test
+void reembolsoEmiteUmaUnicaVez() {
+    Trace trace = agente.executar("Quero o reembolso do pedido 4521");
+
+    assertThat(trace.chamadas("emitirReembolso")).hasSize(1);
+    assertThat(trace.chamadas("consultarPedido").get(0).argumento("numero"))
+        .isEqualTo("4521");
+    assertThat(trace.passos()).isLessThanOrEqualTo(5);
+}</code></pre>
+          <p>O que precisa de julgamento vai para o Ragas: você monta as amostras com a pergunta, a resposta, os trechos recuperados e a referência, escolhe as métricas da tabela e roda a avaliação em Python, a partir dos traces exportados. Comece com 30 a 50 casos reais, incluindo os que já deram errado, e rode a cada mudança. Os nomes dos campos e das métricas mudam entre versões: confira a documentação da versão instalada.</p>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>O que veio substituir</h4>
+            <p>O "vibe check": abrir algumas conversas, achar que está bom e publicar. E testes que comparam só o texto final, que não pegam ferramenta chamada duas vezes, argumento errado nem um agente que acerta por sorte depois de 15 passos.</p>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>Agentes fazem coisas no mundo: emitem reembolso, mandam e-mail, alteram cadastro. Um erro de trajetória vira prejuízo, mesmo com a resposta final educada. Avaliar é o que permite trocar de modelo para economizar, mudar prompts com segurança e responder, com número, se a versão nova é melhor. Em entrevista, "como você sabe que o seu agente funciona?" é pergunta certa.</p>
+          </div>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia:</b> avaliar um motorista de aplicativo. Não basta ele chegar ao destino: importa se passou no sinal vermelho, se deu três voltas no quarteirão e quanto gastou de combustível. Avaliar só a chegada é avaliar só a resposta final.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas de produção</b>
+          <ul>
+            <li><b>Avaliar só a resposta final:</b> ferramenta chamada duas vezes, argumento errado e passos demais passam despercebidos.</li>
+            <li><b>Confiar no juiz sem calibrar:</b> compare uma amostra das notas do modelo juiz com a avaliação de uma pessoa antes de usar o número para decidir.</li>
+            <li><b>Mesmo modelo como agente e juiz:</b> ele tende a aprovar o próprio estilo. Prefira outro modelo, ou critérios bem objetivos.</li>
+            <li><b>Conjunto de casos fácil e parado:</b> só casos felizes, que nunca crescem. Todo bug de produção vira um caso novo.</li>
+            <li><b>Rodar uma vez só:</b> a saída varia entre execuções; repita os casos e olhe a taxa, não um resultado isolado.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>Conexões</b>
+          <span>Veja também: <a href="#t6-evals">6.2 Evals e LLM-as-a-judge</a>, <a href="#t6-metricas-defesa">6.5 Métricas de retrieval</a> e <a href="#t6-harness">6.1 Harness</a>, onde a avaliação roda.</span>
+        </div>
+<!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: avaliar agentes</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Três camadas</b>
+                    <p>Resultado (atingiu o objetivo?), trajetória (ferramentas, argumentos, passos) e operação (tokens, latência).</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Código e juiz</b>
+                    <p>O que dá para conferir por igualdade vira teste; o que precisa de julgamento vai para um modelo juiz calibrado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Ragas</b>
+                    <p>Biblioteca com métricas prontas: Agent Goal Accuracy, Tool Call Accuracy, Faithfulness, Context Precision e Recall.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: resposta final certa não prova agente certo</b>
+                    <p>O texto pode estar perfeito enquanto o agente chamou a ferramenta de pagamento duas vezes.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: todo bug vira caso de teste</b>
+                    <p>O conjunto de casos cresce a cada incidente. Rode a cada mudança de prompt, modelo ou ferramenta, e compare com a versão anterior.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t6-avaliar-agentes">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t6-avaliar-agentes</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um agente de reembolso passa em 90% dos testes, que comparam o texto final da resposta. Em produção, alguns clientes recebem o reembolso duas vezes quando a ferramenta demora a responder.</p>
+                <p class="te-instrucao">O que faltava na avaliação?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O texto final estava certo; um juiz melhor continuaria aprovando. O defeito está nos passos, não na resposta.">
+                    <span class="te-letter">A</span> Usar um modelo maior como juiz, que entende melhor se o texto final está correto.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A chamada duplicada só aparece olhando a trajetória. A correção definitiva ainda inclui idempotência na ferramenta.">
+                    <span class="te-letter">B</span> Avaliar a trajetória: conferir quantas vezes cada ferramenta foi chamada e com quais argumentos, além do resultado final.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mais casos com a mesma métrica medem mais vezes a coisa errada; a chamada duplicada continua invisível.">
+                    <span class="te-letter">C</span> Aumentar o conjunto de testes de 50 para 500 casos, mantendo a comparação do texto final.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que avaliar só a resposta final de um agente não basta?</p>
+                  <span class="tf-hint">Dica: o agente toma várias decisões no caminho →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque o agente decide várias coisas antes de responder: quais ferramentas chamar, com quais argumentos, quantas vezes e quando parar. A resposta pode estar certa enquanto ele cobrou duas vezes ou deu 15 passos. Avalie também a trajetória (ferramentas e argumentos) e a operação (tokens, latência e passos).</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <button class="done" type="button" data-k="t6-avaliar-agentes">marcar dominado</button>
+      </article>
+
+          </section>
 
     <!-- ==================== PARTE 07 ==================== -->
     <section class="part" id="p7">
@@ -6605,13 +7204,13 @@ var DATA = [
         alem: "Mesmo com janelas de 1 milhão de tokens, prompts concisos e limpos geram saídas 3x mais confiáveis."
       },
       {
-        t: "Temperatura & Top-P", x: "o controle de estocasticidade",
-        oq: "Parâmetros matemáticos que controlam a aleatoriedade da distribuição Softmax na inferência.",
-        ps: "Garantir código determinístico e sem erros de sintaxe (temperatura 0) ou textos criativos (temperatura 0.7).",
-        sub: "Substituiu modelos fechados sem controle sobre a aleatoriedade das previsões.",
-        pq: "Temperatura divide os logits antes da Softmax; Top-p corta a cauda acumulada de tokens improváveis.",
-        ex: "temperature=0.0 e top_p=0.1 para geração de endpoints Spring Boot e queries SQL.",
-        alem: "Nunca mexa agressivamente em Temperatura e Top-p ao mesmo tempo; ajuste um parâmetro por vez."
+        t: "Temperatura, Top-k & Top-p", x: "como o modelo escolhe a próxima palavra",
+        oq: "Três controles que mexem na lista de probabilidades antes do sorteio de cada token: temperatura concentra ou espalha; top-k guarda os K mais prováveis; top-p guarda os mais prováveis até somar P.",
+        ps: "Saída estável para JSON, SQL e código (temperatura 0 a 0.2) ou variada para texto criativo (0.7 a 0.9 com top-p 0.9 a 0.95).",
+        sub: "Substituiu a busca gulosa e o beam search, que repetem em texto aberto, e o sorteio puro, que pega tokens absurdos da cauda.",
+        pq: "Temperatura divide os logits antes do softmax; top-k corta num número fixo; top-p corta pela soma acumulada. Erro comum: confiar em top-k num provedor que não aceita o parâmetro.",
+        ex: "ChatOptions.builder().temperature(0.0).build() para extrair JSON; .temperature(0.8).topP(0.92) para descrição de produto.",
+        alem: "Mude um parâmetro por vez e compare com casos de teste; temperatura 0 não garante a mesma resposta em toda execução."
       },
       {
         t: "Métricas TTFT / TPS & Roteamento", x: "latência e model routers",
@@ -6696,6 +7295,16 @@ var DATA = [
         alem: "O LLM NUNCA deve executar comandos SQL diretamente no banco; o backend sempre valida e executa via JPA/JDBC."
       },
       {
+        id: "n-tokens-chunks",
+        t: "Tokens, Sentenças & Chunks", x: "como dividir o texto para o RAG",
+        oq: "Token é o pedaço de palavra que o modelo lê; sentença é a unidade de sentido; chunk é o pedaço indexado e devolvido pela busca.",
+        ps: "Fazer o RAG achar o trecho certo e entregá-lo inteiro, sem estourar limites nem gastar tokens à toa.",
+        sub: "Substituiu mandar o documento inteiro no prompt e a busca só por palavra-chave.",
+        pq: "Divide em seções e sentenças, agrupa até um limite de tokens com sobreposição e gera um embedding por chunk. Erro comum: cortar a cada N caracteres e partir frases ao meio.",
+        ex: "new TokenTextSplitter().apply(paginas) antes de vectorStore.add(chunks), com o título da seção nos metadados.",
+        alem: "Meça com 20 a 30 perguntas reais se o trecho certo aparece entre os primeiros resultados antes de mudar o tamanho do chunk."
+      },
+      {
         t: "RAG com pgvector & HNSW", x: "busca semântica e contextual",
         oq: "Arquitetura que recupera trechos relevantes da documentação privada da empresa e injeta no contexto do LLM.",
         ps: "Responder dúvidas técnicas sobre código e regras corporativas com precisão e ausência de alucinação.",
@@ -6762,6 +7371,16 @@ var DATA = [
         pq: "StateGraph imutável salvando snapshots a cada transição; permite pausar para aprovação humana e retroceder no tempo.",
         ex: "LangGraph com PostgresSaver gravando estado de cada subagente antes de invocar comandos destrutivos de terminal.",
         alem: "Adicionar mais agentes aumenta custos exponencialmente; priorize um agente com boas ferramentas antes de montar um squad."
+      },
+      {
+        id: "n-frameworks-agentes",
+        t: "Frameworks: Agno, LangGraph & Spring AI", x: "o mesmo loop, estilos diferentes",
+        oq: "Bibliotecas que implementam o loop agêntico, memória, conhecimento e coordenação de agentes: LangChain, LangGraph, Agno e Spring AI.",
+        ps: "Não reescrever o loop de ferramentas, histórico e estado em todo projeto.",
+        sub: "Substituiu o loop escrito à mão contra a API do modelo em cada projeto.",
+        pq: "Todos repetem: modelo pede ferramenta, framework executa, resultado volta. Erro comum: escolher pelo hype e não registrar o prompt final.",
+        ex: "Spring AI com métodos @Tool na stack Java; LangGraph para fluxo em grafo; Agno para agentes e times em Python servidos pelo AgentOS.",
+        alem: "Quem entende o loop troca de framework em dias; quem só conhece a abstração fica preso a ela."
       }
     ]
   },
@@ -6812,6 +7431,16 @@ var DATA = [
         pq: "Recall@k mede presença de fatos no Top-K; juiz com rubrica estrita avalia fidelidade; Dual-LLM isola leitor não confiável de executor privilegiado.",
         ex: "Pipeline CI/CD rodando 500 evals medindo Recall@5 > 92% e bloqueando prompts que tentam vazar chaves de API.",
         alem: "Injeção de prompt é inerente ao modelo de linguagem: a defesa verdadeira mora na arquitetura de privilégios e não no prompt."
+      },
+      {
+        id: "n-avaliar-agentes",
+        t: "Avaliar Agentes & Ragas", x: "resultado, trajetória e operação",
+        oq: "Medir com casos fixos se o agente cumpre a tarefa, pelo caminho certo, com custo e tempo aceitáveis.",
+        ps: "Trocar modelo, prompt ou ferramenta sem regressão escondida.",
+        sub: "Substituiu o vibe check e os testes que comparam só o texto final.",
+        pq: "Grava o trace, confere por código o que é exato e usa um juiz calibrado no resto. Erro comum: avaliar só a resposta final e não ver ferramenta chamada duas vezes.",
+        ex: "assertThat(trace.chamadas(\"emitirReembolso\")).hasSize(1); no Ragas, Agent Goal Accuracy e Tool Call Accuracy.",
+        alem: "Todo bug de produção vira um caso novo no conjunto de avaliação."
       }
     ]
   },
@@ -6853,6 +7482,8 @@ var DATA = [
 var trackEl = document.getElementById("track");
 var navEl = document.getElementById("nav");
 var flat = [];
+/* nós novos trazem id próprio; os antigos mantêm o id posicional para não perder o progresso salvo */
+var novosComId = 0;
 
 DATA.forEach(function(g, gi){
   var grp = document.createElement("div");
@@ -6869,7 +7500,7 @@ DATA.forEach(function(g, gi){
   clus.className = "cluster";
 
   g.items.forEach(function(it){
-    it._g = g.g; it._gc = g.c; it._id = "t_" + flat.length;
+    it._g = g.g; it._gc = g.c; it._id = it.id || ("t_" + (flat.length - novosComId)); if (it.id) novosComId++;
     var idx = flat.length;
     flat.push(it);
 
@@ -7511,5 +8142,15 @@ updateProgress();
 <script src="../assets/js/quiz-engine.js" defer></script>
   <script defer src="../assets/js/instant-nav.js"></script>
 <script defer src="../assets/js/pomodoro.js"></script>
+<script>
+/* Abre os "Para ir além" na impressão e devolve o estado depois. */
+(function(){
+  var abertos=null;
+  function antes(){var ds=document.querySelectorAll("details.alem");abertos=[];for(var i=0;i<ds.length;i++){abertos.push(ds[i].open);ds[i].open=true;}}
+  function depois(){if(!abertos)return;var ds=document.querySelectorAll("details.alem");for(var i=0;i<ds.length;i++)ds[i].open=abertos[i];abertos=null;}
+  window.addEventListener("beforeprint",antes);
+  window.addEventListener("afterprint",depois);
+})();
+</script>
 </body>
 </html>

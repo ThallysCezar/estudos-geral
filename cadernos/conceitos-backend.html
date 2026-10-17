@@ -3438,6 +3438,167 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
         <button class="done" type="button" data-k="g2">marcar dominado</button>
       </article>
 
+      <article class="topic" id="g2b">
+        <div class="th"><h3>JWT é legível por qualquer um: por que ele é seguro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> decodificar não é falsificar. O JWT comum é <b>assinado, não criptografado</b>: qualquer pessoa lê o que está dentro, mas ninguém consegue alterar sem a chave de quem emitiu, porque a assinatura deixa de bater. Ele garante <b>quem emitiu e que ninguém mexeu</b> — não que ninguém leu.</p>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Numa revisão de segurança, alguém colou o token de produção num decodificador online e viu o id do usuário, os papéis e a data de expiração. A conclusão apressada foi "o JWT está exposto, precisamos trocar". O teste certo foi outro: mudar <code class="ic">"role":"user"</code> para <code class="ic">"role":"admin"</code> no payload e mandar o token alterado para a API. Ela respondeu 401, porque a assinatura não conferia. O problema real que a revisão achou estava em outro lugar: o payload carregava o CPF do cliente, que qualquer um com o token conseguia ler.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como uma carta com lacre de cera.</b> Qualquer pessoa lê a carta: o texto está à vista. Mas o lacre com o selo de quem enviou só é feito por quem tem o sinete. Se alguém trocar uma palavra, vai precisar romper o lacre e não consegue refazê-lo igual. Quem recebe confere o lacre — não esconde a carta.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O JWT (JSON Web Token, RFC 7519) se popularizou com as APIs e os microsserviços. Com a sessão tradicional, cada requisição precisava consultar um armazenamento compartilhado para saber quem era o usuário. O JWT inverteu isso: o servidor de login entrega um token que já traz a identidade e as permissões, assinado, e qualquer serviço confere sozinho.</p><p class="repl"><b>Veio substituir:</b> o token opaco que exigia consultar o servidor de autenticação a cada requisição, e a sessão que precisava de armazenamento compartilhado entre réplicas.</p></div>
+          <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Ao explicar por que um token decodificado não é, por si só, um vazamento.</li><li>Ao decidir o que pode e o que não pode ir no payload.</li><li>Ao configurar a validação no Spring Security (resource server).</li><li>Em entrevista de backend: é pergunta frequente.</li></ul></div>
+        </div>
+
+        <h4 class="codelab">o que é um JWT, por dentro</h4>
+        <p>É um <b>crachá digital</b>. Depois do login, o servidor entrega o token ao usuário; em cada requisição seguinte, o usuário apresenta o crachá, e o servidor sabe quem ele é e o que pode fazer sem consultar banco nem sessão. O token tem três partes separadas por ponto: <code class="ic">cabecalho.payload.assinatura</code>.</p>
+        <table style="width:100%;border-collapse:collapse;margin-top:14px;font:400 .88rem/1.45 Georgia,serif">
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Parte</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">O que contém</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Está escondida?</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Cabeçalho</b></td><td style="padding:9px;color:var(--ink2)">O algoritmo da assinatura, por exemplo <code class="ic">{"alg":"RS256"}</code></td><td style="padding:9px;color:var(--ink2)">Não: é só Base64url</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Payload</b></td><td style="padding:9px;color:var(--ink2)">Os dados: quem é (<code class="ic">sub</code>), papéis, emissor (<code class="ic">iss</code>), público (<code class="ic">aud</code>), expiração (<code class="ic">exp</code>)</td><td style="padding:9px;color:var(--ink2)">Não: é só Base64url</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Assinatura</b></td><td style="padding:9px;color:var(--ink2)">Uma impressão digital das duas primeiras partes, calculada com a chave do emissor</td><td style="padding:9px;color:var(--ink2)">Não é para esconder: é para provar</td></tr>
+        </table>
+        <p><b>Base64url não é criptografia.</b> É só um jeito de escrever bytes como texto, e qualquer um desfaz. Por isso, colando o token num decodificador, você lê tudo — e isso é esperado.</p>
+
+        <h4 class="codelab">por que ele é seguro: a assinatura</h4>
+        <p>No login, o servidor monta o cabeçalho e o payload e calcula a assinatura sobre os dois, com uma chave que só ele tem. Em cada requisição, o servidor que recebe o token verifica a assinatura sobre o cabeçalho e o payload que chegaram. Se alguém trocou um único caractere — o papel de <code class="ic">user</code> para <code class="ic">admin</code>, a expiração para daqui a um ano —, o conteúdo mudou e a assinatura antiga não confere mais. Sem a chave, não há como gerar uma assinatura nova válida, e o servidor responde 401.</p>
+        <table style="width:100%;border-collapse:collapse;margin-top:14px;font:400 .88rem/1.45 Georgia,serif">
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Tipo de chave</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Quem assina</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">Quem verifica</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>HS256</b> (segredo compartilhado)</td><td style="padding:9px;color:var(--ink2)">Quem tem o segredo</td><td style="padding:9px;color:var(--ink2)">Quem tem o mesmo segredo</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>RS256 / ES256</b> (par de chaves)</td><td style="padding:9px;color:var(--ink2)">Só o servidor de login, com a chave privada</td><td style="padding:9px;color:var(--ink2)">Qualquer API, com a chave pública, publicada num endpoint JWKS</td></tr>
+        </table>
+        <p>Com o par de chaves, a chave pública pode ser pública de verdade: com ela dá para verificar, mas não para assinar. É o modelo mais usado entre microsserviços.</p>
+        <div class="cs"><b>Integridade não é sigilo.</b> O JWT garante que ninguém alterou o conteúdo e que foi o servidor certo que emitiu. Ele não garante que ninguém leu. Se o conteúdo precisa ficar escondido, a saída é o JWE (a versão criptografada) ou, mais simples, não colocar o dado no token: guarde só um identificador e busque o resto no servidor.</div>
+
+        <h4 class="codelab">por que ele é tão usado</h4>
+        <ul>
+          <li><b>Verificação local:</b> qualquer serviço confere o token sozinho, com a chave pública, sem chamar o servidor de login e sem sessão compartilhada. Isso escala bem com muitos serviços e réplicas.</li>
+          <li><b>Padrão:</b> RFC 7519, com bibliotecas em toda linguagem e suporte pronto no Spring Security.</li>
+          <li><b>Carrega o necessário para autorizar:</b> quem é, quem emitiu, para quem vale e até quando.</li>
+        </ul>
+
+        <h4 class="codelab">como usar no Spring</h4>
+        <pre><code>// application.yml: a API só aceita tokens assinados por este emissor
+// spring.security.oauth2.resourceserver.jwt.issuer-uri: https://auth.exemplo.com
+
+@Bean
+SecurityFilterChain api(HttpSecurity http) throws Exception {
+    return http
+        .authorizeHttpRequests(a -&gt; a.anyRequest().authenticated())
+        .oauth2ResourceServer(o -&gt; o.jwt(Customizer.withDefaults()))
+        .build();
+}
+// O Spring busca as chaves públicas do emissor, verifica a assinatura,
+// confere exp e iss, e recusa com 401 o token alterado ou vencido.</code></pre>
+
+        <div class="cs"><b>Como responder numa entrevista</b> (cerca de 40 segundos): "Decodificar não é falsificar. O JWT padrão é assinado, não criptografado: cabeçalho e payload são só Base64, então qualquer um lê, mas a assinatura é calculada com a chave do emissor. Se alguém mudar o payload, por exemplo o papel para admin, a assinatura não bate e o servidor recusa. Então ele garante integridade e autenticidade, não sigilo — por isso eu nunca coloco dado sensível no payload. Ele é muito usado porque qualquer serviço valida o token sozinho, com a chave pública, sem consultar sessão, o que escala bem entre microsserviços. Os cuidados são validar assinatura, algoritmo, exp, iss e aud, e usar validade curta com refresh token."</div>
+
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Carregar a identidade e as permissões do usuário de forma que qualquer serviço confira sozinho, sem chamar o servidor de autenticação a cada requisição, com a garantia de que ninguém alterou o que o emissor escreveu.</p></div>
+          <div><h4>Por que é importante</h4><p>É a base da autenticação entre microsserviços e cai muito em entrevista. Entender que a proteção é a assinatura muda onde você procura os riscos: não em "dá para ler", e sim no que vai no payload, no algoritmo aceito, na validação dos campos e em onde o token é guardado.</p></div>
+        </div>
+        <div class="cs"><b>Onde a teoria mora:</b> a comparação com sessão e o problema da revogação estão em <a href="#g2">Sessão ou JWT</a>; o login delegado, em <a href="#g3">OAuth 2.0, PKCE e OIDC</a>.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul>
+          <li><b>Dado sensível no payload.</b> CPF, e-mail, salário ficam visíveis para quem tiver o token. No payload vai só o necessário para autorizar.</li>
+          <li><b>Aceitar <code class="ic">alg: none</code>.</b> Bibliotecas antigas aceitavam um token "sem assinatura" se o cabeçalho dissesse isso.</li>
+          <li><b>Confusão de algoritmo.</b> O servidor espera RS256, mas aceita HS256 e usa a chave pública como se fosse segredo; como ela é pública, o atacante assina com ela. Fixe o algoritmo esperado.</li>
+          <li><b>Não validar exp, iss e aud.</b> Passa token vencido ou emitido para outro sistema.</li>
+          <li><b>Validade longa.</b> O JWT vale até expirar e não se revoga fácil. Use token de acesso curto (minutos) e refresh token guardado no servidor.</li>
+          <li><b>Token em localStorage.</b> Qualquer XSS lê. Prefira cookie HttpOnly, Secure e SameSite.</li>
+        </ul></div>
+        <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: por que o JWT legível é seguro</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Assinado, não criptografado</b>
+                    <p>Cabeçalho e payload são Base64url: qualquer um lê. A segurança está na assinatura.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Alterar invalida</b>
+                    <p>Mudar um byte do payload faz a assinatura não conferir; sem a chave, não há como assinar de novo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Validar tudo</b>
+                    <p>Assinatura, algoritmo esperado, exp, iss e aud, em toda requisição.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: decodificar não é quebrar</b>
+                    <p>Ver o conteúdo num decodificador não compromete nada. O risco real é o que você colocou no payload e a validação mal feita.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: integridade, não sigilo</b>
+                    <p>O JWT responde a "quem emitiu e se foi alterado". Para esconder conteúdo, é outra ferramenta (JWE) ou outro desenho.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-cb-g2b">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #g2b</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um colega decodificou o token de produção num site e viu o id do usuário e os papéis. Ele propõe trocar o JWT por outro mecanismo porque "qualquer um consegue ler e mudar o token".</p>
+                <p class="te-instrucao">Qual é a avaliação correta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Editar o payload invalida a assinatura; sem a chave do emissor, o servidor recusa o token alterado.">
+                    <span class="te-letter">A</span> Ele tem razão: como o payload é só Base64, basta editar o papel para admin e reenviar o token para ganhar acesso.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Base64url é codificação, reversível por qualquer um; a segurança não vem dela, vem da assinatura.">
+                    <span class="te-letter">B</span> O JWT é seguro porque o Base64url é uma criptografia leve, que só o servidor consegue reverter.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O JWT garante integridade e autenticidade, não sigilo; os riscos reais estão no conteúdo do payload e na validação.">
+                    <span class="te-letter">C</span> Ler não é alterar: a assinatura impede mudanças sem a chave. O cuidado é não colocar dado sensível no payload e validar assinatura, algoritmo, exp, iss e aud.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Se qualquer um decodifica um JWT, por que ele é considerado seguro?</p>
+                  <span class="tf-hint">Dica: codificação contra assinatura →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque a segurança está na assinatura, não no sigilo. Cabeçalho e payload são só Base64url, legíveis por qualquer um, mas a assinatura é feita com a chave do emissor: alterar um byte invalida o token. Por isso nada sensível vai no payload, e o servidor valida assinatura, algoritmo, exp, iss e aud.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <button class="done" type="button" data-k="g2b">marcar dominado</button>
+      </article>
+
       <article class="topic" id="g3">
         <div class="th"><h3>OAuth 2.0, PKCE e OIDC: o login social explicado</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
@@ -3853,6 +4014,173 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
 
           </div>
         <button class="done" type="button" data-k="h2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="h2b">
+        <div class="th"><h3>A imagem Docker de 2 GB e o deploy lento: como diminuir</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> imagem grande quase nunca é culpa do Java em si. Ela fica grande porque leva junto o que só servia para compilar, arquivos que não deviam entrar e o jar inteiro numa camada só. O deploy fica lento porque, a cada mudança, essa camada gigante viaja de novo. A correção é <b>medir, separar o build do runtime e dividir o jar em camadas</b>.</p>
+        <div class="caso">
+          <b>O caso</b>
+          <p>A imagem de uma API Spring Boot tinha 2 GB, e cada deploy levava minutos só no envio para o registry e no download pelos nós. O <code class="ic">docker history</code> mostrou o motivo: a imagem final partia de um JDK completo com Maven, copiava o projeto inteiro (inclusive <code class="ic">.git</code> e <code class="ic">target/</code>), guardava o cache de dependências do Maven e colocava o jar inteiro numa camada só — qualquer mudança de uma linha reenviava centenas de MB. Com multi-stage, imagem só com JRE, <code class="ic">.dockerignore</code> e jar em camadas, a imagem caiu para algumas centenas de MB, e o deploy passou a enviar só a camada da aplicação.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como uma mudança de casa.</b> Você não leva a betoneira e os andaimes usados para construir a casa nova; leva só os móveis. E, se as caixas de livros não mudaram desde a última mudança, não faz sentido embalar tudo de novo: só a caixa que mudou precisa ir no caminhão.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>No começo, o Dockerfile típico de uma aplicação Java fazia tudo numa etapa: partia de uma imagem com JDK e Maven, compilava e rodava ali mesmo. Funcionava, mas a imagem levava o ambiente inteiro de build. O Docker ganhou o multi-stage build para separar as duas coisas, e o Spring Boot passou a gerar o jar em camadas para aproveitar o cache do Docker.</p><p class="repl"><b>Veio substituir:</b> o Dockerfile de uma etapa só, que compilava e rodava na mesma imagem, e o fat jar copiado inteiro, que transformava cada deploy num envio completo.</p></div>
+          <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Quando o pipeline demora mais no push e no pull do que no build.</li><li>Quando o autoscaling sobe nós novos devagar.</li><li>Quando o scanner de segurança aponta dezenas de vulnerabilidades em ferramentas que a aplicação nem usa.</li><li>Em entrevista de backend: é pergunta frequente.</li></ul></div>
+        </div>
+
+        <h4 class="codelab">o que é uma imagem, e por que ela fica grande</h4>
+        <p>Uma imagem é o <b>pacote com tudo o que a aplicação precisa para rodar</b>: um sistema operacional mínimo, o Java e o seu jar. Ela é construída pelo Dockerfile, linha por linha, e <b>cada instrução que mexe em arquivos (<code class="ic">FROM</code>, <code class="ic">COPY</code>, <code class="ic">RUN</code>) cria uma camada</b>. A imagem é a pilha dessas camadas. Daí vêm duas regras que explicam tudo:</p>
+        <ul>
+          <li><b>Uma camada nunca diminui.</b> Se uma linha baixa 500 MB e a seguinte apaga esses arquivos, os 500 MB continuam na imagem; a segunda camada só os esconde.</li>
+          <li><b>Camadas são reaproveitadas.</b> No envio e no download, só trafegam as camadas que o outro lado ainda não tem. Camada que não mudou não viaja de novo.</li>
+        </ul>
+        <p>O deploy de uma imagem de 2 GB é lento porque cada nó precisa baixar esses bytes antes de subir o container — e, com escala automática, cada máquina nova paga esse custo.</p>
+        <table style="width:100%;border-collapse:collapse;margin-top:14px;font:400 .88rem/1.45 Georgia,serif">
+          <tr style="border-bottom:1px solid var(--line2)"><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">De onde vêm os 2 GB</td><td style="padding:9px;color:var(--muted);font:700 .66rem 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase">O que acontece</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Build dentro da imagem final</b></td><td style="padding:9px;color:var(--ink2)">Vão junto o JDK completo, o Maven, o cache de dependências e o código-fonte, coisas que só servem para compilar.</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>COPY . . sem .dockerignore</b></td><td style="padding:9px;color:var(--ink2)">Entram .git, target/, arquivos da IDE e logs.</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Limpeza em outra linha</b></td><td style="padding:9px;color:var(--ink2)">Instalar num RUN e apagar no seguinte: o arquivo continua na camada anterior.</td></tr>
+          <tr style="border-bottom:1px solid var(--line)"><td style="padding:9px;color:var(--ink2)"><b>Jar inteiro numa camada</b></td><td style="padding:9px;color:var(--ink2)">O fat jar junta dependências (centenas de MB) e o seu código (poucos MB). Mudou uma linha, a camada inteira é reenviada.</td></tr>
+        </table>
+
+        <h4 class="codelab">como resolver, passo a passo</h4>
+        <ol>
+          <li><b>Medir antes de mexer.</b> <code class="ic">docker history minha-api</code> mostra o tamanho de cada camada; a ferramenta <code class="ic">dive</code> mostra o que tem dentro de cada uma. Você descobre qual linha do Dockerfile é a culpada.</li>
+          <li><b>Multi-stage build.</b> Duas etapas no mesmo Dockerfile: a primeira usa JDK e Maven para compilar; a segunda parte de uma imagem <b>só com JRE</b> (roda Java, não compila) e copia apenas o resultado. O ambiente de build fica para trás.</li>
+          <li><b>.dockerignore.</b> O ".gitignore do Docker": deixa <code class="ic">.git</code>, <code class="ic">target/</code>, <code class="ic">.idea/</code> e logs fora do build.</li>
+          <li><b>Jar em camadas — o que deixa o deploy rápido.</b> O Spring Boot separa o jar em dependências, loader, dependências snapshot e aplicação. Cada parte vira uma camada, da que muda menos para a que muda mais. A camada grande de dependências já está no registry e nos nós e não viaja de novo; o deploy envia só a camada do seu código, de poucos MB.</li>
+          <li><b>Instalar e limpar na mesma instrução.</b> <code class="ic">RUN apt-get install ... &amp;&amp; rm -rf /var/lib/apt/lists/*</code>, numa linha só.</li>
+          <li><b>Indo além, se precisar.</b> <code class="ic">jlink</code> monta um Java só com os módulos que a aplicação usa; os Buildpacks (<code class="ic">mvn spring-boot:build-image</code>) geram uma imagem otimizada sem Dockerfile; o GraalVM native image gera uma imagem bem menor, com build mais demorado.</li>
+        </ol>
+
+        <h4 class="codelab">o dockerfile resultante</h4>
+        <pre><code># Etapa 1: build (JDK e Maven ficam só aqui)
+FROM maven:3-eclipse-temurin-21 AS build
+WORKDIR /build
+COPY pom.xml .
+RUN mvn -q dependency:go-offline          # dependências em camada própria
+COPY src ./src
+RUN mvn -q package -DskipTests \
+ &amp;&amp; java -Djarmode=tools -jar target/*.jar extract --layers --launcher --destination extracted
+
+# Etapa 2: runtime (só JRE e as camadas, da que muda menos para a que muda mais)
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN useradd -r app
+USER app
+COPY --from=build /build/extracted/dependencies/ ./
+COPY --from=build /build/extracted/spring-boot-loader/ ./
+COPY --from=build /build/extracted/snapshot-dependencies/ ./
+COPY --from=build /build/extracted/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code></pre>
+        <p>E o <code class="ic">.dockerignore</code> ao lado: <code class="ic">.git</code>, <code class="ic">target/</code>, <code class="ic">.idea/</code>, <code class="ic">*.log</code>. O comando de extração das camadas mudou entre versões do Spring Boot; o de cima é o das versões recentes, e o da sua versão está na documentação.</p>
+        <div class="cs"><b>O resultado esperado:</b> uma imagem de algumas centenas de MB em vez de 2 GB e, principalmente, um deploy que envia só a camada que mudou. O número exato depende das dependências do projeto: meça com <code class="ic">docker images</code> antes e depois.</div>
+
+        <div class="cs"><b>Como responder numa entrevista</b> (cerca de 40 segundos): "Primeiro eu meço com docker history para ver qual camada pesa. Quase sempre é o build dentro da imagem, então eu faço multi-stage: compilo numa etapa com JDK e Maven, e a imagem final só tem JRE e o jar. Coloco um .dockerignore para não levar .git e target. E, o principal para o deploy, eu separo o jar do Spring Boot em camadas: dependências numa camada, código em outra. Como as dependências não mudam, o registry e os nós já têm essa camada, e o deploy só envia os poucos MB do meu código. Se precisar ir além, jlink ou native image." O que essa resposta mostra é que você entende camadas e cache; a resposta fraca é só "usar alpine".</div>
+
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Deploys rápidos, menos custo de registry e de tráfego, nós novos que sobem rápido no autoscaling e uma superfície de ataque menor, já que a imagem não carrega ferramentas que a aplicação não usa.</p></div>
+          <div><h4>Por que é importante</h4><p>Tempo de deploy e de escala é tempo de recuperação em incidente: com imagem pequena e em camadas, um rollback ou um nó novo fica pronto bem mais rápido. E cada ferramenta a menos na imagem é uma vulnerabilidade a menos para corrigir.</p></div>
+        </div>
+        <div class="cs"><b>Onde a teoria mora:</b> camadas, multi-stage e imagem enxuta, em detalhe, estão na trilha <a href="../trilhas/docker-kubernetes.html#b1">Docker e Kubernetes</a> (parte de imagens); o pipeline que faz o deploy, em <a href="#h2">O seu pipeline</a>.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul>
+          <li><b>Trocar só a base para alpine.</b> Ajuda um pouco, mas mantém o build dentro da imagem e o jar numa camada única.</li>
+          <li><b>Apagar arquivos num RUN separado.</b> A camada anterior continua na imagem, com o mesmo tamanho.</li>
+          <li><b>COPY . . sem .dockerignore.</b> Leva .git, target e às vezes segredos locais para dentro da imagem.</li>
+          <li><b>Copiar o código antes das dependências.</b> Qualquer mudança no código invalida o cache, e todas as dependências são baixadas de novo.</li>
+          <li><b>Comando de extração da versão errada.</b> O modo de extrair as camadas mudou entre versões do Spring Boot.</li>
+        </ul></div>
+        <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: imagem grande e deploy lento</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Meça antes</b>
+                    <p>docker history e dive mostram qual camada pesa e o que tem dentro dela.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Multi-stage + JRE</b>
+                    <p>O ambiente de build fica na primeira etapa; a imagem final leva só o runtime e a aplicação.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Jar em camadas</b>
+                    <p>Dependências numa camada, aplicação em outra: o deploy envia só o que mudou.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: imagem pequena não é só base alpine</b>
+                    <p>O peso costuma estar no build, nos arquivos copiados e no jar inteiro numa camada; a base é só uma parte.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: o que muda menos vai primeiro</b>
+                    <p>Ordene as camadas da mais estável para a mais volátil: dependências antes do código.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-cb-h2b">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #h2b</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> A imagem de uma API Spring Boot tem 2 GB. Ela parte de uma imagem com JDK e Maven, roda o build dentro dela e copia o projeto inteiro com COPY . ., e cada deploy envia quase tudo de novo.</p>
+                <p class="te-instrucao">Qual combinação reduz o tamanho e o tempo de deploy?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O registry e o runtime já trafegam camadas comprimidas; isso não tira o build da imagem nem cria cache por camada.">
+                    <span class="te-letter">A</span> Comprimir a imagem com uma ferramenta externa antes do push e descomprimir no nó antes de subir o container.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Tira o ambiente de build e o lixo da imagem, e o deploy passa a reenviar só a camada da aplicação.">
+                    <span class="te-letter">B</span> Multi-stage com imagem final só de JRE, .dockerignore e o jar extraído em camadas, copiando as dependências antes da aplicação.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="As camadas anteriores continuam na imagem; apagar numa camada nova só esconde os arquivos.">
+                    <span class="te-letter">C</span> Manter o Dockerfile e acrescentar no fim um RUN que apaga o Maven, o cache e o código-fonte.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que o jar em camadas deixa o deploy mais rápido, mesmo sem diminuir muito a imagem?</p>
+                  <span class="tf-hint">Dica: pense no cache de camadas no envio →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque só trafegam as camadas que ainda não existem no registry ou no nó. Separando dependências, que mudam pouco, da aplicação, que muda sempre, a camada grande das dependências fica em cache e o deploy envia só a camada pequena do seu código, em vez do fat jar inteiro a cada mudança.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <button class="done" type="button" data-k="h2b">marcar dominado</button>
       </article>
 
       <article class="topic" id="h3">

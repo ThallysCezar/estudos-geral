@@ -90,7 +90,7 @@ README.md, SECURITY.md, Agent.md, Spec.md, Context.md
 - `cf` termina com **"Erro comum:"** e o erro real.
 - `ex`, quando houver, em contraste RUIM/BOM ou comando comentado.
 - `map: [["Documento", "o que ele explica sobre isto"]]` liga o nó a outros documentos; é como o OrderFlow aparece na trilha.
-- Ordem no script: `function W(` → `var DG=` → `var T=` → renderização (o DG chama W na definição). O id do nó é derivado do título (`t` vira slug): renomear `t` muda o id e zera o progresso daquele nó. Exceção: `trilhas/ia.html` usa id posicional (`"t_"+índice`), onde renomear é seguro e reordenar não.
+- Ordem no script: `function W(` → `var DG=` → `var T=` → renderização (o DG chama W na definição). O id do nó é derivado do título (`t` vira slug): renomear `t` muda o id e zera o progresso daquele nó. Exceção: `trilhas/ia.html` usa id posicional (`"t_"+índice`) para os nós antigos, onde renomear é seguro e reordenar não. **Nó novo na IA leva `id:` próprio** (ex.: `id: "n-tokens-chunks"`): ele não conta na posição, então os nós antigos mantêm o id e o progresso salvo (contador `novosComId`, desde 2026-10-17).
 
 **Fechamento do tópico** (`.topico-fechamento`)
 - `.topico-revisao`: recapitulando (3 pontos), pegadinha e modelo mental.

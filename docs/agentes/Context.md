@@ -2,6 +2,16 @@
 
 Última atualização: 2026-10-12. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
 
+## Novos tópicos (2026-10-17)
+
+Pedido do Thallys: acrescentar assuntos que faltavam e responder duas perguntas de entrevista.
+
+- `trilhas/ia.html`: 2.3 ampliado para temperatura, top-k e top-p; novos 4.3 "Tokens, sentenças e chunks" (RAG e streaming viraram 4.4 e 4.5), 5.6 "Frameworks de agentes: Agno, LangChain, LangGraph e Spring AI" e 6.6 "Como avaliar um agente: resultado, trajetória e Ragas". Primeira vez que a IA recebe `details.alem` (CSS `alem-css` e listener de impressão trazidos do System Design). Fatos de Agno e Ragas conferidos na documentação oficial em 2026-10-17.
+- `trilhas/mensageria.html`: parte nova "Kafka na prática" (`#pkafka`, tópicos `kf1` a `kf6`: partição e chave, consumer group e rebalance, retenção e replay, acks/idempotência/transações, Spring Kafka com DLT, consumer lag), antes de "Como aprender" (que virou a parte 12). Decisão: **mais foco em Kafka, mantendo o RabbitMQ**; reescrever a trilha com Kafka como principal foi descartado. 4 nós novos no marco do Kafka.
+- **As duas perguntas de entrevista ficam no caderno de dúvidas** (`cadernos/conceitos-backend.html`), no formato completo pedido pelo Thallys: conceito por trás, como funciona, como resolver passo a passo e um bloco "Como responder numa entrevista" (`.cs`): `g2b` "JWT é legível por qualquer um: por que ele é seguro" e `h2b` "A imagem Docker de 2 GB e o deploy lento". A primeira versão do Docker (`b6`, enxuta, na trilha) foi retirada; o tópico `b4` da trilha de Docker ganhou um link para o caderno. Regra derivada: **pergunta de entrevista ou dúvida do Thallys vai para o caderno de dúvidas, explicada do conceito à resposta**, e as trilhas só apontam para lá.
+- Tópicos novos sem emoji; no `.caso` da IA e da Mensageria, `<b>` vira rótulo de linha própria (CSS), então negrito no meio do texto usa `<strong>`. O motor do quiz já escreve "Correto!"/"Incorreto" antes da explicação: `data-rationale` não deve começar com essas palavras.
+- Backup: `Arquivados/2026-10-17-antes-novos-topicos/`. Verificado: audit-chassi, diff-snapshot sem perda, check-links, contratos 11/11, quiz-vies abaixo de 60% nos quatro documentos, console limpo, 375px sem overflow. Baseline não regravado (mudanças são só acréscimos). Nada commitado.
+
 ## Pomodoro compartilhado (2026-10-12)
 
 Widget opcional em todas as páginas HTML ativas, criado por `assets/js/pomodoro.js`; `assets/css/pomodoro.css` fornece o estilo comum. Sem configuração, o widget mostra apenas “Técnica Pomodoro”; salvar etapas em `ferramentas/pomodoro.html` habilita o timer. Sugestões: quatro focos de 25 min, pausas de 5 min e pausa longa de 15 min após o quarto foco. Preferências e sessão usam `site.pomodoro.config.v1` e `site.pomodoro.session.v1`. A sessão usa `endsAt`, avança as etapas automaticamente e mantém a contagem ao navegar entre páginas no mesmo perfil/origem. Sinais sintetizados com Web Audio marcam início, fim e começo automático da etapa seguinte; a configuração oferece “Testar som” e informa quando o navegador bloqueia áudio. A posição do widget sobe quando a página também exibe os botões “Início” e “voltar ao topo”. `localStorage` não sincroniza entre notebooks.

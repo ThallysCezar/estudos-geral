@@ -7011,8 +7011,960 @@ public class OrderFlowFaturamentoConsumer {
 
 
     <!-- ==================== PARTE 11 ==================== -->
+    <section class="part" id="pkafka">
+      <div class="ph"><span class="num">11</span><div><h2>Kafka na prática</h2><p>Partição e chave, consumer group, retenção e replay, garantias de escrita, Spring Kafka com tópico de erro e o lag: o Kafka no nível de quem o opera.</p></div></div>
+
+      <article class="topic" id="kf1">
+        <div class="th"><h3>Tópico, partição e chave: como o Kafka divide e ordena</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>O serviço de pedidos publicava os eventos "criado", "pago" e "enviado" num tópico de 6 partições, sem chave. O consumidor de notificações passou a receber, para alguns pedidos, "enviado" antes de "pago" e mandava ao cliente a mensagem errada. Os eventos do mesmo pedido estavam caindo em partições diferentes, e o Kafka só garante ordem dentro de uma partição. Publicar com a chave igual ao id do pedido colocou todos os eventos de cada pedido na mesma partição, e a ordem voltou.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O Kafka guarda mensagens em <b>tópicos</b>, e cada tópico é dividido em <b>partições</b>: logs separados, cada um com sua própria sequência de posições (offsets). A <b>chave</b> da mensagem decide a partição: mensagens com a mesma chave sempre vão para a mesma partição. A ordem é garantida <b>só dentro de uma partição</b>, nunca no tópico inteiro. As partições também são a unidade de paralelismo: cada uma é lida por um consumidor do grupo por vez, então o número de partições é o teto de consumidores trabalhando ao mesmo tempo.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> as filas dos caixas de um supermercado. Cada caixa atende na ordem de chegada, mas não há ordem entre caixas diferentes. Se todas as compras de uma mesma família passam pelo mesmo caixa, elas saem na ordem certa. A chave é a família; o caixa é a partição.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Escalar a leitura e a escrita dividindo o tópico em partições, sem perder a ordem onde ela importa: por entidade (pedido, conta, cliente).</p>
+                <p class="repl"><b>Veio substituir:</b> a fila única, em que garantir ordem exigia um só consumidor e, com isso, um teto de vazão; e o particionamento feito à mão, com vários tópicos, um por grupo de clientes.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Escolher a chave é uma decisão de arquitetura: define a ordem, o paralelismo e o risco de partição sobrecarregada. Mudar o número de partições depois muda para onde cada chave vai e quebra a ordem dos eventos já publicados.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Use como chave o id da entidade cuja ordem importa (pedido, conta).</li><li>Escolha o número de partições pensando no pico de consumidores que você quer ter, com folga.</li><li>Evite chaves muito concentradas (um único cliente gigante vira uma partição sobrecarregada).</li><li>Fator de replicação 3 em produção, para cada partição ter cópias em outros brokers.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O produtor calcula um hash da chave e usa o resto da divisão pelo número de partições para escolher o destino. Sem chave, o cliente espalha as mensagens entre as partições, e não há ordem entre elas. Cada partição tem um broker líder, que recebe as escritas, e réplicas em outros brokers, que copiam o log para assumir se o líder cair.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// A chave (id do pedido) manda todos os eventos do pedido para a mesma partição
+public void publicar(PedidoEvento evento) {
+    kafkaTemplate.send("pedidos.eventos", evento.pedidoId().toString(), evento);
+}
+
+// Sem chave: os eventos do mesmo pedido podem cair em partições diferentes
+kafkaTemplate.send("pedidos.eventos", evento); // ordem por pedido não garantida</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Publicar sem chave quando a ordem importa:</b> eventos do mesmo pedido em partições diferentes chegam fora de ordem.</li>
+            <li><b>Aumentar partições com o sistema rodando:</b> as chaves passam a cair em outras partições, e a ordem entre eventos antigos e novos da mesma chave se perde.</li>
+            <li><b>Chave concentrada:</b> se 40% das mensagens têm a mesma chave, uma partição recebe 40% da carga e vira o gargalo.</li>
+            <li><b>Partições de menos:</b> com 3 partições, o quarto consumidor do grupo fica parado; o paralelismo acabou.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: tópico, partição e chave</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Partição</b>
+                    <p>Um log separado dentro do tópico, com a própria sequência de offsets.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Chave</b>
+                    <p>Mesma chave, mesma partição. É ela que garante a ordem por entidade.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Paralelismo</b>
+                    <p>Cada partição é lida por um consumidor do grupo por vez: partições são o teto de consumidores ativos.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: ordem no tópico inteiro</b>
+                    <p>O Kafka só garante ordem dentro de uma partição. Ordem global exige uma única partição, e perde o paralelismo.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: a chave é a entidade cuja ordem importa</b>
+                    <p>Pergunte: a ordem precisa valer por pedido, por conta ou por nada? A resposta é a chave.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf1">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf1</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um tópico de eventos de pedido tem 6 partições e é publicado sem chave. O consumidor de notificações às vezes recebe "enviado" antes de "pago" para o mesmo pedido.</p>
+                <p class="te-instrucao">O que corrige a ordem sem perder o paralelismo?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Resolve a ordem, mas limita a leitura a um consumidor por vez e perde todo o paralelismo.">
+                    <span class="te-letter">A</span> Reduzir o tópico para uma única partição, para o Kafka garantir a ordem de todas as mensagens.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A ordem passa a valer por pedido, que é o que importa, e as 6 partições continuam dividindo a carga.">
+                    <span class="te-letter">B</span> Publicar com a chave igual ao id do pedido, para todos os eventos de um pedido irem para a mesma partição.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Os relógios dos produtores divergem e eventos podem chegar depois de outros já processados; ordenar no consumidor é frágil.">
+                    <span class="te-letter">C</span> Ordenar os eventos no consumidor por horário de publicação, mantendo a publicação sem chave.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Em que escopo o Kafka garante ordem, e como manter a ordem por pedido?</p>
+                  <span class="tf-hint">Dica: pense em partição e chave →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">O Kafka só garante ordem dentro de uma partição, nunca no tópico inteiro. Para manter a ordem por pedido, publique com a chave igual ao id do pedido: mensagens com a mesma chave vão sempre para a mesma partição. As outras partições continuam dividindo a carga entre os consumidores.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="kf2">
+        <div class="th"><h3>Consumer group, offset e rebalance</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um consumidor de faturamento levava, em alguns eventos, mais de 6 minutos para processar um lote, porque chamava um sistema externo lento. Passado o limite de tempo entre leituras, o Kafka considerava o consumidor morto, tirava as partições dele e as entregava a outro. O lote, ainda sem offset confirmado, era processado de novo pelo novo dono — e o original terminava também. Resultado: notas emitidas em dobro e o grupo em rebalance o tempo todo. Diminuir o tamanho do lote e tornar o faturamento idempotente resolveu.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>Um <b>consumer group</b> é um conjunto de consumidores que dividem o trabalho de ler um tópico: cada partição é entregue a um único consumidor do grupo. O <b>offset</b> é a posição de leitura: cada grupo guarda, por partição, até onde já processou, e é por ele que retoma depois de um restart. Grupos diferentes leem o mesmo tópico de forma independente, cada um com seus offsets. O <b>rebalance</b> é a redistribuição das partições quando um consumidor entra, sai ou para de responder.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> uma equipe dividindo pilhas de documentos para revisar. Cada pessoa fica com algumas pilhas e marca com um clipe onde parou. Se alguém sai, as pilhas dela são redistribuídas, e quem assume recomeça do clipe — o que estava entre o clipe e onde a pessoa realmente estava é revisado de novo.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Dividir a leitura de um tópico entre várias instâncias (dentro do grupo) e, ao mesmo tempo, deixar vários sistemas lerem o mesmo tópico (um grupo para cada).</p>
+                <p class="repl"><b>Veio substituir:</b> as filas separadas por consumidor, em que cada novo interessado exigia copiar as mensagens; no Kafka, um grupo novo só começa a ler o mesmo log.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>É no offset que mora a garantia de entrega: confirmar antes de processar perde mensagem; confirmar depois pode repetir. E rebalances frequentes param o grupo e geram reprocessamento. Entender isso explica a maioria dos "duplicou" e "parou de consumir" em produção.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Confirme o offset depois do processamento, nunca antes.</li><li>Faça o processamento idempotente: depois de um rebalance, parte do lote volta.</li><li>Mantenha o tempo de processamento de um lote bem abaixo de <code>max.poll.interval.ms</code> (reduza <code>max.poll.records</code> se preciso).</li><li>Use um <code>groupId</code> por sistema que lê o tópico.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Os offsets confirmados ficam num tópico interno do Kafka. Um broker atua como coordenador do grupo e acompanha os consumidores por heartbeats e pela frequência das leituras. Se um consumidor demora mais que <code>max.poll.interval.ms</code> entre duas leituras, é tirado do grupo, e as partições dele são redistribuídas a partir do último offset confirmado.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// Spring Kafka: o offset é confirmado depois que o método termina sem erro
+// (por padrão, o commit automático do cliente fica desligado)
+@KafkaListener(topics = "pedidos.eventos", groupId = "faturamento")
+public void onPedidoPago(PedidoPago evento) {
+    faturamento.emitirNota(evento); // idempotente: ignora se a nota já existe
+}
+
+// application.yml
+// spring.kafka.consumer.max-poll-records: 50</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Commit antes de processar:</b> se o consumidor cai no meio, a mensagem já foi marcada como lida e se perde.</li>
+            <li><b>Processamento lento demais por lote:</b> passa de <code>max.poll.interval.ms</code>, o consumidor sai do grupo e o lote é reprocessado por outro.</li>
+            <li><b>Mais consumidores que partições:</b> os excedentes ficam parados, só esperando.</li>
+            <li><b>Mesmo groupId em sistemas diferentes:</b> eles passam a dividir as mensagens em vez de cada um receber todas.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: consumer group, offset e rebalance</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Consumer group</b>
+                    <p>Divide as partições entre os consumidores; cada partição tem um dono por vez.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Offset</b>
+                    <p>A posição confirmada por grupo e partição; é de onde a leitura recomeça.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Rebalance</b>
+                    <p>Redistribui as partições quando um consumidor entra, sai ou fica lento demais.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: o rebalance não perde nada, mas repete</b>
+                    <p>O que foi processado e não confirmado volta para o próximo dono. Sem idempotência, vira efeito duplicado.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: um grupo por sistema, um consumidor por partição</b>
+                    <p>Dentro do grupo, divide; entre grupos, todos recebem tudo.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf2">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf2</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um consumidor demora até 6 minutos por lote porque chama um sistema externo lento. O grupo entra em rebalance com frequência e algumas notas fiscais são emitidas duas vezes.</p>
+                <p class="te-instrucao">Qual combinação ataca as duas causas?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mais partições não mudam o tempo de cada lote nem tornam o efeito idempotente; e mudar partições afeta a distribuição das chaves.">
+                    <span class="te-letter">A</span> Aumentar o número de partições para 60, para cada consumidor receber menos mensagens por lote.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O commit antes do processamento troca duplicidade por perda: se o consumidor cair, a mensagem já constava como lida.">
+                    <span class="te-letter">B</span> Ativar o commit automático do offset, para a posição ser salva antes do processamento lento terminar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Lotes menores evitam que o consumidor seja tirado do grupo; a idempotência cobre a repetição que ainda pode acontecer.">
+                    <span class="te-letter">C</span> Reduzir o tamanho do lote para ficar bem abaixo do limite entre leituras e tornar a emissão da nota idempotente.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que acontece com as mensagens de um consumidor que sai do grupo no meio de um lote?</p>
+                  <span class="tf-hint">Dica: pense no último offset confirmado →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">As partições dele são redistribuídas no rebalance, e o novo dono recomeça a partir do último offset confirmado. Tudo o que foi processado depois desse offset, mas não confirmado, é entregue de novo. Por isso o processamento precisa ser idempotente e o commit deve vir depois do efeito.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="kf3">
+        <div class="th"><h3>Retenção, replay e compactação: o log que fica</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um bug no cálculo de comissão passou duas semanas em produção. Com uma fila, os eventos já teriam sido apagados depois de consumidos, e a correção exigiria reconstruir tudo a partir do banco. Como os eventos de venda estavam num tópico Kafka com retenção de 30 dias, o time corrigiu o código, criou um consumer group novo apontando para o início do período e reprocessou as duas semanas, gerando os valores corretos.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>No Kafka, ler uma mensagem não a apaga. As mensagens ficam no log pelo tempo ou tamanho definido na <b>retenção</b> e são apagadas em blocos quando ela vence. Isso permite o <b>replay</b>: reler o passado, reposicionando o offset de um grupo ou criando um grupo novo. Existe também a <b>compactação</b>: em vez de apagar por tempo, o Kafka mantém só a última mensagem de cada chave, o que transforma o tópico num retrato do estado atual de cada entidade.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> um gravador de câmera de segurança. Ver a gravação não apaga nada; as imagens ficam pelo período configurado e as mais antigas são sobrescritas. Se algo deu errado, você volta a fita até o dia em que aconteceu e assiste de novo.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Reprocessar depois de corrigir um bug, alimentar um sistema novo com o histórico, reconstruir uma base a partir dos eventos e, com compactação, guardar o estado mais recente de cada chave.</p>
+                <p class="repl"><b>Veio substituir:</b> as filas que apagam a mensagem depois do ack, em que reprocessar exigia exportar e republicar dados de outro lugar; e as tabelas de "eventos antigos" mantidas à mão para auditoria.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>O replay é o principal motivo para escolher Kafka em vez de uma fila. Mas ele só existe dentro da retenção configurada, e reprocessar exige consumidores idempotentes, porque os mesmos eventos passam de novo pelos mesmos efeitos.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Defina a retenção pelo maior período em que você pode precisar reprocessar (o padrão do Kafka é de 7 dias).</li><li>Para reprocessar, prefira um consumer group novo; ou reposicione o offset do grupo com ele parado.</li><li>Use compactação para tópicos de estado (cadastro, saldo atual), com a chave igual ao id da entidade.</li><li>Para apagar uma chave num tópico compactado, publique a chave com valor nulo.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Cada partição é gravada em arquivos de segmento. A retenção apaga segmentos inteiros quando a mensagem mais nova deles passa do prazo ou quando o tópico passa do tamanho limite. Na compactação, um processo de limpeza reescreve os segmentos antigos mantendo só a última mensagem de cada chave. Um consumer group novo começa do início ou do fim do log, conforme <code>auto.offset.reset</code> (o padrão é o fim).</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos de comando e configuração</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-bash"># Retenção de 30 dias no tópico de vendas
+kafka-configs.sh --bootstrap-server localhost:9092 --alter \
+  --entity-type topics --entity-name vendas.eventos \
+  --add-config retention.ms=2592000000
+
+# Reposicionar o grupo (parado) para reler desde uma data
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group comissao --topic vendas.eventos \
+  --reset-offsets --to-datetime 2026-10-01T00:00:00.000 --execute
+
+# Tópico de estado: guarda só a última mensagem de cada chave
+kafka-configs.sh --bootstrap-server localhost:9092 --alter \
+  --entity-type topics --entity-name clientes.estado \
+  --add-config cleanup.policy=compact</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Contar com replay além da retenção:</b> o que passou do prazo já foi apagado.</li>
+            <li><b>Grupo novo sem configurar o início:</b> por padrão ele começa do fim do log e não lê nada do passado.</li>
+            <li><b>Reprocessar com efeitos não idempotentes:</b> o replay reenvia e-mails, cobra de novo, emite nota de novo.</li>
+            <li><b>Reposicionar o offset com o grupo rodando:</b> o comando é recusado ou os consumidores sobrescrevem a posição.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: retenção, replay e compactação</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Retenção</b>
+                    <p>Ler não apaga. O log é apagado por tempo ou tamanho, em segmentos.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Replay</b>
+                    <p>Reler o passado com um grupo novo ou reposicionando o offset, dentro da retenção.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Compactação</b>
+                    <p>Guarda só a última mensagem de cada chave: o estado atual de cada entidade.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: replay sem idempotência</b>
+                    <p>Reprocessar repete os efeitos. Sem consumidor idempotente, o replay que conserta um bug cria outro.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: a retenção é a sua janela de conserto</b>
+                    <p>Defina pelo maior período em que você pode precisar reler, não pelo padrão.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf3">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf3</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um bug no cálculo de comissão ficou duas semanas em produção. Os eventos de venda estão num tópico Kafka com retenção de 30 dias, e o consumidor de comissão é idempotente.</p>
+                <p class="te-instrucao">Qual é o caminho para corrigir os valores?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Os eventos continuam no log dentro da retenção; um grupo novo relê o período sem afetar os outros consumidores.">
+                    <span class="te-letter">A</span> Corrigir o código e reprocessar as duas semanas com um consumer group novo, começando do início do período.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="No Kafka, consumir não apaga; os eventos ainda estão no log dentro dos 30 dias de retenção.">
+                    <span class="te-letter">B</span> Republicar os eventos das duas semanas a partir do banco de dados, porque mensagens consumidas já foram apagadas do Kafka.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A retenção só define por quanto tempo o log fica; ela não reprocessa nada sozinha.">
+                    <span class="te-letter">C</span> Mudar a retenção para infinita, para que o Kafka devolva automaticamente as mensagens com erro.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que o Kafka permite replay e uma fila tradicional não?</p>
+                  <span class="tf-hint">Dica: o que acontece com a mensagem depois de lida →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque no Kafka ler não apaga: a mensagem fica no log até vencer a retenção, e cada grupo só guarda até onde leu. Para reler, basta um grupo novo ou reposicionar o offset. Numa fila tradicional, a mensagem é removida depois do ack, e não há o que reler.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf3">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="kf4">
+        <div class="th"><h3>Garantias no Kafka: acks, produtor idempotente e transações</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um produtor configurado com <code>acks=1</code> recebia a confirmação assim que o líder da partição gravava a mensagem. O líder caiu antes de as réplicas copiarem os últimos registros, uma réplica atrasada assumiu e algumas mensagens confirmadas simplesmente sumiram. Em outra ocasião, um timeout de rede fez o produtor reenviar um lote que já tinha sido gravado, e o tópico ficou com eventos duplicados. As duas coisas são controladas por configuração: <code>acks=all</code> com réplicas mínimas sincronizadas, e o produtor idempotente.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>São as configurações que definem o que o Kafka promete ao gravar e ler. <b>acks</b> diz quantas réplicas precisam confirmar antes de o produtor considerar a mensagem gravada: nenhuma, só o líder ou todas as réplicas sincronizadas. O <b>produtor idempotente</b> numera as mensagens para o broker descartar reenvios do mesmo lote, eliminando duplicatas causadas por retry. As <b>transações</b> gravam em vários tópicos e partições de forma atômica — tudo ou nada —, inclusive o offset de leitura, o que permite processar e republicar sem duplicar dentro do Kafka.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> um cartório com cópias. acks=1 é aceitar o protocolo assim que o primeiro funcionário arquiva o documento; acks=all é esperar as cópias ficarem nos outros cartórios. O número de protocolo único é o produtor idempotente: se você entregar o mesmo documento de novo, o cartório reconhece e não registra duas vezes.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Escolher, com consciência, entre velocidade e segurança na escrita, e evitar duplicatas e perdas causadas por falhas de rede e de broker.</p>
+                <p class="repl"><b>Veio substituir:</b> a confirmação só do líder como padrão, que perdia mensagens na troca de líder, e a deduplicação feita à mão pelo consumidor para cada retry do produtor.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Perda e duplicidade em produção quase sempre vêm dessas configurações. E a transação do Kafka tem um limite claro: ela garante exatamente uma vez só dentro do Kafka. Gravar no banco e no Kafka juntos continua exigindo outbox e consumidores idempotentes.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li><code>acks=all</code> e <code>enable.idempotence=true</code> (padrões nas versões atuais do cliente; confirme na sua).</li><li>No tópico: fator de replicação 3 e <code>min.insync.replicas=2</code>.</li><li>Transações para "ler de um tópico, processar e publicar em outro"; consumidores com <code>isolation.level=read_committed</code>.</li><li>Banco + Kafka: outbox, não transação do Kafka.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Com <code>acks=all</code>, o líder só confirma depois que todas as réplicas sincronizadas (ISR) gravaram; com <code>min.insync.replicas=2</code>, se sobrar menos de 2 réplicas sincronizadas, a escrita é recusada em vez de arriscar perda. O produtor idempotente recebe um id e manda um número de sequência por partição; o broker descarta o que já recebeu. Na transação, um coordenador registra o início e o fim, e os consumidores em <code>read_committed</code> só enxergam mensagens de transações confirmadas.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// application.yml (Spring Boot)
+// spring.kafka.producer.acks: all
+// spring.kafka.producer.properties.enable.idempotence: true
+// spring.kafka.producer.transaction-id-prefix: faturamento-tx-
+// spring.kafka.consumer.isolation-level: read_committed
+
+// Ler, processar e publicar dentro de uma transação do Kafka
+@KafkaListener(topics = "pedidos.pagos", groupId = "faturamento")
+@Transactional("kafkaTransactionManager")
+public void faturar(PedidoPago evento) {
+    NotaEmitida nota = faturamento.calcular(evento);
+    kafkaTemplate.send("notas.emitidas", evento.pedidoId().toString(), nota);
+    // o offset de leitura é confirmado na mesma transação do envio
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>acks=1 em dado importante:</b> a mensagem confirmada pode sumir se o líder cair antes das réplicas copiarem.</li>
+            <li><b>acks=all sem min.insync.replicas:</b> com uma única réplica sincronizada, "todas" é uma só, e a garantia some.</li>
+            <li><b>Achar que a transação do Kafka cobre o banco:</b> ela não inclui o seu banco de dados; para isso, use outbox.</li>
+            <li><b>Consumidor em read_uncommitted com produtor transacional:</b> ele lê mensagens de transações que depois foram abortadas.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: acks, idempotência e transações</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>acks</b>
+                    <p>Quantas réplicas confirmam antes de o produtor seguir. all + min.insync.replicas=2 evita perda na troca de líder.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Produtor idempotente</b>
+                    <p>Número de sequência por partição: o broker descarta o reenvio do mesmo lote.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Transações</b>
+                    <p>Gravação atômica em vários tópicos e do offset de leitura. Só vale dentro do Kafka.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: exactly-once do Kafka não inclui o seu banco</b>
+                    <p>A transação cobre tópicos e offsets. Efeito no banco ou em API externa continua exigindo idempotência e outbox.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: perda é acks, duplicata é retry</b>
+                    <p>Perdeu mensagem confirmada? Olhe acks e réplicas. Duplicou na escrita? Olhe o produtor idempotente.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf4">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf4</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um produtor com acks=1 perdeu mensagens já confirmadas quando o líder da partição caiu. O tópico tem fator de replicação 3.</p>
+                <p class="te-instrucao">Qual configuração evita essa perda?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O produtor recebeu confirmação e não tem por que reenviar; a mensagem se perdeu depois de confirmada.">
+                    <span class="te-letter">A</span> Aumentar o número de retries do produtor, para ele reenviar até o novo líder aceitar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A mensagem só é confirmada quando já existe em réplicas que podem assumir; com menos de 2 sincronizadas, a escrita é recusada.">
+                    <span class="te-letter">B</span> Usar acks=all com min.insync.replicas=2, para a confirmação só vir depois que réplicas sincronizadas gravaram.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Transações tratam atomicidade entre partições; com acks=1 o problema de durabilidade continua.">
+                    <span class="te-letter">C</span> Ativar transações no produtor, que garantem exatamente uma vez inclusive na troca de líder.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que acks=all, produtor idempotente e transações resolvem no Kafka?</p>
+                  <span class="tf-hint">Dica: perda, duplicata e atomicidade →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">acks=all, com min.insync.replicas, evita perder mensagem confirmada quando o líder cai. O produtor idempotente evita duplicatas causadas por reenvio. As transações gravam em vários tópicos e o offset de forma atômica. Tudo isso vale só dentro do Kafka; o banco continua exigindo outbox e idempotência.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf4">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="kf5">
+        <div class="th"><h3>Spring Kafka na prática: listener, erros e o tópico de erro (DLT)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">spring kafka</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um evento com um campo inválido entrou no tópico de pedidos. O listener lançava exceção, o container tentava de novo, falhava de novo, e a partição inteira ficou parada atrás daquela única mensagem: os pedidos seguintes não eram processados. Configurar um tratador de erro com 3 tentativas e envio para um tópico de erro (DLT) fez a mensagem ruim sair do caminho depois das tentativas, com os dados do erro nos cabeçalhos, e a partição voltou a andar.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Spring Kafka</b> integra o Kafka ao Spring: o <code>KafkaTemplate</code> publica, o <code>@KafkaListener</code> consome, e o container cuida da conexão, das leituras, do commit do offset e das tentativas. O tratamento de erro é o ponto mais importante: o <code>DefaultErrorHandler</code> tenta processar de novo com um intervalo, e, quando as tentativas acabam, um recuperador publica a mensagem num <b>tópico de erro (DLT, dead letter topic)</b>, para a partição seguir. É o equivalente, no Kafka, da DLQ do RabbitMQ.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> uma esteira de fábrica com uma caixa defeituosa. Se a esteira parar até alguém consertar aquela caixa, toda a produção para atrás dela. O certo é tentar ajeitar algumas vezes e, se não der, tirar a caixa para uma bancada lateral e deixar a esteira andar.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Consumir e publicar com pouco código, com conversão de JSON, commit do offset depois do processamento e uma política de erro que não trava a partição por causa de uma mensagem ruim.</p>
+                <p class="repl"><b>Veio substituir:</b> o loop de leitura escrito à mão com o cliente puro do Kafka, com commit, retry e envio para tópico de erro implementados em cada serviço.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>No Kafka, uma mensagem que falha sempre trava a partição inteira, porque o consumidor avança em ordem. Sem tópico de erro, um único dado inválido para o processamento de todos os pedidos daquela partição. É o defeito mais comum de quem vem do RabbitMQ.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Defina um <code>DefaultErrorHandler</code> com poucas tentativas e um <code>DeadLetterPublishingRecoverer</code>.</li><li>Marque como não repetíveis as exceções de dado inválido: elas vão direto para o tópico de erro.</li><li>Use o <code>ErrorHandlingDeserializer</code> para que um JSON quebrado não derrube o consumidor antes de chegar ao listener.</li><li>Monitore e reprocesse o tópico de erro; ele não se esvazia sozinho.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O container lê um lote, chama o listener mensagem a mensagem e confirma o offset depois do sucesso. Se o listener lança exceção, o tratador reposiciona a leitura na mensagem com erro e tenta de novo, conforme o intervalo configurado. Esgotadas as tentativas, o recuperador publica a mensagem no tópico de erro (por padrão, o nome do tópico original com o sufixo <code>.DLT</code>), com cabeçalhos sobre a exceção, e o offset avança.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">@Bean
+DefaultErrorHandler kafkaErrorHandler(KafkaTemplate&lt;Object, Object&gt; template) {
+    // esgotadas as tentativas, publica em "pedidos.eventos.DLT"
+    var recuperador = new DeadLetterPublishingRecoverer(template);
+    var handler = new DefaultErrorHandler(recuperador, new FixedBackOff(1000L, 3));
+    handler.addNotRetryableExceptions(PedidoInvalidoException.class); // direto para a DLT
+    return handler;
+}
+
+@KafkaListener(topics = "pedidos.eventos", groupId = "estoque")
+public void onPedido(PedidoCriado evento) {
+    estoque.reservar(evento); // exceção aqui -&gt; tentativas -&gt; DLT
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Sem tópico de erro:</b> uma mensagem que sempre falha trava a partição inteira.</li>
+            <li><b>Repetir erro de dado:</b> tentar 10 vezes um JSON inválido só atrasa; marque essas exceções como não repetíveis.</li>
+            <li><b>Desserializador sem tratamento:</b> um JSON quebrado falha antes do listener e o consumidor fica em loop; use o ErrorHandlingDeserializer.</li>
+            <li><b>DLT que ninguém olha:</b> mensagens acumulam ali sem alerta, e os pedidos somem do fluxo de negócio.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Spring Kafka e o tópico de erro</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>KafkaTemplate e @KafkaListener</b>
+                    <p>Publicar e consumir com pouco código; o container confirma o offset depois do sucesso.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>DefaultErrorHandler</b>
+                    <p>Tenta de novo com intervalo e, no fim, chama o recuperador.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>DLT</b>
+                    <p>O tópico de erro tira a mensagem ruim do caminho e deixa a partição seguir.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: no Kafka, uma mensagem ruim para a fila inteira</b>
+                    <p>O consumidor avança em ordem; sem DLT, a mensagem que sempre falha trava tudo o que vem depois na partição.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: tentar pouco, desviar rápido, monitorar a DLT</b>
+                    <p>Erro transitório merece poucas tentativas; erro de dado vai direto para o tópico de erro.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf5">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf5</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um evento com campo inválido entra no tópico de pedidos. O listener lança exceção em toda tentativa, e os pedidos seguintes daquela partição param de ser processados.</p>
+                <p class="te-instrucao">Qual configuração resolve sem perder a mensagem?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A mensagem ruim vai para o tópico de erro com os detalhes da falha, e a partição volta a andar.">
+                    <span class="te-letter">A</span> Configurar um DefaultErrorHandler com poucas tentativas e um DeadLetterPublishingRecoverer, marcando a exceção de dado inválido como não repetível.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A partição volta a andar, mas o evento se perde: não fica em lugar nenhum para análise e reprocessamento.">
+                    <span class="te-letter">B</span> Capturar a exceção no listener e apenas registrar no log, para o offset avançar e a partição seguir.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Isso esconde o erro e pode perder também mensagens válidas quando o consumidor cair no meio do lote.">
+                    <span class="te-letter">C</span> Ligar o commit automático do offset, para a mensagem ser marcada como lida antes do erro acontecer.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que um tópico de erro (DLT) é indispensável no Kafka?</p>
+                  <span class="tf-hint">Dica: pense na ordem dentro da partição →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque o consumidor do Kafka avança em ordem dentro da partição. Uma mensagem que sempre falha impede a leitura de tudo o que vem depois. O tratador tenta algumas vezes e, no fim, publica a mensagem no tópico de erro com os detalhes da falha; o offset avança e a partição volta a andar.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf5">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="kf6">
+        <div class="th"><h3>Consumer lag: o número que mostra se o consumo acompanha</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">operação</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Numa campanha, o lag do grupo de notificações subiu de algumas centenas para 2 milhões de mensagens em uma hora: os clientes recebiam o "pedido confirmado" 40 minutos depois. O time dobrou o número de consumidores, de 12 para 24, e nada mudou, porque o tópico tinha 12 partições e os 12 consumidores novos ficaram parados. O que resolveu foi tirar uma chamada síncrona lenta do processamento de cada mensagem; para a campanha seguinte, o tópico foi criado com mais partições.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>consumer lag</b> é a distância, em mensagens, entre o fim do log de uma partição (a última mensagem publicada) e o último offset que o grupo confirmou. É o principal número de saúde de um consumidor Kafka: lag estável e baixo significa que o consumo acompanha a produção; lag crescendo significa que o consumidor está mais lento que os produtores, e cada mensagem nova vai esperar mais. O lag é medido por partição e por grupo, e o total do grupo é a soma.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a fila de um caixa de banco vista pela senha. A senha chamada agora contra a última senha emitida: se a diferença cresce a cada minuto, os atendentes não estão dando conta, e quem chega agora vai esperar cada vez mais.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Saber se o consumo está em dia, disparar alerta antes de o atraso virar problema para o cliente, e decidir entre acelerar o processamento ou aumentar o paralelismo.</p>
+                <p class="repl"><b>Veio substituir:</b> olhar só a CPU e o uso de memória dos consumidores, que podem estar baixos enquanto o atraso cresce porque o tempo está indo em espera de rede.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>O lag traduz o problema técnico em impacto: atraso para o cliente. E ele expõe o teto do Kafka: escalar consumidores só ajuda até o número de partições; depois disso, é preciso deixar o processamento mais rápido ou ter mais partições.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Alerte sobre o lag que cresce por alguns minutos seguidos, não sobre um pico isolado.</li><li>Se há partições sem consumidor ocupado, aumente as instâncias até o número de partições.</li><li>Se cada consumidor já tem uma partição, acelere o processamento: tire chamadas síncronas lentas, processe em lote.</li><li>Dimensione as partições para o pico previsto antes da campanha; aumentar depois muda o destino das chaves.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O broker conhece o último offset de cada partição, e o grupo registra o último offset confirmado. A ferramenta de linha de comando, os exportadores de métricas e os painéis calculam a diferença por partição. Um lag concentrado em poucas partições aponta para chave concentrada; um lag alto em todas aponta para consumo lento ou consumidores de menos.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos de comando</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-bash"># Lag por partição de um grupo (coluna LAG)
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --describe --group notificacoes
+
+# Saída resumida:
+# TOPIC            PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
+# pedidos.eventos  0          1204511         1371002         166491
+# pedidos.eventos  1          1198870         1369954         171084</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Adicionar consumidores além do número de partições:</b> os excedentes ficam parados, e o lag não cai.</li>
+            <li><b>Olhar só a média do grupo:</b> uma partição com lag enorme, causada por chave concentrada, some na média.</li>
+            <li><b>Alertar sobre pico momentâneo:</b> o lag sobe e desce normalmente em rajadas; alerte sobre crescimento sustentado.</li>
+            <li><b>Esconder lentidão aumentando max.poll.records:</b> lotes maiores sem processamento mais rápido levam a rebalances.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: consumer lag</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O que é</b>
+                    <p>Fim do log menos o offset confirmado, por partição e por grupo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Como ler</b>
+                    <p>Estável e baixo: em dia. Crescendo: consumo mais lento que a produção.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>O teto</b>
+                    <p>Consumidores só ajudam até o número de partições; depois, acelere o processamento.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: mais instâncias resolvem o lag</b>
+                    <p>Só até o número de partições. Depois disso, as instâncias novas ficam paradas.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: lag é atraso para o cliente</b>
+                    <p>Converta o lag em tempo: lag dividido pela taxa de consumo diz quanto tempo uma mensagem nova vai esperar.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf6">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf6</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um tópico tem 12 partições e o grupo de notificações já tem 12 consumidores. O lag cresce sem parar durante a campanha, e cada mensagem faz uma chamada HTTP síncrona lenta.</p>
+                <p class="te-instrucao">O que reduz o lag?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Com 12 partições, só 12 consumidores trabalham; os outros 12 ficam parados.">
+                    <span class="te-letter">A</span> Subir para 24 consumidores no grupo, para dobrar a vazão de leitura.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Isso evita perda se o atraso passar da retenção, mas não diminui o atraso.">
+                    <span class="te-letter">B</span> Aumentar a retenção do tópico, para as mensagens atrasadas não serem apagadas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Com um consumidor por partição, o gargalo é o tempo de cada mensagem; mais partições ampliam o teto no futuro.">
+                    <span class="te-letter">C</span> Acelerar o processamento de cada mensagem, tirando a chamada síncrona lenta do caminho, e planejar mais partições para o próximo pico.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é consumer lag e por que mais consumidores nem sempre o reduzem?</p>
+                  <span class="tf-hint">Dica: pense no teto de partições →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Lag é a diferença entre a última mensagem publicada e o último offset confirmado pelo grupo, por partição. Ele cresce quando o consumo é mais lento que a produção. Mais consumidores só ajudam até o número de partições; depois disso, é preciso processar mais rápido ou ter mais partições.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf6">marcar dominado</button>
+      </article>
+
+      </section>
+
     <section class="part" id="p11">
-      <div class="ph"><span class="num">11</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Leituras de referência, documentação oficial do RabbitMQ e seis laboratórios práticos para executar no seu computador.</p></div></div>
+      <div class="ph"><span class="num">12</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Leituras de referência, documentação oficial do RabbitMQ e seis laboratórios práticos para executar no seu computador.</p></div></div>
 
       <!-- k1 -->
             <!-- k1 -->

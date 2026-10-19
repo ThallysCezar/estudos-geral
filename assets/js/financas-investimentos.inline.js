@@ -177,3 +177,10 @@
 
   paint();
 })();
+
+/* Entrada discreta: clique triplo no título do caderno abre a área restrita (conteúdo cifrado com senha). */
+(function(){
+  var h=document.querySelector("header h1, h1");
+  if(!h)return;
+  h.addEventListener("click",function(e){if(e.detail===3){location.href="../privado/plano.html";}});
+})();

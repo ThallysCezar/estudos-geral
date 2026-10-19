@@ -195,3 +195,5 @@ O auditor atual quantifica lacunas por peça em `audit-chassi.mjs --resumo`; os 
 ## Manutenção deste arquivo
 
 Ao fechar um marco: atualize estado e data; reconcilie este arquivo com `HANDOFF.md`; remova pendências obsoletas. Mantenha abaixo de ~150 linhas.
+
+- **`privado/plano.html` (2026-10-19):** página cifrada com senha (AES-GCM, decifrada no navegador). É gerada fora deste repositório; não edite à mão e não a inclua no inventário de documentos. A entrada é um clique triplo no título de `cadernos/financas-investimentos.html` (código no fim de `assets/js/financas-investimentos.inline.js`).

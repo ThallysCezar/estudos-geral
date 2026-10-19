@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="O acervo: trilhas de backend, nuvem e IA, cadernos de fundamentos, governança e segurança de TI, além do laboratório de projetos. Busca por assunto, o fio do OrderFlow e a ordem de leitura.">
+<meta name="color-scheme" content="dark">
+<title>O acervo · os documentos de estudo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+:focus-visible{outline:2px solid var(--purple);outline-offset:3px;box-shadow:0 0 0 4px rgba(189,147,249,.2)}
+button:active,.btn-act:active,.island a:active{transform:scale(.97)}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);
+  background:radial-gradient(ellipse at 6% 0,#bd93f91f,transparent 36rem),radial-gradient(ellipse at 92% 4%,#8be9fd14,transparent 38rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(#f8f8f21a 1px,transparent 1px);background-size:22px 22px;
+  mask-image:linear-gradient(#0007,transparent 60%)}
+.wrap{position:relative;z-index:1;width:min(1120px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+.mono{font-family:"Cascadia Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.kick{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+.island{position:sticky;top:16px;z-index:6;width:min(1120px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;gap:9px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em;margin-right:auto;white-space:nowrap}
+.brand i{font-style:normal;color:var(--purple)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;white-space:nowrap;transition:background .3s var(--ease),color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+.island a.on{color:var(--purple);border-color:#bd93f97a}
+
+.head{padding:clamp(28px,5vh,60px) 0 0}
+.head h1{margin:14px 0 0;font:500 clamp(2.4rem,6vw,4.2rem)/.96 Georgia,serif;letter-spacing:-.05em}
+.head p{margin:18px 0 0;max-width:72ch;color:var(--ink2);font-size:.96rem;line-height:1.65}
+
+/* radar */
+.radar{position:relative;display:grid;place-items:center;margin-top:34px;padding:16px;border-radius:26px;
+  border:1px solid var(--line);background:radial-gradient(70% 70% at 50% 45%,#bd93f916,transparent 70%),#ffffff05;
+  overflow:hidden}
+.radar svg{width:100%;max-width:400px;height:auto;overflow:visible}
+.radar .grid{fill:none;stroke:#44475a55;stroke-width:1}
+.radar .spoke{stroke:#44475a4d;stroke-width:1}
+.radar .blob{fill:#bd93f92b;stroke:var(--purple);stroke-width:2.5;stroke-linejoin:round;
+  filter:drop-shadow(0 0 12px #bd93f96b)}
+.radar .dot{fill:var(--bg);stroke:var(--purple);stroke-width:2.5;opacity:0}
+.radar .ghost{font:700 4.4rem "Cascadia Code",monospace;fill:var(--ink);opacity:.09;
+  text-anchor:middle;dominant-baseline:central;letter-spacing:-.05em}
+.radar .lb-n{font:.68rem "Cascadia Code",monospace;fill:var(--muted)}
+.radar .lb-v{font:700 .95rem "Cascadia Code",monospace;fill:var(--ink2)}
+.radar .lb{opacity:0;cursor:pointer;transition:opacity .5s var(--ease)}
+.radar .lb.in{opacity:1}
+.radar .lb:hover .lb-v{fill:var(--purple)}
+.radar .cap{position:absolute;left:20px;right:20px;bottom:14px;display:flex;justify-content:space-between;gap:10px;
+  pointer-events:none}
+.radar .cap span{font:700 .61rem "Cascadia Code",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+h2.sec{font:500 1.5rem Georgia,serif;letter-spacing:-.03em;margin:clamp(48px,7vh,78px) 0 3px}
+p.sub{color:var(--muted);font-size:.84rem;margin:0 0 18px;max-width:78ch;line-height:1.6}
+
+.findbar{display:flex;align-items:center;gap:12px;padding:13px 20px;border:1px solid var(--line);
+  border-radius:999px;background:#ffffff05}
+.findbar i{font-style:normal;color:var(--soft);font-size:.95rem}
+#find{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:400 .95rem Inter,sans-serif;outline:none}
+#find::placeholder{color:var(--muted)}
+.findbar:focus-within{border-color:#bd93f98c}
+#findn{font:.66rem "Cascadia Code",monospace;color:var(--muted);white-space:nowrap}
+
+.idx{border-top:1px solid var(--line);margin-top:14px}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) 170px 30px;gap:20px;align-items:center;
+  padding:17px 12px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;
+  transition:background .35s var(--ease)}
+.row:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
+.row.off{display:none}
+.row .num{font:700 .66rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--c)}
+.row h3{margin:0;font:500 1.32rem/1.15 Georgia,serif;letter-spacing:-.035em}
+.row .meta{font:.66rem "Cascadia Code",monospace;color:var(--muted);margin-top:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .desc{margin:7px 0 0;color:var(--muted);font-size:.82rem;line-height:1.5;max-width:64ch;display:none}
+.row.hit .desc{display:block}
+.row .desc mark{background:color-mix(in srgb,var(--c) 30%,transparent);color:var(--ink);border-radius:3px;padding:0 2px}
+.row .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.row .tags em{font-style:normal;font:.63rem "Cascadia Code",monospace;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:4px 9px}
+.row .go{text-align:right;color:var(--c);font:500 1.05rem Georgia,serif;opacity:.7}
+.row:hover .go{opacity:1}
+.none{padding:22px 12px;color:var(--muted);font-size:.85rem;display:none}
+.none.on{display:block}
+
+/* fio + trilho animado */
+.track{position:relative;height:52px;margin:22px 0 -4px}
+.rail{position:absolute;left:8.333%;right:8.333%;top:25px;height:1px;
+  background:linear-gradient(to right,transparent,var(--line2) 6%,var(--line2) 94%,transparent)}
+.nodes{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:center}
+.nodes i{justify-self:center;width:9px;height:9px;border-radius:50%;background:var(--panel);
+  border:1.5px solid var(--line2);margin-top:1px;animation:nodeHit 6s var(--ease) infinite;animation-delay:var(--d)}
+@keyframes nodeHit{
+  0%,100%{border-color:var(--line2);box-shadow:none;transform:scale(1)}
+  6%{border-color:var(--c);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 22%,transparent);transform:scale(1.5)}
+  20%{border-color:var(--line2);box-shadow:none;transform:scale(1)}
+}
+.pkt{position:absolute;top:19px;left:8.333%;width:13px;height:13px;margin-left:-6.5px;border-radius:4px;
+  background:var(--cyan);box-shadow:0 0 16px 2px #8be9fd99;animation:pktRun 6s var(--ease) infinite}
+.pkt:after{content:"";position:absolute;right:100%;top:50%;width:46px;height:2px;margin-top:-1px;
+  background:linear-gradient(to left,#8be9fdcc,transparent);border-radius:2px}
+@keyframes pktRun{
+  0%{left:8.333%;opacity:0;transform:scale(.4)}
+  5%{opacity:1;transform:scale(1)}
+  83.33%{left:91.667%;opacity:1;transform:scale(1)}
+  92%{left:91.667%;opacity:0;transform:scale(.4)}
+  100%{left:8.333%;opacity:0;transform:scale(.4)}
+}
+.fio{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.st{position:relative;display:block;text-decoration:none;padding:18px 17px 20px;border-radius:20px;
+  border:1px solid color-mix(in srgb,var(--c) 30%,transparent);
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+.st:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 16px 36px #00000066, 0 0 24px color-mix(in srgb,var(--c) 20%,transparent)}
+.st u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
+.st b{display:block;margin:12px 0 6px;font:500 1.12rem/1.15 Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.st span{color:var(--muted);font-size:.78rem;line-height:1.5}
+
+.ord{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:18px}
+.ord a{display:block;text-decoration:none;padding:17px 19px;border-radius:18px;border:1px solid var(--line);
+  background:#ffffff05;transition:border-color .35s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease)}
+.ord a:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--c) 60%,transparent);box-shadow:0 14px 30px #00000055, 0 0 20px color-mix(in srgb,var(--c) 16%,transparent)}
+.ord u{display:block;text-decoration:none;font:700 .62rem "Cascadia Code",monospace;letter-spacing:.14em;color:var(--c)}
+.ord b{display:block;margin:9px 0 6px;font:500 1.1rem Georgia,serif;letter-spacing:-.03em}
+.ord span{color:var(--muted);font-size:.8rem;line-height:1.5}
+
+.obs{--ob:var(--gold);
+  position:relative;display:flex;align-items:center;gap:18px;margin-top:clamp(44px,6vh,64px);padding:22px;
+  overflow:hidden;text-decoration:none;border:1px solid color-mix(in srgb,var(--ob) 30%,transparent);border-radius:24px;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--ob) 8%,transparent),transparent 62%),var(--panel);
+  transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
+.obs+.obs{margin-top:14px}
+.obs:hover{border-color:var(--ob);transform:translateY(-4px);box-shadow:0 18px 40px #00000066, 0 0 26px color-mix(in srgb,var(--ob) 16%,transparent)}
+.obs:before{content:"";position:absolute;right:-40px;bottom:-52px;width:132px;height:132px;border-radius:42px;
+  background:color-mix(in srgb,var(--ob) 15%,transparent);transform:rotate(22deg);transition:transform .5s var(--ease)}
+.obs:hover:before{transform:rotate(40deg) scale(1.12)}
+.obs .mark{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:19px;
+  border:1px solid color-mix(in srgb,var(--ob) 45%,transparent);background:color-mix(in srgb,var(--ob) 12%,transparent);
+  font:500 1.6rem Georgia,serif;color:var(--ob)}
+.obs .t{position:relative;z-index:1;flex:1;min-width:0}
+.obs .tag{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--ob)}
+.obs h3{margin:5px 0 5px;font:500 1.42rem Georgia,serif;letter-spacing:-.03em}
+.obs p{margin:0;color:var(--muted);font-size:.83rem;max-width:66ch;line-height:1.5}
+
+footer{margin:clamp(56px,8vh,90px) 0 44px;padding-top:24px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.77rem;line-height:1.7}
+footer a{color:var(--purple)}
+
+.rise{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rise.in{opacity:1;transform:none}
+
+@media(max-width:1000px){
+  .fio{grid-template-columns:repeat(3,1fr)}
+  .track{display:none}
+  .row{grid-template-columns:30px minmax(0,1fr) 30px;gap:14px}
+  .row .tags{display:none}
+}
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}
+  .island{width:calc(100% - 24px);flex-wrap:wrap;border-radius:22px;padding:10px 13px;gap:7px}
+  .island .brand{margin-right:0;width:100%;margin-bottom:2px;font-size:.72rem}
+  .island a,.island button.btn-act{font-size:.71rem;padding:6px 10px}
+  .island a.hide{display:none}
+  .fio{grid-template-columns:1fr}
+  pre{overflow-x:auto;max-width:100%}
+  code{overflow-wrap:anywhere}
+  pre code{overflow-wrap:normal}
+  table{display:block;overflow-x:auto;max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .pkt{display:none}.rise{opacity:1;transform:none}
+}
+
+/* ---------- Command Palette & Backup Modals ---------- */
+.palette-scrim{position:fixed;inset:0;z-index:100;background:#0d0e14d9;backdrop-filter:blur(8px);display:grid;place-items:start center;padding:clamp(20px,10vh,80px) 16px 20px;opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.palette-scrim.open{opacity:1;pointer-events:auto}
+.palette-box{width:min(660px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:20px;box-shadow:0 24px 60px #000000a6;overflow:hidden;transform:translateY(-10px) scale(.98);transition:transform .24s var(--ease)}
+.palette-scrim.open .palette-box{transform:none}
+.palette-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);background:#1e1f29}
+.palette-head i{font-style:normal;color:var(--purple);font-size:1.1rem}
+.palette-input{flex:1;background:transparent;border:0;outline:none;color:var(--ink);font:500 1rem "Inter",sans-serif}
+.palette-input::placeholder{color:var(--soft)}
+.palette-kbd{font:700 .65rem "Cascadia Code",monospace;color:var(--muted);background:#282a36;padding:4px 8px;border-radius:6px;border:1px solid var(--line2)}
+.palette-results{max-height:min(420px,60vh);overflow-y:auto;padding:8px 0}
+.palette-item{display:flex;align-items:center;gap:12px;padding:11px 20px;text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
+.palette-item:hover,.palette-item.active{background:#ffffff0f;border-left-color:var(--purple)}
+.palette-item .p-tag{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.palette-item .p-text{flex:1;min-width:0}
+.palette-item .p-title{font:600 .86rem "Inter",sans-serif;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-item .p-sub{font:400 .74rem Georgia,serif;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-empty{padding:28px 20px;text-align:center;color:var(--soft);font-style:italic;font-size:.88rem}
+
+/* Botões do island */
+.island button.btn-act{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 13px;font:600 .74rem "Inter",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease)}
+.island button.btn-act:hover{background:#ffffff0f;color:var(--ink);border-color:var(--purple)}
+.island button.btn-act kbd{font:700 .6rem "Cascadia Code",monospace;background:#ffffff14;padding:2px 5px;border-radius:4px;border:1px solid var(--line2)}
+
+/* Backup card/modal */
+.backup-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(500px,100%)}
+.backup-card h3{margin:0 0 8px;font:600 1.25rem Georgia,serif;color:var(--ink)}
+.backup-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);line-height:1.55}
+.backup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.backup-actions button{flex:1 1 140px;border-radius:12px;padding:12px 14px;border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.backup-actions button.primary{border-color:var(--purple);background:color-mix(in srgb,var(--purple) 18%,transparent);color:var(--purple)}
+.backup-actions button:hover{filter:brightness(1.2)}
+
+/* ---------- o modal da escolha de IA ---------- */
+.mdl{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,#15161e 78%,transparent);backdrop-filter:blur(7px);
+  opacity:0;animation:mdlIn .32s var(--ease) forwards}
+.mdl[hidden]{display:none}
+@keyframes mdlIn{to{opacity:1}}
+.mdl .box{--c:var(--purple);position:relative;width:min(640px,100%);max-height:calc(100dvh - 40px);overflow:auto;
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);border-radius:26px;padding:30px 30px 22px;
+  background:radial-gradient(120% 130% at 0% 0%,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  box-shadow:0 30px 90px #00000099;
+  transform:translateY(14px) scale(.985);animation:boxIn .42s .04s var(--ease) forwards}
+@keyframes boxIn{to{transform:none}}
+.mdl .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--c)}
+.mdl h3{margin:11px 0 0;font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.mdl .hist{margin:14px 0 0;color:var(--muted);font-size:.86rem;line-height:1.62;max-width:56ch}
+.mdl .hist b{color:var(--ink);font-weight:500}
+.mdl .x{position:absolute;top:14px;right:17px;cursor:pointer;background:none;border:0;line-height:1;
+  color:var(--soft);font:400 1.5rem Georgia,serif}
+.mdl .x:hover{color:var(--ink)}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opt{--o:var(--c);display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  border:1px solid color-mix(in srgb,var(--o) 26%,transparent);border-radius:19px;padding:17px 18px 15px;
+  background:color-mix(in srgb,var(--o) 6%,transparent);
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.opt:hover,.opt:focus-visible{border-color:color-mix(in srgb,var(--o) 62%,transparent);
+  background:color-mix(in srgb,var(--o) 13%,transparent);transform:translateY(-2px);outline:none}
+.opt .bg{display:inline-block;margin-bottom:11px;padding:4px 9px;border-radius:999px;
+  font:700 .55rem "Cascadia Code",monospace;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid color-mix(in srgb,var(--o) 40%,transparent);color:var(--o)}
+.opt .bg.mudo{color:var(--soft);border-color:var(--line2)}
+.opt strong{display:block;font:500 1.26rem Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.opt em{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:.79rem;line-height:1.5}
+.opt .qd{display:block;margin-top:11px;font:.67rem "Cascadia Code",monospace;color:var(--soft)}
+
+.mdl .tally{margin:18px 0 0;font:.69rem "Cascadia Code",monospace;color:var(--soft);letter-spacing:.05em}
+.mdl .pe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.mdl .pe button,.mdl .pe a{cursor:pointer;font:inherit;font-size:.76rem;color:var(--muted);background:none;
+  border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.mdl .pe button:hover,.mdl .pe a:hover{color:var(--ink)}
+.mdl .pe .nb{margin-left:auto;text-decoration:none;cursor:default;color:var(--soft);font-size:.68rem;
+  font-family:"Cascadia Code",monospace}
+@media(max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .mdl .box{padding:24px 20px 18px;border-radius:22px}
+  .mdl .pe .nb{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.mdl,.mdl .box{animation:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <button type="button" class="btn-act" id="btnPalette" title="Buscar no acervo completo (Ctrl+K)">🔍 Buscar <kbd>Ctrl+K</kbd></button>
+  <button type="button" class="btn-act" id="btnBackup" title="Fazer backup ou restaurar dados">💾 Backup</button>
+  <a href="index.html">hoje</a>
+  <a href="acervo.html" class="on">o acervo</a>
+  <a href="lab/projetos.html">projetos</a>
+  <a href="ferramentas/prompt-studio.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">🧠 prompt studio</a>
+  <a href="ferramentas/refinador.html" style="color:var(--purple);font-weight:700;border-color:color-mix(in srgb,var(--purple) 45%,transparent);background:color-mix(in srgb,var(--purple) 10%,transparent)">✨ formatador</a>
+  <a href="https://thallyscezar.github.io/docs-md/" target="_blank" rel="noopener noreferrer" style="color:var(--lime);font-weight:700;border-color:color-mix(in srgb,var(--lime) 45%,transparent);background:color-mix(in srgb,var(--lime) 10%,transparent)">📄 docs IA ↗</a>
+</nav>
+
+<main class="wrap">
+
+  <header class="head">
+    <span class="kick" style="color:var(--purple)">o acervo</span>
+    <h1>O acervo<br>de estudos.</h1>
+    <p>Cada um tem duas metades: em cima uma <b>trilha visual</b> no estilo roadmap.sh, para varrer e revisar com modo teste; embaixo o <b>conteúdo em profundidade</b>, onde cada tópico traz a origem do mecanismo, o que ele veio substituir, os diagramas, as armadilhas que custam uma madrugada e uma prova de domínio.</p>
+
+    <div class="radar">
+      <svg viewBox="0 0 340 320" id="rad" role="img" aria-label="Nós de trilha por documento"></svg>
+      <div class="cap"><span>nós de trilha por documento</span><span id="radMax"></span></div>
+    </div>
+  </header>
+
+  <h2 class="sec">Procure um assunto</h2>
+  <p class="sub">Digite o termo e o índice filtra para os documentos que o cobrem, destacando onde ele aparece na descrição.</p>
+  <div class="findbar">
+    <i>⌕</i>
+    <input id="find" type="search" placeholder="idempotência, generics, HPA, JWT, DDD, JOIN…" autocomplete="off" aria-label="Procurar um assunto no acervo">
+    <span id="findn"></span>
+  </div>
+  <div class="idx" id="idx"></div>
+  <p class="none" id="none">Nenhum documento cobre esse termo pelo nome. Se for uma dúvida solta, o lugar dela é o <a href="cadernos/conceitos-backend.html" style="color:var(--gold)">caderno de dúvidas</a>.</p>
+
+  <h2 class="sec">O fio condutor</h2>
+  <p class="sub">O mesmo sistema — <b>OrderFlow</b> — atravessa os seis primeiros documentos. As restrições se repetem entre eles: a conta do pool de conexões que limita o autoescalonamento aparece em três, vista de ângulos diferentes.</p>
+  <div class="track" aria-hidden="true">
+    <div class="rail"></div>
+    <div class="nodes" id="nodes"></div>
+    <div class="pkt"></div>
+  </div>
+  <div class="fio" id="fio"></div>
+
+  <h2 class="sec">Em que ordem ler</h2>
+  <p class="sub">O cronograma distribui os temas pela semana. Esta é a outra ordem — a de dependência, para quando você quer atravessar um assunto do começo ao fim em vez de seguir o dia.</p>
+  <div class="ord" id="ord"></div>
+
+  <a class="obs" href="cadernos/conceitos-backend.html">
+    <div class="mark">?</div>
+    <div class="t">
+      <span class="tag">obs · dúvidas</span>
+      <h3>Conceitos de Backend completo</h3>
+      <p>O sétimo fica fora da sequência de propósito: é o caderno de dúvidas. Gargalos e escala, race condition, locks pessimista/otimista/distribuído, idempotência, rate limit e disjuntor, índices e JOINs, sessão versus JWT, OAuth2 e PKCE, upload, observabilidade, deploy e rollback. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa e no formato, em vez de criar um arquivo novo solto.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/biblioteca.html" style="--ob:var(--purple)">
+    <div class="mark">▤</div>
+    <div class="t">
+      <span class="tag">obs · a estante</span>
+      <h3>Biblioteca completa</h3>
+      <p>O oitavo também fica fora da sequência, por outro motivo: não é sobre uma tecnologia, é sobre <b>como decidir</b>. Reúne os cinco livros que estavam espalhados pelo vault — Fundamentals of Software Architecture, The Hard Parts, Learning DDD, System Design Interview e Entendendo Algoritmos — com a síntese de cada um, a ordem de leitura e a tabela de <b>onde os autores discordam</b>, que é justamente onde mora o trade-off. Livro terminado vira marco, parte e uma linha de divergência ali.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/git.html" style="--ob:var(--pink)">
+    <div class="mark">⑂</div>
+    <div class="t">
+      <span class="tag">obs · o histórico</span>
+      <h3>Git completo</h3>
+      <p>Também fora da semana, pelo mesmo motivo do Linux: é <b>ferramenta de uso contínuo</b>. Unifica os quatro roadmaps de Git que estavam concorrendo no vault, com a trilha avançada de 07/09 como espinha. A tese é uma só: quase todo problema vem de tratar o Git como histórico linear, quando ele é um <b>grafo de snapshots imutáveis</b> — e quase toda recuperação é possível porque nada é apagado de imediato. Inclui o que quase ninguém usa e resolve muito: <code>cherry-pick -x</code>, <code>bisect</code>, <code>worktree</code>, <code>range-diff</code> e o reflog, que é a rede de segurança que dá coragem para experimentar.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/linux.html" style="--ob:var(--orange)">
+    <div class="mark">$_</div>
+    <div class="t">
+      <span class="tag">obs · o térreo</span>
+      <h3>Linux e terminal completo</h3>
+      <p>Fica fora da semana porque é <b>ferramenta de uso contínuo</b>, não assunto que se estuda em bloco e termina. E é o documento que estava faltando embaixo de todos os outros: cada laboratório do acervo roda num container, o Docker fala em <b>PID 1 e SIGTERM</b>, o System Design manda rodar <code>EXPLAIN ANALYZE</code> pelo <code>psql</code>, a Nuvem exige <b>teardown por comando</b>. Nove documentos pressupunham o terminal e nenhum explicava. Aqui cada conceito chega com o sintoma real: o container que ignora o Ctrl+C, o disco que encheu sem arquivo grande, a porta que não responde, o 137 sem exceção no log.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/governanca-seguranca.html" style="--ob:var(--cyan)">
+    <div class="mark">G</div>
+    <div class="t">
+      <span class="tag">obs · decisão, risco e proteção</span>
+      <h3>Governança e segurança de TI</h3>
+      <p>Conecta governança, gestão de risco e segurança prática: papéis e políticas, controles e evidências, identidade e acesso, privacidade e LGPD, desenvolvimento seguro, resposta a incidentes e continuidade. Começa pelos conceitos e termina aplicando o raciocínio a uma API Java/Spring com RabbitMQ.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="trilhas/system-design.html" style="--ob:var(--lime)">
+    <div class="mark">⧉</div>
+    <div class="t">
+      <span class="tag">obs · o projeto inteiro</span>
+      <h3>System Design completo</h3>
+      <p>O nono fica fora da sequência porque só rende <b>depois</b> dos outros: ele não explica mecanismo, ensina a <b>escolher entre mecanismos sob restrição</b>. A regra do documento é que nenhum conceito aparece sozinho — cada um chega com o caso que o obriga a existir: 10 mil requisições por segundo no banco, 1 milhão de eventos por segundo, dois bilhões de usernames, um milhão de pedidos para paginar. Onde o mecanismo já foi explicado nos documentos 3 e 7, aqui ele aparece <b>sendo escolhido</b>, com o link de volta em vez da repetição.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="trilhas/ia.html" style="--ob:var(--purple)" id="cardIAAcervo">
+    <div class="mark">◈</div>
+    <div class="t">
+      <span class="tag">obs · dois caminhos · escolher</span>
+      <h3>Inteligência Artificial</h3>
+      <p>Toda a área de IA do vault e os 6 Grandes Níveis de AI Engineering: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/ingles.html" style="--ob:var(--cyan)">
+    <div class="mark">EN</div>
+    <div class="t">
+      <span class="tag">obs · o idioma técnico</span>
+      <h3>Inglês técnico completo</h3>
+      <p>O décimo segundo faz os outros treze renderem: toda fonte primária vive em inglês. Calibrado para quem lê com esforço e tem escuta fraca, prioriza a entrada antes da saída — CEFR, EF SET, input compreensível e a regra dos 95%, a escada da legenda, vocabulário por frequência, repetição espaçada e shadowing — para então destravar o code review, a mensagem assíncrona e a reunião ao vivo sob pressão.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="cadernos/oratoria.html" style="--ob:var(--gold)">
+    <div class="mark">🎙</div>
+    <div class="t">
+      <span class="tag">obs · a voz e a decisão</span>
+      <h3>Oratória e comunicação</h3>
+      <p>O décimo terceiro é a camada que faz os outros pagarem: ensina a defender uma decisão técnica na ordem certa (restrição, opções, escolha e preço). Com evidência: reavaliação de ansiedade como empolgação, exposição gradual, condução de postmortems sem culpados (<i>blameless</i>), a entrevista de System Design como prova oral e conversas difíceis com o modelo SBI.</p>
+    </div>
+  </a>
+
+  <a class="obs" href="lab/projetos.html" style="--ob:var(--lime)">
+    <div class="mark">⌘</div>
+    <div class="t">
+      <span class="tag">obs · a bancada</span>
+      <h3>Laboratório de projetos</h3>
+      <p>Esta é a única peça do acervo que não se lê: se constrói. <b>18 projetos</b> em seis oficinas — Java puro, Spring, Cloud agnóstica, AWS, RabbitMQ e IA — cada um com o problema real, a arquitetura desenhada, as etapas, os critérios de aceite, as <b>falhas para injetar de propósito</b> e o que precisa existir no repositório para comprovar que você aprendeu. Junto vêm <b>18 aquecimentos</b> de 20 a 40 minutos, menores que um projeto, para as noites que não comportam noventa minutos. Cada projeto abre com um bloco <b>“onde está a teoria”</b>, ligando de volta aos documentos do acervo — e o capstone é o mesmo OrderFlow que atravessa seis deles.</p>
+    </div>
+  </a>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a> · desenvolvedor backend Java e Spring.<br>
+    HTML autocontido, tema Dracula. Sem framework, sem build, sem rastreador.
+  </footer>
+
+</main>
+
+<div class="mdl" id="mdlIA" hidden role="dialog" aria-modal="true" aria-labelledby="mdlIAT">
+  <div class="box" id="mdlIABox"></div>
+</div>
+
+<script defer src="assets/js/acervo.inline.js"></script>
+
+<!-- Modal da Paleta de Comandos -->
+<div class="palette-scrim" id="paletteScrim" hidden>
+  <div class="palette-box">
+    <div class="palette-head">
+      <i>⌘</i>
+      <input type="search" id="paletteInput" class="palette-input" placeholder="Buscar tópicos, arquivos ou projetos... (ex: outbox, hikari, kafka, jwt, r03)" autocomplete="off">
+      <span class="palette-kbd"><kbd>Esc</kbd> fechar</span>
+    </div>
+    <div class="palette-results" id="paletteResults"></div>
+  </div>
+</div>
+
+<!-- Modal de Backup e Restauração -->
+<div class="palette-scrim" id="backupModal" hidden>
+  <div class="backup-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <h3 style="margin:0 0 6px">Backup de Dados Locais</h3>
+      <button type="button" id="btnFecharBackup" style="background:none;border:0;color:var(--soft);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <p>Suas anotações, escolhas e dados ficam salvos localmente no navegador (<code class="mono" style="color:var(--teal)">localStorage</code>). Exporte um arquivo JSON para segurança ao limpar o cache ou trocar de máquina.</p>
+    <div class="backup-actions">
+      <button type="button" class="primary" id="btnExportarJson">⬇ Exportar JSON</button>
+      <button type="button" id="btnRestaurarJson">⬆ Restaurar JSON</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none">
+    </div>
+    <div id="backupMsg" style="margin-top:14px;font-size:.8rem;color:var(--teal);display:none"></div>
+  </div>
+</div>
+
+<script src="assets/js/floating-home.js" defer></script>
+<script src="assets/js/instant-nav.js" defer></script>
+<script defer src="assets/js/pomodoro.js"></script>
+</body>
+</html>

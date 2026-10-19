@@ -487,7 +487,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a1">
         <div class="th"><h3>A corrente arrebenta no elo mais fraco</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o primeiro passo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fintech dobrou a quantidade de pods do backend de 10 para 20 para aguentar um pico de cadastros na Black Friday. A latência média, em vez de cair, subiu de 180ms para 4.200ms porque o gargalo real era o pool de conexões do banco relacional, que saturou com 800 conexões concorrentes bloqueando locks em tabelas. O time aprendeu que escalar o que não é o gargalo apenas desloca e amplifica a pressão sobre o recurso mais frágil.</p>
         </div>
 
@@ -498,7 +498,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
           <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Quando a aplicação está lenta e você precisa decidir onde mexer.</li><li>Ao justificar por que aumentar réplicas não vai resolver.</li><li>Ao dimensionar antes de uma campanha.</li></ul></div>
         </div>
         <p>A investigação tem uma ordem que economiza horas. Primeiro, <b>o que piorou</b>: a latência subiu ou a vazão caiu? São sintomas diferentes. Depois, <b>a aplicação está esperando ou trabalhando?</b> CPU alta com pouca espera é trabalho de verdade — otimize o algoritmo. CPU baixa com latência alta é espera: o gargalo está fora, no banco, numa API ou numa trava. Só então desça para o recurso específico.</p>
-        <div class="cs"><b>Meça pelo percentil, nunca pela média.</b> Uma média de 200 ms com p99 de 8 segundos significa que um usuário em cada cem está tendo uma experiência terrível — e a média nunca vai te contar isso. Em sistemas com cache, a média é ainda mais enganosa: ela é dominada pelos acertos rápidos, enquanto o problema real está exatamente nos casos que erraram o cache. <b>p95 e p99 são os números que importam</b>; a média serve para relatório, não para diagnóstico.</div>
+        <div class="cs"><b>Leia a distribuição, não só um número.</b> A média resume o tempo total, enquanto p95/p99 ajudam a enxergar a cauda e a experiência dos pedidos mais lentos. Uma média de 200 ms com p99 de 8 s pode esconder um grupo de requisições muito degradadas. Combine percentis com taxa de erro, volume, segmentação e traces; média também pode ser útil, mas não revela sozinha a distribuição.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Escalar a aplicação quando o gargalo é o banco.</b> Mais réplicas pedem mais conexões — e você derruba o banco mais rápido.</li><li><b>Otimizar o que é fácil de medir.</b> O código que você entende recebe atenção; o gargalo real fica onde ninguém olha.</li><li><b>Testar com um usuário.</b> Race condition, exaustão de pool e contenção de lock só aparecem sob concorrência.</li><li><b>Não medir antes e depois.</b> Sem o número anterior, você não sabe se melhorou.</li></ul></div>
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
@@ -529,7 +529,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Identificação Baseada em Telemetria</b>
-                    <p>Nunca tente adivinhar o gargalo: inspecione métricas em tempo de estresse. Se a CPU está em 12% e o tempo de resposta saltou para 3 segundos, o gargalo é <strong>espera de I/O (I/O Wait)</strong> no banco ou serviço downstream.</p>
+        <p>Não conclua a causa apenas pela CPU baixa. Ela pode indicar espera de I/O, filas, locks, pool esgotado, throttling ou dependência lenta. Correlacione latência por etapa, thread dumps, métricas de pool e sinais do banco/serviço downstream durante a carga.</p>
                   </div>
                 </div>
               </div>
@@ -609,7 +609,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a2">
         <div class="th"><h3>As seis alavancas de escala, na ordem de tentar</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um time de engenharia gastou 3 meses fragmentando um monolito em microsserviços para tentar resolver a lentidão de uma rota de listagem de pedidos. Após o deploy distribuído, a lentidão continuava idêntica porque a query SQL executava um `SELECT *` sem paginação trazendo 120.000 linhas da tabela. A simples adição de um índice composto e paginação (`LIMIT 20`) reduziu o tempo de resposta de 6 segundos para 14 milissegundos, provando que otimização de consulta e índice deve vir antes de escala arquitetural complexa.</p>
         </div>
 
@@ -727,7 +727,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">1. <strong>Otimização de Queries e Código:</strong> índices, remoção de N+1 (custo mínimo).<br>2. <strong>Scale-Up (Vertical):</strong> aumentar tamanho da máquina (ganho instantâneo).<br>3. <strong>Cache em Memória (Redis):</strong> absorver tráfego de leitura repetitivo.<br>4. <strong>Scale-Out (Horizontal Stateless):</strong> adicionar réplicas de aplicação atrás de ALB.<br>5. <strong>Réplicas de Leitura (Read Replicas):</strong> desacoplar leituras do nó Primário.<br>6. <strong>Sharding (Particionamento):</strong> fatiar dados horizontalmente.<br><em>A ordem importa porque cada degrau subsequente custa 10x mais complexidade operacional que o anterior.</em></p>
+        <p class="tf-resposta">Investigue a causa com medições antes de escolher a intervenção: 1. examine plano e custo das queries, índices, N+1 e contenção; 2. avalie scale-up se CPU, memória ou I/O do banco forem o limite; 3. considere cache para leituras repetidas com tolerância de frescor; 4. réplicas de leitura se o padrão e a consistência permitirem; 5. scale-out da aplicação só ajuda se ela for o gargalo e o banco suportar a carga adicional; 6. particionamento/sharding quando o volume ou throughput justificar a complexidade. A ordem é uma heurística, não uma escada obrigatória.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -740,8 +740,8 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a3">
         <div class="th"><h3>Connection pooling: a conta que quase ninguém faz</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java/Spring</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um desenvolvedor configurou o pool HikariCP com 200 conexões máximas por réplica em um cluster de 15 pods, imaginando que mais conexões gerariam mais paralelismo. Com 3.000 conexões ativas disputando um banco PostgreSQL de 8 vCPUs, a CPU do banco bateu 100% consumida exclusivamente por chaveamento de contexto de threads (context switching), derrubando a API. A redução do pool para a fórmula recomendada (`pool_size = (vCPU * 2) + spindle_count = 18`) derrubou a CPU do banco para 22% e aumentou a vazão em 4x.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> muitos pods abrem pools grandes contra um banco limitado. Mais conexões podem aumentar fila, contenção e troca de contexto em vez de throughput. Não há fórmula universal baseada apenas em vCPU: dimensione o total de conexões (réplicas × tamanho do pool), teste sob carga e observe fila, tempo de espera, CPU e latência do banco.</p>
         </div>
 
         <p class="direto"><b>Direto:</b> o banco aceita um número limitado de conexões simultâneas, e cada uma custa memória nele. Quando a aplicação escala, o número de conexões pedidas cresce junto — e o teto é atingido muito antes do que se imagina, com a aplicação parecendo lenta enquanto o banco parece ocioso.</p>
@@ -804,7 +804,7 @@ teto de réplicas:    <span class="n">15</span>
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Conexões são Recursos Finitos e Caros</b>
-                    <p>Cada conexão aberta no PostgreSQL consome um processo dedicado no Linux com 5MB a 10MB de memória RAM, além de memória de buffer e slots de lock.</p>
+                    <p>No PostgreSQL, cada conexão normalmente é atendida por um processo servidor. O consumo por conexão depende da versão, configuração, consultas, buffers e carga; não use uma faixa fixa de memória como capacidade garantida. Pools reduzem conexões simultâneas, mas também precisam respeitar o orçamento total do banco.</p>
                   </div>
                 </div>
               </div>
@@ -898,7 +898,7 @@ teto de réplicas:    <span class="n">15</span>
       <article class="topic" id="b1">
         <div class="th"><h3>A janela entre ler e escrever</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o clássico</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma API de cupons de desconto executava duas operações separadas: primeiro lia se o cupom ainda estava ativo (`SELECT used_count FROM coupons WHERE code = 'DESC50'`) e, em caso afirmativo, incrementava o contador. Durante uma transmissão com 5.000 cliques simultâneos no mesmo milissegundo, 3.200 requisições leram que o cupom de uso único ainda estava livre antes que a primeira escrita ocorresse, gerando um rombo de R$ 160.000 em descontos indevidos. A atomicidade com `UPDATE coupons SET used_count = used_count + 1 WHERE code = 'DESC50' AND used_count = 0` eliminou a janela de corrida.</p>
         </div>
 
@@ -1047,7 +1047,7 @@ teto de réplicas:    <span class="n">15</span>
       <article class="topic" id="b2">
         <div class="th"><h3>As cinco saídas, da mais barata à mais cara</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um arquiteto implementou um lock distribuído pesado no Redis com Redlock para coordenar o saldo de estoque de camisetas. A complexidade do TTL e a latência de rede no Redis limitaram a vazão a 120 compras por segundo. O problema foi resolvido substituindo o lock distribuído por uma simples restrição única de banco (`UNIQUE CONSTRAINT`) combinada com update atômico condicional (`WHERE saldo >= :qtd`), multiplicando a capacidade por 25 a custo computacional quase zero.</p>
         </div>
 
@@ -1176,7 +1176,7 @@ teto de réplicas:    <span class="n">15</span>
       <article class="topic" id="b3">
         <div class="th"><h3>Concorrência vs Paralelismo: Seção Crítica, Deadlock, Livelock e Starvation</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">fundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois processos concorrentes atualizavam contas em transferências bancárias: o processo A bloqueava a Conta 1 e tentava bloquear a Conta 2, enquanto o processo B bloqueava a Conta 2 e tentava a Conta 1. Em um horário de pico de TED/PIX, ambas as threads entraram em Deadlock permanente no banco de dados, congelando o pool e gerando 4.500 transações pendentes com timeout. A imposição mandatória de ordenação consistente de locks (sempre travar a conta com menor ID primeiro) erradicou a possibilidade de deadlocks.</p>
         </div>
 
@@ -1188,7 +1188,7 @@ teto de réplicas:    <span class="n">15</span>
           <div><h4>Conceitos Fundamentais &amp; Unidades</h4>
             <ul>
               <li><b>Processo:</b> instância isolada pelo Sistema Operacional com seu próprio espaço de endereçamento de memória virtual. Alto custo de chaveamento de contexto.</li>
-              <li><b>Thread do SO (Platform Thread):</b> linha de execução que compartilha a mesma memória do processo. Custo de stack (~1MB) e agendamento pelo kernel.</li>
+              <li><b>Thread de plataforma:</b> linha de execução que compartilha a memória do processo e roda sobre uma thread do SO. Tem stack nativa, cujo tamanho depende de runtime, sistema e configuração, além de custo de agendamento pelo kernel.</li>
               <li><b>Tasks / Coroutines / Virtual Threads:</b> abstrações leves em nível de runtime (ex: Loom no Java, goroutines em Go) escalando milhões de fluxos sem esgotar memória.</li>
               <li><b>Recurso Compartilhado &amp; Seção Crítica:</b> variáveis globais em Heap, buffers de socket ou pools de banco de dados onde duas threads disputam escrita.</li>
             </ul>
@@ -1351,7 +1351,7 @@ teto de réplicas:    <span class="n">15</span>
       <article class="topic" id="c1">
         <div class="th"><h3>Pessimista x otimista: a aposta que você faz</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema de reservas de passagens aéreas utilizava lock otimista (`@Version`) para a reserva de assentos em voos promocionais de fim de ano. Como 400 usuários disputavam os mesmos 10 assentos promocionais simultaneamente, 98% das transações falhavam repetidamente com `OptimisticLockingFailureException`, forçando retries furiosos que destruíram a CPU da aplicação. A adoção de lock pessimista pontual (`SELECT ... FOR UPDATE`) com fila de espera curta garantiu atendimento determinístico com tempo de resposta estável de 45ms.</p>
         </div>
 
@@ -1503,7 +1503,7 @@ Optional&lt;Produto&gt; <span class="a">findParaAtualizar</span>(<span class="a"
       <article class="topic" id="c2">
         <div class="th"><h3>Lock distribuído: quando o recurso não é uma linha</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rotina de geração de faturas mensais rodava em 3 instâncias de background workers. Cada instância disparava a geração automática das faturas no dia 1º à meia-noite. Sem lock distribuído, as três instâncias executaram o lote ao mesmo tempo, gerando cobranças triplicadas no cartão de 18.000 clientes. A introdução de um lock distribuído no Redis via Redisson com tempo de concessão (lease time) de 30 minutos garantiu que estritamente uma única réplica executasse o fechamento.</p>
         </div>
 
@@ -1655,7 +1655,7 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
       <article class="topic" id="c3">
         <div class="th"><h3>Lock não é Promise: desfazendo a confusão</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor Node.js assumiu que, por ser uma linguagem baseada em Promises e event loop assíncrono single-thread, a aplicação estaria imune a race conditions em acessos ao banco de dados. Um endpoint de débito em conta fazia `await getSaldo()` e depois `await debitar()`. Durante um teste de carga concorrente, o saldo de um cliente ficou negativo em R$ 8.000 porque múltiplas Promises intercalaram operações I/O na fila de microtasks. O time aprendeu que assincronismo não substitui controle de concorrência e isolamento transacional.</p>
         </div>
 
@@ -1776,7 +1776,7 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
       <article class="topic" id="c4">
         <div class="th"><h3>A Matriz Prática de Locks: Bancos Relacionais, ORMs e Coordenadores Distribuídos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">ecossistema</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor utilizou `@Lock(LockModeType.PESSIMISTIC_WRITE)` em uma consulta JPA que carregava uma árvore de entidades com múltiplos relacionamentos `@OneToMany`. O Hibernate executou locks de linha em todas as tabelas filhas desnecessariamente, travando inserções globais na tabela de histórico de clientes por 40 segundos. O time criou uma matriz de governança técnica para direcionar a escolha precisa entre isolamento transacional, lock explícito de linha única e locks distribuídos em memória.</p>
         </div>
 
@@ -1943,7 +1943,7 @@ String meu = UUID.<span class="a">randomUUID</span>().<span class="a">toString</
       <article class="topic" id="d1">
         <div class="th"><h3>Idempotency key: o padrão que resolve na prática</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">obrigatório</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um usuário clicou 4 vezes no botão de Finalizar Pagamento de R$ 1.200 porque a conexão 4G do celular oscilou e a tela não mostrou indicador de carregamento. Como o backend não exigia cabeçalho de idempotência (`Idempotency-Key`), foram debitados R$ 4.800 no cartão do cliente. A inclusão mandatória de uma chave de idempotência gravada em tabela com constraint de chave única e TTL de 24 horas bloqueou qualquer requisição repetida instantaneamente.</p>
         </div>
 
@@ -2095,7 +2095,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="d2">
         <div class="th"><h3>Rate limiting, throttle e circuit breaker</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um gateway de pagamento parceiro sofreu lentidão severa e passou a demorar 25 segundos para rejeitar requisições. Como a aplicação não tinha Circuit Breaker configurado, todas as 200 threads do servidor Tomcat ficaram presas aguardando I/O bloqueante na rede externa, paralisando até mesmo rotas estáticas e o health check da aplicação. A configuração do Resilience4j com Circuit Breaker abrindo após 50% de falhas e fallback rápido com mensagem amigável manteve a aplicação responsiva.</p>
         </div>
 
@@ -2223,11 +2223,11 @@ criarPedido(clienteId, valor);
       <article class="topic" id="d3">
         <div class="th"><h3>Defesas Distribuídas: Idempotência em Mensageria, Gateways e Semântica Segura</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um broker RabbitMQ sofreu uma reinicialização de nó e reenviou 30.000 mensagens com a flag `redelivered = true` para uma fila de processamento de reembolsos. O consumidor processou todas as mensagens novamente, realizando R$ 450.000 em estornos duplicados na conta dos clientes. A implementação do padrão de verificação de idempotência no consumidor, checando o ID do evento em uma tabela de controle antes de executar a lógica de estorno, blindou a mensageria contra duplicidades de rede.</p>
         </div>
 
-        <p class="direto"><b>Direto:</b> em sistemas distribuídos, a rede e os brokers de mensageria operam sob a semântica <b>at-least-once</b>: mensagens <em>serão</em> entregues mais de uma vez em caso de reconexão ou rebalanceamento. Idempotência não é um detalhe de API HTTP — é o único mecanismo que garante que reentregas de mensagens, webhooks duplicados e retentativas em API Gateways não corrompam o saldo ou gerem duplicidade no banco.</p>
+        <p class="direto"><b>Direto:</b> alguns fluxos de mensageria podem redeliver uma mensagem quando a confirmação não chega ou o consumidor falha. A semântica depende do broker, configuração e momento do ack. Idempotência é uma defesa importante contra duplicidade, mas não é o único mecanismo: restrições únicas, deduplicação, transações locais e outbox podem participar do desenho.</p>
 
         <div class="analogia"><i class="ic">≈</i><p><b>O Carimbo de Registro na Alfândega.</b> Um contêiner de mercadoria chega ao porto. Se a conexão de rádio oscilar, a transportadora pode reenviar o aviso de chegada. Em vez de abrir um novo processo e cobrar imposto duas vezes, o fiscal bate o olho no número de registro lacrado (Idempotency Key / Message ID): se o carimbo já existe no livro oficial, ele apenas entrega a liberação já emitida sem reprocessar as caixas.</p></div>
 
@@ -2289,7 +2289,7 @@ criarPedido(clienteId, valor);
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>A Ilusão da Garantia 'Exatamente Uma Vez' (Exactly-Once)</b>
-                    <p>Em sistemas distribuídos na presença de falhas de rede, <strong>Exactly-Once puro de ponta a ponta é fisicamente impossível</strong>. Sistemas robustos utilizam entrega 'At-Least-Once' combinada com <strong>Processamento Idempotente no Consumidor</strong>.</p>
+                    <p>Uma garantia exactly-once precisa declarar seu escopo. A confirmação de um broker não torna atômicos os efeitos em banco e APIs externas. Fora de uma transação comum, desenhe retries para resultado incerto e use mecanismos como idempotência, deduplicação, outbox e reconciliação conforme o efeito protegido.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -2370,7 +2370,7 @@ criarPedido(clienteId, valor);
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Porque em redes distribuídas, falhas temporárias podem fazer a confirmação de exclusão (ACK) se perder após a mensagem já ter sido processada.<br>Com <strong>At-Least-Once Delivery</strong>, o broker garante que a mensagem nunca será perdida, re-entregando-a se necessário; o <strong>Consumidor Idempotente</strong> reconhece que a mensagem já foi processada (por ID ou restrição no banco) e a descarta sem duplicar o trabalho.<br>Essa combinação oferece a <strong>mesma garantia prática de Exactly-Once com robustez e alta performance</strong>.</p>
+                  <p class="tf-resposta">O consumidor pode terminar o efeito de negócio e falhar antes de enviar o ack; o broker pode então redeliver. A confirmação e o efeito no banco não são uma única transação só por usarem a mesma mensagem. Uma chave de operação persistida junto com a alteração pode deduplicar o efeito dentro daquele banco; para sistemas externos, considere outbox, idempotency key do provedor e reconciliação. Não prometa “nunca perder” sem explicar as garantias e limites do fluxo.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -2387,7 +2387,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="e1">
         <div class="th"><h3>Índice: a B-tree e o preço dela</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um time de engenharia criou 18 índices diferentes em uma tabela de eventos de telemetria que recebia 12.000 inserções por segundo, buscando acelerar relatórios analíticos esporádicos. O throughput de inserção despencou de 12.000 para 850 inserts/s e o volume de disco do banco explodiu em 4x devido ao custo de manutenção de nós da B-Tree a cada escrita. A remoção de 14 índices redundantes normalizou a taxa de ingestão imediatamente.</p>
         </div>
 
@@ -2509,7 +2509,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="e2">
         <div class="th"><h3>JOINs: quem sobra e quem some</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um relatório financeiro de comissão de vendas utilizava um `INNER JOIN` entre a tabela de Vendedores e a tabela de Metas. Vendedores novos que ainda não tinham meta cadastrada no mês foram silenciosamente excluídos da query, deixando 42 colaboradores sem pagamento no fim do mês. A substituição pelo `LEFT JOIN` correto com tratamento de valores nulos corrigiu o relatório e restituiu as comissões devidas.</p>
         </div>
 
@@ -2652,7 +2652,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="e3">
         <div class="th"><h3>SQL ou NoSQL: escolher pelo padrão de acesso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um e-commerce armazenou o catálogo de produtos e seus relacionamentos hierárquicos de categorias em um banco NoSQL documental (MongoDB). Quando foi necessário calcular relatórios contábeis de inventário agregando compras, fornecedores e impostos por categoria, o sistema precisou fazer centenas de queries manuais em loop na aplicação, demorando 45 minutos por relatório. A migração do catálogo e financeiro para PostgreSQL com modelo relacional e constraints ACID normalizou as consultas analíticas em 2 segundos.</p>
         </div>
 
@@ -2779,7 +2779,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="f1">
         <div class="th"><h3>Polling, long polling, SSE e WebSocket</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo de rastreamento de entregas fazia polling HTTP a cada 500ms a partir do celular de 150.000 usuários ativos para atualizar a posição do motoboy no mapa. O volume de 300.000 requisições HTTP por segundo saturou os balanceadores de carga com tráfego inútil (99% das respostas eram sem alteração). A substituição de polling por Server-Sent Events (SSE) unidirecional reduziu as requisições em 98% e derrubou o uso de CPU dos servidores de 92% para 6%.</p>
         </div>
 
@@ -2900,7 +2900,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="f2">
         <div class="th"><h3>Upload: MinIO, multipart e URL pré-assinada</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma funcionalidade de upload de vídeos de 500 MB transferia o arquivo inteiro do navegador para o servidor da aplicação em memória antes de repassar para o bucket S3. Três uploads simultâneos consumiram 1.5 GB de Heap da JVM, causando OutOfMemoryError no pod e derrubando a API. A reformulação gerando URLs pré-assinadas (Presigned URLs) permitiu que o navegador enviasse os arquivos diretamente para o MinIO/S3 sem trafegar bytes pela aplicação backend.</p>
         </div>
 
@@ -3039,7 +3039,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="f3">
         <div class="th"><h3>Multiplexação: várias conversas no mesmo cano</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação de microsserviços utilizava HTTP/1.1 para comunicação interna. Sob pico de carga, as requisições entraram em Head-of-Line Blocking porque o HTTP/1.1 exige uma conexão TCP dedicada para cada requisição simultânea, esgotando portas efêmeras e sockets do sistema operacional em estado `TIME_WAIT`. A atualização para gRPC sobre HTTP/2 com multiplexação de múltiplos fluxos lógicos dentro de uma única conexão TCP persistente resolveu o gargalo de rede.</p>
         </div>
 
@@ -3164,7 +3164,7 @@ criarPedido(clienteId, valor);
       <article class="topic" id="g1">
         <div class="th"><h3>Autenticação, autorização e a falha nº 1 do mundo real</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais explorado</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um endpoint de perfil de usuário `/api/users/{id}/faturas` validava corretamente que o cliente estava autenticado com token JWT, mas não verificava se o `{id}` da URL correspondia ao ID do usuário autenticado no token (vulnerabilidade BOLA / IDOR). Um usuário alterou o ID na requisição e conseguiu visualizar as faturas e dados de cartão de crédito de outros 50.000 clientes da plataforma. A inclusão de autorização estrita baseada em contexto do token bloqueou o vazamento.</p>
         </div>
 
@@ -3312,7 +3312,7 @@ public FaturaDTO buscarFatura(@PathVariable Long faturaId) {
       <article class="topic" id="g2">
         <div class="th"><h3>Sessão ou JWT: onde guardar o "estou logado"</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa utilizava tokens JWT sem estado com prazo de expiração de 30 dias gravados no frontend. Um funcionário do setor financeiro teve o notebook roubado com credenciais ativas. O time de segurança tentou revogar o acesso do usuário no backend e descobriu que era impossível invalidar um JWT válido sem criar uma lista de revogação centralizada em memória (Redis). O incidente forçou a redução do TTL do JWT para 15 minutos com uso de Refresh Tokens controlados no banco.</p>
         </div>
 
@@ -3602,7 +3602,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
       <article class="topic" id="g3">
         <div class="th"><h3>OAuth 2.0, PKCE e OIDC: o login social explicado</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo móvel implementou o fluxo OAuth 2.0 Authorization Code padrão sem utilizar PKCE (Proof Key for Code Exchange). Um aplicativo malicioso instalado no mesmo celular interceptou o código de autorização através do Custom URL Scheme do sistema operacional e trocou o código pelo token de acesso, sequestrando a conta da vítima. A adoção mandatória de PKCE com verificação de `code_verifier` e `code_challenge` eliminou o vetor de interceptação.</p>
         </div>
 
@@ -3744,7 +3744,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
       <article class="topic" id="h1">
         <div class="th"><h3>Observabilidade e o método de cinco passos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um incidente com clientes reclamando de lentidão intermitente, os desenvolvedores começaram a alterar configurações às cegas no banco de dados e na memória da JVM sem dados concretos, piorando a instabilidade por 4 horas. Um engenheiro de confiabilidade aplicou o método de 5 passos (Identificar sintoma -> Isolar camada -> Analisar métricas -> Correlacionar logs e traces -> Hipótese e teste controlado), descobrindo em 8 minutos que um lock de linha em uma tabela secundária era a única causa raiz.</p>
         </div>
 
@@ -3878,9 +3878,9 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
       </article>
 
       <article class="topic" id="h2">
-        <div class="th"><h3>O seu pipeline: Azure DevOps para a AWS</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o seu caso real</span></div></div>
+        <div class="th"><h3>O seu pipeline: Azure DevOps para a AWS</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o seu exemplo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um pipeline de CI/CD utilizava chaves estáticas de acesso da AWS salvas como variáveis de ambiente no Azure DevOps. Durante um build de dependências com script malicioso em uma biblioteca npm de terceiro, a chave foi extraída e postada em um servidor externo, permitindo a invasão da conta AWS. A substituição de chaves estáticas por autenticação OIDC federada (OpenID Connect com IAM Role de confiança temporária) eliminou credenciais estáticas do pipeline.</p>
         </div>
 
@@ -4186,7 +4186,7 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
       <article class="topic" id="h3">
         <div class="th"><h3>Rollback e GMUD: voltar atrás sem drama</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um deploy de release em produção aplicou uma migration de banco de dados que apagava uma coluna legada (`DROP COLUMN telefone`). A versão nova do backend continha um bug crítico e precisou de rollback imediato, mas a versão antiga não conseguiu subir porque dependia da coluna que havia sido deletada. A GMUD entrou em pânico com 6 horas de downtime. O time adotou a regra de mudanças retrocompatíveis em duas fases (Expand and Contract), onde colunas nunca são removidas no mesmo release que o código.</p>
         </div>
 
@@ -4279,7 +4279,7 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Uma equipe precisa renomear a coluna `cpf` para `documento_fiscal` na tabela de clientes com 10 milhões de registros em produção. Como aplicar o padrão Expand and Contract para garantir tolerância a falhas e capacidade de rollback imediato sem indisponibilidade?</p>
+                <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Uma equipe precisa renomear a coluna `cpf` para `documento_fiscal` em uma tabela grande. Como aplicar Expand and Contract para reduzir o risco durante a migração e preservar um caminho de rollback, considerando compatibilidade, backfill, tráfego concorrente e janela de operação?</p>
                 
                 <p class="te-instrucao">Qual sequência de etapas garante o padrão Expand and Contract?</p>
 
@@ -4322,7 +4322,7 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
       <article class="topic" id="h4">
         <div class="th"><h3>Git squash e hooks: histórico limpo, erro pego cedo</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor cometeu acidentalmente um arquivo de credenciais de produção `private.key` em um commit intermediário local. Embora ele tenha apagado o arquivo no commit seguinte, o commit com a chave foi enviado para o repositório remoto Git e vazou no histórico. A implementação de hooks locais pré-commit (git-secrets/trufflehog) e a padronização de squash commits nos merges impediram a persistência de segredos no repositório.</p>
         </div>
 
@@ -4452,9 +4452,9 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
           <span style="font-size:.72rem;color:var(--muted)">Clique nos incidentes para simular a cascata de falhas e diagnosticar a causa raiz</span>
         </div>
         <div class="wl-ctrls">
-          <button type="button" class="btn-wl btn-inc1" id="btnWarInc1">🚨 Incidente 01: OOMKilled 137 (Off-Heap / cgroup)</button>
-          <button type="button" class="btn-wl btn-inc2" id="btnWarInc2">⚡ Incidente 02: HikariCP Starvation (I/O em @Transactional)</button>
-          <button type="button" class="btn-wl btn-inc3" id="btnWarInc3">☠️ Incidente 03: Poison Pill & RabbitMQ DLQ Loop</button>
+          <button type="button" class="btn-wl btn-inc1" id="btnWarInc1">🚨 Cenário 01: OOMKilled 137 (Off-Heap / cgroup)</button>
+          <button type="button" class="btn-wl btn-inc2" id="btnWarInc2">⚡ Cenário 02: HikariCP Starvation (I/O em @Transactional)</button>
+          <button type="button" class="btn-wl btn-inc3" id="btnWarInc3">☠️ Cenário 03: Poison Pill & RabbitMQ DLQ Loop</button>
           <button type="button" class="btn-wl" id="btnWarReset">↺ Reset</button>
         </div>
         <div class="wl-flow">
@@ -4486,16 +4486,16 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
 
 
       <article class="topic" id="j1">
-        <div class="th"><h3>Incidente 01 · O "OOMKilled" fantasma: Exit 137 sem Heap Dump</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">k8s + jvm</span></div></div>
+        <div class="th"><h3>Cenário 01 · O "OOMKilled" fantasma: Exit 137 sem Heap Dump</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">k8s + jvm</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um Pod Kubernetes rodando Spring Boot com `-Xmx2g` em um container com limite de 2.5 GB sofria OOMKilled com Exit Code 137 diariamente, mas nenhum arquivo de Heap Dump era gerado. A investigação com Native Memory Tracking (NMT) revelou que a biblioteca Netty do Spring WebFlux alocava buffers de I/O em memória nativa (Off-Heap) fora da gestão do Garbage Collector, estourando o cgroup do container Linux. O ajuste de limites do cgroup e calibração de memória nativa estabilizou o container.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><em>Cenário ilustrativo, não relato de produção:</em> um Pod com Spring Boot tem limite de memória próximo ao teto configurado para a heap e termina com <code>OOMKilled</code> (código 137), sem heap dump. Uma hipótese é o consumo total do processo — que pode incluir heap, Metaspace, stacks, buffers diretos e bibliotecas nativas — exceder o limite do cgroup. NMT pode ajudar a investigar categorias nativas, mas não identifica sozinho toda alocação de toda biblioteca; combine-o com métricas do contêiner, logs e ferramentas adequadas ao runtime.</p>
         </div>
 
         <p class="direto"><b>Direto:</b> o Pod do Kubernetes morre com status <code class="i">OOMKilled</code> e código de saída 137, mas a JVM não lançou <code class="i">OutOfMemoryError</code> e o log não mostra nada. O assassino não foi a JVM: foi o <b>Linux Kernel OOM Killer</b> via cgroup, porque a memória <em>Off-Heap</em> (Metaspace, thread stacks, Netty buffers) ultrapassou o teto do container.</p>
         <div class="analogia"><i class="ic">≈</i><p><b>Como alugar um caminhão pelo tamanho da caçamba.</b> Você mediu que a carga ocupa 800 kg e alugou um caminhão com teto de 1000 kg. Mas esqueceu que o peso do próprio motor, do combustível e do motorista somam 350 kg. Na balança da rodovia (o cgroup do Linux), o total deu 1150 kg — o caminhão é apreendido imediatamente pela polícia rodoviária, mesmo com espaço sobrando na caçamba.</p></div>
         <div class="duo o">
-          <div><h4>A autópsia do incidente</h4><p>O container foi configurado com limite estrito de 1 GB no Kubernetes (<code class="i">resources.limits.memory: 1Gi</code>) e a equipe setou a JVM com <code class="i">-Xmx768m</code>, acreditando que 256 MB seriam folga suficiente. Sob carga, 200 threads ativas alocaram 1 MB de stack cada (<code class="i">-Xss1m</code> × 200 = 200 MB), mais 120 MB de Metaspace e buffers de socket do driver JDBC. A memória residente total (RSS) bateu 1030 MB. O kernel do nó enviou <code class="i">SIGKILL</code> (sinal 9). Como sinal 9 não pode ser interceptado, o processo morreu instantaneamente, com exit code 128 + 9 = 137, sem gerar heap dump.</p>
+          <div><h4>Como investigar o caso</h4><p>Não conclua a causa apenas pelo código 137: ele indica encerramento por sinal, e <code>OOMKilled</code> aponta pressão/limite de memória do contêiner. Compare limite do cgroup, RSS, heap usada e comprometida, quantidade de threads, Metaspace e buffers nativos no momento da falha. O tamanho de stack varia por JVM, SO e <code>-Xss</code>; reconstrua a conta com medições reais. Um heap dump pode não existir se o kernel encerrou o processo antes de a JVM reagir.</p>
           <p class="repl"><b>A ponte entre os mundos:</b> Kubernetes (<a href="../trilhas/docker-kubernetes.html">Docker e K8s</a>) limita o processo inteiro via cgroups; a JVM (<a href="../trilhas/java.html">Java Completo</a>) só gerencia o Heap se você não limitar explicitamente a memória nativa.</p></div>
           <div><h4>Onde você usa isso no dia a dia</h4><ul><li>Diagnosticar pods que entram em <code class="i">CrashLoopBackOff</code> em silêncio durante picos de tráfego.</li><li>Configurar corretamente os limites de memória da JVM em contêineres de produção.</li><li>Definir a proporção correta entre <code class="i">requests</code> e <code class="i">limits</code> no Kubernetes.</li></ul></div>
         </div>
@@ -4504,16 +4504,17 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code>
 # flag errada na JVM:
 java -Xmx800m -jar app.jar
 
-# 800m (Heap) + 200m (200 threads × 1MB)
-# + 120m (Metaspace) + 60m (Direct I/O) = 1180MB
-# Kernel OOM-Killer: SIGKILL (Exit 137)</code></pre></div>
+# Exemplo conceitual: heap + Metaspace + stacks + buffers nativos
+# podem exceder o limite do cgroup; não some estimativas fixas.
+# Confirme o motivo em kubectl describe pod e nas métricas do processo.</code></pre></div>
           <div class="depois"><div class="lab">Configuração resiliente para container</div><pre><code># k8s limit: 1Gi
 # Flags modernas para contêiner:
 java -XX:MaxRAMPercentage=70.0 \
      -XX:+UseContainerSupport \
      -Xss512k \
      -jar app.jar
-# Heap teto: ~716MB. Sobram ~300MB para off-heap!</code></pre></div>
+# O limite de heap não reserva automaticamente o restante.
+# Meça o processo completo sob carga.</code></pre></div>
         </div>
         <div class="gotcha"><b>Sinais no War Room para matar a charada</b><ul><li>Rode <code class="i">kubectl describe pod &lt;nome&gt;</code>: procure por <code class="i">Last State: Terminated / Reason: OOMKilled / Exit Code: 137</code>.</li><li>Se o log da aplicação parar abruptamente sem stacktrace de erro, o processo foi executado pelo kernel (SIGKILL), não pela JVM.</li><li>Use Virtual Threads do Java 21: reduzem o custo de stack de dezenas de megabytes para míseros kilobytes sob alta concorrência.</li></ul></div>
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -4523,7 +4524,7 @@ java -XX:MaxRAMPercentage=70.0 \
             <div class="topico-revisao">
               <div class="tr-header">
                 <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Incidente 01 · O OOMKilled Fantasma (Exit 137)</h4>
+                <h4 class="tr-title">Síntese de Fixação: Cenário 01 · O OOMKilled Fantasma (Exit 137)</h4>
               </div>
               
               <div class="tr-grid">
@@ -4545,7 +4546,7 @@ java -XX:MaxRAMPercentage=70.0 \
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Memória Off-Heap vs Heap</b>
-                    <p>O consumo total da JVM inclui Heap (-Xmx), Metaspace, Thread Stacks (1MB por thread), buffers diretos (Direct ByteBuffer / Netty) e código nativo compilado pelo JIT.</p>
+                    <p>O consumo total da JVM inclui heap (<code>-Xmx</code>), Metaspace, stacks de threads, buffers diretos (Direct ByteBuffer/Netty), Code Cache e outras alocações nativas. A stack não tem um tamanho universal por thread: plataforma e opções da JVM influenciam esse valor.</p>
                   </div>
                 </div>
               </div>
@@ -4562,7 +4563,7 @@ java -XX:MaxRAMPercentage=70.0 \
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p><strong>Deixe Margem para a Máquina</strong>: Em containers Docker/K8s, defina -Xmx em aproximadamente 70% a 75% do limite de memória do container (ou use -XX:MaxRAMPercentage=75.0), reservando 25% para memória nativa/off-heap.</p>
+                    <p><strong>Dimensione heap e processo juntos</strong>: em contêineres, não entregue todo o limite à heap sem medir. Configure <code>-Xmx</code> ou <code>-XX:MaxRAMPercentage</code> considerando threads, bibliotecas, buffers e carga; acompanhe RSS e valide sob estresse. 70%–75% pode ser apenas um ponto de partida em alguns serviços, nunca uma margem universal garantida.</p>
                   </div>
                 </div>
               </div>
@@ -4623,9 +4624,9 @@ java -XX:MaxRAMPercentage=70.0 \
       </article>
 
       <article class="topic" id="j2">
-        <div class="th"><h3>Incidente 02 · Connection Starvation: o pool asfixiado por I/O externo</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">spring + hikaricp</span></div></div>
+        <div class="th"><h3>Cenário 02 · Connection Starvation: o pool asfixiado por I/O externo</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">spring + hikaricp</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rota `@Transactional` de processamento de pagamentos abria uma conexão com o PostgreSQL, executava uma query rápida, e em seguida fazia uma chamada HTTP síncrona para uma API antifraude externa que demorava 4 segundos para responder. Como a transação manteve a conexão do HikariCP presa durante toda a chamada HTTP externa, todas as 50 conexões do pool foram consumidas em 2 segundos por apenas 50 requisições simultâneas, travando todas as outras rotas do sistema. A remoção da chamada externa de dentro da transação atômica liberou o pool imediatamente.</p>
         </div>
 
@@ -4664,7 +4665,7 @@ txTemplate.executeWithoutResult(status -&gt; {
             <div class="topico-revisao">
               <div class="tr-header">
                 <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Incidente 02 · Connection Starvation no Pool JDBC</h4>
+                <h4 class="tr-title">Síntese de Fixação: Cenário 02 · Connection Starvation no Pool JDBC</h4>
               </div>
               
               <div class="tr-grid">
@@ -4774,9 +4775,9 @@ Sob carga de 50 req/s, a aplicação lança `ConnectionTimeoutException: Connect
       </article>
 
       <article class="topic" id="j3">
-        <div class="th"><h3>Incidente 03 · A avalanche do RabbitMQ: Poison Pill e loop de Requeue</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">mensageria</span></div></div>
+        <div class="th"><h3>Cenário 03 · A avalanche do RabbitMQ: Poison Pill e loop de Requeue</h3><div class="badges"><span class="badge b-ess">war room</span><span class="badge b-ver">mensageria</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma mensagem com payload malformado provocou um `NullPointerException` durante a deserialização em um `@RabbitListener`. Como a configuração padrão utilizava `requeue = true` sem limite de tentativas, a mensagem era devolvida para o topo da fila e relida no milissegundo seguinte em loop infinito, consumindo 100% de CPU e gerando 500.000 logs de erro por minuto. A configuração de uma Dead Letter Exchange (DLQ) com descarte após 3 tentativas encerrou a avalanche.</p>
         </div>
 
@@ -4815,7 +4816,7 @@ spring.rabbitmq.listener.simple:
             <div class="topico-revisao">
               <div class="tr-header">
                 <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Incidente 03 · Avalanche RabbitMQ: Poison Pill e Requeue Loop</h4>
+                <h4 class="tr-title">Síntese de Fixação: Cenário 03 · Avalanche RabbitMQ: Poison Pill e Requeue Loop</h4>
               </div>
               
               <div class="tr-grid">

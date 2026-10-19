@@ -1,6 +1,43 @@
 # Context.md — o que existe no site e em que ponto estamos
 
-Última atualização: 2026-10-12. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
+Última atualização: 2026-10-18. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
+
+## Caderno de finanças e investimentos (2026-10-18)
+
+- Criada `cadernos/financas-investimentos.html` como material educacional geral: orçamento/objetivos, reserva, liquidez, renda fixa, Tesouro/CDB/CDI/FGC, ações, FIIs, ETFs, diversificação, avaliação, plataformas, custos, tributação geral e prevenção a golpes. Não registra dados pessoais nem recomenda ativos.
+- A sugestão recebida foi contextualizada: 6 meses é referência ajustável (CVM apresenta estimativa de 6–12); D+0 depende das condições do produto; FGC cobre créditos elegíveis e não Tesouro; 100% CDI não significa retorno líquido; divisão 25/25/25/25 e quantidade fixa de ativos não são regras universais.
+- Fontes listadas: CVM/Portal do Investidor, FGC e B3; Investidor10 foi descrito como ferramenta privada, com permissões e termos a conferir. Integrada à Home, Acervo, paletas, progresso e README. Backup pré-catálogo: `Arquivados/2026-10-18-antes-nota-financas/`. Sem commit/publicação.
+- Imagem enviada pelo usuário incorporada no início do caderno em `assets/img/financas/mapa-mental-financas-investimentos.png`, no padrão `figure.topic-img`, com alt/legenda e visualizador compartilhado `img-modal`; asset local, sem dependência remota. Check-links agora verifica 328 alvos e contratos seguem 11/11.
+- Adicionada uma etapa navegável de plano em três fases, com percentuais do material marcados como cenário didático, fórmulas parametrizadas, simulação fictícia e automação segura. Removidos dados pessoais do anexo (aporte, despesas, perfil/trabalho) e nomes/taxas promocionais de bancos; incluídos limites sobre a meta de reserva, volatilidade de IPCA+ e rendimentos de FIIs. A contagem do caderno passa a 15 e a do widget global a 502. Tributação resumida com ressalvas e fonte da Receita Federal.
+- Contratos (11/11) e links locais passaram; auditoria específica do chassi ainda reporta lacunas por tópico, e a renderização visual não foi feita. Ver HANDOFF antes de declarar conformidade completa.
+
+## Revisão didática transversal (2026-10-17)
+
+- Pedido: revisar as demais áreas com o mesmo cuidado didático aplicado à IA, sem redesenhar os documentos. Mantidos estrutura, ordem e chassi; alterados explicações, cenários, resumos e exercícios nos sete arquivos de `trilhas/` (Arquitetura, Docker/Kubernetes, Java, Mensageria, Nuvem, Spring e System Design) e sete `cadernos/` (Biblioteca, Conceitos de Backend, Git, Governança e Segurança, Inglês, Linux e Oratória). A trilha de IA não foi modificada nesta passada.
+- Corrigidos números e resultados hipotéticos que pareciam medições reais, regras universais sem contexto e garantias excessivas. Exemplos relevantes: custo de memória e capacidade de Virtual Threads; streaming de arquivos; segurança de uso do load factor; entrega/ack/idempotência em mensageria; limites de cache e semântica de contêiner; responsabilidade compartilhada; locking S3 do Terraform; progresso do Git reflog; e regra dos 95% no estudo de inglês.
+- Exercícios e resumos dos tópicos foram alinhados onde a explicação principal mudou. Cenários inventados agora estão identificados como hipotéticos/ilustrativos; preservados exemplos numéricos quando eram definições, configurações ou entradas explicitamente exemplificativas.
+- Backups anteriores à revisão: `Arquivados/2026-10-17-revisao-didatica-outras-areas/` (14 HTML). Não regravar baseline; `diff-snapshot` compara com alterações preexistentes e reporta mudanças históricas também. Verificações executadas após a edição final devem ser registradas no handoff desta revisão.
+- Revisão de conteúdo dirigida, não certificação linha a linha de todas as afirmações. Inspeção visual não realizada: navegador local bloqueou URL `file://` por política. Nenhum commit ou publicação.
+
+### Segunda passada — cenários, complexidade e garantias
+
+- A pedido do Thallys, a revisão foi ampliada nos mesmos 14 documentos (as sete trilhas e sete cadernos), sem reestruturar páginas. Antes desta passada, cópias do estado revisado ficaram em `Arquivados/2026-10-17-revisao-didatica-segunda-passada/` (14 HTML).
+- Em 311 blocos, o rótulo sem comprovação “INCIDENTE REAL DE PRODUÇÃO” passou a “CENÁRIO HIPOTÉTICO DE PRODUÇÃO”. Cabeçalhos genéricos “Falhas Reais” também foram corrigidos para “Falhas comuns” ou “Riscos comuns”; exemplos e números permanecem como premissas de ensino, não evidência empírica.
+- Corrigidos outros excessos localizados: O(1) atribuído à paginação keyset; custos de threads/heap e streaming; pinning de Virtual Threads (diferença entre JDK 21–23 e 24+, com fonte JEP 444/491); `maxUnavailable` tratado como garantia de zero downtime; disponibilidade garantida em Kubernetes gerenciado; assinatura Git como prova de identidade; e tarifação de rede apresentada como igual entre provedores.
+- `Spec.md` passou a exigir que cenário real tenha fonte, que números hipotéticos sejam tratados como premissas e que complexidade venha acompanhada de condições.
+- Fontes primárias conferidas: JEP 444 e JEP 491 do OpenJDK; documentação do Kubernetes sobre Deployment/rolling update; documentação Java de `Files.lines`; PostgreSQL `LIMIT/OFFSET`; documentação do Git sobre commit/assinatura; e orientação de preços de rede da AWS. Esta é uma revisão dirigida, não uma auditoria formal linha a linha.
+- Verificações finais a registrar no HANDOFF: manter sem quebras links, contratos, tags, quiz e diff-snapshot; baseline não deve ser regravado. Inspeção visual continua bloqueada para `file://`; sem commit/publicação.
+- Passe complementar autorizada pelo Thallys: corrigidas também afirmações remanescentes de maior impacto em Java, Nuvem e Mensageria. Exemplos numéricos de benchmark foram explicitados como hipotéticos ou dependentes de medição; DBaaS/PITR, escolha NoSQL, prefetch, throughput persistente e quorum deixaram de prometer números ou garantias universais. Backup anterior deste passe: `Arquivados/2026-10-17-revisao-didatica-passe-final/` (5 documentos). Links locais e contratos seguem válidos; quizzes dessas três páginas permanecem abaixo do teto heurístico; `git diff --check` sem erros. Nenhum redesign, commit ou baseline regravado.
+
+## IA aplicada ao desenvolvimento (2026-10-17)
+
+- O pedido foi melhorar didática preservando estrutura: a trilha `trilhas/ia.html` mantém seções, ordem, chassi, navegação e visual; a intervenção revisa explicações e exemplos já existentes.
+- Corrigidos modelos mentais que tratavam delimitadores de prompt como barreira contra injection, prompt como contrato de correção, spec como fonte infalível e agente como executor autônomo. Tool calling: o backend valida, autoriza, executa e limita cada ferramenta.
+- A bancada tem a missão `I04` (agente Spring com consulta read-only, isolamento por tenant, limites, aprovação humana e testes locais); total de projetos foi atualizado de 18 para 19 na bancada e Home. Aquecimentos continuam 18.
+- A missão verifica suporte a tool calling do modelo/provider escolhido; quando não houver suporte local, a integração é testada com modelo falso. Nenhum segredo ou dado real nos exercícios.
+- Referências técnicas oficiais consultadas: Spring AI Tool Calling e documentação de Prompt Engineering da OpenAI. Sem mudança na estrutura da trilha e sem baseline regravado.
+- Revisão didática adicional: removidos resultados de negócio e métricas apresentados sem evidência como fatos; cenários agora são identificados como hipotéticos e pedem validação. Corrigidas explicações absolutas sobre memorização de LLM, pré-treino/SFT/RLHF/DPO, gargalo PCIe, model tiering, avaliação de RAG e quality gates. Painel de nós e corpo foram alinhados nos conceitos tocados; a trilha segue preservando estrutura e ordem.
+- Verificação desta passada: `check-links` (302 alvos, sem quebras), contratos 11/11, auditor de quiz da IA 18/36 (50%, abaixo do teto de 60%), `audit-chassi` sem tags desbalanceadas e `git diff --check` limpo. `diff-snapshot` aponta alterações acumuladas desde 2026-10-13 e nenhum tópico removido; baseline não regravado. Inspeção visual não executada.
 
 ## Novos tópicos (2026-10-17)
 

@@ -48,6 +48,7 @@ const DOCUMENTOS_ESPERADOS = [
   'cadernos/ingles.html',
   'cadernos/oratoria.html',
   'cadernos/governanca-seguranca.html',
+  'cadernos/financas-investimentos.html',
   'lab/projetos.html',
   'ferramentas/pomodoro.html'
 ];

@@ -855,7 +855,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a1">
         <div class="th"><h3>O problema é o acoplamento no tempo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um fluxo de checkout síncrono disparava 4 chamadas HTTP em sequência: pagamento, reserva de estoque, emissão de nota fiscal e envio de e-mail de confirmação. Durante um pico na Black Friday, a API do provedor de e-mail sofreu instabilidade e passou a demorar 4 segundos por requisição. Todas as 2.400 compras simultâneas travaram com timeout, esgotando as threads do servidor e gerando perda de R$ 390.000 em vendas. A substituição do e-mail e nota fiscal por eventos assíncronos postados em fila liberou o usuário em 22 milissegundos e desacoplou a disponibilidade dos serviços.</p>
         </div>
 
@@ -875,7 +875,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Em sistemas com 10 microsserviços encadeados síncronamente (A chama B que chama C... que chama J), a disponibilidade global do sistema é a <strong>multiplicação das disponibilidades individuais</strong>. Se cada serviço tiver 99% de SLA, a probabilidade da cadeia inteira funcionar é de apenas (0.99^{10} approx 90.4%), significando que 1 a cada 10 requisições falhará com erro 500!</p>
+          <p>Para uma cadeia síncrona, a chance de sucesso pode ser aproximada pelo produto das disponibilidades dos componentes <strong>se</strong> as falhas forem independentes e cada componente for necessário para responder. Na prática, falhas podem ser correlacionadas, há retries, timeouts e dependências opcionais; portanto, 10 serviços com 99% não implicam automaticamente 90,4% de sucesso ponta a ponta. Modele o caminho crítico e valide com dados e orçamento de erro.</p>
           </div>
         </div>
           </div>
@@ -930,7 +930,7 @@ public class CheckoutAsyncService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Falsa sensação de sucesso (Fire and Forget Ingênuo):</strong> Responder HTTP 200 para o cliente antes de o evento estar seguramente gravado no disco do broker. Se a conexão cair no meio do caminho, o evento evapora e o pedido nunca será entregue.</li>
             <li><strong>Latência percebida em fluxos que exigem resposta síncrona:</strong> Tentar usar mensageria para fluxos onde o usuário PRECISA do dado imediatamente na tela (ex: validar senha ou consultar saldo disponível na tela do caixa eletrônico) gera complexidade desnecessária com polling ou WebSockets.</li>
@@ -1047,7 +1047,7 @@ public class CheckoutAsyncService {
       <article class="topic" id="a2">
         <div class="th"><h3>Comando, evento e documento: três coisas que a gente chama de "mensagem"</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de pedidos publicou uma mensagem chamada `PedidoCriadoEvent`, mas colocou dentro dela a instrução de cobrar o cartão de crédito do cliente. Quando o time de inteligência de dados criou um novo consumidor para alimentar o data lake lendo os mesmos eventos, a rotina de dados reexecutou a cobrança indevidamente para 8.000 clientes. A falha forçou o time a diferenciar formalmente Comando (intenção dirigida a um único destinatário com efeito colateral) de Evento de Domínio (fato passado imutável de difusão aberta).</p>
         </div>
 
@@ -1114,7 +1114,7 @@ rabbitTemplate.convertAndSend("amq.topic", "evt.v1.pedido.pago", event);
 rabbitTemplate.convertAndSend("amq.direct", "cmd.fiscal.emitir-danfe", command);</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Eventos "vazios" forçando queries em cascata:</strong> Publicar apenas <code>{"pedidoId": 123}</code> sem os dados essenciais obriga todos os 10 microsserviços ouvintes a fazerem uma chamada HTTP síncrona de volta ao serviço de pedidos para buscar detalhes, gerando um bombardeio de requisições simultâneas (*Thundering Herd*) sobre o banco de dados. Envie payloads auto-contidos (*Event-Carried State Transfer*).</li>
             <li><strong>Comando com múltiplos consumidores concorrentes executando a mesma ação:</strong> Se dois serviços consumirem o mesmo <code>DebitarContaCommand</code> por erro de binding, a conta do cliente será debitada duas vezes!</li>
@@ -1231,8 +1231,8 @@ rabbitTemplate.convertAndSend("amq.direct", "cmd.fiscal.emitir-danfe", command);
       <article class="topic" id="a3">
         <div class="th"><h3>Garantias de entrega e o mito do exactly-once</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Uma equipe de engenharia projetou um microsserviço financeiro assumindo que o broker de mensageria garantia entrega única (Exactly-Once) e não implementou chave de idempotência no consumidor. Após uma oscilação na rede, o RabbitMQ reenviou 18.000 mensagens de crédito de cashback que já haviam sido processadas porque o ack TCP se perdeu. O consumidor creditou R$ 50 duas vezes para cada usuário, causando um prejuízo imediato de R$ 900.000 à empresa antes que o serviço fosse paralisado.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> um consumidor grava um crédito no banco e cai antes de confirmar a mensagem ao RabbitMQ. Como o broker não recebeu o ack de processamento, pode entregar a mensagem novamente. Se o consumidor não reconhecer a mesma operação, pode duplicar o efeito. O número de mensagens e o prejuízo dependem do sistema; a lição é projetar idempotência e confirmar somente depois de concluir o trabalho necessário.</p>
         </div>
 
         <div class="topic-split">
@@ -1243,16 +1243,16 @@ rabbitTemplate.convertAndSend("amq.direct", "cmd.fiscal.emitir-danfe", command);
             <ul>
               <li><strong>At-Most-Once (No Máximo Uma Vez):</strong> A mensagem pode ser entregue 0 ou 1 vez. Não há retransmissão em caso de erro (pode haver perda de dados, mas nunca duplicidade).</li>
               <li><strong>At-Least-Once (Pelo Menos Uma Vez):</strong> A mensagem é garantida de ser entregue 1 ou mais vezes. O broker e o produtor tentam novamente até receber confirmação. <strong>Pode haver mensagens duplicadas!</strong></li>
-              <li><strong>Exactly-Once (Exatamente Uma Vez):</strong> A garantia mítica de que toda mensagem é processada exatamente 1 única vez sem duplicidade nem perda em qualquer cenário de queda de energia ou partição de rede.</li>
+              <li><strong>Exactly-once:</strong> descreve uma garantia dentro de um escopo definido por uma tecnologia ou transação. Não significa que qualquer efeito externo (como atualizar um banco e enviar um e-mail) ocorrerá uma só vez em todos os cenários. Em consumidores, use chave de idempotência, deduplicação ou transação/outbox conforme o limite que precisa proteger.</li>
             </ul>
         </div>
 
-            <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> At-most-once é mandar um sinal de fumaça: se o vento soprar, sumiu. At-least-once é enviar uma encomenda com confirmação de assinatura: se o carteiro não conseguir ouvir você assinando, ele volta amanhã com o mesmo pacote. <em>Exactly-once</em> em redes não confiáveis é matematicamente impossível sem tratar a idempotência na ponta de quem recebe.</p></div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> em at-most-once, você tenta uma vez e aceita a possibilidade de perda; em at-least-once, repete até obter confirmação e aceita que uma tentativa anterior talvez já tenha produzido efeito. Para que a repetição não duplique o resultado, o destinatário reconhece a chave da operação. A garantia precisa sempre indicar até onde a confirmação e a deduplicação se estendem.</p></div>
 
             <div class="duo">
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
-            <p>Desmistifica o mito comercial do "Exactly-Once": na prática da engenharia de software distribuída (Teorema dos Dois Generais), <strong>praticamente todos os brokers operam em modo At-Least-Once</strong>. A responsabilidade de garantir que o efeito colateral ocorra apenas uma vez é 100% da sua aplicação através de <strong>Idempotência</strong>.</p>
+            <p>RabbitMQ pode redeliver uma mensagem não confirmada quando a conexão ou o canal fecha; publisher confirms e consumer acknowledgements protegem trechos diferentes do fluxo. A aplicação deve tolerar redelivery. Idempotência evita duplicar efeitos observáveis, mas não substitui confirmar a mensagem no momento correto nem resolve sozinha uma transação entre broker, banco e serviços externos.</p>
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
@@ -1287,7 +1287,7 @@ public class PagamentoConsumer {
         </div>
             <div class="pilar-card p-funciona">
           <div class="pilar-header"><span class="pilar-icon">⚙️</span> <b>5. Como funciona por baixo dos panos?</b></div>
-          <p>O <em>Problema dos Dois Generais</em> prova que sobre um canal de comunicação não confiável (como TCP/IP), é impossível para dois nós concordarem sobre um estado compartilhado com certeza absoluta usando um número finito de mensagens. Por isso, sistemas reais aceitam a possibilidade de retransmissão e resolvem o problema no armazenamento local.</p>
+          <p>O <em>Problema dos Dois Generais</em> é um modelo teórico sobre obter conhecimento comum por um canal sujeito a perda de mensagens. Ele ajuda a discutir limites de confirmação, mas não é uma explicação completa de garantias de brokers nem torna idempotência o único mecanismo possível. Em sistemas reais, examine o protocolo, o escopo da transação e o tratamento de falhas entre participantes.</p>
         </div>
           </div>
         </div>
@@ -1305,7 +1305,7 @@ CREATE TABLE mensagens_processadas (
 );</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Checar idempotência em memória local (ex: num <code>HashSet</code> Java):</strong> Se a sua aplicação reiniciar ou tiver 3 pods rodando no Kubernetes, a memória local é perdida ou não compartilhada, permitindo que pods diferentes processem a mesma mensagem duplicada. A checagem DEVE ser feita em banco relacional com restrição UNIQUE ou Redis com TTL.</li>
           </ul>
@@ -1339,7 +1339,7 @@ CREATE TABLE mensagens_processadas (
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>O Mito do 'Exactly-Once' Puro de Rede</b>
-                    <p>Devido ao clássico 'Problema dos Dois Generais', é impossível garantir entrega exatamente uma vez através de canais de rede não-confiáveis. 'Exactly-Once' só existe se o consumidor implementar <strong>Idempotência</strong>!</p>
+                    <p>Redes não oferecem, por si sós, uma transação atômica entre broker e qualquer efeito externo. Algumas tecnologias oferecem garantias exactly-once dentro de limites específicos; para efeitos fora desse limite, como gravar em outro banco ou cobrar um pagamento, combine idempotência, deduplicação e coordenação transacional conforme o caso.</p>
                   </div>
                 </div>
               </div>
@@ -1401,7 +1401,7 @@ CREATE TABLE mensagens_processadas (
               <div class="tf-card">
                 <div class="tf-face tf-front">
                   <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">Por que 'Exactly-Once Delivery' ponta a ponta é considerado impossível no nível de transporte de rede?</p>
+                  <p class="tf-pergunta">Por que uma confirmação do broker não basta para garantir que todo efeito do consumidor ocorreu exatamente uma vez?</p>
                   <span class="tf-hint">Dica: Pense na falha do pacote de confirmação (ACK) voltando pelo cabo de rede →</span>
                 </div>
                 <div class="tf-face tf-back">
@@ -1421,7 +1421,7 @@ CREATE TABLE mensagens_processadas (
       <article class="topic" id="a4">
         <div class="th"><h3>Quando NÃO usar fila</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">fundamentos & amqp</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe colocou uma fila de mensageria no meio do fluxo de autenticação de usuários: ao digitar o login e senha, o frontend enviava o comando para uma fila e ficava fazendo polling a cada 200ms aguardando uma resposta assíncrona. A latência média do login subiu de 35ms para 1.900ms, degradando a experiência do usuário. O time precisou aprender que autenticações síncronas que exigem resposta imediata do chamador devem permanecer em HTTP/gRPC determinístico.</p>
         </div>
 
@@ -1491,7 +1491,7 @@ public class CepController {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Emular RPC síncrono sobre RabbitMQ (Request/Reply com Reply-To):</strong> Criar uma fila temporária de resposta para simular uma chamada síncrona HTTP sobre o RabbitMQ une o pior dos dois mundos: toda a complexidade de mensageria com todo o bloqueio e fragilidade de chamadas síncronas.</li>
           </ul>
@@ -1615,7 +1615,7 @@ public class CepController {
       <article class="topic" id="b1">
         <div class="th"><h3>A regra que muda tudo: o produtor nunca publica numa fila</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço produtor publicava mensagens acoplado diretamente ao nome da fila física `fila_pagamentos_v1`. Quando a equipe de segurança exigiu conectar um novo serviço de auditoria para receber uma cópia de todos os pagamentos em tempo real, foi necessário alterar o código-fonte do produtor e fazer deploy emergencial. O problema foi corrigido desacoplando o produtor através de uma Exchange intermediária com routing keys, permitindo conectar novos consumidores sem tocar no produtor.</p>
         </div>
 
@@ -1677,7 +1677,7 @@ public TopicExchange fiscalExchange() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Publicar em Exchange Inexistente:</strong> Se o nome da exchange estiver errado no código Java, o canal AMQP fecha abruptamente com erro de protocolo <code>404 NOT_FOUND - no exchange 'fiscal.events' in vhost '/'</code>, derrubando a thread produtora.</li>
           </ul>
@@ -1793,7 +1793,7 @@ public TopicExchange fiscalExchange() {
       <article class="topic" id="b2">
         <div class="th"><h3>Connection e channel: o erro de performance mais comum</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço abria uma nova conexão TCP (`Connection`) com negociação TLS e autenticação no RabbitMQ a cada mensagem enviada. Sob carga de 2.500 mensagens por segundo, a CPU do broker bateu 100% apenas processando handshakes criptográficos de rede e o servidor travou. A refatoração manteve uma única conexão TCP persistente e passou a abrir e fechar apenas `Channels` lógicos multiplexados, derrubando o uso de CPU do broker para 7%.</p>
         </div>
 
@@ -1857,7 +1857,7 @@ rabbitTemplate.execute(channel -> {
 });</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Channel Concurrency Bug:</strong> Compartilhar o mesmo objeto <code>com.rabbitmq.client.Channel</code> entre duas threads Java concorrentes sem sincronização corrompe os frames de rede AMQP, fechando a conexão abruptamente com erro <code>Channel closure: unexpected frame</code>.</li>
             <li><strong>Connection Leaks por falta de cache:</strong> Esquecer de fechar canais abertos manualmente faz a aplicação atingir o limite <code>channel-max</code> do broker (padrão 2047 por conexão), recusando novas mensagens.</li>
@@ -1974,7 +1974,7 @@ rabbitTemplate.execute(channel -> {
       <article class="topic" id="b3">
         <div class="th"><h3>Anatomia da mensagem: envelope, propriedades e corpo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um consumidor de mensagens em produção parou de processar eventos e passou a lançar exceções de deserialização porque o produtor começou a enviar payloads compactados com GZIP sem preencher a propriedade `content-encoding` no cabeçalho da mensagem. O preenchimento correto de metadados padrão do AMQP (`content-type: application/json`, `correlation-id` e `message-id`) normalizou a interoperabilidade entre sistemas.</p>
         </div>
 
@@ -2042,7 +2042,7 @@ public void consumir(
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Mensagens com payloads gigantescos (&gt; 10MB):</strong> Filas de mensageria foram feitas para mensagens leves (&lt; 100KB). Trafegar arquivos de PDF ou fotos inteiras dentro do corpo da mensagem consome a memória RAM do cluster RabbitMQ e derruba o throughput. Use o padrão <strong>Claim Check Pattern</strong>: salve o arquivo no AWS S3 / MinIO e trafegue na mensagem apenas a URL do arquivo para download!</li>
           </ul>
@@ -2158,7 +2158,7 @@ public void consumir(
       <article class="topic" id="b4">
         <div class="th"><h3>Declaração de topologia: quem cria o quê</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia & exchanges</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço produtor entrou no ar e publicou 35.000 mensagens de pedidos antes que o serviço consumidor fosse implantado. Como o produtor publicou na exchange mas o binding com a fila ainda não havia sido criado pelo consumidor, todas as 35.000 mensagens foram descartadas no limbo pelo broker sem deixar rastros. A equipe implementou um script de infraestrutura que pré-declara a topologia completa antes de liberar o tráfego dos produtores.</p>
         </div>
 
@@ -2224,7 +2224,7 @@ public class LogisticaConsumerTopologyConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>InequivalentArgException (406 PRECONDITION_FAILED):</strong> O erro mais temido no RabbitMQ! Acontece quando dois serviços tentam declarar a MESMA fila com argumentos diferentes (ex: o serviço A declara <code>durable=true</code> e o serviço B tenta declarar <code>durable=false</code>, ou um muda o tipo para Quorum Queue). O broker rejeita a conexão com erro 406 e mata o canal. Uma vez criada com um argumento, a fila precisa ser deletada manualmente para mudar suas propriedades estruturais.</li>
           </ul>
@@ -2348,7 +2348,7 @@ public class LogisticaConsumerTopologyConfig {
       <article class="topic" id="c1">
         <div class="th"><h3>Direct, topic, fanout e headers</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ciclo de vida & entrega</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema utilizou uma Fanout Exchange para distribuir eventos de pagamento. Quando foi criado um evento de transação com suspeita de fraude destinado exclusivamente ao time de risco, todos os 12 microsserviços da empresa receberam a mensagem e gastaram CPU processando e descartando dados desnecessários. A troca para Topic Exchange com padrão de chaves hierárquicas (`pagamento.cartao.suspeito`) direcionou as mensagens com precisão cirúrgica apenas para os serviços interessados.</p>
         </div>
 
@@ -2418,7 +2418,7 @@ public Binding bindingAuditoriaTotal(Queue filaAuditoria, TopicExchange ecommerc
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Colisão de Routing Keys mal planejadas:</strong> Não definir um padrão de nomenclatura corporativo (ex: <code>&lt;contexto&gt;.&lt;versao&gt;.&lt;entidade&gt;.&lt;evento&gt;</code>) leva desenvolvedores a inventarem nomes livres (<code>novo-pedido</code>, <code>pedidos_vendas</code>), impossibilitando o uso de filtros genéricos e coringas.</li>
             <li><strong>Headers Exchanges sob Altíssimo Volume:</strong> Avaliar mapas complexos de headers em milhões de mensagens por segundo tem custo computacional significativamente superior ao roteamento puramente binário do Direct ou Topic.</li>
@@ -2542,7 +2542,7 @@ public Binding bindingAuditoriaTotal(Queue filaAuditoria, TopicExchange ecommerc
       <article class="topic" id="c2">
         <div class="th"><h3>Quando a mensagem não casa com nada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ciclo de vida & entrega</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor cometeu um erro de digitação na routing key de uma mensagem crítica (`pagamento.efetuad0` em vez de `pagamento.efetuado`). Como a exchange não encontrou nenhuma fila correspondente e a flag `mandatory` estava desligada por padrão, o RabbitMQ descartou silenciosamente 12.000 mensagens sem emitir erro para a aplicação. A configuração de uma Alternate Exchange (AE) passou a capturar automaticamente todas as mensagens órfãs em uma fila de auditoria.</p>
         </div>
 
@@ -2624,7 +2624,7 @@ public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Fila de Mensagens Sem Rota enchendo o disco:</strong> Criar uma fila de <em>Unrouted Messages</em> sem monitoramento no Prometheus faz com que ela acumule milhões de mensagens órfãs, consumindo todo o disco do servidor até o RabbitMQ travar todos os produtores por alarme de disco.</li>
           </ul>
@@ -2748,7 +2748,7 @@ public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
       <article class="topic" id="d1">
         <div class="th"><h3>Durabilidade e persistência: dois interruptores, não um</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fila foi criada corretamente como durável (`durable = true`), mas a biblioteca do produtor enviou as mensagens com `deliveryMode = 1` (não-persistente, gravado apenas na memória RAM). Durante uma reinicialização de segurança do servidor do RabbitMQ, a fila voltou vazia e 45.000 mensagens pendentes de emissão fiscal foram apagadas da memória. Persistência de ponta a ponta exige fila durável e mensagens publicadas com `deliveryMode = 2`.</p>
         </div>
 
@@ -2810,9 +2810,9 @@ MessagePostProcessor persistentPostProcessor = message -> {
 };</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
-            <li><strong>Impacto de IOPS em Disco Lento:</strong> Persistir 100% das mensagens em disco com <code>fsync</code> imediato reduz o throughput de ~80.000 msgs/s (em memória) para ~5.000 msgs/s em discos magnéticos tradicionais ou volumes em nuvem com limites baixos de IOPS (como AWS EBS gp2 básico). Utilize SSDs NVMe ou pools com buffers adequados.</li>
+            <li><strong>Impacto de persistência e I/O:</strong> persistência, confirmações, tamanho de mensagem, tipo de fila, broker, disco e configuração alteram throughput e latência. Não use uma comparação fixa entre mensagens/s em memória e em disco como benchmark universal; meça com a topologia e o padrão de durabilidade exigidos. Escolha armazenamento e limites de I/O de acordo com essa medição.</li>
           </ul>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -2926,7 +2926,7 @@ MessagePostProcessor persistentPostProcessor = message -> {
       <article class="topic" id="d2">
         <div class="th"><h3>Publisher confirms: a prova de que o broker aceitou</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cluster de RabbitMQ sofreu esgotamento de espaço em disco e passou a rejeitar novas mensagens. Como o produtor publicava de forma síncrona sem Publisher Confirms ativado, a chamada Java `basicPublish()` retornou normalmente sem lançar exceção, e a aplicação assumiu falsamente que as 9.000 mensagens haviam sido salvas. A ativação de Publisher Confirms com confirmação explícita de `ack` do broker evitou perdas silenciosas.</p>
         </div>
 
@@ -2998,7 +2998,7 @@ public class PedidoSeguroProducer {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Bloquear a thread esperando o Confirm (<code>correlationData.getFuture().get(5, SECONDS)</code>):</strong> Se você tornar a confirmação assíncrona síncrona usando <code>.get()</code> na thread da requisição HTTP, você anula o ganho de throughput do Publisher Confirms e expõe sua API à latência do disco do broker.</li>
           </ul>
@@ -3114,7 +3114,7 @@ public class PedidoSeguroProducer {
       <article class="topic" id="d3">
         <div class="th"><h3>Backpressure no produtor: quando o broker manda parar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">consumo & ack/nack</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma campanha de vendas, os produtores injetaram mensagens a uma velocidade muito superior à capacidade de absorção do cluster. O RabbitMQ atingiu o limite de alerta de memória (`vm_memory_high_watermark`) e acionou o alarme de backpressure, bloqueando os sockets TCP dos produtores. Como a aplicação não monitorava conexões bloqueadas, todas as threads de envio congelaram aguardando escrita na rede. O monitoramento de conexões em estado `blocked` normalizou a detecção de saturação.</p>
         </div>
 
@@ -3182,7 +3182,7 @@ public class RabbitBlockedConnectionListener implements ConnectionListener {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Consumidores fora do ar causando acúmulo infinito em disco:</strong> Se os consumidores caírem e os produtores continuarem gerando milhões de mensagens, as filas acumulam até estourar o disco. Configure a política <code>max-length</code> ou <code>max-length-bytes</code> nas filas para descartar ou rejeitar mensagens excedentes com segurança.</li>
           </ul>
@@ -3306,7 +3306,7 @@ public class RabbitBlockedConnectionListener implements ConnectionListener {
       <article class="topic" id="e1">
         <div class="th"><h3>Ack manual e a janela entre o commit e a confirmação</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um consumidor configurado com auto-ack automático confirmava a mensagem no momento em que o broker a entregava no socket de rede. Durante o processamento em Java, ocorreu uma falha de conexão com o banco de dados e a transação abortou. Como o RabbitMQ já havia deletado a mensagem da fila no momento do envio, a mensagem foi perdida para sempre. A adoção de confirmação manual (`basicAck`) estritamente após o commit no banco garantiu a resiliência.</p>
         </div>
 
@@ -3373,10 +3373,10 @@ spring:
   rabbitmq:
     listener:
       simple:
-        acknowledge-mode: auto # Recomendado para 95% dos casos</code></pre>
+        acknowledge-mode: auto # confirma ao entregar; uma falha antes do processamento pode perder o trabalho</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Esquecer de chamar o ACK no modo MANUAL:</strong> O erro clássico de novatos: esquecer de chamar <code>channel.basicAck()</code> em algum branch condicional do código (ex: num <code>if/else</code>). A mensagem fica eternamente presa como <em>Unacked</em>. Quando o limite do prefetch é atingido, o consumidor para de receber novas mensagens e <strong>trava a fila inteira</strong>!</li>
             <li><strong>Chamar ACK duas vezes com a mesma DeliveryTag:</strong> Lança erro fatal no canal AMQP <code>PRECONDITION_FAILED - unknown delivery tag</code>, matando o canal.</li>
@@ -3497,7 +3497,7 @@ public void processar(PedidoMsg msg, Channel channel, @Header(AmqpHeaders.DELIVE
       <article class="topic" id="e2">
         <div class="th"><h3>Prefetch: o parâmetro que quase todo mundo erra</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação consumidora que executava processamento pesado de PDFs (8 segundos por arquivo) manteve o valor padrão de prefetch ilimitado. O RabbitMQ despejou 6.000 mensagens na memória da primeira réplica que subiu, esgotando sua memória Heap e causando `OutOfMemoryError`, enquanto as outras 5 réplicas recém-criadas ficaram ociosas sem mensagens. O ajuste para `basicQos(prefetch = 5)` distribuiu o trabalho uniformemente entre os nós.</p>
         </div>
 
@@ -3517,7 +3517,7 @@ public void processar(PedidoMsg msg, Channel channel, @Header(AmqpHeaders.DELIVE
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Se você deixar <strong>Prefetch infinito (0)</strong> e subir um novo pod consumidor, o RabbitMQ despejará 50.000 mensagens na memória RAM daquele pod no primeiro milissegundo. A JVM sofrerá <code>OutOfMemoryError</code> antes mesmo de processar o primeiro pedido, e os outros 4 pods consumidores ficarão sem mensagens para trabalhar!</p>
+            <p>Com prefetch sem limite, um consumidor pode acumular muitas entregas não confirmadas e concentrar trabalho, enquanto outras réplicas ficam subutilizadas. A quantidade recebida e o consumo de memória dependem do backlog, do ritmo de entrega, do tamanho das mensagens e do cliente; não há um número universal nem entrega literalmente instantânea. Defina um limite e meça vazão, latência e memória.</p>
           </div>
         </div>
           </div>
@@ -3558,7 +3558,7 @@ public SimpleRabbitListenerContainerFactory slowTaskFactory(ConnectionFactory cf
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Prefetch 1 em tarefas ultrarrápidas de alta escala:</strong> Se o processamento levar 1ms e a latência de rede for 2ms, o consumidor passará 66% do tempo ocioso esperando o próximo pacote de rede chegar. Para tarefas leves, use prefetch entre 20 e 100.</li>
           </ul>
@@ -3585,7 +3585,7 @@ public SimpleRabbitListenerContainerFactory slowTaskFactory(ConnectionFactory cf
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>O Perigo do Prefetch Infinito (Padrão Antigo = 0)</b>
-                    <p>Sem prefetch configurado, o RabbitMQ cospe 50.000 mensagens na memória RAM do consumidor no milissegundo em que ele sobe, esgotando o Heap da JVM e causando OutOfMemoryError.</p>
+                    <p>Sem um limite adequado de prefetch, um consumidor pode acumular muitas mensagens não confirmadas, elevar o uso de memória e reduzir a distribuição justa do trabalho. O impacto varia com tamanho da mensagem, número de consumidores, cliente e capacidade de processamento; configure e valide o limite sob carga.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -3674,7 +3674,7 @@ public SimpleRabbitListenerContainerFactory slowTaskFactory(ConnectionFactory cf
       <article class="topic" id="e3">
         <div class="th"><h3>Ordem: o que a fila garante e o que ela não garante</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">concorrência & prefetch</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fila de atualização cadastral tinha 4 consumidores concorrentes. A mensagem 1 (alterar e-mail) e a mensagem 2 (desativar conta) do mesmo usuário foram consumidas em paralelo: o consumidor da mensagem 2 processou mais rápido e desativou a conta, mas o consumidor da mensagem 1 terminou em seguida e reativou a conta acidentalmente. A preservação de ordem estrita exigiu particionamento por chave de cliente com fila dedicada ou consumidor exclusivo.</p>
         </div>
 
@@ -3729,7 +3729,7 @@ public Queue filaOrdenada() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Single Active Consumer virando gargalo:</strong> Com <code>x-single-active-consumer=true</code>, você não consegue escalar horizontalmente adicionando novos pods para aquela fila; todo o tráfego fica limitado à velocidade da CPU daquela única thread consumidora.</li>
             <li><strong>Dependência ingênua de Timestamp de relógio:</strong> Ordenar mensagens pelo campo <code>criadoEm</code> do payload falha em ambientes de nuvem se os servidores sofrerem com deriva de relógio (<em>Clock Drift</em> NTP).</li>
@@ -3854,7 +3854,7 @@ public Queue filaOrdenada() {
       <article class="topic" id="f1">
         <div class="th"><h3>Taxonomia da falha: transitória, permanente e de contrato</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma falha de quebra de contrato (campo obrigatório ausente em um JSON) foi tratada com a mesma política de retry de falhas de rede transitórias. O consumidor tentou reprocessar a mesma mensagem corrompida 600.000 vezes em 2 horas, consumindo 100% de CPU e gerando R$ 6.500 em faturas de logs de erro no Datadog. A classificação correta entre falha transitória (merece retry) e falha de negócio permanente (vai direto para DLQ) corrigiu o desperdício.</p>
         </div>
 
@@ -3925,7 +3925,7 @@ try {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Tratar todas as exceções como transitórias:</strong> Se você capturar <code>Exception.class</code> e reenviar para a fila principal, qualquer erro de digitação de código travará os consumidores em loop infinito de 100% de CPU.</li>
           </ul>
@@ -4041,7 +4041,7 @@ try {
       <article class="topic" id="f2">
         <div class="th"><h3>Retry com backoff: a fila de espera com TTL e DLX</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de pagamento enfrentou lentidão transitória e rejeitou requisições por 3 minutos. O consumidor de mensageria reenviou as mensagens com retry imediato sem intervalo de espera (backoff zero), bombardeando a API externa com 20.000 requisições por segundo e impedindo a recuperação do gateway. A implementação de filas de retry com TTL e Dead Letter Exchange com backoff exponencial (10s, 30s, 60s) permitiu a recuperação do tráfego sem sobrecarga.</p>
         </div>
 
@@ -4113,7 +4113,7 @@ public void consumir(Message msg) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>TTL por mensagem em vez de TTL na fila:</strong> Se você definir TTL individual por mensagem em vez de configurar o TTL na fila (<code>x-message-ttl</code>), uma mensagem com TTL longo na cabeça da fila <strong>bloqueia a expiração das mensagens com TTL curto atrás dela</strong> (Head-of-Line Blocking do RabbitMQ). SEMPRE configure o TTL na definição da fila!</li>
           </ul>
@@ -4233,7 +4233,7 @@ Argumentos:
       <article class="topic" id="f3">
         <div class="th"><h3>Dead Letter Queue e parking lot</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma mensagem venenosa (poison pill) com caracteres especiais inválidos causou `NullPointerException` na deserialização de uma fila de pedidos, travando todo o processamento de 90.000 clientes. A implementação de uma Dead Letter Queue (DLQ) com limite de 3 tentativas rejeitou a mensagem com `basicNack(requeue = false)` e a isolou em uma fila de quarentena, permitindo que a fila principal continuasse operando em velocidade máxima.</p>
         </div>
 
@@ -4333,7 +4333,7 @@ public class DlqReplayController {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>DLQ sem Alerta e sem Monitoramento:</strong> Uma DLQ sem dashboard de métricas vira um "cemitério esquecido". Se ninguém olhar para a DLQ, falhas silenciosas de integração passam semanas sem serem descobertas até os clientes começarem a processar a empresa judicialmente.</li>
             <li><strong>DLQ com TTL ativado:</strong> Colocar TTL em uma Dead Letter Queue faz com que mensagens que precisavam de investigação humana sejam automaticamente deletadas após alguns dias, destruindo evidências de falha.</li>
@@ -4361,7 +4361,7 @@ public class DlqReplayController {
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Por Que a DLQ Salva a Operação?</b>
-                    <p>Ela desobstrui a fila principal permitindo que o tráfego saudável continue fluindo, ao mesmo tempo em que retém 100% das mensagens problemáticas para análise e correção manual sem perda de dados.</p>
+                    <p>Ela pode separar mensagens que falharam repetidamente da fila principal para inspeção e tratamento. Retenção, durabilidade, política de expiração, limites e risco de perda dependem da topologia e da configuração; DLQ não é backup nem garante preservação eterna.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -4450,7 +4450,7 @@ public class DlqReplayController {
       <article class="topic" id="f4">
         <div class="th"><h3>Desligar sem perder trabalho</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">dlq & poison pills</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um deploy de release no Kubernetes, os Pods antigos foram terminados no meio do processamento de faturas de 35 segundos. Como o encerramento foi abrupto sem esperar a conclusão dos acks, o RabbitMQ recolocou as mensagens na fila e os novos Pods reprocessaram tudo do zero, emitindo boletos bancários duplicados para 800 clientes. A configuração de Graceful Shutdown cancelando o consumidor e aguardando as mensagens em voo encerrou as duplicidades.</p>
         </div>
 
@@ -4513,7 +4513,7 @@ public void processar(RelatorioMsg msg) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>TerminationGracePeriodSeconds curto no Kubernetes:</strong> Se o Kubernetes estiver com o padrão de 30 segundos, mas sua tarefa de consumidor demorar 45 segundos, aos 30 segundos o Kubernetes envia um <code>SIGKILL (Kill -9)</code> implacável que mata a JVM sem deixar rastros! Configure <code>terminationGracePeriodSeconds: 60</code> no YAML do Deployment do Kubernetes.</li>
           </ul>
@@ -4637,7 +4637,7 @@ public void processar(RelatorioMsg msg) {
       <article class="topic" id="g1">
         <div class="th"><h3>Idempotência de efeito: as três formas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma perda temporária de pacote TCP fez o broker reentregar uma mensagem de pagamento que já havia sido processada com sucesso no banco. Sem controle de idempotência, o consumidor disparou um segundo pagamento de R$ 2.400 para o mesmo fornecedor. A implementação de uma tabela de chaves de idempotência com chave única no banco de dados bloqueou reprocessamentos duplicados instantaneamente.</p>
         </div>
 
@@ -4715,7 +4715,7 @@ CREATE TABLE mensagens_consumidas (
 );</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Checagem não-atômica com <code>SELECT</code> seguido de <code>INSERT</code>:</strong> Fazer <code>if (!repo.existsById(id)) { repo.save(id); }</code> em código Java não protege contra concorrência! Duas threads simultâneas farão o SELECT ao mesmo tempo, ambas acharão que o ID não existe e ambas executarão o pagamento. O controle DEVE ser atômico no banco via <code>ON CONFLICT</code> ou trava única!</li>
           </ul>
@@ -4845,7 +4845,7 @@ public void processarDebito(DebitoMensagem msg) {
       <article class="topic" id="g2">
         <div class="th"><h3>Transactional Outbox: o padrão mais importante desta trilha</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço gravava o pedido no banco de dados e em seguida chamava `rabbitTemplate.send()`. Uma oscilação na rede ocorreu exatamente após o commit do banco mas antes da postagem no broker, deixando o pedido confirmado no banco sem que a expedição fosse notificada. A adoção do padrão Transactional Outbox garantiu que o pedido e o evento fossem gravados na mesma transação atômica do banco, eliminando pedidos fantasmas.</p>
         </div>
 
@@ -4950,7 +4950,7 @@ public void finalizarPedido(Pedido pedido) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Dual-Write Ingênuo:</strong> Fazer <code>banco.save(pedido); rabbitTemplate.send(evento);</code>. Se a aplicação sofrer OOMKilled ou perder a rede entre essas duas linhas, o evento é perdido para sempre!</li>
           </ul>
@@ -5075,7 +5075,7 @@ public void criarPedido(CriarPedidoCmd cmd) {
       <article class="topic" id="g3">
         <div class="th"><h3>Saga: consistência entre serviços sem transação distribuída</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">outbox & dual-write</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um fluxo de e-commerce distribuído entre serviços de Pedido, Pagamento e Entrega sofreu falha quando o estoque não tinha os itens disponíveis após o cartão ter sido debitado. Sem transações compensatórias estruturadas, o cliente ficou sem o produto e com o valor cobrado na fatura. A adoção do padrão Saga coreografada via mensageria disparou o evento de compensação automática que estornou o cartão em 1.5 segundo.</p>
         </div>
 
@@ -5131,7 +5131,7 @@ public void compensarEstoque(EstornoPedidoEvent event) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Falta de Isolamento em Sagas (Anomalias de Leitura Suja):</strong> Como a Saga comita em cada passo intermediário, um usuário pode consultar seu pedido no meio do caminho e ver o status "Estoque Reservado" antes de o pagamento falhar. Modele estados intermediários explícitos no domínio (ex: <code>PENDENTE_PAGAMENTO</code>, <code>RESERVANDO_ESTOQUE</code>).</li>
             <li><strong>Ciclos em Sagas Coreografadas (*Choreography Spaghetti*):</strong> Quando o fluxo envolve mais de 5 serviços, a coreografia descentralizada se torna impossível de rastrear e debugar. Para fluxos longos, use sempre um Orquestrador formal.</li>
@@ -5256,7 +5256,7 @@ public void compensarEstoque(EstornoPedidoEvent event) {
       <article class="topic" id="h1">
         <div class="th"><h3>A configuração mínima que você deveria copiar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação Spring Boot conectava ao RabbitMQ usando as configurações padrão de fábrica com canal compartilhado sem pool de conexões adequado. Durante um pico repentino de tráfego, o handshake de canais concorrentes gerou lentidão generalizada e perda de mensagens em trânsito. A declaração explícita de `CachingConnectionFactory` com `setPublisherConfirmType(ConfirmType.CORRELATED)` garantiu alta vazão e confiabilidade de entrega.</p>
         </div>
 
@@ -5343,7 +5343,7 @@ public class RabbitCoreConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>default-requeue-rejected = true:</strong> Deixar essa propriedade como <code>true</code> faz com que qualquer exceção não tratada devolva a mensagem para a mesma fila imediatamente, reativando o veneno da <em>Poison Message</em> em loop infinito! Configure sempre como <code>false</code> para que mensagens rejeitadas vão para a Dead Letter Exchange.</li>
           </ul>
@@ -5462,7 +5462,7 @@ public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
       <article class="topic" id="h2">
         <div class="th"><h3>Declarables, conversor e o @RabbitListener</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um produtor em Java publicava eventos serializados com o formatador nativo binário do Java, e um novo microsserviço em Node.js tentou consumir a fila e falhou com erro de sintaxe por não conseguir decodificar o payload. A configuração padronizada de `Jackson2JsonMessageConverter` em todos os listeners garantiu que todas as mensagens trafeguem em formato JSON interoperável e legível por qualquer tecnologia.</p>
         </div>
 
@@ -5537,7 +5537,7 @@ public MessageConverter messageConverter() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>ClassNotFoundException por acoplamento de pacote:</strong> Se o serviço A enviar a classe <code>com.empresa.servicoA.PedidoDTO</code> e o serviço B tentar desserializar esperando <code>com.empresa.servicoB.PedidoDTO</code>, o Jackson do Spring AMQP quebra se confiar cegamente no header <code>__TypeId__</code>. Configure um mapeador customizado ou use <code>@Payload</code> com classes desacopladas.</li>
           </ul>
@@ -5662,7 +5662,7 @@ public Declarables topologiaPedidos() {
       <article class="topic" id="h3">
         <div class="th"><h3>Testar mensageria de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">idempotência & deduplicação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Testes de integração rodando com mocks em memória validavam que o método de envio era chamado, mas não detectavam que a exchange não existia no RabbitMQ real de produção, causando falhas graves no deploy. A adoção de Testcontainers com uma instância oficial do RabbitMQ rodando no Docker durante a esteira de CI capturou 6 bugs de configuração de topologia antes do release.</p>
         </div>
 
@@ -5678,7 +5678,7 @@ public Declarables topologiaPedidos() {
             <div class="duo">
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
-            <p>Garante que os bindings, a sintaxe dos coringas de tópicos (<code>*</code> e <code>#</code>), as permissões de vhost e as regras de DLQ realmente funcionam no protocolo AMQP real antes de qualquer linha de código subir para produção.</p>
+            <p>Permite verificar, em uma instância real do broker, bindings, roteamento, permissões e regras de DLQ antes do deploy. Ainda é necessário cobrir versões, configuração e condições relevantes do ambiente; um teste não prova paridade total com produção.</p>
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
@@ -5741,7 +5741,7 @@ void deveEnviarParaDlqQuandoPayloadForInvalido() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Uso de <code>Thread.sleep(2000)</code> nos testes assíncronos:</strong> Testes com <code>sleep</code> fixo tornam o build do CI extremamente lento e causam falhas intermitentes (*Flaky Tests*) quando o runner do CI estiver sob alta concorrência de CPU. Use sempre <code>await().untilAsserted(...)</code> do Awaitility!</li>
           </ul>
@@ -5887,7 +5887,7 @@ class PedidoConsumerIntegrationTest {
       <article class="topic" id="i1">
         <div class="th"><h3>Quorum queues e alta disponibilidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cluster RabbitMQ utilizando filas clássicas espelhadas (Mirrored Queues) sofreu uma partição de rede temporária no data center. A sincronização de espelhos causou bloqueio de todas as filas e perda de mensagens por split-brain. A migração completa para Quorum Queues, que utilizam o algoritmo de consenso Raft para replicação distribuída entre os nós, garantiu alta disponibilidade sem inconsistências sob falhas de rede.</p>
         </div>
 
@@ -5944,7 +5944,7 @@ public class QuorumQueueConfig {
 # definition: {"queue-type": "quorum"}</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Cluster de 2 nós:</strong> Em um cluster de apenas 2 nós, o quórum de maioria é 2 (50% + 1). Se 1 nó cair, a maioria é perdida e o cluster <strong>fica travado sem aceitar escritas</strong>! Clusters com Quorum Queues DEVEM ter SEMPRE número ímpar de nós: <strong>3, 5 ou 7 nós</strong>.</li>
             <li><strong>Não suporta mensagens transitórias (Non-durable):</strong> Quorum Queues só aceitam mensagens persistentes gravadas em disco.</li>
@@ -5979,7 +5979,7 @@ public class QuorumQueueConfig {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Durabilidade com Consenso Distribuído</b>
-                    <p>Uma mensagem só é confirmada para o produtor após ser gravada no log persistente da <strong>maioria dos nós do cluster (Quorum: 2 de 3, ou 3 de 5)</strong>, garantindo tolerância contra perda de dados.</p>
+                    <p>Em uma quorum queue, publisher confirms dependem do protocolo de replicação e da confirmação do quorum necessário, conforme a versão e o estado do cluster. Isso melhora a tolerância a falhas, mas não elimina todos os cenários de perda: considere persistência, confirmação do publisher, falhas correlacionadas, políticas operacionais e restauração.</p>
                   </div>
                 </div>
               </div>
@@ -6061,7 +6061,7 @@ public class QuorumQueueConfig {
       <article class="topic" id="i2">
         <div class="th"><h3>Diagnóstico: os quatro números que resolvem quase tudo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um incidente crítico em que o processamento de pedidos parecia congelado, uma consulta de 30 segundos ao painel do RabbitMQ Management revelou o número `messages_unacknowledged` em 35.000 com `deliver_rate` zerado. O diagnóstico identificou instantaneamente que os consumidores haviam travado em um pool de banco bloqueado, permitindo reiniciar os serviços certos sem derrubar o broker.</p>
         </div>
 
@@ -6117,7 +6117,7 @@ rate(rabbitmq_queue_messages_published_total[1m])
 rate(rabbitmq_queue_messages_delivered_total[1m])</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Ignorar o gráfico de Publish vs Ack Rate:</strong> Se a taxa de publicação for 500 msgs/s e a taxa de consumo for 400 msgs/s, a fila acumulará 6.000 mensagens a cada minuto. Mesmo que pareça "tudo funcionando", em poucas horas o disco do servidor estoura.</li>
           </ul>
@@ -6240,7 +6240,7 @@ rate(rabbitmq_queue_messages_delivered_total[1m])</code></pre>
       <article class="topic" id="i3">
         <div class="th"><h3>Capacidade, limites e segurança</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">alta disponibilidade & quorum</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma credencial vazada de um microsserviço de relatórios secundário foi utilizada para deletar acidentalmente uma fila de produção contendo 80.000 transações bancárias. O incidente ocorreu porque todos os serviços utilizavam o Virtual Host padrão `/` com o mesmo usuário de admin. A segregação em vhosts dedicados com permissões estritas de leitura e escrita isolou o raio de explosão e garantiu conformidade de segurança.</p>
         </div>
 
@@ -6295,7 +6295,7 @@ spring:
       verify-hostname: true</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Usar o usuário padrão <code>guest:guest</code> fora de localhost:</strong> O RabbitMQ bloqueia por padrão o login de <code>guest</code> vindo de fora de localhost. Crie sempre usuários com senhas fortes e permissões específicas para cada aplicação.</li>
           </ul>
@@ -6419,7 +6419,7 @@ spring:
       <article class="topic" id="j1">
         <div class="th"><h3>Fila e log: o mesmo problema visto de dois jeitos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe tentou usar o RabbitMQ para armazenar 5 meses de histórico de telemetria de sensores de IoT (300 milhões de mensagens) para auditoria e replay. Como o RabbitMQ foi desenhado como fila efêmera (onde a mensagem é deletada após o ack), o acúmulo de milhões de mensagens degradou a memória e os índices do broker. A separação arquitetural direcionando telemetria para o Apache Kafka e mantendo o RabbitMQ para comandos transacionais estabilizou o sistema.</p>
         </div>
 
@@ -6504,7 +6504,7 @@ public void ouvirKafka(ConsumerRecord&lt;String, String&gt; record) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Head-of-Line Blocking no Kafka por Poison Message:</strong> Como o Kafka é um log ordenado sequencial por partição, se a mensagem no offset 100 falhar e seu código fizer retry bloqueante na partição, <strong>a partição inteira congela</strong> e nenhuma mensagem subsequente é lida até que o erro seja resolvido ou a mensagem seja pulada.</li>
           </ul>
@@ -6620,8 +6620,8 @@ public void ouvirKafka(ConsumerRecord&lt;String, String&gt; record) {
       <article class="topic" id="j2">
         <div class="th"><h3>Brokers gerenciados: o mapa de tradução</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Uma migração de RabbitMQ self-hosted para Amazon MQ (RabbitMQ gerenciado na AWS) falhou na primeira semana porque o dimensionamento da instância foi feito sem considerar os limites de canais e I/O de disco da nuvem. O ajuste correto de instâncias e pooling de canais garantiu 99.95% de disponibilidade com custo operacional 40% menor do que gerenciar máquinas virtuais manuais.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> uma equipe migra RabbitMQ autogerenciado para um broker gerenciado e encontra limites de conexões, canais ou I/O diferentes dos esperados. Dimensionamento, arquitetura de filas, rede e contrato do serviço precisam ser validados em teste. Um serviço gerenciado muda o trabalho operacional, mas custo e disponibilidade dependem do plano, configuração, workload e operação da equipe.</p>
         </div>
 
         <div class="topic-split">
@@ -6709,7 +6709,7 @@ public class SqsPedidoConsumer {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Visibility Timeout do SQS menor que o processamento:</strong> Se o seu consumidor demorar 40 segundos para processar um relatório e o <em>Visibility Timeout</em> da fila SQS estiver configurado em 30 segundos, aos 30 segundos o SQS assume que o consumidor morreu e <strong>entrega a mesma mensagem para outro pod</strong>, gerando processamento duplicado em massa!</li>
           </ul>
@@ -6825,7 +6825,7 @@ public class SqsPedidoConsumer {
       <article class="topic" id="j3">
         <div class="th"><h3>OrderFlow com mensageria: o capstone dos seis documentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">observabilidade & métricas</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O capstone corporativo OrderFlow com mensageria foi submetido a um teste de caos simulando o desligamento forçado do nó primário do RabbitMQ durante a Black Friday sob 18.000 pedidos/minuto. A combinação de Transactional Outbox no PostgreSQL, Quorum Queues replicadas via Raft e idempotência de efeito garantiu que nenhum pedido fosse perdido nem processado em duplicidade.</p>
         </div>
 
@@ -6895,7 +6895,7 @@ public class OrderFlowFaturamentoConsumer {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Não testar a falha:</strong> Subir para produção sem ter executado testes de caos (como derrubar o container do RabbitMQ no meio de um teste de carga com Testcontainers) mascara falhas em callbacks e reconexões automáticas.</li>
           </ul>
@@ -8017,7 +8017,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
 docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management-alpine</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Nunca olhar o log do broker Erlang:</strong> Muitos desenvolvedores olham apenas os logs da aplicação Java e ignoram o <code>docker logs rabbitmq</code>, onde o RabbitMQ cospe avisos vitais de alarmes de memória e desconexões anômalas de socket.</li>
           </ul>
@@ -8180,7 +8180,7 @@ docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-mana
 - https://docs.spring.io/spring-amqp/reference/</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Artigos desatualizados recomendando Mirrored Queues (HA):</strong> Cuidado com blogs antigos ensinando <code>x-ha-policy: all</code>: esse modelo legado foi formalmente descontinuado. Use sempre Quorum Queues (<code>x-queue-type: quorum</code>).</li>
           </ul>
@@ -8345,7 +8345,7 @@ docker run -d --name rabbitmq-lab -p 5672:5672 -p 15672:15672 rabbitmq:3.13-mana
 ./mvnw clean test</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Fazer apenas na teoria sem rodar o código:</strong> Conhecimento puramente teórico de mensageria evapora da memória em poucas semanas. Execute os laboratórios, erre, conserte e fixe o aprendizado.</li>
           </ul>

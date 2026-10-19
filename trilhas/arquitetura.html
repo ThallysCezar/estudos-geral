@@ -794,8 +794,8 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a1">
         <div class="th"><h3>Arquitetura é o conjunto de decisões difíceis de mudar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Uma fintech escolheu um banco NoSQL chave-valor sem suporte a transações ACID multichave como banco principal de contas bancárias. Dois anos depois, com 800.000 clientes, a necessidade de auditoria e transferências atômicas exigiu 14 meses de migração de dados com equipe dobrada e custo de R$ 3,2 milhões para migrar para PostgreSQL. A decisão original, tomada em 1 semana sem análise de reversibilidade, consumiu metade do orçamento anual de tecnologia da empresa.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> uma fintech avalia um banco chave-valor para o ledger de contas. Antes da escolha, o time precisa validar se o produto atende às invariantes de saldo, auditoria, consistência e transações necessárias. Se esses requisitos aparecerem tarde, a migração pode ser cara; prazo e custo dependem de volume, modelo de dados, integrações e estratégia de migração — não há um resultado fixo para esse tipo de decisão.</p>
         </div>
 
         <div class="topic-split">
@@ -998,8 +998,8 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a2">
         <div class="th"><h3>Tudo é trade-off: não existe arquitetura melhor, existe adequada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a lei zero</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um time de 4 engenheiros adotou uma malha completa de microsserviços com Istio, gRPC, Kafka e Event Sourcing para um sistema interno de folha de pagamento de 200 funcionários. A complexidade operacional consumiu 70% do tempo do time mantendo clusters e depurando traces distribuídos em vez de entregar regras trabalhistas. A substituição por um monolito modular simples em Spring Boot reduziu o tempo de entrega de novas features de 6 semanas para 3 dias.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> um time pequeno considera microsserviços, service mesh, mensageria e Event Sourcing para uma folha de pagamento interna. A equipe deve comparar o benefício de deploy e escala independentes com o custo de operar rede, observabilidade, consistência e plataforma. Um monólito modular pode ser uma alternativa mais simples; a decisão deve ser validada pelas necessidades de mudança e pelos limites operacionais reais.</p>
         </div>
 
         <div class="topic-split">
@@ -1189,7 +1189,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a3">
         <div class="th"><h3>Requisitos não-funcionais: o que realmente define a arquitetura</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo de leilão online desenhou sua arquitetura focando apenas nas regras de negócio de lances, ignorando o requisito não-funcional de latência P99 menor que 50ms. Na primeira transmissão ao vivo com 12.000 usuários simultâneos, lances demoravam 1.800ms para refletir na tela dos concorrentes, gerando vendas duplicadas do mesmo lote e disputas judiciais de R$ 450.000. O sistema precisou ser reestruturado com WebSockets na borda e Redis Pub/Sub em memória para atender ao requisito temporal.</p>
         </div>
 
@@ -1269,7 +1269,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
           <ul>
             <li><b>Otimizar para a média:</b> focar em médias nos dashboards enquanto o p99 dispara para dezenas de segundos provocando cancelamento de compras.</li>
             <li><b>Superdimensionamento desnecessário (Over-engineering):</b> pagar $5.000/mês em infraestrutura multi-região para um sistema interno que atende 50 funcionários.</li>
-            <li><b>Requisitos não validados com o negócio:</b> assumir que a tolerância a indisponibilidade é zero sem informar à diretoria que 99.999% custa 10x mais que 99.9%.</li>
+            <li><b>Requisitos não validados com o negócio:</b> prometer disponibilidade maior sem estimar orçamento, dependências e esforço operacional. A diferença de custo entre metas como 99,9% e 99,99% depende da arquitetura, dos fornecedores e do que o negócio chama de indisponibilidade.</li>
           </ul>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -1383,7 +1383,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a4">
         <div class="th"><h3>Simplicidade deliberada: a navalha de Ockham aplicada</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma plataforma de cursos implementou um mecanismo genérico de plugins dinâmicos com reflection e carregamento de bytecode customizado para calcular descontos em matrículas. O código continha 18 classes abstratas e 4 fábricas encadeadas. Um bug de concorrência no ClassLoader travava o servidor em horários de pico. A simplificação substituindo o framework genérico por uma tabela de descontos com enum e 12 linhas de lógica pura eliminou os travamentos e facilitou a manutenção para todo o time.</p>
         </div>
 
@@ -1579,7 +1579,7 @@ public class PostgresPedidoRepository implements PedidoRepository {
       <article class="topic" id="a5">
         <div class="th"><h3>O papel: influência sem autoridade e a régua de profundidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">carreira</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um arquiteto corporativo publicou uma diretiva de 80 páginas impondo a adoção mandatória de GraphQL em todos os 15 times da empresa sem envolver os líderes técnicos. Como os times não dominavam os problemas de cache HTTP e queries recursivas N+1 do GraphQL, 8 serviços sofreram degradação crítica de latência em produção. A postura precisou mudar para sessões de prova de conceito conjuntas (RFCs abertas) e workshops práticos onde a autoridade foi conquistada pela viabilidade técnica demonstrada.</p>
         </div>
 
@@ -1778,7 +1778,7 @@ public class PostgresPedidoRepository implements PedidoRepository {
       <article class="topic" id="b1">
         <div class="th"><h3>As quatro camadas presentes em quase todo sistema</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mapa</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Em um sistema de faturamento, a camada de controle HTTP (Controller) executava queries SQL puras via JDBC, validava regras de imposto estadual e disparava requisições para a Receita Federal diretamente na thread web. Quando a prefeitura mudou o formato da nota fiscal, o time precisou alterar 42 controllers diferentes e quebrou regras de negócio em 6 rotas. A reorganização estrita em Presentation, Application, Domain e Infrastructure isolou a regra tributária e permitiu adaptar o conector fiscal sem tocar nas regras de cálculo.</p>
         </div>
 
@@ -1983,7 +1983,7 @@ public class PostgresPedidoRepository implements PedidoRepository {
       <article class="topic" id="b2">
         <div class="th"><h3>Por que a aplicação precisa ser sem estado</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma loja virtual salvava o carrinho de compras e o token do usuário na `HttpSession` em memória do Tomcat. Durante uma liquidação relâmpago, o balanceador de carga começou a distribuir requisições entre 4 instâncias e os clientes perdiam o carrinho a cada clique porque suas sessões estavam presas na instância original. A ativação forçada de Sticky Session sobrecarregou nós individuais. A externalização total do estado para Redis e tokens JWT sem estado permitiu escalar para 30 nós heterogêneos sem perda de contexto.</p>
         </div>
 
@@ -1999,7 +1999,7 @@ public class PostgresPedidoRepository implements PedidoRepository {
             <div class="duo">
           <div class="pilar-box p-serve">
             <div class="pilar-header"><span class="pilar-mini">🚀</span> 2. Para que serve?</div>
-            <p>Serve para viabilizar resiliência automática, auto-scaling horizontal e deploys com zero downtime em Kubernetes/nuvem.</p>
+            <p>Ajuda a viabilizar resiliência, escalabilidade horizontal e atualizações graduais em Kubernetes/nuvem. Disponibilidade durante o deploy depende também de readiness, capacidade, compatibilidade entre versões, roteamento e comportamento do cliente; não há garantia universal de zero downtime.</p>
             <ul>
               <li><b>Zero Downtime Deploy:</b> mata containers antigos e sobe novos (RollingUpdate) sem deslogar usuários ou interromper compras.</li>
               <li><b>Auto-scaling elástico:</b> o cluster pode ir de 2 para 50 pods em minutos durante uma promoção sem necessidade de pré-aquecimento de sessão.</li>
@@ -2182,7 +2182,7 @@ public class AutenticacaoService {
       <article class="topic" id="b3">
         <div class="th"><h3>Cada dado no seu lugar: escolher o armazenamento pela pergunta</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa utilizou Elasticsearch como banco de dados transacional primário para registrar pagamentos e transferências. Após uma partição de rede no cluster, conflitos de versionamento de documentos geraram perda silenciosa de 180 transações financeiras. O time aprendeu que Elasticsearch é otimizado para busca textual e agregações analíticas, enquanto transações financeiras exigem a consistência ACID de um banco relacional como PostgreSQL. O padrão polyglot persistence (Postgres como verdade + Elasticsearch como índice de busca) estabilizou a operação.</p>
         </div>
 
@@ -2378,7 +2378,7 @@ public class AutenticacaoService {
       <article class="topic" id="b4">
         <div class="th"><h3>Os bastidores: o que não cabe dentro da requisição</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma funcionalidade de importação de planilhas de estoque com 50.000 linhas rodava síncronamente dentro do ciclo HTTP da requisição POST. O navegador do cliente e o Cloudflare abortavam a conexão com `504 Gateway Timeout` aos 60 segundos, mas o servidor continuava processando em background sem avisar ninguém, gerando duplicidade quando o usuário clicava novamente. A conversão para um endpoint assíncrono que responde `202 Accepted` imediatamente e delega a importação para workers com fila e polling de status eliminou os timeouts.</p>
         </div>
 
@@ -2573,7 +2573,7 @@ public void processarRelatorio(RelatorioCommand cmd) {
       <article class="topic" id="b5">
         <div class="th"><h3>Chegar num projeto novo: seguir uma requisição do começo ao fim</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Ao integrar um novo microsserviço de crédito, o time assumiu que o tráfego passava diretamente do Ingress para o serviço. Um incidente misterioso derrubou a autenticação: nenhuma requisição chegava aos logs da aplicação. Ao rastrear a requisição de ponta a ponta, os engenheiros descobriram um WAF esquecido no Cloudflare que bloqueava payloads maiores que 128 KB com regras legadas não documentadas. O mapeamento formal da cadeia completa (DNS -> WAF -> Ingress -> Gateway -> App -> DB) tornou-se requisito de onboarding.</p>
         </div>
 
@@ -2776,7 +2776,7 @@ Publica 'PedidoCriado' no Kafka com Outbox Pattern</code></pre></div>
       <article class="topic" id="c1">
         <div class="th"><h3>Acoplamento e coesão: as duas únicas métricas que importam</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a raiz de tudo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma classe chamada `UserManager` continha 4.500 linhas de código e era responsável por autenticar usuários, enviar e-mails de boas-vindas, emitir boletos bancários, calcular comissão de vendedores e exportar relatórios em CSV. Qualquer alteração no formato do boleto quebrava a autenticação de login devido a dependências circulares. A quebra da classe em serviços de responsabilidade única (`AuthService`, `BillingService`, `NotificationService`) reduziu a taxa de regressões em deploy em 88%.</p>
         </div>
 
@@ -2973,7 +2973,7 @@ com.loja.pedidos.PostgresPedidoRepo     // package-private
       <article class="topic" id="c2">
         <div class="th"><h3>SOLID: o que cada letra realmente resolve</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema de e-commerce utilizava uma classe base `OrderProcessor` que violava o Princípio da Substituição de Liskov (LSP): uma subclasse `DigitalOrderProcessor` lançava `UnsupportedOperationException` no método herdado `calculateFreight()`. Durante uma Black Friday, um fluxo genérico de carrinho disparou o cálculo de frete para uma compra mista de curso online, travando o checkout para 1.400 clientes. A segregação de interfaces e respeito estrito ao LSP blindaram os fluxos polimórficos.</p>
         </div>
 
@@ -3197,7 +3197,7 @@ public class CieloGatewayAdapter implements GatewayPagamento {
       <article class="topic" id="c3">
         <div class="th"><h3>Dependências apontam para dentro: o domínio não conhece a borda</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a regra que organiza</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O modelo de domínio core de um sistema bancário (`ContaCorrente`) importava diretamente anotações `@Entity` do Hibernate e classes do Jackson `@JsonProperty` com dependências de banco e JSON misturadas na regra de saldo. Quando o time tentou migrar o ORM do Hibernate para JDBC nativo por performance, o domínio quebrou inteiro e exigiu reescrever testes unitários de regras de negócio. A aplicação do princípio da inversão de dependência isolou o domínio em Java puro, desacoplado de frameworks de infraestrutura.</p>
         </div>
 
@@ -3413,7 +3413,7 @@ public class ContaBancaria {
       <article class="topic" id="c4">
         <div class="th"><h3>Lei de Conway: a arquitetura espelha a organização</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">organização</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa dividiu seu time de engenharia em 3 silos funcionais: 'Time de Frontend', 'Time de Java' e 'Time de DBA'. Para criar uma simples funcionalidade de botão de cancelamento de pedido, era necessário abrir 3 chamados Jira e alinhar deploys sincronizados entre os 3 times, demorando 4 semanas por entrega. A reorganização em equipes multifuncionais orientadas a domínios de negócio ('Time de Checkout', 'Time de Catálogo') permitiu autonomia de ponta a ponta e reduziu o lead time para 2 dias.</p>
         </div>
 
@@ -3599,7 +3599,7 @@ public class ContaBancaria {
       <article class="topic" id="c5">
         <div class="th"><h3>Dívida arquitetural: reconhecer, nomear e cobrar</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um atalho emergencial de bypass de autenticação temporário inserido para uma demonstração rápida nunca foi refatorado e permaneceu esquecido por 18 meses. Uma auditoria de conformidade de segurança (PCI-DSS) descobriu a brecha e suspendeu o credenciamento de processamento de cartões da empresa por 12 dias, gerando R$ 800.000 em multas. A equipe implementou um registro formal de dívida técnica (Architecture Decision Backlog) com 20% da capacidade de cada sprint reservada para amortização de riscos.</p>
         </div>
 
@@ -3790,7 +3790,7 @@ public class ContaBancaria {
       <article class="topic" id="d1">
         <div class="th"><h3>Camadas: o estilo padrão e seus limites</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Em uma arquitetura em camadas tradicional (Controller -> Service -> Repository), o `OrderService` acumulou chamadas a 14 repositories diferentes e totalizou 3.200 linhas de código procedural. Todas as entidades de banco eram modelos anêmicos sem validação, e regras críticas de negócio estavam duplicadas em 5 services diferentes. O time aprendeu os limites do estilo em camadas tradicional e evoluiu o núcleo crítico para Ports & Adapters (Hexagonal), onde o domínio possui métodos ricos e proteção de invariantes.</p>
         </div>
 
@@ -3993,7 +3993,7 @@ public ResponseEntity<?> cancelarPedido(@PathVariable Long id) {
       <article class="topic" id="d2">
         <div class="th"><h3>Monolito modular: o padrão que quase todo time deveria começar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o default honesto</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma startup com 6 desenvolvedores começou o produto dividindo o sistema em 18 microsserviços individuais. O overhead de deploys, contratos de rede e testes ponta a ponta atrasou o lançamento do produto em 8 meses e a empresa quase faliu. O CTO unificou os serviços em um único repositório como Monolito Modular com fronteiras de pacotes estritamente protegidas por testes de arquitetura (ArchUnit). A velocidade de iteração aumentou 4x e o produto foi lançado em 3 semanas.</p>
         </div>
 
@@ -4009,9 +4009,9 @@ public ResponseEntity<?> cancelarPedido(@PathVariable Long id) {
             <div class="duo">
           <div class="pilar-box p-serve">
             <div class="pilar-header"><span class="pilar-mini">🚀</span> 2. Para que serve?</div>
-            <p>Serve como a arquitetura padrão inicial para 95% dos novos projetos de software corporativo no mundo.</p>
+            <p>Um monólito modular costuma ser uma opção inicial simples quando um único deploy atende às necessidades e os limites internos podem ser mantidos claros. Não há uma arquitetura que sirva para uma porcentagem fixa dos projetos; requisitos de isolamento, escala, autonomia de equipes e operação podem justificar outras formas.</p>
             <ul>
-              <li><b>Zero overhead de rede:</b> chamadas entre módulos são invocações normais de métodos Java em memória (0.001ms vs 20ms de latência de rede).</li>
+              <li><b>Sem salto de rede entre módulos locais:</b> uma chamada entre objetos dentro do mesmo processo evita protocolo e rede, mas ainda tem custo de execução, alocação e contenção. Não compare com um valor fixo de latência sem medir o ambiente.</li>
               <li><b>Transações ACID locais:</b> se uma operação crítica precisar salvar dados em dois módulos, a transação local do PostgreSQL garante consistência perfeita.</li>
               <li><b>Caminho suave para microsserviços:</b> se um módulo crescer tanto que justifique deploy isolado, extraí-lo leva dias, não meses, pois sua fronteira já existe.</li>
             </ul>
@@ -4205,7 +4205,7 @@ com.empresa.plataforma
       <article class="topic" id="d3">
         <div class="th"><h3>Microsserviços: o que se ganha, o que se paga</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de pagamentos realizava chamadas HTTP síncronas em cadeia para outros 6 serviços antes de responder ao cliente. Uma lentidão de 300ms no serviço de geolocalização causou um efeito dominó de latência cumulativa de 2.200ms na cadeia inteira, esgotando threads em todos os nós intermediários. A migração de comunicação síncrona encadeada para eventos assíncronos e a adoção de circuit breakers isolaram o raio de explosão e estabilizaram os microsserviços.</p>
         </div>
 
@@ -4402,7 +4402,7 @@ boolean aprovado = antiFraudeService.analisar(pedido);
       <article class="topic" id="d4">
         <div class="th"><h3>Orientado a eventos: quando o produtor não conhece o consumidor</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço produtor publicava um evento genérico `ClienteAlterado` contendo apenas o ID do cliente. 8 serviços consumidores que precisavam saber o novo endereço do cliente começaram a bombardear a API REST do produtor com 15.000 requisições simultâneas para buscar os dados completos (efeito consulta em enxame). A evolução para Event-Carried State Transfer, incluindo o payload de dados essenciais dentro do próprio envelope da mensagem, reduziu a carga de consultas adicionais a zero.</p>
         </div>
 
@@ -4602,7 +4602,7 @@ public void processar(ConsumerRecord&lt;String, String&gt; record) {
       <article class="topic" id="d5">
         <div class="th"><h3>Como escolher: a árvore de decisão honesta</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">síntese</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa escolheu arquitetura de microsserviços orientada a eventos para um sistema de gestão de almoxarifado interno que recebia 40 requisições por hora. O custo da infraestrutura (Kafka gerenciado, clusters Kubernetes e observabilidade Datadog) chegou a R$ 14.000/mês para atender a um escritório com 15 funcionários. A substituição por uma aplicação monolítica simples hospedada em uma única instância gerenciada reduziu o custo para R$ 180/mês e simplificou a manutenção.</p>
         </div>
 
@@ -4800,7 +4800,7 @@ public void processar(ConsumerRecord&lt;String, String&gt; record) {
       <article class="topic" id="e1">
         <div class="th"><h3>Linguagem ubíqua: o vocabulário como decisão técnica</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Em um software de logística internacional, os desenvolvedores nomearam o conceito no código como `ShipmentStatus = CANCELLED`, enquanto os especialistas do setor e a alfândega chamavam de `REVOKED` e `ABORTED` com regras tributárias totalmente distintas. Uma rotina automática tratou uma carga retida na alfândega como cancelamento simples pelo cliente e devolveu o pagamento indevidamente, gerando prejuízo aduaneiro de R$ 220.000. A adoção formal da Linguagem Ubíqua do DDD alinhou o vocabulário do código ao domínio real.</p>
         </div>
 
@@ -4997,7 +4997,7 @@ public void aprovarConcessaoDeCredito(NumeroProposta propostaId, LimiteAprovado 
       <article class="topic" id="e2">
         <div class="th"><h3>Bounded context: a fronteira mais importante do sistema</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o coração do DDD</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma única classe Java `Produto` de 80 atributos era compartilhada pelo catálogo de vendas, estoque físico, logística reversa e contabilidade fiscal. Cada alteração que o time de marketing pedia na descrição de um produto exigia rodar testes de recálculo de impostos e risco aduaneiro. A segregação em Bounded Contexts explícitos (`Catalogo.Produto`, `Estoque.ItemEstocavel`, `Fiscal.MercadoriaTributavel`) permitiu que cada contexto tivesse apenas os atributos e regras pertinentes à sua fronteira.</p>
         </div>
 
@@ -5200,7 +5200,7 @@ public class ItemEstoque {
       <article class="topic" id="e3">
         <div class="th"><h3>Agregado e invariante: onde a consistência é garantida</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema permitia que serviços externos alterassem diretamente os itens de um pedido através do repositório `OrderItemRepository.save(item)` sem passar pela raiz do agregado `Order`. Em uma promoção com cupom de desconto de limite máximo, itens foram adicionados sem recalcular o teto do cupom, permitindo que clientes comprassem R$ 40.000 em produtos a custo zero. A blindagem da consistência tornando a raiz do Agregado a única porta de entrada garantiu a validação invariante dos limites.</p>
         </div>
 
@@ -5400,7 +5400,7 @@ itemPedidoRepository.save(item); // Atualizou direto o filho!</code></pre>
       <article class="topic" id="e4">
         <div class="th"><h3>Core, supporting e generic: onde investir esforço</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">estratégia</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fintech de inteligência de crédito gastou 9 meses e R$ 1,5 milhão construindo um sistema proprietário de envio de e-mails transacionais e faturamento por boleto do zero. Enquanto isso, o algoritmo central de análise de risco e antifraude (Core Domain) ficou sem engenheiros dedicados e perdeu clientes para concorrentes. O reconhecimento de que e-mail e faturamento são Generic Subdomains terceirizáveis (SaaS) liberou 100% da equipe para investir no diferencial competitivo real do negócio.</p>
         </div>
 
@@ -5589,7 +5589,7 @@ itemPedidoRepository.save(item); // Atualizou direto o filho!</code></pre>
       <article class="topic" id="e5">
         <div class="th"><h3>Como aprender um domínio novo em duas semanas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Engenheiros contratados para construir um sistema de previdência privada começaram a programar classes e tabelas de banco imediatamente sem conversar com os atuários da área de negócios. Após 3 meses de desenvolvimento, descobriram que a regra de amortização atuarial implementada violava a regulamentação da SUSEP e todo o código precisou ser descartado. A realização prévia de sessões de Event Storming com especialistas de domínio mapeou os eventos e regras reais antes de qualquer linha de código.</p>
         </div>
 
@@ -5786,7 +5786,7 @@ itemPedidoRepository.save(item); // Atualizou direto o filho!</code></pre>
       <article class="topic" id="f1">
         <div class="th"><h3>Síncrono ou assíncrono: a decisão que define tudo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a escolha raiz</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma requisição de checkout síncrona aguardava o envio de SMS de confirmação da operadora de telefonia antes de retornar HTTP 200 ao cliente. Quando a operadora de telefonia sofreu degradação e passou a responder em 12 segundos, as threads do servidor esgotaram e 3.000 compras online foram canceladas por timeout. A conversão da notificação por SMS para evento assíncrono postado em fila liberou a resposta do checkout em 35 milissegundos.</p>
         </div>
 
@@ -5963,7 +5963,7 @@ broker.publicar(new PedidoPagoEvent(pedidoId)); // 5ms
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O cliente necessita de confirmação imediata de que seus dados foram aceitos pelo aplicativo para prosseguir.">
                     <span class="te-letter">B</span> Tornar até a gravação inicial assíncrona sem fornecer nenhum retorno HTTP imediato de confirmação de cadastro ao usuário da aplicação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Isolar integrações com sistemas externos lentos (gráfica, e-mail) atrás de mensageria garante resposta rápida ao usuário e desacopla a disponibilidade do onboarding das oscilações de parceiros.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto como estratégia: enfileirar trabalho pode tirar a espera do caminho síncrono e reduzir a dependência imediata do parceiro. Ainda é preciso definir confirmação ao usuário, retries, DLQ, idempotência, observabilidade e prazo de entrega; a fila não garante rapidez nem disponibilidade por si só.">
                     <span class="te-letter">C</span> Síncrono para validação e persistência cadastral básica; assíncrono via mensageria para gráfica, contabilidade e envio de e-mail.
                   </button>
                 </div>
@@ -5997,7 +5997,7 @@ broker.publicar(new PedidoPagoEvent(pedidoId)); // 5ms
       <article class="topic" id="f2">
         <div class="th"><h3>Contratos e versionamento: mudar sem quebrar quem consome</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de clientes renomeou o campo `cpf` para `documentoFiscal` em seu payload JSON de resposta sem versionar o endpoint. No instante do deploy, 6 microsserviços dependentes e o aplicativo móvel começaram a lançar exceções de campo nulo, derrubando o login de 150.000 usuários em produção. A implementação de testes de contrato orientados a consumidor (Consumer-Driven Contract Testing com Pact) e a regra de compatibilidade retroativa impediram alterações de quebra em produção.</p>
         </div>
 
@@ -6194,7 +6194,7 @@ public record ClienteResponse(
       <article class="topic" id="f3">
         <div class="th"><h3>REST, gRPC e GraphQL: escolher pelo problema</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo móvel de e-commerce fazia 14 chamadas REST sequenciais para montar a tela inicial, consumindo 8 MB de dados e levando 4.2 segundos em redes móveis 3G/4G. A equipe adotou GraphQL na camada de BFF (Backend for Frontend), permitindo que o aplicativo solicitasse exatamente os campos necessários em uma única requisição de rede, reduzindo o tempo de carregamento da tela para 600ms e economizando 75% da banda do usuário.</p>
         </div>
 
@@ -6387,7 +6387,7 @@ message PedidoResponse {
       <article class="topic" id="f4">
         <div class="th"><h3>Idempotência e entrega garantida</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">produção</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um consumidor de webhook de cobrança da operadora de cartão de crédito sofreu oscilação de rede e o ack de confirmação se perdeu. A operadora reenviou o webhook 5 vezes nos minutos seguintes. Como o serviço não verificava se a transação já havia sido aprovada por chave de idempotência (`idempotency_key`), foram emitidas 5 cobranças de R$ 450 no cartão do mesmo cliente. A inclusão de chave única de idempotência com lock otimista no banco de dados bloqueou duplicidades.</p>
         </div>
 
@@ -6412,7 +6412,7 @@ message PedidoResponse {
           </div>
           <div class="pilar-box p-importa">
             <div class="pilar-header"><span class="pilar-mini">💎</span> 4. Porque importa?</div>
-            <p><b>Origem & Substituição:</b> derivado do clássico <em>Problema dos Dois Generais</em> da teoria da computação: em canais não confiáveis, é impossível atingir entrega "exatamente uma vez" (Exactly-Once) sem custos proibitivos.</p>
+            <p><b>Origem &amp; escopo:</b> redes não oferecem, sozinhas, uma transação atômica que inclua broker e efeitos externos. Sistemas podem garantir exactly-once dentro de um fluxo ou transação específicos; o desenho precisa dizer onde termina essa garantia e como trata retries no restante.</p>
             <p class="repl" class="meta-callout"><b>Veio substituir:</b> a premissa ingênua de que a rede nunca duplica mensagens, responsável por milhares de incidentes de cobranças duplicadas em fintechs.</p>
           </div>
         </div>
@@ -6587,7 +6587,7 @@ public void consumir(PagamentoMensagem msg) {
       <article class="topic" id="f5">
         <div class="th"><h3>Gateway, BFF e camada anticorrupção</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema moderno em nuvem conectou-se diretamente a um ERP legado mainframe que retornava dados em formato posicional EBCDIC com códigos numéricos arcanos. Esses nomes vazaram por todo o código novo, poluindo o domínio moderno com conceitos obsoletos. A criação de uma Camada Anticorrupção (ACL) isolou a comunicação externa, traduzindo as mensagens legadas para o domínio limpo da aplicação e blindando a evolução do novo sistema.</p>
         </div>
 
@@ -6786,7 +6786,7 @@ public class CorreiosAnticorruptionAdapter implements ConsultaFrete {
       <article class="topic" id="g1">
         <div class="th"><h3>Fonte da verdade: um dono por dado</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a regra zero</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois microsserviços diferentes (Cliente e Pagamento) mantinham cópias independentes da tabela de endereços dos usuários e permitiam atualização direta. Um cliente atualizou seu endereço no checkout, mas a cobrança e o envio de cartões continuaram utilizando o endereço antigo do cadastro, enviando um cartão de crédito desbloqueado para o endereço de outra pessoa. A definição de que o Serviço de Clientes é a única Fonte da Verdade (Single Source of Truth) para dados cadastrais resolveu as inconsistências.</p>
         </div>
 
@@ -6981,7 +6981,7 @@ public void atualizar(Usuario u) {
       <article class="topic" id="g2">
         <div class="th"><h3>Consistência forte ou eventual: o que o negócio aceita</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um arquiteto tentou implementar consistência forte síncrona com transações distribuídas Two-Phase Commit (2PC) entre 4 microsserviços geograficamente distribuídos para reservas de hotel. A latência média saltou para 2.400ms e qualquer instabilidade em um nó travava os outros 3 com locks abertos no banco. A migração para consistência eventual com reserva provisória e confirmação assíncrona alinhou a arquitetura à tolerância natural do negócio de hotelaria.</p>
         </div>
 
@@ -7180,7 +7180,7 @@ public void atualizar(Usuario u) {
       <article class="topic" id="g3">
         <div class="th"><h3>Saga: transação de negócio sem transação distribuída</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Em um fluxo de compra envolvendo Pedido, Pagamento e Estoque, o pagamento foi aprovado com sucesso, mas a reserva de estoque falhou por falta de produtos. Sem um mecanismo de transação compensatória, o pedido foi abortado no sistema, mas a cobrança continuou ativa na fatura do cliente, gerando 600 reclamações no Procon. A implementação do padrão Saga orquestrada garantiu que, ao falhar a etapa de estoque, a compensação estornasse o valor do cartão automaticamente.</p>
         </div>
 
@@ -7382,7 +7382,7 @@ public class CheckoutSagaOrchestrator {
       <article class="topic" id="g4">
         <div class="th"><h3>CQRS e read models: separar quem pergunta de quem manda</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um dashboard administrativo de relatórios analíticos executava queries pesadas com agregações de 5 milhões de linhas diretamente no banco relacional de escrita de transações do e-commerce. Durante o expediente, a query analítica consumiu 100% de CPU e travou as escritas de novas vendas de clientes. A separação do modelo via CQRS, replicando os dados de forma assíncrona para uma tabela de leitura desnormalizada (Read Model) no Elasticsearch/Read Replica, isolou o tráfego e zerou o impacto nas vendas.</p>
         </div>
 
@@ -7574,7 +7574,7 @@ SELECT * FROM pedido_resumo WHERE status = 'PROCESSANDO';
       <article class="topic" id="g5">
         <div class="th"><h3>Cache: o ganho fácil e a invalidação difícil</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma loja virtual cacheou o preço e a disponibilidade dos produtos no Redis com TTL de 24 horas. Uma promoção relâmpago reduziu o preço de uma TV de R$ 4.000 para R$ 1.999. Quando a promoção encerrou e o preço voltou ao normal no banco de dados, o cache continuou servindo o valor antigo por mais 18 horas, gerando venda de 300 unidades com prejuízo de R$ 600.000. A adoção de invalidação de cache orientada a eventos no momento do commit do produto evitou dessincronizações.</p>
         </div>
 
@@ -7770,7 +7770,7 @@ SELECT * FROM pedido_resumo WHERE status = 'PROCESSANDO';
       <article class="topic" id="g6">
         <div class="th"><h3>Particionamento e sharding: quando um banco não basta</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um banco de dados de mensagens de chat cresceu para 18 Terabytes em um único servidor PostgreSQL. O índice da tabela de mensagens não cabia mais na memória RAM e as buscas demoravam 9 segundos. A aplicação implementou Sharding horizontal particionando as mensagens por canal e tenant distribuídos em 8 instâncias menores. A latência de consulta caiu para 12ms e o throughput de escrita aumentou em 7x.</p>
         </div>
 
@@ -7969,7 +7969,7 @@ SELECT * FROM pedido_resumo WHERE status = 'PROCESSANDO';
       <article class="topic" id="h1">
         <div class="th"><h3>Escalar leitura é fácil; escalar escrita é o problema</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma contagem de votos de um reality show, a aplicação escalou réplicas de leitura com sucesso, mas o nó mestre de escrita do banco relacional atingiu 100% de saturação de IOPS com 30.000 votos por segundo, bloqueando novas inserções. A reestruturação da escrita bufferizando os votos em tópicos Kafka particionados para agregação em lote em memória antes da persistência no banco reduziu o volume de escritas no banco em 95%.</p>
         </div>
 
@@ -8169,7 +8169,7 @@ repository.saveAll(itens); // Executa INSERT INTO itens VALUES (...), (...), (..
       <article class="topic" id="h2">
         <div class="th"><h3>Falha parcial: o modo de falha que só existe em sistema distribuído</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a virada de chave</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma chamada entre microsserviços sofreu perda de pacotes na rede exatamente após o serviço de pagamento concluir a cobrança, mas antes de retornar a resposta HTTP ao serviço de pedidos. O serviço de pedidos tratou a falta de resposta como falha de rede e cancelou o pedido, deixando o cliente sem produto e cobrado. O time aprendeu que em sistemas distribuídos a ausência de resposta não significa não-execução, exigindo reconciliação de estado e consultas de status antes de assumir falha.</p>
         </div>
 
@@ -8411,7 +8411,7 @@ public class PagamentoService {
       <article class="topic" id="h3">
         <div class="th"><h3>Degradação graciosa: responder pior é melhor que não responder</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>A página de produto de um grande e-commerce falhava inteira com tela de erro 500 se o serviço de recomendações de produtos similares estivesse fora do ar. Durante uma queda do serviço de IA, as páginas de compras caíram completamente, zerando o faturamento por 2 horas. A aplicação de degradação graciosa com Fallback configurou a tela para renderizar o produto principal normalmente mesmo se o bloco de recomendações retornasse vazio, mantendo as vendas ativas.</p>
         </div>
 
@@ -8598,7 +8598,7 @@ public class PagamentoService {
       <article class="topic" id="h4">
         <div class="th"><h3>Backpressure: recusar cedo em vez de aceitar e cair</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço enfileirava requisições HTTP recebidas em uma fila interna ilimitada em memória RAM quando o banco downstream ficava lento. A fila acumulou 250.000 requisições, consumindo 8 GB de RAM até o processo sofrer OutOfMemoryError e reiniciar. Ao reiniciar, recebia a enxurrada novamente em loop eterno. A implementação de backpressure com Circuit Breaker e descarte rápido (Fast Fail com HTTP 429 / 503) protegeu o serviço contra colapso sob sobrecarga.</p>
         </div>
 
@@ -8788,7 +8788,7 @@ public class ThreadPoolConfig {
       <article class="topic" id="h5">
         <div class="th"><h3>Recuperação de desastre: RTO, RPO e o backup que ninguém testou</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa sofreu um ataque de ransomware e tentou restaurar seu banco de dados a partir dos backups automáticos diários em nuvem. Ao iniciar o procedimento, descobriu-se que os backups estavam corrompidos há 8 meses porque ninguém nunca havia executado um teste de restauração real. A empresa perdeu 6 meses de histórico de dados de clientes e demorou 14 dias para retomar operações básicas. A definição formal de RTO (4 horas) e RPO (15 minutos) com testes mensais de restauração automatizados blindou a segurança.</p>
         </div>
 
@@ -8982,7 +8982,7 @@ public class ThreadPoolConfig {
       <article class="topic" id="i1">
         <div class="th"><h3>Superfície de ataque e modelagem de ameaça</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço interno de processamento de logs foi exposto acidentalmente com IP público na internet sem autenticação porque os desenvolvedores assumiram que a URL era secreta. Em menos de 24 horas, scanners de vulnerabilidade descobriram o endpoint e extraíram 4 GB de dados contendo tokens de sessão e senhas em trânsito. A modelagem formal de ameaças (Threat Modeling usando STRIDE) antes de cada release passou a mapear e bloquear exposições não intencionais.</p>
         </div>
 
@@ -9267,7 +9267,7 @@ public class ThreadPoolConfig {
       <article class="topic" id="i2">
         <div class="th"><h3>Identidade em sistema distribuído: quem é quem entre serviços</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Microsserviços internos comunicavam-se entre si confiando cegamente no cabeçalho HTTP `X-User-Id` repassado pela rede. Um desenvolvedor mal-intencionado conectou na rede corporativa e disparou uma chamada simulando ser o administrador do sistema (`X-User-Id: 1`), aprovando pagamentos fraudulentos. A adoção de autenticação mútua TLS (mTLS) com identidades SPIFFE/x509 e tokens JWT assinados criptograficamente garantiu que apenas serviços autorizados transacionem na rede interna.</p>
         </div>
 
@@ -9526,7 +9526,7 @@ public class SecurityHeaderInterceptor implements ClientHttpRequestInterceptor {
       <article class="topic" id="i3">
         <div class="th"><h3>Segredos, criptografia e dados sensíveis</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um dump de banco de dados vazou após um backup acidental cair em um bucket público. Os números de cartão de crédito e senhas de clientes estavam gravados em texto claro na tabela de usuários. A repercussão do vazamento gerou multa de R$ 12 milhões pela LGPD e cancelamento de contratos com bancos parceiros. A implementação mandatória de criptografia de dados sensíveis em repouso com envelope encryption e hashing de senhas com Argon2 neutralizou o risco de vazamento em repouso.</p>
         </div>
 
@@ -9767,7 +9767,7 @@ public class MaskingPatternConverter extends CompositeConverter&lt;ILoggingEvent
       <article class="topic" id="i4">
         <div class="th"><h3>Os três pilares: logs, métricas e traces</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma quebra de faturamento onde a latência de checkout subiu de 40ms para 8.000ms, o time de engenharia perdeu 3 horas tentando ler milhões de linhas de logs de texto puro sem correlação. Apenas quando o distributed tracing com OpenTelemetry foi analisado, o gráfico de cascata revelou instantaneamente que uma chamada gRPC específica para o serviço de frete estava presa em um timeout de socket de 7 segundos. A tríade de métricas RED, logs estruturados e traces correlacionados reduziu o MTTR de 3 horas para 4 minutos.</p>
         </div>
 
@@ -10000,7 +10000,7 @@ public class MaskingPatternConverter extends CompositeConverter&lt;ILoggingEvent
       <article class="topic" id="i5">
         <div class="th"><h3>SLI, SLO e orçamento de erro: confiabilidade como número</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Os times de produto e engenharia viviam em guerra contínua: produto exigia deploys diários de novas telas, enquanto engenharia reclamava que o sistema estava instável. Sem metas numéricas, as discussões eram emocionais e subjetivas. A definição formal de SLO de disponibilidade (99.9% de sucesso em requisições de checkout) com Orçamento de Erro (Error Budget) permitiu que, ao estourar o orçamento de falhas em uma semana, novos deploys fossem congelados automaticamente para focar em estabilidade sem atrito entre times.</p>
         </div>
 
@@ -10244,7 +10244,7 @@ sum(rate(http_requests_total{job="checkout-service"}[30d])) >= 0.995
       <article class="topic" id="j1">
         <div class="th"><h3>ADR: a memória de por que as coisas são assim</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o hábito mais barato</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma nova liderança técnica assumiu o projeto e decidiu reescrever todo o mecanismo de persistência de banco NoSQL para relacional porque não entendia por que haviam usado NoSQL. Seis meses de trabalho foram perdidos para descobrir o mesmo problema de throughput de escrita que havia motivado a escolha original 3 anos antes. A adoção de Architecture Decision Records (ADRs) versionadas no repositório Git registrou o contexto, alternativas descartadas e consequências de cada decisão, impedindo retrabalho histórico.</p>
         </div>
 
@@ -10483,7 +10483,7 @@ ocorrerá de forma 100% assíncrona. A janela de consistência medida é de 300 
       <article class="topic" id="j2">
         <div class="th"><h3>C4: quatro níveis de zoom para não desenhar tudo junto</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa tentava explicar a arquitetura de seu sistema de pagamentos aos novos desenvolvedores usando um único diagrama gigante com 250 caixas contendo desde tabelas de banco de dados até módulos de frontend e portas de firewall. O diagrama era ilegível e ninguém entendia a visão macro do negócio. A adoção do modelo C4 (Contexto, Contêineres, Componentes e Código) forneceu os níveis de zoom corretos para executivos, arquitetos e desenvolvedores se alinharem sem confusão.</p>
         </div>
 
@@ -10756,7 +10756,7 @@ ocorrerá de forma 100% assíncrona. A janela de consistência medida é de 300 
       <article class="topic" id="j3">
         <div class="th"><h3>Evolução: strangler fig e fitness functions</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa tentou substituir um monolito de 10 anos fazendo uma reescrita total do zero (Big Bang Rewrite) em paralelo. Após 2 anos e R$ 4 milhões gastos, o sistema legado continuava recebendo regras novas de negócio e o novo sistema nunca alcançava a paridade funcional, sendo cancelado pela diretoria. A estratégia foi substituída pelo padrão Strangler Fig, interceptando rotas no API Gateway e migrando uma funcionalidade por vez de forma incremental e segura.</p>
         </div>
 
@@ -10998,7 +10998,7 @@ public static final ArchRule regraDeArquitetura = noClasses()
       <article class="topic" id="j4">
         <div class="th"><h3>Comunicar a decisão: o trabalho que faz a arquitetura acontecer</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">influência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um arquiteto sênior desenhou uma solução de microsserviços elegante para autenticação e guardou a especificação no seu repositório pessoal sem apresentar nem explicar aos times de desenvolvimento. Três equipes diferentes construíram suas próprias soluções concorrentes e incompatíveis de autenticação nos meses seguintes. A criação de Fóruns de Arquitetura semanais e RFCs colaborativas garantiu alinhamento e engajamento genuíno de toda a equipe de engenharia.</p>
         </div>
 
@@ -11241,7 +11241,7 @@ Subir um piloto em ambiente de Homologação na próxima terça-feira e rodar te
       <article class="topic" id="j5">
         <div class="th"><h3>Capstone: projetar o OrderFlow de ponta a ponta</h3><div class="badges"><span class="badge b-ver">projeto integrador</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O sistema OrderFlow sofreu um colapso completo durante um lançamento nacional: o monolito bloqueou o pool de conexões por falta de CQRS, a ausência de Sagas gerou pedidos pagos sem estoque e a falta de Camada Anticorrupção fez um erro no ERP travar o catálogo de produtos. A reestruturação de ponta a ponta projetou Bounded Contexts claros, comunicação orientada a eventos com RabbitMQ, Sagas com compensação atômica, cache com invalidação inteligente e observabilidade com OpenTelemetry, garantindo estabilidade para 100.000 pedidos por hora.</p>
         </div>
 
@@ -11583,7 +11583,7 @@ Subir um piloto em ambiente de Homologação na próxima terça-feira e rodar te
 4. Redação de ADR e revisão por pares</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Copiar arquiteturas de big techs sem a mesma escala:</strong> Adotar Kubernetes, Kafka e microsserviços em equipes de 4 pessoas para sistemas de 50 requisições por minuto cria complexidade operacional sem benefício proporcional.</li>
             </ul>
@@ -11645,7 +11645,7 @@ Subir um piloto em ambiente de Homologação na próxima terça-feira e rodar te
 4. Martin Fowler: Padrões de arquitetura corporativa (martinfowler.com)</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Dogmatismo em padrões de design:</strong> Seguir à risca estruturas rígidas de Clean Architecture ou DDD tático em CRUDs simples, criando 15 classes e 4 mappers para salvar um registro no banco.</li>
             </ul>
@@ -11712,7 +11712,7 @@ Subir um piloto em ambiente de Homologação na próxima terça-feira e rodar te
 4. Capstone OrderFlow com arquitetura documentada em ADRs</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Ignorar latência de rede entre microsserviços:</strong> Projetar cascatas de chamadas HTTP síncronas entre 5 serviços, acumulando timeouts e multiplicando a probabilidade de falha parcial.</li>
             </ul>

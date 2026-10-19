@@ -1,0 +1,118 @@
+# HANDOFF.md — passagem de bastão
+
+## Pomodoro compartilhado (2026-10-12)
+
+- Solicitação atual: widget “Técnica Pomodoro” discreto em todas as páginas, configuração dedicada, minutos escondidos antes de configuração e início, e sinais sonoros suaves no início e fim.
+- Já preparado: plano e especificação em `C:\Workspace\Agentes\widgets\pomodoro-estudos\plan.md` e `spec.md`; página de configuração, script compartilhado e estilo comum.
+- Backup de 21 HTML preexistentes criado em `Arquivados/2026-10-12-antes-pomodoro-global/`; widget compartilhado foi incluído nas 20 páginas sem ele. São 22 HTML ativos no total, sem arquivos de `Arquivados/` modificados.
+- Página de configuração em `ferramentas/pomodoro.html`; Home, README, DOCS do Acervo, paletas e contrato de inventário incluem a ferramenta. O widget foi posicionado acima do botão “voltar ao topo”.
+- Verificações concluídas: sintaxe JS do widget, da configuração e do contrato; `check-links` (289 alvos, sem quebras); 22/22 páginas ativas carregam o widget e as 21 cópias de backup existem.
+- Refinamento pedido em 2026-10-12: quando há o botão flutuante “Início”, o timer sobe para empilhar acima dele e do botão “voltar ao topo”; sem esse botão, conserva a posição inferior. Cada conclusão toca a sequência suave de término e um toque de início da nova etapa, que começa automaticamente.
+- Áudio refinado após relato de silêncio: ganho Web Audio aumentado sem sair do timbre senoidal suave; agora há mensagem se o navegador não liberar o áudio e um botão “Testar som” na configuração. Confira no navegador/dispositivo do usuário após atualizar a página.
+- Não foi executada a suíte de testes nem revisão visual no navegador. Não regravar baseline automaticamente. A configuração e sessão ficam no navegador local; não sincronizam com outro notebook.
+
+Para o próximo agente. Escrito para ser lido frio, sem acesso à conversa anterior. Última atualização: 2026-10-12.
+
+**Mantenha este arquivo vivo.** Ao terminar uma tarefa, atualize "Onde paramos" e "O que vem a seguir". Ele existe porque uma sessão pode acabar de repente.
+
+---
+
+## 0. Leia nesta ordem
+
+1. `Agent.md` — como conduzir o trabalho. As regras dele valem sobre tudo o que está aqui.
+2. `Context.md` — estado, decisões, números medidos e armadilhas. É a fonte da verdade.
+3. `Spec.md` — o que produzir e a "Definição de pronto".
+4. Este arquivo — o que está em andamento e o que vem a seguir.
+5. `docs/historico/RELATORIO-MIGRACAO-ANGULAR.md` — registro histórico da migração; não representa a arquitetura atual sozinho.
+
+Não duplique conteúdo entre eles. Este arquivo aponta, não repete.
+
+---
+
+## 1. ATENÇÃO: nada está commitado
+
+O último commit é `9281ccc`. **Há trabalho local não commitado** em vários arquivos e novos recursos, incluindo os documentos de orientação, scripts, páginas, assets e backups. Preserve a árvore de trabalho; não use `checkout`, `stash`, `reset` ou limpeza em lote.
+
+Consequências práticas:
+- Um `git checkout .`, `git stash` ou `git reset --hard` apaga dias de trabalho.
+- Os backups em `Arquivados/2026-10-09-antes-defer/` também são não rastreados. **Eles são a única forma de desfazer a extração de JS.** Não apague.
+- O dono não pediu commit, e o `Agent.md` proíbe commitar sem pedido. Pergunte antes.
+
+---
+
+## 2. Onde paramos
+
+- **2026-10-18 — caderno educacional de finanças e investimentos.** `cadernos/financas-investimentos.html` foi integrado à Home, Acervo, paletas, progresso, README e inventário do teste. Contratos passaram 11/11; `check-links` passou (326 alvos); JS do caderno e catálogos passou em `node --check`; tags estruturais balanceadas. `audit-chassi` reconhece os 14 casos, mas ainda aponta lacunas por tópico em analogias, diagramas, armadilhas, fechamento, aprofundamento, referências cruzadas e contas. O documento é utilizável como guia geral, mas ainda não está alinhado integralmente ao chassi `Direto` do `Spec.md`. Revisão visual no navegador não realizada. Não regravar baseline nem fazer commit. Backup de catálogo: `Arquivados/2026-10-18-antes-nota-financas/`.
+- **Próximo passo:** alinhar os tópicos ao chassi `Direto` do `Spec.md`, depois rodar auditoria, links, contratos, `git diff --check` e revisão visual.
+- **2026-10-18 — correção da imagem anexada:** adicionada a imagem original em `assets/img/financas/mapa-mental-financas-investimentos.png` e inserida no hero de `cadernos/financas-investimentos.html` como `figure.topic-img`, com alt, legenda e modal compartilhado. Links (328 alvos), contratos (11/11), sintaxe JS e `git diff --check` passaram. Revisão de navegador continua pendente.
+
+- **2026-10-17 — revisão didática das outras áreas: duas passadas concluídas.** Sem redesenho: revisados sete documentos de trilha e sete cadernos. Segunda passada rotulou 311 exemplos sem fonte como hipotéticos, corrigiu números absolutos, garantias técnicas e complexidade O(1) inadequada; `Spec.md` agora formaliza procedência de casos/números e condições de análise assintótica. Backups: `Arquivados/2026-10-17-revisao-didatica-outras-areas/` e `Arquivados/2026-10-17-revisao-didatica-segunda-passada/`. Verificações finais: links, contratos, chassi/tags, quizzes e snapshot; registrar resultados abaixo quando executados. Inspeção visual bloqueada pela política do navegador para `file://`. Nenhum commit ou baseline regravado.
+- **Resultados finais desta revisão:** `check-links` 302 alvos, sem quebras; contratos 11/11; `audit-chassi --resumo` confirmou tags balanceadas nos 496 tópicos (o relatório mantém lacunas de cobertura do chassi, sem preenchimento artificial); auditor de quizzes: 14 documentos sob o teto heurístico de 60%, exceção preexistente `assets/js/microlearning-data.js` em 89%; `diff-snapshot` sem tópicos removidos; `git diff --check` sem erros (apenas avisos CRLF em arquivos preexistentes `Spec.md` e `lab/projetos.html`). Sem inspeção visual por bloqueio de `file://`, sem commit e sem regravar baseline.
+- **Passe complementar após autorização:** refinados claims numéricos/garantias em `trilhas/java.html`, `trilhas/nuvem.html` e `trilhas/mensageria.html`; backup de cinco HTML em `Arquivados/2026-10-17-revisao-didatica-passe-final/`. `check-links` (302), contratos 11/11, auditor de quiz (páginas alteradas abaixo de 60%) e `git diff --check` passaram novamente. Nenhum baseline ou commit criado.
+- **2026-10-17 — didática de IA aplicada: concluída sem redesenho.** A trilha manteve seções, ordem, navegação, chassi e visual; foram revisados modelos mentais, exemplos hipotéticos, treino de LLM, tool calling, RAG, agentes e limites de avaliação. A bancada ganhou `I04` (agente Spring de consulta segura); total atualizado para 19 projetos na bancada e Home (18 aquecimentos). Verificações atuais: `check-links` 302 alvos, contratos 11/11, quiz da IA 50% (abaixo de 60%), `audit-chassi` sem tags desbalanceadas e `git diff --check` limpo. `diff-snapshot` mostra alterações acumuladas desde 2026-10-13, sem remoções; baseline não regravado. Revisão visual não foi feita. Nada commitado.
+- **2026-10-17 — novos tópicos: concluído.** IA (2.3 com top-k; 4.3 tokens/sentenças/chunks; 5.6 frameworks com Agno; 6.6 avaliação de agentes com Ragas), Mensageria (parte "Kafka na prática", kf1 a kf6), Conceitos/caderno de dúvidas (g2b, JWT legível mas seguro; h2b, imagem Docker de 2 GB, as duas no formato completo com "Como responder numa entrevista"); a trilha de Docker só aponta para o caderno. Detalhes e verificação em `Context.md`, seção "Novos tópicos (2026-10-17)". Pendente: revisão do Thallys; regravar o baseline (`snapshot.mjs --gravar`) junto do commit, se ele aprovar. Nada commitado.
+- Estado vigente segundo `Context.md`: site estático em produção; Angular foi abandonado em 2026-10-09. O texto antigo deste handoff dizia ao mesmo tempo que Angular fora removido e que ainda faltava decidir o destino. Essa contradição foi resolvida: não retome a migração sem pedido explícito.
+- Nova página `cadernos/governanca-seguranca.html` cobre fundamentos de governança, risco, controles, segurança de aplicações, IAM, privacidade/LGPD, incidentes, continuidade e fornecedores; ligada à home, ao acervo e ao README. A barra lateral agora usa o chassi System Design (progresso, controles, busca e navegação agrupada).
+- Em 2026-10-12, corrigida a diferença visual apontada: a trilha de Governança deixou de ser grade de cartões e passou a usar marcos conectados no formato vertical de `trilhas/system-design.html`; o grid, largura do conteúdo e espaçamento de hero/seções/tópicos também foram alinhados. Links: 15 alvos locais distintos conferidos, sem quebras. A inspeção visual pelo navegador embutido foi bloqueada pela política de URL `file://`; não declarar validação visual concluída.
+- `Spec.md` define esse chassi como padrão obrigatório para documentos, com adaptação proporcional em cadernos menores.
+- O mapa mental de Governança de TI está no início da página como `figure.topic-img`, com legenda, texto alternativo, lazy loading e lightbox compartilhado. `Spec.md` agora define este padrão para imagens didáticas.
+- A página usa referências primárias (NIST, ANPD e OWASP) e não pretende ser aconselhamento jurídico.
+- `Context.md` foi reduzido e atualizado; os achados antigos de auditoria estão marcados como não revalidados.
+- Contagens fixas foram removidas do título do acervo, da descrição do laboratório na home e do texto inicial do README. Outros números no conteúdo ainda podem existir e merecem revisão dirigida.
+- Organização da documentação concluída: todos os arquivos Markdown internos foram organizados em `docs/agentes/` (`Agent.md`, `Spec.md`, `Context.md`, `HANDOFF.md`), `docs/planos/` (`PLANO-MELHORIAS.md`, `TAREFAS-GEMINI.md`) e `docs/historico/` (`RELATORIO-MIGRACAO-ANGULAR.md`); `SECURITY.md` movido para `.github/SECURITY.md`; `package-lock.json` órfão removido da raiz. A raiz do repositório agora contém estritamente os 6 arquivos essenciais (`index.html`, `acervo.html`, `README.md`, `LICENSE`, `.gitignore`, `.nojekyll`).
+- Assets de mídia unificados: 19 arquivos soltos na raiz de `assets/img/` foram organizados em suas subpastas temáticas (15 duplicatas eliminadas, poupando ~6.5 MB; SVGs de IA em `ia/`; mapa de Governança em `governanca/`), sem quebras de link.
+- Piloto do catálogo concluído: Governança e Segurança agora aparece no índice pesquisável do Acervo e nas paletas Ctrl+K da Home e do Acervo. O teste 11 compara o inventário oficial com essas entradas e com o README.
+- Verificações executadas: contratos 11/11, links locais sem quebra e auditoria de tags sem erro. Quizzes: 459 questões, posições corretas A=150/B=161/C=148; todas as opções mudaram versus `HEAD`, então o balanço de posição não comprova correção semântica. O plano M03 documenta essa reformulação; revisar conteúdo antes de regravar o baseline.
+- `diff-snapshot` aponta 305 gabaritos alterados e 473 tópicos com texto alterado contra o baseline de 2026-10-10. O teste de renderização não concluiu localmente: Edge headless encerrou com `-1073741819` (access violation) nos 14 documentos; repetir em ambiente de navegador confiável.
+- `audit-chassi --resumo` vê 487 tópicos em 16 documentos; a página de Governança não satisfaz as peças que o auditor verifica. Decidir se é exceção ao chassi antes de mudanças em lote.
+- Nenhuma publicação ou commit foi feita. Não houve otimização adicional de performance: use medições novas antes de alterar carregamento, imagens ou scripts.
+
+---
+
+## 3. Próximas melhorias sugeridas
+
+1. Rever semanticamente os quizzes reformulados e, quando autorizado junto a um commit, atualizar o baseline para o estado intencional.
+2. Rever se Governança deve adotar o chassi didático por tópico; a presente correção foi somente da trilha e do espaçamento visual.
+3. Decidir se o contrato de inventário é suficiente ou se vale centralizar metadados; não criar um build obrigatório para leitura.
+4. Repetir a renderização headless em ambiente confiável e medir desempenho antes de novas otimizações.
+
+---
+
+## 4. As ferramentas, e como usá-las
+
+Tudo em `scripts/`, Node puro, sem dependência. Rode da raiz do `site-estudos`:
+
+```
+node scripts/check-links.mjs        # arquivos e âncoras, inclusive dentro dos .js
+node scripts/audit-chassi.mjs       # peças do chassi por tópico, emoji, tags
+node scripts/diff-snapshot.mjs      # o que mudou vs o golden master
+node scripts/snapshot.mjs --gravar  # regravar o golden master, de propósito
+node scripts/sync-angular.mjs --verificar
+node scripts/extrai-js-inline.mjs   # a otimização de performance
+node --test scripts/tests/regression-contracts.test.mjs
+```
+
+**Rode `diff-snapshot` antes de começar** (tem que estar limpo) e depois de editar. Ele separa **perda** (falha) de **mudança** (aviso). Se a perda for intencional, regrave o baseline no mesmo commit.
+
+Regra aprendida na marra: **toda ferramenta tem que seguir os `<script src>` locais.** O JS não mora mais no HTML. Três verificadores quebraram por ler só o HTML e acusaram perda de ids, chaves e links que apenas tinham mudado de arquivo. Se criar verificador novo, use `textoComScripts()` de `lib-html.mjs`.
+
+---
+
+## 5. Armadilhas que custaram tempo aqui
+
+As do projeto estão em `Context.md`. Estas são de método, e valem para qualquer agente:
+
+- **Medir antes de concluir.** O dono pediu migração para framework por causa de lentidão. A medição mostrou que 88% do tempo era JS inline — Angular teria piorado. A correção certa custou dias, não semanas.
+- **Não confiar em código que "parece certo".** O outro agente disse ter corrigido tudo; testar no navegador confirmou quase tudo, mas revelou que a performance seguia igual e que um documento estava quebrado em produção havia tempo.
+- **Testar a rede de testes.** A primeira versão do golden master deixava passar troca de gabarito. Só descobri sabotando um espelho descartável de propósito.
+- **Heredoc do Git Bash come barra invertida.** `cat > arquivo <<'EOF'` com JavaScript dentro corrompeu `\\s` em `new RegExp` duas vezes, gerando verificador que passava calado. Escreva arquivo de código com a ferramenta de escrita, não pelo shell, e valide com `node --check`.
+- **Chrome não reduz janela maximizada.** Para testar 375 px, carregue a página num iframe de 375 px e meça lá dentro.
+- **Otimização não é universal.** `trilhas/ia.html` ficou 2x mais lento com a mesma transformação que acelerou os outros, porque já era rápido. Meça documento a documento.
+
+---
+
+## 6. Como registrar o que você fizer
+
+Se você roda no terminal (CLI), registre ao fim de cada tarefa que alterou arquivos, em `../Logs/claude/log-AAAA-MM-DD.md` — **fora deste repositório**, que é público. Formato em `../Log.md`. No app desktop, Cowork ou extensão de IDE, não registre.
+
+O log desta sessão está em `../Logs/claude/log-2026-10-09.md` e tem o detalhe de cada alteração, com a verificação feita e o que ficou pendente. É o lugar certo para entender o porquê de qualquer mudança específica.

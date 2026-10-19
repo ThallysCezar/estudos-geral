@@ -48,6 +48,7 @@
       I01:[["ia","APIs generativas, ChatClient e fallback para modelos locais"],["spring","Configuração tipada e testes de integração com Testcontainers"],["back","Latência e cache num pipeline de várias etapas"]],
       I02:[["ia","Prompt engineering, spec driven development e JSON Schema para record"],["spring","Records, Bean Validation e contrato de saída imutável"],["back","Contrato e fallback quando a dependência é probabilística"]],
       I03:[["ia","Eval, LLM-as-a-judge, métricas de qualidade e mitigação de alucinação"],["bib","Como decidir sob incerteza — e por que uma métrica só esconde risco"],["back","Medição, percentis e detecção de regressão"]],
+      I04:[["ia","Agentes, tool calling, limites e aprovação humana"],["spring","Spring AI: ChatClient, ferramentas e integração com o backend"],["back","Autorização, tenant e trilha de auditoria no backend"]],
       R01:[["msg","Exchange, binding, routing key e a mensagem que some sem rota"],["arq","Coreografia: quem publica não conhece quem consome"]],
       R02:[["msg","Ack, prefetch, retry, DLX e o ciclo de dead letter"],["k8s","Por que o pool de conexões limita o HPA"]],
       R03:[["msg","Outbox, confirms, inbox e por que exactly-once não existe sem escopo"],["arq","OrderFlow: o mesmo sistema atravessando os seis documentos"],["k8s","Operar o capstone em cluster local"],["back","Reconciliação: a consulta que prova consistência"],["ia","Agente ou classificador opcional sem quebrar a transação central"]]
@@ -403,6 +404,24 @@
       cost:"R$ 0 com modelos locais; monitore apenas recurso da máquina.",command:"mkdir ai-eval-bench && cd ai-eval-bench && git init && mvn -N wrapper:wrapper"
     });
     P({
+      id:"I04",area:"ai",difficulty:"Avançado",sessions:9,title:"Agente de suporte com ferramentas seguras",
+      summary:"Construa um agente Spring que consulta pedidos por ferramentas explícitas, respeita o tenant e interrompe ações fora da política.",
+      problem:"Um assistente precisa responder sobre pedidos usando dados atuais. O modelo pode propor ferramenta inexistente, argumento inválido, pedido de outro cliente ou ação que altera o estado; nenhuma dessas decisões pode ser confiada ao prompt.",
+      why:"Tool calling conecta linguagem a sistemas reais, mas cria uma fronteira de segurança e confiabilidade. O modelo escolhe uma ferramenta dentre as descritas; o backend continua responsável por autenticação, autorização, validação, execução, limites e registro do resultado.",
+      learns:["Spring AI ChatClient e ciclo de tool calling","contratos de ferramenta pequenos e tipados","autorização por usuário e tenant no serviço","separação entre consulta e ação com efeito","limite de iterações, timeout e orçamento","idempotência, confirmação humana e auditoria","testes determinísticos sem depender da resposta exata do modelo"],
+      architecture:["Usuário autenticado","API Spring","ChatClient","Policy + Tool Registry","OrderQuery Service","Resposta com evidência"],
+      prerequisites:["I02 ou saída estruturada básica","Spring Security e injeção de dependência","HTTP, DTOs e testes com JUnit","Docker e noção de Testcontainers"],
+      stack:["Java 21","Spring Boot","Spring AI","Ollama local","PostgreSQL","Spring Security","JUnit + Testcontainers"],
+      steps:["Modele pedidos fictícios para dois usuários/tenants e defina quais campos cada um pode consultar.","Implemente primeiro um endpoint comum de consulta autenticada sem LLM; prove isolamento entre tenants com testes.","Confirme na documentação da versão usada se o provider e o modelo local suportam tool calling. Se não suportarem, use um modelo falso para validar a orquestração; não trate texto livre como chamada executável.","Defina ferramentas pequenas, como consultarPedido(numero), sem aceitar SQL, URL ou nome de método arbitrário.","Registre ferramentas no ChatClient e faça o backend validar argumentos e contexto antes de chamar o serviço de domínio.","Retorne ao modelo apenas os dados mínimos necessários; não exponha tokens, dados de outro tenant ou campos internos.","Limite chamadas, iterações e tempo total; trate ferramenta indisponível e argumentos inválidos com resultado explícito.","Mantenha a primeira versão somente de leitura. Para uma ação simulada, exija confirmação humana e use chave de idempotência.","Registre trace id, ferramenta, duração, resultado permitido/negado e versão do modelo sem guardar prompt sensível por padrão.","Escreva testes de política com modelo falso e testes de integração com o modelo local; compare também resposta sem evidência e tentativa de injection."],
+      acceptance:["Usuário A nunca lê pedido do tenant B, mesmo se o modelo solicitar","nenhuma ferramenta permite SQL livre ou operação não registrada","argumentos são validados no backend antes da execução","limite interrompe loop e registra motivo","resposta distingue dado consultado de inferência e informa ausência de evidência","ação que altera estado não executa sem confirmação explícita","testes centrais rodam sem modelo e sem chave paga"],
+      tests:["modelo solicita pedido de outro tenant","argumento ausente, malformado ou excessivamente longo","modelo repete a mesma ferramenta até o limite","ferramenta retorna vazio, timeout ou erro","texto do pedido contém instrução de prompt injection","usuário não autenticado tenta chamar a API","confirmação de ação é repetida com a mesma chave idempotente"],
+      failures:["remova a verificação de tenant e veja o teste falhar","desligue o limite de iterações em teste com relógio/contador controlado","simule timeout do modelo e da ferramenta separadamente","retorne dado pessoal extra e confira se o minimizador o descarta"],
+      questions:["Quem realmente executa a chamada pedida pelo modelo?","Por que schema válido não significa permissão válida?","Qual dado deve voltar ao modelo e qual deve permanecer no serviço?","Como provar que uma ação não foi executada duas vezes?","O que o usuário vê quando a consulta não encontra evidência?"],
+      ladder:["consulta autenticada + ferramenta read-only","limites, auditoria, isolamento e testes adversariais","aprovação de ações, observabilidade e evals de trajetória"],
+      evidence:["diagrama do fluxo de tool calling e da fronteira de autorização","testes automatizados de isolamento entre tenants","registro de uma chamada permitida, negada e interrompida","threat model curto e ADR sobre ações read-only","README com execução local e teardown"],
+      cost:"R$ 0 com Ollama, PostgreSQL e Docker locais; o custo é CPU/RAM/energia. Não use dados reais.",command:"spring init --java-version=21 --build=maven --dependencies=web,security,jdbc,actuator agent-support"
+    });
+    P({
       id:"R01",area:"rabbit",difficulty:"Intermediário",sessions:7,title:"Ateliê de topologias RabbitMQ",
       summary:"Modele direct, topic, fanout, bindings e mensagens não roteáveis antes de escrever consumer de negócio.",
       problem:"Eventos precisam chegar a consumidores diferentes sem o produtor conhecer filas. Uma routing key errada não pode simplesmente desaparecer sem diagnóstico.",
@@ -632,4 +651,4 @@
     renderPracs();renderRoute();render();updateProgress();observeReveals();
     var initial=location.hash.match(/^#project-([A-Z]\d{2})$/);if(initial)openProject(initial[1],true);
   })();
-  
+

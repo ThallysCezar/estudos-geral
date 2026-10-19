@@ -439,7 +439,7 @@ details.alem>summary:hover{background:var(--bg2)}
 
         <h4 class="codelab">os três blocos, por dentro</h4>
         <p><b>Contrato</b> é o que você promete: p99 abaixo de um valor, taxa de erro aceitável, e qual consistência o negócio exige — pode ficar velho por 30 segundos? precisa ler o que acabou de escrever? O contrato define o grau de liberdade que você tem para trocar exatidão por velocidade.</p>
-        <p><b>Workload</b> é a natureza do tráfego: proporção de leitura e escrita, média contra pico e por quanto tempo o pico dura, quantas consultas cada requisição dispara, e — a pergunta que quase ninguém faz — qual é a <b>distribuição das chaves</b>. Tráfego uniforme e tráfego Zipf (em que 20% das chaves levam 80% dos acessos) pedem soluções opostas: o segundo é o cenário em que cache funciona; o primeiro é aquele em que cache quase não ajuda.</p>
+        <p><b>Workload</b> descreve a carga: proporção de leitura e escrita, média e pico, duração do pico, consultas por requisição e distribuição das chaves. Uma distribuição uniforme e uma distribuição concentrada (por exemplo, um padrão Zipf) podem favorecer desenhos diferentes. Cache ajuda quando há repetição suficiente, custo de origem relevante e uma política aceitável de frescor; medir a taxa de reutilização é melhor que presumir o benefício pelo nome da distribuição.</p>
         <p><b>Gargalo</b> é qual recurso satura primeiro e qual consulta domina. Sem isso, você está otimizando por fé.</p>
 
         <figure class="dg"><svg viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
@@ -606,7 +606,7 @@ details.alem>summary:hover{background:var(--bg2)}
             <li><b>Ler o resultado como configuração.</b> A conta revela viabilidade; ela não dimensiona nada sozinha.</li>
             <li><b>Misturar unidades.</b> λ em requisições por segundo com W em milissegundos dá um número mil vezes errado — e plausível o bastante para passar despercebido.</li>
             <li><b>Apresentar estimativa como promessa.</b> Diga “essa conta sugere”, nunca “o sistema suporta”. O modelo usa médias estacionárias e ignora p99, locks e variação de chave.</li>
-            <li><b>Esquecer que cache não alivia escrita.</b> Toda escrita chega ao banco, com hit rate de 99% ou de 0%.</li>
+        <li><b>Supor que qualquer cache reduz toda carga no banco.</b> Um cache de leitura pode absorver leituras repetidas; escritas continuam exigindo uma política coerente de invalidação/atualização e, em write-through, também chegam à origem. Write-back muda o caminho, mas adiciona riscos de durabilidade e recuperação.</li>
           </ul>
         </div>
 
@@ -719,7 +719,7 @@ details.alem>summary:hover{background:var(--bg2)}
       <article class="topic" id="a3">
         <div class="th"><h3>Os quatro erros que eliminam candidato</h3><div class="badges"><span class="badge b-imp">reconhecer</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>No design de um sistema de leilões online, a equipe assumiu de antemão a adoção de Kafka, micro-sharding e Cassandra sem antes quantificar o tráfego esperado e sem perguntar se os lances exigiam consistência ACID imediata. O resultado em produção foi um sistema com consistência eventual onde dois compradores arremataram o mesmo lote por lances simultâneos. A falha custou R$ 380.000 em indenizações. O incidente provou que assumir requisitos e escolher tecnologias antes de fechar o contrato funcional elimina a solução.</p>
         </div>
 
@@ -730,7 +730,7 @@ details.alem>summary:hover{background:var(--bg2)}
         <p><b>Um: propor antes de entender.</b> Já tratado acima, e ainda é o mais comum. A tentação vem da ansiedade de parecer produtivo.</p>
         <p><b>Dois: citar tecnologia como se fosse resposta.</b> “Uso Kafka” não explica nada. Kafka resolve buffer, ordenação por partição e releitura do histórico. Se o problema era latência de leitura, Kafka não é resposta — e quem cita sem nomear qual propriedade está usando revela que decorou a solução de outra pessoa.</p>
         <p><b>Três: não saber o preço.</b> Todo mecanismo cobra. Cache cobra invalidação e uma janela de dado velho. Réplica cobra lag e um caminho novo de falha. Sharding cobra roteamento, consultas que atravessam nós e rebalanceamento. Fila cobra ordem parcial, duplicidade e um novo componente para operar. Quem propõe sem nomear o preço não está projetando, está listando.</p>
-        <p><b>Quatro: prometer garantia que não existe.</b> O exemplo clássico é <i>exactly-once</i> sem escopo. Entrega exatamente uma vez não existe de ponta a ponta num sistema distribuído; o que existe é entrega ao menos uma vez somada a efeito idempotente, que produz o mesmo resultado observável. Dizer a frase sem a qualificação é o tipo de erro que um entrevistador sênior anota.</p>
+        <p><b>Quatro: falar de garantia sem delimitar seu escopo.</b> Algumas tecnologias oferecem exactly-once dentro de uma transação ou fluxo delimitado; isso não se estende automaticamente a efeitos externos. Ao descrever o desenho, diga qual componente confirma o quê, onde existe transação e como retries são deduplicados ou tornados idempotentes.</p>
 
         <div class="cs"><b>E um quinto, silencioso:</b> pensar sem narrar. Ficar dois minutos calado e apresentar o desenho pronto desperdiça justamente o que estava sendo avaliado. Diga em voz alta a hipótese que você está considerando e por que descartou as outras.</div>
 
@@ -1290,7 +1290,7 @@ SELECT id, criado_em, total FROM pedido
       <article class="topic" id="c1">
         <div class="th"><h3>Por que escrita é mais difícil que leitura</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma plataforma de votação aguentava facilmente 50.000 leituras/segundo via réplicas de banco e cache Redis. Porém, durante a final de um programa ao vivo, 25.000 votos de escrita por segundo bateram diretamente no nó primário do PostgreSQL. Os locks de linha na tabela de contagem saturaram a CPU a 100% e causaram crash do banco em 40 segundos. A solução exigiu bufferizar as escritas em partições de fila Kafka e agregar votos em memória em janelas de 1 segundo antes de persistir no banco.</p>
         </div>
 
@@ -1861,10 +1861,10 @@ if (buffer.size() >= 1000 || decorreu(200)) {
               <div class="te-body">
                 <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Em uma aplicação com 200 milhões de usuários, um serviço precisa verificar se um novo nome de usuário escolhido no formulário de cadastro já existe no banco de dados. 95% das verificações são de nomes inéditos que não existem.</p>
                 
-                <p class="te-instrucao">Como um Bloom filter posicionado na frente do banco economiza 95% do I/O de consultas no banco de dados?</p>
+                <p class="te-instrucao">Como um Bloom filter pode evitar leituras desnecessárias no banco quando muitos nomes consultados ainda não existem?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A garantia matemática de que elementos ausentes nunca retornam positivo permite filtrar 95% das buscas sem tocar no disco.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Um resultado negativo permite pular a consulta quando o filtro está corretamente sincronizado; um positivo pode ser falso e exige confirmar no banco. A proporção de consultas evitadas depende da taxa de falsos positivos e da distribuição observada.">
                     <span class="te-letter">A</span> Com zero falso-negativo garantido, a resposta "não existe" descarta a consulta ao banco com 100% de certeza.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Bloom filter não armazena as chaves originais, apenas posições de bits determinadas por funções hash.">
@@ -2211,7 +2211,7 @@ try {
       <article class="topic" id="e2">
         <div class="th"><h3>O cursor é contrato de API</h3><div class="badges"><span class="badge b-prof">profundidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma API de feed de notícias expunha paginação por offset numérico (`/feed?page=1000`). Em páginas profundas, o banco de dados executava `OFFSET 50000`, escaneando e descartando 50.000 linhas no disco a cada clique, elevando a latência da query para 8.400ms e derrubando o banco. A migração do contrato de API para paginação por cursor opaco criptografado permitiu queries determinísticas com `WHERE (created_at, id) < (:ts, :id) LIMIT 20` executadas em 3ms.</p>
         </div>
 
@@ -2259,7 +2259,7 @@ try {
             <div class="topico-revisao">
               <div class="tr-header">
                 <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
-                <h4 class="tr-title">Síntese de Fixação: Paginação por Cursor / Keyset (Complexidade O(1))</h4>
+                <h4 class="tr-title">Síntese de Fixação: paginação por cursor / keyset</h4>
               </div>
               
               <div class="tr-grid">
@@ -2320,11 +2320,11 @@ try {
               <div class="te-body">
                 <p class="te-pergunta"><strong>Cenário de System Design / Arquitetura Distribuída:</strong> Uma rede social precisa exibir um feed de atividades com centenas de milhões de publicações. O time de frontend implementou rolagem infinita e precisa que o carregamento da 500ª página seja tão rápido e leve para o banco quanto a primeira página.</p>
                 
-                <p class="te-instrucao">Qual padrão de paginação atende a esse requisito mantendo a consulta em tempo constante O(1) de busca?</p>
+                <p class="te-instrucao">Qual padrão evita percorrer um prefixo grande de resultados, quando há ordenação estável e índice compatível?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O cursor ancora a consulta no ponto exato do índice sem varrer nem descartar dados anteriores, garantindo tempo de resposta constante.">
-                    <span class="te-letter">A</span> Keyset Pagination (Paginação por Cursor): filtra por WHERE (criado_em, id) < (:lastDate, :lastId) LIMIT 20, navegando diretamente no índice B-Tree em O(1).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto: com ordenação e índice compatíveis, o cursor continua a busca a partir da última chave e evita computar um prefixo grande. O custo segue o plano, filtro, índice e cardinalidade; não é uma promessa universal de O(1) nem de latência constante.">
+                    <span class="te-letter">A</span> Keyset Pagination (Paginação por cursor): filtra pela última chave ordenada, por exemplo, <code>(criado_em, id) &lt; (:lastDate, :lastId)</code>, com índice compatível para ler a próxima página sem descartar todas as anteriores.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Window Functions exigem computação sobre todo o conjunto de dados para calcular a numeração das linhas, sendo pesadas.">
                     <span class="te-letter">B</span> Paginação baseada em Window Functions com a cláusula ROW_NUMBER() particionada por usuário para cachear os números de páginas na camada de visualização distribuída.
@@ -2639,7 +2639,7 @@ try {
       <article class="topic" id="f2">
         <div class="th"><h3>Quarentena, CDN e o evento do storage</h3><div class="badges"><span class="badge b-prof">profundidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rede social permitia upload de imagens diretamente para o bucket público de produção sem etapa de quarentena. Um atacante enviou arquivos disfarçados de imagem contendo malware e conteúdo ilícito que foram imediatamente distribuídos para a CDN e cacheados globalmente. A exclusão manual dos caches demorou 18 horas de crise de relações públicas. A reestruturação isolou o upload em um bucket de quarentena privado acoplado a notificações de storage para escaneamento e redimensionamento antes da publicação.</p>
         </div>
 
@@ -2927,7 +2927,7 @@ try {
       <article class="topic" id="g2">
         <div class="th"><h3>SOAP, REST, GraphQL e gRPC: escolher pelo problema</h3><div class="badges"><span class="badge b-imp">trade-off</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa utilizou REST com payloads JSON massivos para comunicação síncrona interna entre 30 microsserviços sob carga de 80.000 RPS. O overhead de serialização e deserialização de strings JSON consumia 45% do tempo de CPU de todos os nós da empresa. A migração das comunicações internas entre microsserviços para gRPC com Protocol Buffers binários sobre HTTP/2 reduziu o consumo de CPU em 60% e a latência de rede P99 caiu de 75ms para 8ms.</p>
         </div>
 
@@ -3078,7 +3078,7 @@ try {
         <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Você manda uma carta pedindo que alguém transfira dinheiro e não recebe resposta. A carta se perdeu? Chegou e a pessoa transferiu, mas a confirmação se perdeu? Mandar a segunda carta é seguro <b>só se</b> ela disser “transfira <b>esta</b> operação, identificada por este número, se ainda não tiver transferido”.</p></div>
 
         <p>É por isso que a idempotência não é um detalhe de implementação: ela é a <b>condição que torna o retry possível</b>. Sem ela, toda repetição é uma aposta, e a única alternativa segura é nunca repetir — o que transforma qualquer soluço de rede em falha permanente para o usuário.</p>
-        <p>Esse é também o motivo pelo qual <i>exactly-once</i> não existe de ponta a ponta. O que existe é entrega ao menos uma vez somada a efeito idempotente, que produz o mesmo <b>resultado observável</b> de uma execução única. Dizer “exactly-once” sem essa qualificação é o tipo de afirmação que um entrevistador sênior anota — e que, num projeto real, vira um bug de duplicidade seis meses depois.</p>
+        <p>Confirme o limite da garantia antes de chamá-la de <i>exactly-once</i>: uma transação do broker pode proteger publicação e consumo dentro do próprio fluxo, mas não torna atômicos efeitos independentes em banco, e-mail ou API externa. Para retries fora desse limite, use idempotência/deduplicação e padrões de coordenação apropriados, como outbox, quando fizer sentido.</p>
 
         <div class="ver"><b>onde a teoria mora</b>A <i>idempotency key</i>, o inbox do consumidor e o padrão outbox estão detalhados em <a href="../cadernos/conceitos-backend.html">Conceitos de Backend completo</a> e <a href="mensageria.html">Mensageria e RabbitMQ completo</a>. Falha parcial e degradação do ponto de vista de estilo arquitetural estão em <a href="arquitetura.html">Arquitetura completo</a>.</div>
 
@@ -3648,7 +3648,7 @@ Com replicação 3x: ~55 TB de storage</code></pre>
 
         <div class="duo">
           <div><h4>3. Estimativa de RAM para Cache (Regra 80/20)</h4>
-            <p>Pelo princípio de Pareto, 20% das chaves (posts, produtos, links) são responsáveis por 80% das requisições de leitura. Guarde os 20% mais quentes na RAM do Redis.</p>
+        <p>Alguns workloads concentram muitas leituras em poucas chaves; uma distribuição Zipf ou um padrão próximo de 80/20 é um exemplo, não uma lei. Meça a frequência e o custo das chaves antes de decidir o que colocar no Redis, considerando também expiração, invalidação e memória disponível.</p>
             <pre><code>// Tráfego diário de leitura: 50 GB de dados consultados
 RAM necessária no cache = 50 GB × 0.20 = 10 GB de RAM
 Adicione 25% de margem operacional: ~12.5 GB</code></pre>
@@ -4232,7 +4232,7 @@ p ≈ 1</code>
       <article class="topic" id="k4">
         <div class="th"><h3>04 · Netflix e YouTube (streaming de vídeo em escala global)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">streaming &amp; cdn</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma plataforma de vídeo corporativo transmitiu uma conferência ao vivo para 500.000 espectadores simultâneos servindo os arquivos de vídeo diretamente de instâncias de aplicação em nuvem. A banda de rede da região saturou em 3 minutos e o custo de transferência de dados (egress) atingiu US$ 95.000 em uma única manhã, com 80% dos usuários sofrendo congelamentos. A adoção de streaming adaptativo (HLS/DASH) segmentando vídeos em chunks de 6 segundos distribuídos por CDNs com cache na borda reduziu a carga nos servidores de origem em 99.4%.</p>
         </div>
 
@@ -4356,7 +4356,7 @@ p ≈ 1</code>
       <article class="topic" id="k5">
         <div class="th"><h3>05 · Google Maps e serviços de proximidade (Yelp)</h3><div class="badges"><span class="badge b-prof">grafos &amp; mapas</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo de entrega calculava os motoristas mais próximos executando consultas SQL com fórmula trigonométrica de Haversine varrendo 2 milhões de localizações a cada segundo. A CPU do banco bateu 100% e as buscas de motoristas demoravam 14 segundos. A reestruturação geoespacial indexando as coordenadas em Geohash e células H3 no Redis em memória reduziu a busca de vizinhos para uma consulta de conjunto de 2ms, viabilizando o pareamento em tempo real.</p>
         </div>
 
@@ -4480,7 +4480,7 @@ p ≈ 1</code>
       <article class="topic" id="k6">
         <div class="th"><h3>06 · Google Search e web crawler distribuído</h3><div class="badges"><span class="badge b-prof">busca &amp; big data</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um crawler web distribuído entrou em um loop infinito ao encontrar armadilhas de URLs infinitas em calendários dinâmicos. O crawler gerou 12 milhões de requisições inúteis em 4 horas, esgotando o espaço em disco do banco de fronteira de URLs e sofrendo bloqueio de IP por centenas de provedores. A introdução de um Bloom Filter para deduplicação de URLs já visitadas e um módulo de polidez com rate limit por domínio estabilizou a ingestão.</p>
         </div>
 
@@ -4604,7 +4604,7 @@ p ≈ 1</code>
       <article class="topic" id="k7">
         <div class="th"><h3>07 · Amazon e-commerce e flash sale (Black Friday / ingressos)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">alta concorrência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante a venda relâmpago de 5.000 ingressos de um show internacional, 150.000 fãs clicaram em comprar no mesmo segundo. O banco de dados recebeu 150.000 transações concorrentes com lock pessimista na tabela de assentos, gerando deadlock generalizado e travamento da aplicação, enquanto o estoque final ficou com 200 ingressos vendidos a mais que a lotação física. A solução introduziu uma sala de espera virtual (Virtual Waiting Room), reserva atômica de estoque em Redis via scripts Lua e processamento assíncrono do checkout em fila.</p>
         </div>
 
@@ -4728,7 +4728,7 @@ p ≈ 1</code>
       <article class="topic" id="k8">
         <div class="th"><h3>08 · Twitter e Instagram (feed social)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">fanout</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rede social adotava abordagem de Fanout-on-Write pura duplicando cada novo post para a timeline de todos os seguidores. Quando uma celebridade com 40 milhões de seguidores publicou uma foto, o backend tentou inserir 40 milhões de registros em tabelas de feed simultaneamente, gerando fila de espera de 35 minutos e travando o banco de dados. A adoção do modelo híbrido (Fanout-on-Write para usuários comuns e Fanout-on-Read com merge em memória para contas com mais de 50.000 seguidores) resolveu o gargalo da celebridade.</p>
         </div>
 
@@ -4852,7 +4852,7 @@ p ≈ 1</code>
       <article class="topic" id="k9">
         <div class="th"><h3>09 · Sistema de notificações distribuído em grande escala</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">resiliência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema de notificações de push mobile para alertas de emergência disparou 10 milhões de mensagens simultaneamente para a API do Apple APNs e Google FCM sem controle de concorrência. As APIs da Apple bloquearam o IP da empresa por rate limiting excessivo e as notificações críticas de evacuação atrasaram em 4 horas. A reestruturação implementou particionamento por canal, filas dedicadas por prioridade com algoritmo Leaky Bucket e agrupamento de alertas em lote.</p>
         </div>
 
@@ -4976,7 +4976,7 @@ p ≈ 1</code>
       <article class="topic" id="k10">
         <div class="th"><h3>10 · Google Drive e Dropbox (armazenamento e sincronização)</h3><div class="badges"><span class="badge b-prof">storage &amp; deduplicação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de sincronização de arquivos na nuvem enviava o arquivo inteiro de 2 GB novamente a cada alteração de uma única linha em um documento de texto. A largura de banda dos clientes e o custo de upload do storage na nuvem explodiram em 800%. A implementação de chunking de arquivos em blocos de 4 MB com hash SHA-256 e sincronização diferencial (Sync Delta enviando apenas os blocos cujos hashes mudaram) reduziu o tráfego de dados em 92%.</p>
         </div>
 
@@ -5100,7 +5100,7 @@ p ≈ 1</code>
       <article class="topic" id="k11">
         <div class="th"><h3>11 · Distributed rate limiter</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">proteção de api</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um limitador de taxa implementado com contadores simples no banco de dados sofreu race conditions sob ataque de força bruta: entre o `SELECT` do contador e o `UPDATE`, 200 requisições simultâneas passavam despercebidas antes do bloqueio, permitindo ataques de credential stuffing. A migração para Sliding Window Log em Redis com script Lua atômico garantiu limitação precisa de 100 req/min por IP sem concorrência e com latência de resposta menor que 2ms.</p>
         </div>
 
@@ -5228,7 +5228,7 @@ p ≈ 1</code>
       <article class="topic" id="k12">
         <div class="th"><h3>12 · Cache distribuído de alta performance (Redis / Memcached)</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">resiliência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa configurou um cluster Redis distribuído sem sharding adequado e armazenou uma chave gigante contendo o catálogo de produtos inteiro (`catalog_all = 450 MB`). A leitura dessa chave saturou a placa de rede de 1 Gbps do nó Redis a 100%, gerando timeouts em cascata para todos os outros serviços que compartilhavam o cluster. A fragmentação da chave em chaves granulares por categoria e o particionamento por hash ring consistente normalizou o throughput.</p>
         </div>
 
@@ -5354,7 +5354,7 @@ p ≈ 1</code>
       <article class="topic" id="k13">
         <div class="th"><h3>13 · Autocomplete e typeahead (Google Suggest)</h3><div class="badges"><span class="badge b-prof">estruturas de dados</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma barra de busca de e-commerce disparava uma consulta SQL com `WHERE name LIKE '%termo%'` no banco relacional a cada caractere digitado pelo usuário. Com 25.000 usuários digitando ao mesmo tempo, o banco executou 100.000 buscas textuais por segundo, entrando em colapso. A criação de uma estrutura de dados Trie (árvore de prefixos) serializada em memória com cache dos 10 termos mais populares por prefixo reduziu a latência de sugestão para 4ms.</p>
         </div>
 
@@ -5478,7 +5478,7 @@ p ≈ 1</code>
       <article class="topic" id="k14">
         <div class="th"><h3>14 · Métricas e observabilidade em tempo real (Prometheus / Datadog)</h3><div class="badges"><span class="badge b-prof">observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um time de microsserviços adicionou o `user_id` de cada cliente como label em uma métrica do Prometheus (`http_requests_total{user_id="12345"}`). Com 3 milhões de usuários ativos, a cardinalidade da métrica explodiu para 30 milhões de séries temporais na memória do Prometheus, causando crash por OutOfMemory repetido e apagão de monitoramento. A eliminação de IDs de alta cardinalidade das labels e o uso de métricas agregadas por status code e rota salvaram a observabilidade.</p>
         </div>
 
@@ -5604,7 +5604,7 @@ p ≈ 1</code>
       <article class="topic" id="k15">
         <div class="th"><h3>15 · Stripe e ledger financeiro de pagamentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">consistência crítica</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fintech calculava o saldo das contas executando `UPDATE contas SET saldo = saldo + valor`. Um bug de concorrência e uma falha de rollback parcial deixaram o saldo de 400 clientes divergente do extrato de transações, com R$ 1,2 milhão de diferença contábil inexplicável. A reconstrução da arquitetura adotou um Livro-Razão Imutável de Partidas Dobradas (Double-Entry Ledger), onde o saldo é estritamente derivado da soma imutável de lançamentos de débito e crédito, garantindo auditoria à prova de fraudes.</p>
         </div>
 
@@ -5728,7 +5728,7 @@ p ≈ 1</code>
       <article class="topic" id="k16">
         <div class="th"><h3>16 · YouTube: ingestão de vídeo UGC, DAG de transcodificação e sharding Vitess</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">video ugc &amp; dag</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma plataforma de vídeos gerados por usuários (UGC) transcodificava arquivos de vídeo sequencialmente em um único worker por vídeo. Vídeos em 4K demoravam 3 horas para processar, criando uma fila represada de 45.000 vídeos pendentes. A reestruturação da ingestão fragmentou o vídeo em pedaços de 10 segundos processados em paralelo via DAG no Kubernetes e particionou os metadados de comentários e canais no banco de dados MySQL usando Vitess, reduzindo o tempo de publicação para 90 segundos.</p>
         </div>
 
@@ -5854,7 +5854,7 @@ p ≈ 1</code>
       <article class="topic" id="k17">
         <div class="th"><h3>17 · Spotify: streaming de áudio de baixa latência, cache local e Spotify Connect</h3><div class="badges"><span class="badge b-prof">streaming &amp; sync</span><span class="badge b-caso">tempo real</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo de streaming de música tocava faixas baixando o arquivo de áudio MP3 completo a cada reprodução. Usuários em redes móveis instáveis enfrentavam pausas constantes de buffering e o consumo de dados móveis gerou milhares de reclamações. A implementação de pré-busca inteligente (prefetching da próxima faixa na playlist), chunking com formato Ogg Vorbis comprimido e cache local criptografado no dispositivo reduziu a latência de início de reprodução para zero milissegundos.</p>
         </div>
 
@@ -6250,7 +6250,7 @@ p ≈ 1</code>
       <article class="topic" id="l3">
         <div class="th"><h3>Protocolo MCP, Sistemas de Agentes &amp; Caching Semântico</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">mcp &amp; agentes</span><span class="badge b-caso">arquitetura moderna</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema corporativo baseado em agentes de IA disparava chamadas repetidas para um modelo LLM externo pagando US$ 0,03 por consulta para responder perguntas frequentes de políticas internas. A fatura mensal de tokens atingiu US$ 24.000, e a latência de resposta aos clientes ultrapassava 4 segundos por pergunta. A implementação de Caching Semântico com banco vetorial (pgvector) buscando embeddings com threshold de similaridade de cosseno de 0.92 interceptou 68% das consultas na borda, respondendo em 15 milissegundos e reduzindo a fatura de IA em US$ 16.000/mês.</p>
         </div>
 
@@ -6374,7 +6374,7 @@ p ≈ 1</code>
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Caches tradicionais utilizam a <strong>correspondência exata da string (ou hash MD5)</strong> da pergunta; qualquer alteração de pontuação ou sinônimo causa Cache Miss.<br>O <strong>Semantic Caching</strong> gera o <strong>vetor de embedding da pergunta e avalia a similaridade semântica (distância de cosseno)</strong> com perguntas anteriores no cache. Se a intenção for semanticamente equivalente (ex: > 95% de proximidade), a resposta é devolvida imediatamente do cache, <strong>reduzindo custos de API em até 80% e cortando a latência de segundos para milissegundos</strong>.</p>
+                  <p class="tf-resposta">Um cache exato procura uma chave definida pela aplicação; normalização pode fazer textos equivalentes gerarem a mesma chave, mas variações não normalizadas podem causar miss. O <strong>cache semântico</strong> usa embeddings e uma regra de similaridade para propor candidatos. Não há um limiar universal: similaridade vetorial não prova equivalência de intenção. Meça falsos hits e economia real, respeite usuário, tenant, permissões e atualidade, e consulte a fonte de verdade quando houver dúvida.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>

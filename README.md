@@ -30,6 +30,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | 13 | [Inglês Técnico](cadernos/ingles.html) | Input compreensível, shadowing e code review sem atrito |
 | 14 | [Oratória & Comunicação](cadernos/oratoria.html) | Defesa técnica de decisões, postmortems blameless e modelo SBI |
 | — | [Governança e Segurança de TI](cadernos/governanca-seguranca.html) | Governança, risco, controles, IAM, privacidade, desenvolvimento seguro, incidentes e continuidade |
+| — | [Finanças e investimentos](cadernos/financas-investimentos.html) | Orçamento, objetivos, reserva, renda fixa e variável, plano educacional em três fases, aportes, custos e fontes oficiais; sem carteira recomendada |
 
 ### 🛠️ Laboratório & Prática (`lab/`)
 | # | Documento | Foco |

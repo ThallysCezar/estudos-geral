@@ -847,8 +847,8 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a1">
         <div class="th"><h3>O problema: "na minha máquina funciona"</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a origem</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um microsserviço de geração de relatórios funcionava perfeitamente no notebook do desenvolvedor (Ubuntu com biblioteca `glibc` 2.35 e fontes locais). Ao rodar no servidor Linux de produção que utilizava CentOS 7 com biblioteca legada, a aplicação falhou com erro `libstdc++.so.6: version GLIBCXX_3.4.21 not found`, quebrando o deploy por 6 horas. O empacotamento do binário e de todas as dependências de sistema operacional em uma imagem Docker garantiu paridade absoluta entre a máquina de desenvolvimento e produção.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> um serviço funciona no notebook, mas falha no servidor por diferença de bibliotecas nativas. Empacotar aplicação e dependências em uma imagem reduz esse tipo de divergência, mas não cria paridade absoluta: kernel, arquitetura da CPU, configuração, secrets, permissões e serviços externos ainda podem diferir. Reproduza também a arquitetura de destino e teste a imagem em ambiente representativo.</p>
         </div>
 
         <div class="topic-split">
@@ -952,7 +952,7 @@ class OrderRepositoryTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Tratar Container como Servidor Físico (Pet vs Cattle):</strong> Acessar o container via <code>docker exec</code>, instalar pacotes na mão e alterar configurações sem recriar a imagem. Qualquer restart ou rescheduling destrói essas alterações, pois a camada do container é efêmera.</li>
             <li><strong>Falsa Sensação de Segurança (Container não é Sandbox Estrita):</strong> Containers compartilham o mesmo kernel do host. Um container executando como <code>root</code> (UID 0) sem User Namespace ativado, se explorar uma vulnerabilidade no kernel ou montar o Docker socket, obtém controle irrestrito do host.</li>
@@ -1070,7 +1070,7 @@ class OrderRepositoryTest {
       <article class="topic" id="a2">
         <div class="th"><h3>Namespaces e cgroups: o isolamento por dentro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">mecanismo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação Node.js com vazamento de memória (memory leak) rodava em container sem limitação de recursos no host compartilhado. O processo consumiu 31 GB dos 32 GB de RAM física da máquina, forçando o OOM Killer do Linux do host a derrubar processos vitais do sistema operacional, incluindo o daemon do Docker e o agente de monitoramento. A imposição de limites rígidos de cgroup (`--memory=2g` e cgroups v2) isolou o consumo e impediu que um único container derrubasse o servidor inteiro.</p>
         </div>
 
@@ -1090,7 +1090,7 @@ class OrderRepositoryTest {
             <ul>
               <li><b>Isolamento de Visão (Namespaces):</b> PID (processos), NET (placas de rede/portas), MNT (árvore de diretórios), IPC (memória compartilhada), UTS (hostname) e USER (mapeamento de UID/GID).</li>
               <li><b>Controle de Recursos (Cgroups):</b> Estabelece limites estritos de memória para evitar que um processo com vazamento derrube outros serviços (OOM - Out of Memory).</li>
-              <li><b>Fair Sharing de CPU:</b> Garante fatiamento justo de ciclos de clock (CFS - Completely Fair Scheduler) entre containers concorrentes.</li>
+              <li><b>Limite e disputa por CPU:</b> cgroups permitem configurar quotas e pesos; o scheduler distribui tempo de CPU conforme política e carga do host. Isso não garante latência ou justiça perfeita entre containers; monitore throttling, requests/limits e contenção.</li>
             </ul>
           </div>
           <div class="pilar-box p-importa">
@@ -1119,8 +1119,8 @@ cat /sys/fs/cgroup/system.slice/docker-*.scope/memory.max</code></pre>
         </div>
             <div class="pilar-card p-funciona">
           <div class="pilar-header"><span class="pilar-icon">⚙️</span> <b>5. Como funciona por baixo dos panos? (A JVM e os Cgroups)</b></div>
-          <p>Historicamente (Java 8 antes do update 131), a JVM consultava as syscalls tradicionais do Linux (como <code>sysconf(_SC_PHYS_PAGES)</code>) para descobrir a quantidade de RAM disponível. No container com limite de 512MB em um host com 64GB, a JVM acreditava ter 64GB e configurava a Heap inicial em 16GB. Quando o app alocava mais de 512MB, o subsistema de Cgroups acionava o <b>OOM Killer</b> do kernel, que enviava um <code>SIGKILL</code> brutal, matando o container sem gerar log ou stack trace.</p>
-          <p>Nas JVMs modernas (Java 17 e 21+), a JVM detecta automaticamente os limites de Cgroup v1 e v2 (via flag <code>-XX:+UseContainerSupport</code>, ativada por padrão) e dimensiona a Heap em relação à cota do container, respeitando <code>-XX:MaxRAMPercentage</code>.</p>
+          <p>Versões antigas da JVM podiam dimensionar heap e processadores com base no host em vez dos limites do contêiner, contribuindo para encerramentos pelo OOM Killer. O suporte e os limites detectados variam por distribuição, versão do JDK, sistema operacional e versão de cgroups. Por exemplo, as notas do Oracle JDK 8u191 registram melhorias de detecção de contêiner; confira a versão concreta com <code>java -XshowSettings:system -version</code> ou ferramentas equivalentes antes de dimensionar.</p>
+          <p>Versões atuais do HotSpot oferecem suporte a limites de contêiner e, em configurações suportadas, o recurso costuma vir habilitado por padrão. Isso não dimensiona a aplicação por você: <code>-XX:MaxRAMPercentage</code> define um teto relativo para heap, e o restante do processo (Metaspace, stacks, buffers e nativas) também precisa caber no limite.</p>
         </div>
           </div>
         </div>
@@ -1131,7 +1131,7 @@ cat /sys/fs/cgroup/system.slice/docker-*.scope/memory.max</code></pre>
        <div class="cs-title"><span class="pilar-icon">☕</span> <b>6. Exemplo de dimensionamento correto de memória para JVM em container</b></div>
        <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
      </div>
-          <p>Configuração de flags para garantir que a memória total (Heap + Metaspace + Threads + Buffers nativos) não estoure o cgroup:</p>
+          <p>Exemplo para iniciar a análise de memória do processo; nenhum conjunto de flags garante ausência de OOM sem validar versão da JVM, limites e workload:</p>
           <pre><code class="language-dockerfile"># Dockerfile da aplicação Spring Boot
 FROM eclipse-temurin:21-jre-alpine
 
@@ -1142,11 +1142,11 @@ ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app.jar"]</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Container sem Limite de Memória Definido:</strong> O container consumirá memória indefinidamente. Em caso de vazamento, o kernel acionará o OOM Killer contra outros processos do host, podendo derrubar daemons essenciais (como o próprio Kubelet ou Docker daemon).</li>
             <li><strong>PID 1 e o Encerramento Gracioso Travado (Graceful Shutdown):</strong> O processo com PID 1 possui tratamento especial no Linux: se ele não registrar um tratador explícito para <code>SIGTERM</code>, o kernel ignora o sinal. O <code>docker stop</code> aguarda 10 segundos de timeout e emite um <code>SIGKILL</code> forçado, corrompendo transações em andamento.</li>
-            <li><strong>Heap Dimensionada em 100% da Cota do Container:</strong> Esquecer que a JVM consome memória nativa fora da Heap (Metaspace, CodeCache, threads stacks e buffers NIO). Definir Heap de 512MB em um container de 512MB causa OOMKilled imediato assim que a aplicação sobe conexões de rede.</li>
+            <li><strong>Heap próxima do limite do contêiner:</strong> a JVM também usa Metaspace, stacks, CodeCache, buffers diretos e bibliotecas nativas. Configurar o teto da heap próximo ao limite deixa pouca margem e pode causar OOM sob carga; o resultado depende do consumo real do processo.</li>
           </ul>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -1217,17 +1217,17 @@ ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app.jar"]</code></pre>
               <div class="te-body">
                 <p class="te-pergunta"><strong>Cenário de Produção (DevOps/K8s):</strong> Um contêiner Java sobe em um servidor que tem 32GB de RAM, mas o contêiner foi iniciado com a flag Docker: <code>--memory=1g</code>. A aplicação foi configurada sem flags de memória e alocou 1.2GB sob tráfego.</p>
                 
-                <p class="te-instrucao">O que acontece com o contêiner no exato instante em que ele atinge 1.001MB?</p>
+                <p class="te-instrucao">O que um limite de memória de contêiner faz quando a carga tenta consumir mais memória do que o permitido?</p>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A terminação por cgroup ocorre externamente no nível do kernel do Linux, sem tempo de a JVM capturar a falha.">
                     <span class="te-letter">A</span> A JVM dispara uma OutOfMemoryError no log da aplicação e desacelera o garbage collector para liberar páginas de memória.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Quando o limite estrito do cgroup é atingido e não há swap habilitado explicitamente, o kernel aciona o OOM Killer imediatamente.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O daemon Docker não reduz prioridade de CPU nem garante que o excesso seja acomodado em swap; esse comportamento depende do kernel e da configuração do cgroup.">
                     <span class="te-letter">B</span> O daemon do Docker reduz a prioridade de CPU do processo e move o excesso de alocação de memória temporariamente para o swap.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O subsistema cgroup memory impõe o teto configurado. Ao ultrapassar o limite sem margem, o kernel envia SIGKILL sumário, gerando o status 137 (OOMKilled).">
-                    <span class="te-letter">C</span> O cgroup do kernel Linux detecta a violação do limite estrito e encerra o processo com SIGKILL (Exit Code 137).
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto: o limite do cgroup restringe memória do contêiner; sob pressão que não pode ser atendida, o kernel pode acionar o OOM killer e encerrar processo(s). O momento e o status observável dependem do kernel, da configuração de swap e do runtime; não há um gatilho universal de 1 MB acima do limite.">
+                    <span class="te-letter">C</span> O cgroup limita o consumo; sob pressão de memória, o kernel pode acionar o OOM killer. Não existe um comportamento de encerramento garantido exatamente em 1.001 MB.
                   </button>
                 </div>
 
@@ -1260,7 +1260,7 @@ ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app.jar"]</code></pre>
       <article class="topic" id="a3">
         <div class="th"><h3>Imagem e container: molde e instância</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor salvou arquivos de configuração e certificados TLS diretamente dentro do container em execução (`docker exec`) sem alterar a imagem base nem usar volumes. Duas semanas depois, após uma reinicialização de segurança do host, o container antigo foi recriado a partir da imagem original e todas as alterações manuais sumiram, tirando a autenticação do ar por 3 horas. O time aprendeu que imagens são moldes imutáveis e que o ciclo de vida de containers exige configuração declarativa externa.</p>
         </div>
 
@@ -1334,7 +1334,7 @@ docker run -d --name order-service \
   order-service:v1</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Armazenar Banco de Dados ou Uploads na Camada do Container:</strong> Todo dado escrito no sistema de arquivos padrão do container morre no momento em que ele é recriado em um deploy. Além disso, o driver OverlayFS tem performance de I/O muito inferior ao disco bruto.</li>
             <li><strong>Usar <code>docker commit</code> para Gerar Imagens em Produção:</strong> Gerar imagens a partir de containers alterados manualmente cria caixas-pretas impossíveis de auditar, rastrear no Git ou reproduzir na esteira de CI. Imagens devem ser construídas estritamente via <code>Dockerfile</code> versionado.</li>
@@ -1452,7 +1452,7 @@ docker run -d --name order-service \
       <article class="topic" id="a4">
         <div class="th"><h3>Docker, containerd e a OCI: quem faz o quê</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma atualização do Docker Daemon em um servidor crítico, o serviço `dockerd` foi reiniciado e todas as 40 aplicações em produção caíram simultaneamente porque a flag `live-restore` estava desativada. A separação moderna entre o daemon Docker e o runtime desacoplado `containerd` com especificação OCI permite que os containers continuem executando sem interrupção mesmo se o daemon de gerenciamento superior for reiniciado ou atualizado.</p>
         </div>
 
@@ -1477,8 +1477,8 @@ docker run -d --name order-service \
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>No início, o Docker era um binário monolítico com controle proprietário. A comunidade da CNCF e grandes players de tecnologia exigiram a separação em padrões abertos. Em 2022, o Kubernetes removeu o <em>dockershim</em> (camada intermediária para falar com o Docker), passando a se comunicar diretamente com o containerd ou CRI-O através da interface <b>CRI (Container Runtime Interface)</b>.</p>
-            <p class="repl"><b>Veio substituir:</b> O acoplamento estrito a uma ferramenta proprietária única e o intermediário dockershim que desperdiçava CPU e memória nos nós de Kubernetes.</p>
+            <p>O Kubernetes removeu o <em>dockershim</em> na versão 1.24 e passou a integrar runtimes de nó por meio da <b>CRI (Container Runtime Interface)</b>, como containerd e CRI-O. Isso mudou a integração entre o kubelet e o runtime; não significa que imagens criadas com Docker deixaram de funcionar. O formato e a compatibilidade dependem da imagem e do runtime usados.</p>
+            <p class="repl"><b>Veio substituir:</b> a integração mantida pelo Kubernetes especificamente para o Docker Engine como runtime de nó. A remoção não foi uma promessa de ganho fixo de CPU ou memória; simplificou a manutenção da interface de runtime.</p>
           </div>
         </div>
           </div>
@@ -1526,7 +1526,7 @@ crictl pods</code></pre>
 docker image inspect order-service:1.0.0 | grep -i io.buildpacks</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Montar o Docker Socket dentro do Container (<code>-v /var/run/docker.sock:...</code>):</strong> Prática comum e perigosíssima em pipelines de CI (Docker-out-of-Docker). Dá ao container controle absoluto sobre o daemon do host: qualquer invasor dentro do container pode criar um container com privilégios de root e montar a partição raiz <code>/</code> do servidor host.</li>
             <li><strong>Mito do "Docker Morreu no Kubernetes":</strong> Desenvolvedores que supõem erroneamente que imagens geradas via Docker não funcionam no Kubernetes. A remoção do dockershim afetou exclusivamente o runtime do nó do cluster, mantendo o formato de imagens OCI completamente inalterado e universal.</li>
@@ -1571,7 +1571,7 @@ docker image inspect order-service:1.0.0 | grep -i io.buildpacks</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>O Pânico do 'Kubernetes Removeu o Docker':</b>
-                    <p>Quando o Kubernetes depreciou o Dockershim na versão 1.24, muitos acharam que imagens Docker deixariam de rodar. Na verdade, o Kubernetes apenas passou a falar diretamente com o <code>containerd</code> via CRI (Container Runtime Interface), eliminando o intermediário inútil. Imagens OCI do Docker continuam rodando 100%!</p>
+                    <p>Quando o Kubernetes removeu o Dockershim na versão 1.24, a mudança foi na integração com o runtime do nó, não no formato da imagem. Imagens produzidas por Docker normalmente continuam utilizáveis por runtimes compatíveis com OCI, desde que arquitetura, plataforma e configuração sejam compatíveis.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -1649,7 +1649,7 @@ docker image inspect order-service:1.0.0 | grep -i io.buildpacks</code></pre>
       <article class="topic" id="b1">
         <div class="th"><h3>Camadas: por que a ordem do Dockerfile importa tanto</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o pulo do gato</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Dockerfile colocava a instrução `COPY . .` antes do comando de instalação de dependências. Como qualquer alteração em arquivos de código ou documentação invalidava o cache da camada no início do arquivo, cada build no pipeline de CI baixava 800 MB de pacotes da internet do zero, demorando 18 minutos por commit. A reordenação copiando apenas os manifestos de dependência antes da compilação reduziu o tempo de build do CI de 18 minutos para 45 segundos por reuso de cache.</p>
         </div>
 
@@ -1734,7 +1734,7 @@ docker history order-service:v1
 # dive order-service:v1</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong><code>COPY . .</code> no Início do Dockerfile:</strong> Qualquer mudança no arquivo <code>README.md</code>, no <code>.git</code> ou em scripts de documentação destrói o cache do build inteiro, forçando o download de centenas de megabytes de pacotes novamente.</li>
             <li><strong>Apagar Arquivos em Camada Posterior:</strong> Baixar tarballs de instalação (ex: JDK) e remover o <code>.tar.gz</code> no comando <code>RUN</code> seguinte dobra o tamanho da imagem desnecessariamente.</li>
@@ -1856,7 +1856,7 @@ CMD ["node", "server.js"]</code></pre>
       <article class="topic" id="b2">
         <div class="th"><h3>Multi-stage: construir num lugar, entregar em outro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação Go foi compilada em um Dockerfile de estágio único usando a imagem oficial `golang:1.22`. A imagem final entregue em produção tinha 1.2 GB e continha o compilador Go, git, compiladores C e o código-fonte inteiro da aplicação, sendo reprovada em auditoria de segurança com 84 vulnerabilidades críticas (CVEs). A refatoração para multi-stage build compilou no estágio `builder` e copiou apenas o binário compilado estático para uma imagem final `distroless` de 28 MB, zerando as vulnerabilidades.</p>
         </div>
 
@@ -1954,7 +1954,7 @@ COPY --from=builder /app/application/ ./
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Alpine Linux e a Biblioteca C (musl vs glibc):</strong> Imagens baseadas em Alpine utilizam a implementação <code>musl libc</code> em vez da tradicional <code>glibc</code>. Bibliotecas nativas via JNI (como drivers específicos de criptografia ou APMs legados) podem quebrar silenciosamente ou apresentar degradações de performance com alocação de memória no musl. Se necessitar de glibc estrita, utilize imagens <code>-slim</code> baseadas em Debian/Ubuntu.</li>
             <li><strong>Rodar como Root (UID 0):</strong> O padrão do Docker é executar como root. Se um container em root for comprometido e houver escape de namespace, o invasor é root no nó físico. Sempre declare <code>USER appuser</code>.</li>
@@ -2085,7 +2085,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
       <article class="topic" id="b3">
         <div class="th"><h3>ENTRYPOINT, CMD e o processo PID 1</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um container Java iniciava a JVM através de um script shell wrapping (`CMD ["/start.sh"]`) sem usar `exec java -jar app.jar`. Como o shell `/bin/sh` assumiu o PID 1 e não repassava sinais POSIX, quando o orquestrador enviou `SIGTERM` para encerramento gracioso, o processo Java não recebeu o sinal e continuou rodando até sofrer `SIGKILL` após 30 segundos, corrompendo 140 transações bancárias em voo. O uso de `exec "$@"` no script garantiu que o Java assumisse o PID 1 e tratasse o desligamento gracioso.</p>
         </div>
 
@@ -2179,7 +2179,7 @@ server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Uso da Forma Shell por Força do Hábito:</strong> Escrever <code>ENTRYPOINT java -jar ...</code> faz o shell virar PID 1. O container ignora o encerramento do Kubernetes até o estouro do grace period, sofrendo <code>SIGKILL</code> e derrubando requisições ativas de clientes.</li>
             <li><strong>Esquecer a Instrução <code>exec</code> no Script Wrapper:</strong> Se você criar um <code>entrypoint.sh</code> e invocar <code>java -jar app.jar</code> sem <code>exec</code> na frente, o shell continuará como pai (PID 1) e o Java será PID 2, reproduzindo a mesma falha de perda de sinal.</li>
@@ -2296,7 +2296,7 @@ spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
       <article class="topic" id="b4">
         <div class="th"><h3>Imagem enxuta e segura: o que não deve estar lá</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um container executava como usuário padrão `root` em produção e continha ferramentas utilitárias (`curl`, `netcat` e `apt`). Um atacante explorou uma injeção de comando em um endpoint HTTP e, por ter privilégios de root no container com ferramentas de rede instaladas, realizou varredura lateral na rede privada e instalou um minerador de Monero. A remoção de ferramentas supérfluas, uso de imagens Alpine/Distroless e execução com usuário não-privilegiado (`USER appuser`) neutralizaram a superfície de ataque.</p>
         </div>
 
@@ -2368,7 +2368,7 @@ ENTRYPOINT ["app.jar"]</code></pre>
         </div>
           <div class="cs"><b>Caso de entrevista:</b> "a imagem do Spring Boot tem 2 GB e o deploy está lento, como diminuir?" — explicado do conceito à resposta no <a href="../cadernos/conceitos-backend.html#h2b">caderno de dúvidas</a>.</div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Uso de <code>:latest</code> em Produção:</strong> Torna o build não-reproduzível. Dois deploys do mesmo commit em dias distintos baixam bases diferentes, introduzindo bugs fantasmas ou quebras de versão de SO.</li>
             <li><strong>Esquecer o arquivo <code>.dockerignore</code>:</strong> O Docker CLI envia todo o diretório local para o daemon como <em>Build Context</em>. Enviar a pasta <code>.git</code> (que pode ter centenas de MB) não apenas retarda o build como pode vazar credenciais antigas gravadas no histórico do repositório.</li>
@@ -2486,7 +2486,7 @@ ENTRYPOINT ["app.jar"]</code></pre>
       <article class="topic" id="b5">
         <div class="th"><h3>Registry, tags e a promoção da imagem</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe utilizava a tag `:latest` em seu manifesto de deploy no Kubernetes. Um desenvolvedor subiu uma versão com bug acidentalmente sob a tag `:latest` no registry durante a madrugada. Na manhã seguinte, após um Pod reiniciar e executar o `imagePullPolicy: Always`, a versão quebrada foi puxada para produção sem passar pela esteira de QA, gerando 1h30 de indisponibilidade. A adoção de tags imutáveis com hash SHA-256 e versão semântica (`v1.4.2@sha256:...`) garantiu reprodutibilidade estrita.</p>
         </div>
 
@@ -2566,7 +2566,7 @@ docker inspect --format='{{index .RepoDigests 0}}' registry.empresa.com/order-se
 # Retorno: registry.empresa.com/order-service@sha256:b590e8d...</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Uso de <code>:latest</code> em Manifestos do Kubernetes:</strong> Ninguém sabe qual código está ativo no cluster. Se o Pod morrer e reiniciar em outro nó, o Kubernetes pode baixar uma versão diferente que foi enviada recentemente para o registry, causando instabilidade e inviabilizando rollbacks.</li>
             <li><strong>Sobrescrita de Tags Imutáveis:</strong> Sobrescrever a tag <code>:1.4.2</code> após corrigir um bug apaga o histórico do registry e torna impossível auditar qual código rodou em determinado incidente. Registries modernos devem ser configurados com <b>Tag Immutability</b> ativada.</li>
@@ -2690,7 +2690,7 @@ docker inspect --format='{{index .RepoDigests 0}}' registry.empresa.com/order-se
       <article class="topic" id="c1">
         <div class="th"><h3>docker run e o ciclo de vida do container</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um container de produção executando um gateway de pagamento caiu silenciosamente às 3h da manhã devido a uma exceção não capturada. Como o comando havia sido iniciado sem política de reinicialização (`--restart unless-stopped` ou `--restart on-failure:5`), o container permaneceu em estado `Exited (1)` por 5 horas até o primeiro operador acordar. A definição de políticas explícitas de restart no Docker garantiu a autorrecuperação imediata de processos com falha efêmera.</p>
         </div>
 
@@ -2771,7 +2771,7 @@ docker run -d \\
   orderflow:1.0.0</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Container com Status <code>Exited (0)</code> Imediato:</strong> Desenvolvedor roda <code>docker run -d ubuntu</code> e reclama que "o Docker não está funcionando". O Ubuntu rodou <code>/bin/bash</code>, não recebeu stdin interativo e finalizou com sucesso 0. Para comandos contínuos, a aplicação deve manter um processo em foreground (como Tomcat ou Nginx).</li>
             <li><strong>Acúmulo Silencioso de Containers Parados no Disco:</strong> Rodar <code>docker run</code> repetidas vezes sem a flag <code>--rm</code> acumula dezenas de containers parados no estado <code>Exited</code>, que continuam consumindo metadados e espaço de disco na pasta <code>/var/lib/docker/containers/</code>. Use <code>docker system df</code> e <code>docker container prune</code>.</li>
@@ -2889,7 +2889,7 @@ docker run -d \\
       <article class="topic" id="c2">
         <div class="th"><h3>Volumes e bind mounts: onde os dados sobrevivem</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um banco de dados PostgreSQL foi iniciado via Docker sem montar um volume gerenciado para o diretório `/var/lib/postgresql/data`. Quando o time executou `docker rm -f pg-prod` para atualizar a versão do banco, todos os dados de clientes gravados na camada de gravação efêmera (writable layer) do container foram permanentemente apagados do disco. A utilização mandatória de Named Volumes (`docker volume create pg-data`) desacoplou a persistência do ciclo de vida dos containers.</p>
         </div>
 
@@ -2989,7 +2989,7 @@ docker run --rm \\
   alpine tar xzf /backup/pgdata-backup.tar.gz -C /dados</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Uso de Bind Mounts em Produção com Kubernetes:</strong> Bind mounts amarram o Pod ao nó físico em que o disco existe (HostPath). Se o nó falhar e o Pod for recriado em outro servidor, ele não encontrará os arquivos. Em produção, utilize PersistentVolumes (PV/PVC) gerenciados por StorageClasses de rede (EBS, Ceph, etc.).</li>
             <li><strong>Executar <code>docker system prune --volumes</code> Distraidamente:</strong> O comando <code>prune</code> comum preserva volumes, mas adicionar a flag <code>--volumes</code> apaga todos os volumes nomeados que não estejam anexados a um container ativo no exato momento. É a causa clássica de exclusão acidental de bases locais de desenvolvimento.</li>
@@ -3107,7 +3107,7 @@ docker run --rm \\
       <article class="topic" id="c3">
         <div class="th"><h3>Redes: como containers se enxergam</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois containers (uma API Java e um Redis) foram iniciados na rede padrão de bridge (`docker0`) sem criar uma rede customizada. A aplicação tentava conectar em `redis:6379`, mas a resolução de nomes por DNS interno falhava, pois a rede bridge padrão do Docker não oferece DNS resolution automático por nome de container. A criação de uma bridge customizada (`docker network create app-net`) ativou o DNS resolver embutido e normalizou a comunicação entre serviços.</p>
         </div>
 
@@ -3192,7 +3192,7 @@ spring.datasource.url=jdbc:postgresql://pedidos-db:5432/pedidos
 spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/pedidos</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Usar a Rede Bridge Padrão (Default Bridge):</strong> Containers que sobem sem a flag <code>--network</code> caem na rede bridge padrão (chamada apenas de <code>bridge</code>). <b>Na rede padrão, o DNS interno por nome é DESATIVADO por razões históricas!</b> A resolução por nome só funciona em redes criadas explicitamente por você.</li>
             <li><strong>Publicar Portas de Bancos no Host por Reflexo (<code>-p 5432:5432</code>):</strong> Se a aplicação e o banco estão na mesma docker network, eles se comunicam pela rede interna. Publicar a porta no host abre o PostgreSQL para a rede local da sua empresa ou para a internet pública se o servidor tiver IP externo!</li>
@@ -3310,7 +3310,7 @@ spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/pedidos</code>
       <article class="topic" id="c4">
         <div class="th"><h3>Configuração e segredos: o que entra por fora</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma chave privada de API externa foi mantida diretamente em um arquivo `.env` commitado na imagem Docker. A imagem foi enviada para o Docker Hub em repositório público por engano, e em menos de 20 minutos a credencial foi usada para consumir R$ 15.000 em créditos de serviços na nuvem. A extração de toda configuração para variáveis de ambiente injetadas em tempo de execução via `--env-file` ou Kubernetes Secrets blindou as imagens contra vazamentos de segredos.</p>
         </div>
 
@@ -3400,7 +3400,7 @@ public class SecretConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Chumbar Senhas na Instrução <code>ENV</code> do Dockerfile:</strong> Essa instrução grava o valor de forma permanente nas camadas da imagem. Mesmo que você envie a imagem para um registry privado, qualquer desenvolvedor com acesso de leitura na imagem extrai a senha da produção.</li>
             <li><strong>Commitar Arquivos <code>.env</code> no Repositório Git:</strong> Adicione <code>.env</code> ao <code>.gitignore</code> e ao <code>.dockerignore</code> no primeiríssimo commit do projeto.</li>
@@ -3518,7 +3518,7 @@ public class SecretConfig {
       <article class="topic" id="c5">
         <div class="th"><h3>Diagnóstico: quando o container não sobe</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação recém-empacotada reiniciava em loop infinito entrando em CrashLoopBackOff. Um desenvolvedor júnior tentava usar `docker exec -it` para entrar no container e inspecionar o erro, mas recebia a mensagem de que o container não estava rodando. O uso correto do comando `docker logs --tail 100 [id]` revelou instantaneamente que uma variável de ambiente obrigatória (`DATABASE_URL`) não havia sido passada, causando encerramento imediato do Spring Boot na inicialização.</p>
         </div>
 
@@ -3616,7 +3616,7 @@ nc -zv pedidos-db 5432
 curl -v http://localhost:8080/actuator/health</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Reconstruir a Imagem como Primeiro Reflexo:</strong> Custa minutos preciosos de downtime e raramente conserta problemas de rede, permissão de volume ou variáveis ausentes.</li>
             <li><strong>Ler Apenas as Últimas Linhas de Log em CrashLoop:</strong> Quando um container reinicia em loop eterno, as últimas linhas mostram apenas o processo subindo de novo; a exceção fatal que causou a queda original está no topo do primeiro log.</li>
@@ -3740,7 +3740,7 @@ curl -v http://localhost:8080/actuator/health</code></pre>
       <article class="topic" id="d1">
         <div class="th"><h3>O que o Compose resolve</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Novos engenheiros em um time gastavam em média 3 dias úteis configurando manualmente PostgreSQL, Redis, RabbitMQ e ElasticSearch em suas máquinas locais para conseguir rodar a aplicação em desenvolvimento, gerando conflitos recorrentes de versões. A criação de um arquivo `docker-compose.yml` unificado permitiu subir todo o ambiente de microsserviços com um único comando `docker compose up -d` em menos de 2 minutos.</p>
         </div>
 
@@ -3852,7 +3852,7 @@ docker compose down
 docker compose down -v</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong><code>depends_on</code> sem Healthcheck (A Falha da "Segunda Tentativa"):</strong> O desenvolvedor reclama que o projeto "sempre dá erro na primeira vez e só sobe na segunda". Isso ocorre porque na primeira vez a API tentou conectar com o Postgres antes dele aceitar conexões. A solução definitiva é <code>condition: service_healthy</code>.</li>
             <li><strong>Usar o Docker Compose como Plataforma de Produção:</strong> O Compose foi desenhado para ambiente de máquina única. Ele não possui tolerância a falhas, reconciliação entre nós, auto-recuperação de servidores mortos, nem rolling updates com zero-downtime. Em produção, adote Kubernetes ou ECS.</li>
@@ -3984,7 +3984,7 @@ docker compose down -v</code></pre>
       <article class="topic" id="d2">
         <div class="th"><h3>Onde o Compose para — e por que existe Kubernetes</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a virada</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa colocou um arquivo `docker-compose.yml` em uma única VM de produção para rodar um e-commerce. Durante uma queima de estoque, o tráfego saturou a máquina e o host travou. Como o Compose não faz gerenciamento de múltiplos nós, não possui agendamento distribuído, nem autorrecuperação entre servidores físicos, todo o site permaneceu fora do ar até a VM ser reiniciada manualmente. O incidente forçou a transição para um orquestrador de clusters (Kubernetes).</p>
         </div>
 
@@ -4086,7 +4086,7 @@ docker compose down -v</code></pre>
           <div class="cs"><b>A conclusão honesta:</b> Os dois não competem: <b>Compose para desenvolver, Kubernetes para operar</b>. Tentar rodar Kubernetes localmente com dezenas de manifestos e ingress complexos no notebook de todo desenvolvedor torna o desenvolvimento lento e doloroso. Por outro lado, tentar colocar o Docker Compose em produção para suportar tráfego crítico corporativo resulta em quedas inevitáveis a cada manutenção de servidor ou deploy.</div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Kubernetes Prematuro (Over-Engineering):</strong> Adotar Kubernetes em um time de 3 pessoas com uma única aplicação monolítica. O custo operacional de manter o control plane, upgrades de versão e troubleshooting de rede consome 50% do tempo do time sem gerar nenhum valor de negócio.</li>
             <li><strong>Compose em Produção sem Monitoramento de Processos:</strong> Deixar um <code>docker compose up</code> rodando em uma VM de produção sem orquestrador. Se a VM travar, reiniciar para atualizar o kernel Linux ou faltar memória, a aplicação cai e permanece fora do ar até alguém intervir manualmente de madrugada.</li>
@@ -4209,7 +4209,7 @@ docker compose down -v</code></pre>
       <article class="topic" id="e1">
         <div class="th"><h3>Estado desejado: você declara, o cluster persegue</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a ideia central</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um analista de suporte tentou corrigir um bug em um Pod do Kubernetes executando comandos manuais diretamente dentro do container (`kubectl exec`). Minutos depois, o nó do Kubernetes sofreu uma oscilação e o Pod foi reescalado em outro nó, eliminando todas as modificações manuais. O time compreendeu o princípio da reconciliação do control plane: no Kubernetes, qualquer alteração deve ser declarada no manifesto Git (GitOps) para que o reconciler persiga e mantenha o estado desejado.</p>
         </div>
 
@@ -4309,7 +4309,7 @@ spec:
           <p>Se alguém rodar <code>kubectl edit</code> e alterar as réplicas para 5 diretamente no cluster, o próximo pipeline de GitOps (como ArgoCD ou GitHub Actions) lerá o arquivo do Git (que diz 3) e reduzirá o cluster de volta para 3 réplicas. <b>Toda mudança nasce no repositório versionado; o cluster é a consequência física da declaração.</b></p>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Fazer "Hotfixes Rápidos" com <code>kubectl edit</code> em Produção:</strong> Alterar variáveis de ambiente ou réplicas diretamente no console do cluster resolve momentaneamente por 10 minutos. No próximo commit ou reconciliação do ArgoCD, sua alteração é atropelada silenciosamente e desfeita sem deixar log.</li>
             <li><strong>Achar que o <code>kubectl apply</code> Aguarda a Aplicação Subir:</strong> O <code>apply</code> apenas registra a intenção no etcd com sucesso imediato (HTTP 200). A convergência real (download de imagens, probes e startup da JVM) leva tempo. Para esteiras de CI/CD que precisam aguardar a finalização, utilize <code>kubectl rollout status deployment/pedidos --timeout=120s</code>.</li>
@@ -4427,7 +4427,7 @@ spec:
       <article class="topic" id="e2">
         <div class="th"><h3>Anatomia do cluster: control plane e nodes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cluster Kubernetes de homologação teve um dos nós do control plane com disco cheio, travando o banco de dados `etcd`. Como o `etcd` perdeu o consenso de gravação, o `kube-apiserver` parou de responder, impedindo qualquer comando `kubectl` ou novos deploys na empresa. A separação do `etcd` em discos SSD dedicados de alta performance (IOPS garantido) e monitoramento contínuo de latência de gravação de snapshot estabilizaram o control plane.</p>
         </div>
 
@@ -4512,7 +4512,7 @@ kubectl describe node worker-01
 kubectl get events --sort-by=.lastTimestamp</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Negligenciar o Backup do <code>etcd</code>:</strong> O etcd guarda literalmente tudo (segredos, deployments, ingress). Se o cluster sofrer corrupção de etcd sem snapshot periódico (<code>etcdctl snapshot save</code>), sobram apenas servidores vazios sem nenhuma inteligência para reconstruir o cluster.</li>
             <li><strong>Pod Preso em <code>Pending</code> sem Causa Aparente:</strong> Quando um Pod não sobe e fica em <code>Pending</code>, 99% das vezes o motivo reside no <b>Scheduler</b>: nenhum nó possui memória livre suficiente para atender ao <code>requests.memory</code> solicitado pelo manifesto. O comando <code>kubectl describe pod</code> exibe exatamente a mensagem do Scheduler explicando por que os nós foram descartados.</li>
@@ -4565,7 +4565,7 @@ kubectl get events --sort-by=.lastTimestamp</code></pre>
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Em nuvens gerenciadas (AWS EKS, Google GKE, Azure AKS), o provedor gerencia e garante a alta disponibilidade do Control Plane e do etcd para você; você só paga e se preocupa com os Worker Nodes.</p>
+                    <p>Em clusters gerenciados como EKS, GKE ou AKS, o provedor opera partes do control plane e do etcd conforme o produto e seu contrato. Isso reduz trabalho operacional, mas não elimina limites de disponibilidade, configuração, quotas, rede, workers ou responsabilidades do cliente; consulte o escopo e o SLA do serviço escolhido.</p>
                   </div>
                 </div>
               </div>
@@ -4630,7 +4630,7 @@ kubectl get events --sort-by=.lastTimestamp</code></pre>
       <article class="topic" id="e3">
         <div class="th"><h3>kubectl e manifestos: a linguagem do cluster</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor executou `kubectl edit deployment app-prod` diretamente no cluster de produção para mudar uma réplica e uma variável de ambiente. Horas depois, a esteira de CI/CD rodou um deploy automatizado aplicando os arquivos YAML do repositório Git, sobrescrevendo silenciosamente a alteração emergencial e reintroduzindo o problema em produção. A imposição de esteiras GitOps (ArgoCD/Flux) com bloqueio de edições imperativas manuais garantiu que o Git fosse a única fonte da verdade.</p>
         </div>
 
@@ -4720,7 +4720,7 @@ kubectl expose deployment order-service \\
   --dry-run=client -o yaml > service.yaml</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Erros de Indentação em YAML:</strong> YAML é sensível a espaços em branco. Um espaço a mais ou uma tabulação incorreta aninha uma propriedade sob o objeto pai errado, fazendo a validação da API reprovar o manifesto. Sempre valide previamente com <code>kubectl apply --dry-run=server -f manifesto.yaml</code>.</li>
             <li><strong>Esquecer a Flag de Namespace (<code>-n &lt;namespace&gt;</code>):</strong> O desenvolvedor roda <code>kubectl get pods</code> e entra em pânico achando que a aplicação foi deletada. Na verdade, ela está rodando perfeitamente no namespace <code>producao</code>, enquanto a CLI estava conectada no namespace <code>default</code>. Use <code>kubectl get pods -A</code> para auditar todos os namespaces.</li>
@@ -4860,7 +4860,7 @@ spec:
       <article class="topic" id="f1">
         <div class="th"><h3>Pod: a unidade que o cluster agenda</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe colocou dois microsserviços pesados não-relacionados (uma API de pagamentos e um worker de processamento de vídeos) rodando dentro do mesmíssimo Pod. Quando o worker de vídeo começou a processar múltiplos arquivos e consumiu 100% da CPU do Pod, a API de pagamentos começou a dar timeout em requisições HTTP e caiu junto. A separação em Pods independentes garantiu isolamento de ciclo de vida e agendamento proporcional nos nós do cluster.</p>
         </div>
 
@@ -4974,7 +4974,7 @@ spec:
           mountPath: /var/log/app</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Criar Pods Avulsos (Naked Pods) Diretamente:</strong> Se você rodar <code>kubectl run meu-pod</code> ou aplicar um manifesto com <code>kind: Pod</code> diretamente em produção, <b>ninguém está gerenciando aquele Pod</b>. Se o nó físico reiniciar ou sofrer manutenção, o Pod é destruído e nunca mais volta! Utilize sempre controladores como <code>Deployment</code>.</li>
             <li><strong>Tentar "Consertar" um Pod por Dentro com <code>kubectl exec</code>:</strong> Qualquer alteração manual feita dentro do Pod morre no primeiro restart ou quando um novo nó o assumir. Pods são descartáveis.</li>
@@ -5092,7 +5092,7 @@ spec:
       <article class="topic" id="f2">
         <div class="th"><h3>Labels e selectors: o mecanismo que liga tudo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o elo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um novo Deployment de teste foi aplicado com a label `app: checkout`, exatamente a mesma label utilizada pelo Deployment de produção no Service de checkout. O Service começou a balancear 50% das requisições de clientes reais para os Pods instáveis de homologação, causando 4.000 falhas de transação em 20 minutos. A padronização rigorosa de labels incluindo ambiente (`app: checkout`, `env: prod`, `version: v2`) e selectors específicos evitou colisões acidentais.</p>
         </div>
 
@@ -5187,7 +5187,7 @@ kubectl get endpoints order-service
 kubectl get pods --show-labels</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Erros de Caixa Alta/Baixa ou Espaços em Labels (Case Sensitivity):</strong> Escrever <code>app: OrderService</code> no Service e <code>app: order-service</code> no Pod. Para o Kubernetes são strings completamente distintas: o Service fica com endpoints vazios (<code>&lt;none&gt;</code>) e todo o tráfego falha silenciosamente.</li>
             <li><strong>Tentar Alterar o <code>spec.selector</code> de um Deployment Ativo:</strong> O campo <code>selector</code> de um Deployment é <b>estritamente imutável</b> após a criação. Tentar alterar o selector em um <code>kubectl apply</code> é rejeitado pela API do K8s com erro de validação. Para mudar, é necessário deletar o Deployment (ou usar um novo nome).</li>
@@ -5305,7 +5305,7 @@ kubectl get pods --show-labels</code></pre>
       <article class="topic" id="f3">
         <div class="th"><h3>Deployment e ReplicaSet: a cadeia de controle</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um operador tentou deletar um Pod com defeito manualmente usando `kubectl delete pod [nome]` esperando que ele sumisse para sempre. O Pod sumiu e reapareceu 1 segundo depois em outro nó. Ele então tentou deletar o ReplicaSet correspondente. O incidente serviu para demonstrar a hierarquia de controle: o Deployment controla os ReplicaSets, e os ReplicaSets garantem o número de réplicas de Pods; para parar a aplicação, deve-se alterar o número de réplicas no Deployment (`kubectl scale deployment --replicas=0`).</p>
         </div>
 
@@ -5313,10 +5313,10 @@ kubectl get pods --show-labels</code></pre>
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>O <b>Deployment</b> é o controlador declarativo de nível superior responsável pelo ciclo de vida e versionamento de aplicações stateless (sem estado). Ele não gerencia Pods diretamente: ele comanda <b>ReplicaSets</b>. A cada alteração na especificação do Pod (como atualização de imagem ou variáveis), o Deployment cria um novo ReplicaSet e coordena a transição gradual e contínua de réplicas através da estratégia de <b>RollingUpdate</b>, garantindo que o serviço nunca fique indisponível e permitindo <b>rollbacks instantâneos</b> para versões anteriores.</p>
+          <p>O <b>Deployment</b> declara o estado desejado de uma aplicação e coordena <b>ReplicaSets</b>, que por sua vez mantêm a quantidade de Pods. Na estratégia <b>RollingUpdate</b>, os parâmetros <code>maxSurge</code> e <code>maxUnavailable</code> controlam a substituição gradual. Isso não garante disponibilidade do serviço: probes, capacidade do cluster, dependências, migrações compatíveis e configuração de tráfego também importam. Um rollback inicia outra atualização para uma revisão anterior; não é instantâneo.</p>
         </div>
 
-            <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Como a troca de turno de enfermeiros em um hospital de emergência. O Diretor Geral (o <b>Deployment</b>) supervisiona as escalas de atendimento. Para mudar o plantão da noite (o <b>ReplicaSet novo</b>), ele não manda todos os enfermeiros do dia irem embora de uma vez (o que deixaria os pacientes desamparados). Ele faz os novos enfermeiros assumirem seus leitos aos poucos enquanto os antigos encerram seus relatórios. E se a nova equipe não souber operar um equipamento novo, o Diretor aciona o plantão anterior que ainda está no prédio (o rollback imediato).</p></div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> como uma troca gradual de turno em um hospital: a equipe nova assume conforme fica pronta, enquanto a anterior sai segundo a estratégia. O controlador mantém revisões para facilitar uma atualização de retorno, mas essa ação também precisa de tempo, capacidade e compatibilidade entre versões.</p></div>
 
             <div class="duo">
           <div class="pilar-box p-serve">
@@ -5349,7 +5349,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1         # Permite criar até 1 Pod a mais além das 3 réplicas (pico de 4)
-      maxUnavailable: 0   # NUNCA derruba um Pod antigo antes do novo estar Ready (mínimo de 3 sempre!)
+      maxUnavailable: 0   # o rollout não reduz por configuração os Pods disponíveis desejados; depende de readiness/capacidade
   selector:
     matchLabels:
       app: order-service
@@ -5377,7 +5377,7 @@ spec:
             <li>O Kubelet baixa a imagem e inicia o container da <code>v2</code>. Ele dispara a <b>ReadinessProbe</b>.</li>
             <li>Assim que a <code>v2</code> passa no readiness (status <code>Ready</code>), o EndpointSlice adiciona o novo Pod no balanceador.</li>
             <li>Como agora existem 4 Pods saudáveis e <code>maxUnavailable=0</code>, o controlador escala o ReplicaSet <code>v1</code> de 3 para 2 réplicas (enviando SIGTERM gracioso para um Pod antigo).</li>
-            <li>O ciclo se repete até que <code>v2</code> atinja 3 réplicas e <code>v1</code> chegue a 0 réplicas. O ReplicaSet <code>v1</code> permanece salvo com 0 réplicas para possibilitar o rollback imediato!</li>
+            <li>O ciclo se repete até que <code>v2</code> atinja 3 réplicas e <code>v1</code> chegue a 0 réplicas. O ReplicaSet <code>v1</code> pode permanecer no histórico de revisões para permitir uma nova atualização para a versão anterior; o retorno depende de capacidade, readiness e compatibilidade de dados.</li>
           </ol>
         </div>
           </div>
@@ -5403,7 +5403,7 @@ kubectl rollout undo deployment/order-service
 kubectl rollout undo deployment/order-service --to-revision=2</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>RollingUpdate sem ReadinessProbe Configurada (A Troca Cega):</strong> Sem readiness probe, o Kubelet considera o Pod pronto no milissegundo em que o processo Java inicializa. O Deployment mata os Pods antigos enquanto a JVM nova ainda está carregando beans e subindo Flyway (levando 30 segundos). Durante esse intervalo, 100% dos clientes recebem erro 502 Bad Gateway!</li>
             <li><strong>Uso de Tags Móveis na Imagem (<code>:latest</code> ou <code>:prod</code>):</strong> Se você gerar uma nova imagem com a mesma tag <code>:prod</code> e rodar <code>kubectl apply</code>, o manifesto YAML não mudou nenhum caractere! O Deployment assume que não há trabalho a fazer e <b>não dispara o rollout</b>. Além disso, o comando <code>rollout undo</code> aponta para a mesma tag, inviabilizando a volta.</li>
@@ -5525,7 +5525,7 @@ kubectl rollout undo deployment/order-service --to-revision=2</code></pre>
       <article class="topic" id="f4">
         <div class="th"><h3>Namespace: separar sem separar cluster</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois times de desenvolvimento aplicaram seus manifestos no namespace `default` sem especificar namespace. Ambas as aplicações possuíam um Service com o mesmo nome `api-gateway`. O segundo deploy sobrescreveu o Service do primeiro time, sequestrando todo o tráfego da aplicação vizinha. A criação de namespaces dedicados (`ns-pagamentos`, `ns-catalogo`, `ns-logistica`) com ResourceQuotas e NetworkPolicies isolou os domínios de trabalho.</p>
         </div>
 
@@ -5612,7 +5612,7 @@ spec:
               app: order-service</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Achar que Namespace Garante Isolamento de Rede por Padrão:</strong> Um Pod de testes no namespace <code>dev</code> consegue conversar livremente via TCP com o banco de dados de produção no namespace <code>prod</code> pelo FQDN! O isolamento de rede só existe se você instalar um plugin CNI com suporte (Calico, Cilium) e aplicar manifestos explícitos de <code>NetworkPolicy</code>.</li>
             <li><strong>Colocar Desenvolvimento e Produção Crítica no Mesmo Cluster:</strong> Namespaces não protegem contra falhas de kernel do nó, sobrecarga do etcd por deploys massivos de teste ou "vizinhos barulhentos" que consomem todo o I/O de disco. Produção bancária/crítica deve residir em clusters fisicamente segregados.</li>
@@ -5736,7 +5736,7 @@ spec:
       <article class="topic" id="g1">
         <div class="th"><h3>Service: o endereço estável para Pods efêmeros</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço cliente configurou a URL de conexão para outro serviço usando diretamente o IP de um Pod (`http://10.244.2.45:8080`). Quando o Pod foi reiniciado após uma atualização, o IP antigo deixou de existir e as requisições começaram a falhar com Connection Refused. A substituição do IP direto pelo nome estável do Service Kubernetes (`http://pagamento-service.pagamentos.svc.cluster.local`) garantiu resolução automática e balanceamento interno via kube-proxy e CoreDNS.</p>
         </div>
 
@@ -5744,7 +5744,7 @@ spec:
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>Como os Pods são descartáveis e recebem novos endereços IP dinâmicos a cada reinicialização ou rollout, o <b>Service</b> atua como uma abstração de rede que fornece um <b>endereço IP virtual estável e imutável (ClusterIP)</b> associado a um <b>nome DNS interno no CoreDNS</b>. Ele intercepta requisições enviadas a esse endereço único e as balanceia de forma transparente entre o conjunto dinâmico de Pods saudáveis selecionados pelo seu <code>spec.selector</code>, garantindo que mudanças na topologia de réplicas nunca quebrem os clientes.</p>
+          <p>Pods podem ser substituídos e receber novos IPs; o <b>Service</b> fornece um ponto lógico de acesso e seleção de endpoints, normalmente com nome DNS interno. O ClusterIP permanece associado ao Service durante sua vida, mas pode mudar se o recurso for recriado. O balanceamento e a disponibilidade dependem da configuração, dos endpoints prontos, da rede e da tolerância dos clientes a falhas e reconexões.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Como o número telefônico oficial do SAC de um banco (ex: 0800 123 4567). Você como cliente liga sempre para esse mesmíssimo número memorizado. Na central, cinquenta atendentes entram e saem de seus turnos ao longo do dia, trocando de mesas e ramais continuamente. O cliente nunca precisa saber o nome ou o ramal de quem vai atender; o sistema comuta a chamada para qualquer operador disponível no momento.</p></div>
@@ -5754,7 +5754,7 @@ spec:
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <p>Serve para desacoplar a comunicação de rede da efemeridade dos containers:</p>
             <ul>
-              <li><b>ClusterIP (Padrão):</b> IP virtual interno visível exclusivamente de dentro do cluster. É o tipo correto para 95% dos serviços de backend (APIs internas, bancos, brokers).</li>
+              <li><b>ClusterIP (padrão):</b> expõe um Service por um IP virtual acessível dentro do cluster. É uma escolha comum para comunicação interna, mas não é automaticamente adequada a todo banco, broker ou workload; considere descoberta, persistência, exposição e requisitos do serviço.</li>
               <li><b>NodePort:</b> Abre uma porta estática de alto nível (faixa <code>30000-32767</code>) em todos os nós físicos do cluster. Útil para testes em laboratório local.</li>
               <li><b>LoadBalancer:</b> Solicita automaticamente à API do provedor de nuvem (AWS ELB, GCP Cloud LB) um balanceador gerenciado externo com IP público real.</li>
             </ul>
@@ -5831,7 +5831,7 @@ public class CatalogClient {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Inverter <code>port</code> e <code>targetPort</code>:</strong> Declarar <code>port: 8080</code> e <code>targetPort: 80</code> quando a aplicação escuta na 8080. O Service tenta encaminhar para a porta 80 do container, onde nada está escutando, resultando em <code>Connection Refused</code>.</li>
             <li><strong>Aplicação Escutando em <code>127.0.0.1</code> dentro do Container:</strong> Se a JVM ou servidor web subir escutando apenas em <code>localhost</code> (127.0.0.1), ele aceita requisições vindas apenas de dentro do próprio Pod. O tráfego do Service chega pela interface <code>eth0</code> do Pod e é rejeitado. A aplicação deve escutar obrigatoriamente em <code>0.0.0.0</code>.</li>
@@ -5860,7 +5860,7 @@ public class CatalogClient {
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>O Que é um Service?</b>
-                    <p>Uma abstração que define um nome DNS estável, um IP virtual imutável (ClusterIP) e regras de balanceamento de carga Round-Robin para o conjunto de Pods selecionados por labels.</p>
+                    <p>Uma abstração que oferece nome DNS e acesso lógico a endpoints selecionados. O ClusterIP vale durante a vida do recurso; comportamento de encaminhamento depende da implementação de rede do cluster, não de uma promessa universal de round-robin.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -5884,7 +5884,7 @@ public class CatalogClient {
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Para 95% dos serviços internos entre microsserviços, use <strong>ClusterIP</strong>. O CoreDNS fornecerá o endereço estável <code>http://meu-servico:8080</code> para sempre.</p>
+                    <p>Para comunicação interna comum, um Service <strong>ClusterIP</strong> oferece um nome DNS estável enquanto o recurso existir. O endpoint pode mudar conforme Pods entram e saem; clientes precisam tolerar reconexões e observar o contrato de disponibilidade do serviço.</p>
                   </div>
                 </div>
               </div>
@@ -5949,7 +5949,7 @@ public class CatalogClient {
       <article class="topic" id="g2">
         <div class="th"><h3>Ingress: uma porta de entrada para todos os serviços</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa criou um Service do tipo `LoadBalancer` para cada um dos seus 18 microsserviços. Como cada LoadBalancer provisionava um Classic ELB físico independente na AWS, a empresa passou a pagar R$ 12.000/mês apenas em custos fixos de balanceadores ociosos. A consolidação dos serviços através de um único Ingress Controller (NGINX Ingress) compartilhando um único Application Load Balancer com roteamento por host e path reduziu os custos em 85%.</p>
         </div>
 
@@ -6063,7 +6063,7 @@ kubectl get ingress api-ingress -n producao
 kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx -f --tail=100</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Criar o Objeto Ingress sem Ter um Ingress Controller Instalado:</strong> É a causa número um de "criei o Ingress e nada acontece". O Kubernetes aceita o YAML com sucesso (porque o schema é válido), mas como não há nenhum controller instalado no cluster para ler o objeto, o campo <code>ADDRESS</code> fica eternamente vazio e nada é roteado.</li>
             <li><strong>Esquecer o <code>ingressClassName</code>:</strong> Clusters modernos podem ter múltiplos controllers (um interno para a VPN e outro externo para a internet). Se você omitir o <code>ingressClassName</code>, nenhum controller assume a responsabilidade pela regra.</li>
@@ -6196,7 +6196,7 @@ spec:
       <article class="topic" id="g3">
         <div class="th"><h3>Quando a requisição não chega: o roteiro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Após um deploy de release, o Ingress passou a retornar `503 Service Unavailable`. A equipe de plantão perdeu 40 minutos reiniciando os nós sem sucesso. Um engenheiro sênior seguiu o roteiro de diagnóstico: checou o Ingress, validou o Service e executou `kubectl get endpoints app-service`, descobrindo que a lista de endpoints estava vazia `<none>` porque a porta definida no `targetPort` do Service era `8080`, mas a aplicação estava escutando na `8000`. A correção do `targetPort` restabeleceu a comunicação em 1 minuto.</p>
         </div>
 
@@ -6298,7 +6298,7 @@ curl http://localhost:8080/actuator/health
 # O problema reside exclusivamente no Ingress, no DNS externo ou no Certificado TLS!</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Mexer em Várias Peças ao Mesmo Tempo:</strong> Alterar o código da aplicação, o YAML do Service e o Ingress simultaneamente na esperança de que funcione. Quando o sistema voltar, você não aprendeu a causa-raiz e o problema se repetirá.</li>
             <li><strong>Ignorar o Status de Readiness:</strong> Um Pod com status <code>Running</code> porém com <code>READY 0/1</code> está vivo no Linux, mas <b>não recebe tráfego de rede</b>. O desenvolvedor assume que o Service quebrou quando na verdade o Pod está apenas reprovando na checagem de saúde.</li>
@@ -6422,7 +6422,7 @@ curl http://localhost:8080/actuator/health
       <article class="topic" id="h1">
         <div class="th"><h3>ConfigMap e Secret: configuração fora da imagem</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rotação emergencial de credencial de banco de dados exigiu atualizar 12 microsserviços. Como a senha estava gravada diretamente no código e no Dockerfile, foi necessário recompilar 12 imagens, rodar a esteira inteira de CI e fazer deploy de cada aplicação, demorando 4 horas com o banco exposto. A extração das credenciais para Kubernetes Secrets montados como variáveis de ambiente permitiu atualizar a credencial com um único comando e disparar rollout automático.</p>
         </div>
 
@@ -6530,7 +6530,7 @@ kubectl get secret order-secret -o jsonpath='{.data.DB_PASSWORD}' | base64 -d</c
           value: /run/secrets/DB_PASSWORD</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Commitar o YAML de Secret no Repositório Git:</strong> Desenvolvedores acham que o base64 protege o segredo e comitam o arquivo no GitHub. Robôs de varredura capturam a credencial e invadem o banco em minutos.</li>
             <li><strong>Esperar que o Pod Recarregue Variáveis Automaticamente:</strong> Alterar o valor de um ConfigMap ou Secret <b>NÃO reinicia o Pod nem atualiza variáveis de ambiente</b> de containers já em execução! A nova variável só é injetada quando o Pod for destruído e recriado via <code>kubectl rollout restart</code>. (Apenas arquivos montados como volume são atualizados dinamicamente pelo Kubelet, levando até 1 minuto).</li>
@@ -6653,7 +6653,7 @@ kubectl get secret order-secret -o jsonpath='{.data.DB_PASSWORD}' | base64 -d</c
       <article class="topic" id="h2">
         <div class="th"><h3>Probes: liveness, readiness e startup</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">produção</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Pod Java Spring Boot demorava 45 segundos para inicializar. Como o `livenessProbe` foi configurado com `initialDelaySeconds: 10` e sem `startupProbe`, o kubelet assumiu que a aplicação havia travado aos 15 segundos e matou o Pod com SIGKILL. O Pod entrou em loop eterno de reinicializações e nunca conseguia subir. A adição de um `startupProbe` tolerando até 60 segundos com `readinessProbe` desacoplado permitiu que o Spring Boot inicializasse com tranquilidade antes de receber tráfego.</p>
         </div>
 
@@ -6785,7 +6785,7 @@ management.health.readinessstate.enabled=true
 # /actuator/health/readiness  -> Inclui verificações de banco, Redis e RabbitMQ</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Omitir o StartupProbe em Aplicações JVM:</strong> Uma aplicação Spring Boot corporativa leva 35 a 45 segundos para subir em um nó sob carga. Se você configurar apenas o LivenessProbe com <code>initialDelaySeconds: 15</code>, no segundo 20 o Kubelet recebe timeout e <b>mata o Pod antes dele terminar de subir</b>. O Pod entra em loop perpétuo de morte prematura.</li>
             <li><strong>Executar Queries Pesadas dentro da Probe:</strong> Fazer <code>SELECT COUNT(*) FROM pedidos</code> dentro do health check executado a cada 5 segundos em 20 Pods gera uma carga contínua absurda contra o banco, degradando a performance do sistema. Use queries leves como <code>SELECT 1</code>.</li>
@@ -6903,7 +6903,7 @@ management.health.readinessstate.enabled=true
       <article class="topic" id="h3">
         <div class="th"><h3>Requests, limits e QoS: o contrato de recursos</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Pods críticos de processamento financeiro foram implantados sem `requests` e `limits` de memória definidos nos manifestos. Quando um vizinho no mesmo nó sofreu memory leak e a máquina atingiu 98% de uso de RAM, o Linux OOM Killer elegeu e matou o Pod financeiro (classificado com classe de QoS `BestEffort`). A configuração explícita de `requests` iguais a `limits` garantiu a classe de QoS `Guaranteed`, tornando o Pod o último a ser terminado em caso de pressão de memória.</p>
         </div>
 
@@ -6999,10 +6999,10 @@ management.health.readinessstate.enabled=true
           value: "-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0 -XX:+ExitOnOutOfMemoryError"</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Subir Pods em Produção sem Requests (QoS BestEffort):</strong> Se a máquina física entrar em estresse temporário, o Kubelet escolhe os Pods BestEffort para matar e liberar espaço. Sua aplicação de produção é descartada pelo cluster sem aviso.</li>
-            <li><strong>Alocar 100% da Memória do Container para a Heap do Java:</strong> Passar <code>-Xmx512m</code> em um container com limit de 512MB. A JVM consome memória além da Heap (Metaspace, CodeCache, stacks de threads e buffers de rede Netty). Quando a memória total atinge 520MB, o kernel executa <b>OOMKilled brutal</b> no container.</li>
+            <li><strong>Deixar pouca margem além da heap:</strong> <code>-Xmx</code> limita a heap, mas o processo também pode usar Metaspace, CodeCache, stacks e buffers nativos. Um limite apertado pode levar a OOM; acompanhe métricas da JVM e do cgroup para identificar a categoria responsável.</li>
             <li><strong>Requests Irrealisticamente Altos:</strong> Declarar <code>requests.cpu: 4</code> quando o app consome apenas 0.2 núcleos. O Scheduler reserva 4 CPUs inteiras do nó: poucos Pods cabem na máquina e novos Pods ficam eternamente em <code>Pending</code> por falsa escassez de recursos.</li>
           </ul>
         </div>
@@ -7129,7 +7129,7 @@ management.health.readinessstate.enabled=true
       <article class="topic" id="i1">
         <div class="th"><h3>PV, PVC e StorageClass: o disco desacoplado do Pod</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cluster Kubernetes executando em nuvem precisou drenar um nó para manutenção. O Pod de banco de dados tinha um volume persistente vinculado a uma zona de disponibilidade específica (`us-east-1a`). Ao ser reagendado em um nó da zona `us-east-1b`, o Pod ficou preso em estado `Pending` com erro `Volume node affinity conflict`, pois discos de bloco em nuvem não podem ser montados entre zonas diferentes. A utilização de StorageClasses com topologia Multi-AZ e StatefulSets zone-aware resolveu o bloqueio.</p>
         </div>
 
@@ -7231,7 +7231,7 @@ kubectl get pv
 # RECLAIM POLICY: Retain (Se o PVC for deletado, o PV físico é preservado para recuperação manual).</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Escalar Deployment com Volume RWO para 2 Réplicas:</strong> A segunda réplica será agendada em outro nó e entrará em <code>CrashLoop</code> ou <code>Pending</code> eterno, acusando <code>FailedAttachVolume: Volume is already attached to another node</code>. Para múltiplas réplicas com armazenamento próprio, utilize <code>StatefulSet</code> com <code>volumeClaimTemplates</code>.</li>
             <li><strong><code>reclaimPolicy: Delete</code> em Dados Críticos de Produção:</strong> Se um desenvolvedor executar <code>kubectl delete pvc pgdata</code> acidentalmente, o disco físico de 500GB é imediatamente apagado na nuvem sem confirmação. Configure sempre <code>reclaimPolicy: Retain</code> na StorageClass de produção.</li>
@@ -7359,7 +7359,7 @@ spec:
       <article class="topic" id="i2">
         <div class="th"><h3>StatefulSet: quando a identidade importa</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe implantou um cluster de Kafka usando um `Deployment` tradicional com 3 réplicas montando o mesmo PersistentVolume compartilhado. Como Pods de Deployment possuem nomes aleatórios e efêmeros, os nós do Kafka sobrescreveram os logs uns dos outros e o cluster sofreu corrupção total de partições. A migração para `StatefulSet` garantiu identificadores ordinais fixos (`kafka-0`, `kafka-1`, `kafka-2`), nomes de rede estáveis e discos PVC dedicados para cada réplica.</p>
         </div>
 
@@ -7470,7 +7470,7 @@ spec:
           <div class="cs"><b>A pergunta honesta antes de começar:</b> Rodar banco de dados transacional em StatefulSet no Kubernetes é possível e viável em produção — <b>desde que você utilize um Operator maduro (como CloudNative-PG, Zalando Postgres ou Strimzi para Kafka), possua um especialista DBA no time e um plano de restore testado semanalmente</b>. Se a sua organização opera em nuvem pública com bancos gerenciados maduros disponíveis (AWS RDS/Aurora, GCP Cloud SQL), <b>o banco gerenciado quase sempre é a escolha arquitetural mais inteligente</b>. O custo da licença é infinitamente menor do que o custo de uma madrugada inteira de corrupção de dados por split-brain mal gerenciado. Mantenha o Kubernetes focado nas cargas sem estado, onde ele é imbatível.</div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Achar que StatefulSet Garante Alta Disponibilidade por Si Só:</strong> Subir 3 réplicas de PostgreSQL via StatefulSet puro apenas sobe 3 instâncias independentes com bancos zerados em discos separados! Sem um script de clustering ou Operator, não há sincronização entre elas.</li>
             <li><strong>Escalar o StatefulSet para Baixo Esperando Economia de Disco:</strong> Reduzir <code>replicas: 3</code> para <code>replicas: 1</code> destrói os Pods <code>postgres-2</code> e <code>postgres-1</code>, <b>mas os PVCs gerados NÃO são apagados</b> por segurança. Eles continuam existindo e gerando custos na fatura de storage da nuvem até serem removidos manualmente.</li>
@@ -7594,7 +7594,7 @@ spec:
       <article class="topic" id="j1">
         <div class="th"><h3>Rollout e rollback sem derrubar ninguém</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um deploy de uma nova versão de backend quebrou todas as requisições por um erro de sintaxe. O operador entrou em pânico e começou a deletar manifestos manualmente para tentar consertar, apagando configurações que funcionavam. A execução de um simples comando `kubectl rollout undo deployment/api-prod` reverteu o cluster instantaneamente para o ReplicaSet anterior saudável em 3 segundos, eliminando o tempo de indisponibilidade enquanto o time corrigia o bug no Git.</p>
         </div>
 
@@ -7613,8 +7613,8 @@ spec:
             <p>Serve para eliminar janelas de manutenção noturnas e conferir segurança psicológica aos deploys:</p>
             <ul>
               <li><b>Deploy em Horário Comercial:</b> Lançar dezenas de atualizações por dia sem impactar clientes ativos.</li>
-              <li><b>Reversão Imediata (Rollback):</b> Se métricas apontarem aumento de erros 5xx, reverter o cluster para o estado anterior em 3 segundos via <code>kubectl rollout undo</code>.</li>
-              <li><b>Controle Fino de Capacidade:</b> <code>maxSurge: 1</code> e <code>maxUnavailable: 0</code> garantem que a capacidade computacional disponível nunca cai abaixo do contratado.</li>
+              <li><b>Revisão para versão anterior:</b> <code>kubectl rollout undo</code> inicia uma atualização para uma revisão anterior; duração depende de imagens, probes, capacidade, estratégia e compatibilidade.</li>
+              <li><b>Controle de réplicas durante rollout:</b> <code>maxSurge: 1</code> e <code>maxUnavailable: 0</code> orientam o Deployment a não reduzir a contagem desejada de Pods disponíveis durante a atualização, desde que novos Pods consigam ficar prontos. Isso não garante capacidade de negócio ou ausência de falhas.</li>
             </ul>
           </div>
           <div class="pilar-box p-importa">
@@ -7669,7 +7669,7 @@ kubectl rollout undo deployment/order-service</code></pre>
       terminationGracePeriodSeconds: 30 # Concede 30s para o Spring drenar requisições ativas</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Rollout sem ReadinessProbe:</strong> O cluster supõe que o Pod novo está pronto assim que o container sobe. O tráfego é direcionado para a JVM que ainda está inicializando o Spring Boot, devolvendo HTTP 502/Connection Refused para os clientes.</li>
             <li><strong>Omitir o Graceful Shutdown no Código:</strong> Se a aplicação não tratar o SIGTERM, requisições ativas de clientes (como processamentos de cartão de crédito no meio da transação) são cortadas no meio com perda de dados.</li>
@@ -7715,14 +7715,14 @@ kubectl rollout undo deployment/order-service</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Configurar maxUnavailable: 100% por Engano:</b>
-                    <p>Se você configurar <code>maxUnavailable: 100%</code>, o Kubernetes matará <strong>todos os Pods antigos de uma vez</strong> antes de subir os novos, causando indisponibilidade total e queda das sessões de clientes ativos!</p>
+                    <p><code>maxUnavailable: 100%</code> permite que o rollout reduza a quantidade de Pods disponíveis até zero em relação à contagem desejada. Com outras opções da estratégia, falta de capacidade ou probes incorretos, isso pode resultar em interrupção; avalie os dois parâmetros e o comportamento da aplicação.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Em produção corporativa: configure <code>maxSurge: 25%</code> e <code>maxUnavailable: 0</code>. Dessa forma, nenhuma réplica antiga é desligada antes que uma nova réplica saudável esteja comprovadamente pronta e aprovada pela Readiness Probe.</p>
+                    <p>Uma configuração possível é combinar <code>maxSurge</code> positivo com <code>maxUnavailable: 0</code>, desde que o cluster tenha capacidade para criar Pods extras e readiness represente a aptidão para receber tráfego. Escolha valores conforme orçamento, carga e janela de atualização.</p>
                   </div>
                 </div>
               </div>
@@ -7748,17 +7748,17 @@ kubectl rollout undo deployment/order-service</code></pre>
   rollingUpdate:
     maxSurge: 1
     maxUnavailable: 0</code></pre>
-                <p class="te-instrucao">O que esses parâmetros garantem durante a atualização de uma aplicação com 4 réplicas?</p>
+                <p class="te-instrucao">Que aspecto do rollout esses parâmetros controlam para uma aplicação com 4 réplicas?</p>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. maxUnavailable: 0 impede que pods antigos sejam desligados antes que as réplicas substitutas estejam saudáveis.">
                     <span class="te-letter">A</span> Garante atualização instantânea terminando 1 pod por ciclo e promovendo a nova versão sem validação de probes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Como maxUnavailable é 0, a capacidade contratada de 4 réplicas ativas nunca é reduzida durante o processo.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. maxUnavailable=0 limita a redução de Pods disponíveis atribuída ao rollout; não garante capacidade efetiva se Pods novos não ficarem prontos, faltarem recursos ou dependências falharem.">
                     <span class="te-letter">B</span> Permite que a capacidade de atendimento diminua temporariamente em até 25% durante a fase de download da nova imagem nos nós do cluster.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de maxUnavailable: 0 e maxSurge: 1 assegura transição suave sem perda de capacidade de atendimento.">
-                    <span class="te-letter">C</span> Garante zero downtime: mantém no mínimo 4 réplicas ativas e sobe no máximo 1 pod extra, só removendo o antigo após readiness.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto: o controlador pode criar até uma réplica extra e não reduzir Pods disponíveis por causa do rollout, enquanto novas réplicas não ficam prontas. Isso limita a estratégia; não garante zero downtime do serviço.">
+                    <span class="te-letter">C</span> Limita o rollout a até 1 Pod extra e não reduz Pods disponíveis pela estratégia antes que substitutos fiquem prontos; isso não é garantia de zero downtime.
                   </button>
                 </div>
 
@@ -7791,7 +7791,7 @@ kubectl rollout undo deployment/order-service</code></pre>
       <article class="topic" id="j2">
         <div class="th"><h3>Escala: HPA e o gargalo que ele não resolve</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Horizontal Pod Autoscaler (HPA) escalou a aplicação de 5 para 80 réplicas durante um pico de Black Friday baseado em uso de CPU. Porém, como o banco de dados PostgreSQL subjacente tinha capacidade máxima de 150 conexões e cada Pod abria 10 conexões, o HPA causou o colapso total do banco por exaustão de pool. O time aprendeu que o HPA resolve apenas o gargalo da camada de aplicação sem estado e deve ter tetos máximos alinhados à capacidade dos recursos downstream.</p>
         </div>
 
@@ -7871,7 +7871,7 @@ spring.datasource.hikari.connection-timeout=3000
 spring.datasource.hikari.idle-timeout=300000</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>HPA sem <code>requests.cpu</code> Definido no Container:</strong> A métrica do HPA é calculada como uma porcentagem do request declarado. Se você omitir o <code>requests.cpu</code>, o HPA não tem base matemática de divisão e entra em estado <code>&lt;unknown&gt;</code>, recusando-se a escalar.</li>
             <li><strong>Oscilação Contínua de Escala (Flapping / Efeito Ioiô):</strong> O tráfego sobe, o HPA escala réplicas; a CPU cai, o HPA reduz réplicas; a CPU sobe de novo. Sem a diretiva <code>behavior.scaleDown.stabilizationWindowSeconds: 300</code>, o cluster gasta CPU destruindo e criando Pods incessantemente.</li>
@@ -7989,7 +7989,7 @@ spring.datasource.hikari.idle-timeout=300000</code></pre>
       <article class="topic" id="j3">
         <div class="th"><h3>RBAC e ServiceAccount: privilégio mínimo no cluster</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Pod de relatórios foi comprometido através de uma vulnerabilidade RCE em uma biblioteca open-source. Como o Pod utilizava a ServiceAccount padrão `default` que havia recebido permissões globais de `cluster-admin` por conveniência durante testes, o invasor utilizou o token montado em `/var/run/secrets/kubernetes.io/serviceaccount/token` para listar e roubar todos os Secrets de todos os clientes do cluster. A implementação de RBAC restritivo com privilégio mínimo e a desativação de montagem automática de tokens evitaram o vazamento.</p>
         </div>
 
@@ -8092,7 +8092,7 @@ kubectl auth can-i delete pods \\
           image: orderflow:1.4.2</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Conceder <code>cluster-admin</code> para Resolver Falhas de Permissão no Desespero:</strong> Conceder privilégio de administrador global vira permanente e nunca é revisto. Uma falha de injeção de dependência na biblioteca do app expõe o cluster inteiro.</li>
             <li><strong>Utilizar <code>ClusterRole</code> quando uma <code>Role</code> Bastaria:</strong> Uma <code>Role</code> tem escopo restrito a um namespace. Um <code>ClusterRole</code> concede privilégios sobre todos os namespaces do cluster, multiplicando drasticamente o raio de explosão de qualquer vazamento.</li>
@@ -8210,7 +8210,7 @@ kubectl auth can-i delete pods \\
       <article class="topic" id="j4">
         <div class="th"><h3>Helm e o empacotamento dos manifestos</h3><div class="badges"><span class="badge b-prof">aprofundamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa gerenciava 35 arquivos YAML puros duplicados para cada um de seus 4 ambientes (dev, hml, uat, prod). Em um deploy de segurança, uma variável de configuração crítica foi alterada manualmente em dev e homologação, mas esquecida em produção, gerando uma quebra de release de 5 horas. A adoção de Helm Charts com um único template parametrizado e arquivos de sobreposição `values-dev.yaml` e `values-prod.yaml` eliminou a divergência de configurações entre ambientes.</p>
         </div>
 
@@ -8286,7 +8286,7 @@ helm rollback order-service 2 -n producao</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Instalar Charts de Terceiros sem Executar <code>helm template</code>:</strong> Instalar charts públicos de repositórios externos sem inspecionar os recursos gerados. O chart pode provisionar ClusterRoles com acesso universal ou criar serviços LoadBalancer inesperados na sua nuvem. Sempre audite previamente com <code>helm template ... | less</code>.</li>
             <li><strong>Charts Superparametrizados (A Síndrome do Template Ilegível):</strong> Tentar parametrizar cada linha de YAML criando centenas de variáveis no <code>values.yaml</code>. O chart vira um labirinto ilegível de condicionais que ninguém no time consegue depurar.</li>
@@ -8403,7 +8403,7 @@ helm rollback order-service 2 -n producao</code></pre>
       <article class="topic" id="j5">
         <div class="th"><h3>Capstone: o OrderFlow em produção</h3><div class="badges"><span class="badge b-ver">projeto integrador</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante o lançamento nacional do OrderFlow no Kubernetes, o sistema sofreu uma cascata de falhas: o Pod de checkout reiniciava por timeout de ReadinessProbe, a falta de Resource Limits permitiu que o worker de estoque derrubasse o nó por OOM, e o Service de pagamento falhava porque o DNS interno estava sobrecarregado. A estabilização completa do ecossistema reuniu Probes calibrados, QoS Guaranteed, CoreDNS com autoscale, Ingress com terminação TLS e Helm para entrega contínua resiliente.</p>
         </div>
 
@@ -8495,7 +8495,7 @@ helm rollback order-service 2 -n producao</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Pular Etapas de Fundamentação:</strong> Tentar debugar problemas complexos de Ingress ou Probes no Kubernetes sem antes ter certeza absoluta de que o container roda limpo no terminal e responde ao <code>docker stop</code> em menos de 3 segundos. Comece pela imagem, avance para o Compose e termine no cluster.</li>
             <li><strong>Achar que o Deploy foi um Sucesso Apenas Porque o Status está "Running":</strong> Um Pod pode estar em <code>Running</code> porém travado em deadlock de banco ou rejeitando conexões por falta de portas. A aprovação exige a execução metódica dos testes de carga e caos.</li>
@@ -8672,7 +8672,7 @@ kubectl get pods -w
 kubectl describe pod meu-app-xxx</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Assistir aulas sem executar no terminal:</strong> A sensação de aprendizado é alta, mas a capacidade de resolver erros reais continua nula sem a prática no teclado.</li>
               <li><strong>Depender de clusters em nuvem paga para estudar:</strong> Clusters gerenciados remotos geram custos desnecessários para aprendizado inicial; kind e k3d rodam localmente com custo zero.</li>
@@ -8735,7 +8735,7 @@ kubectl describe pod meu-app-xxx</code></pre>
 4. Documentações oficiais: kubernetes.io/docs e docs.docker.com</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Acumular cursos sem concluir projetos:</strong> Consumir múltiplos treinamentos simultaneamente sem implementar laboratórios autorais gera sobrecarga cognitiva e pouca retenção real.</li>
             </ul>
@@ -8799,7 +8799,7 @@ kubectl describe pod meu-pod-xyz
 kubectl get pods --field-selector status.phase!=Running</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Copiar manifestos sem conferir a versão da API:</strong> Recursos como Ingress mudaram de <code>extensions/v1beta1</code> para <code>networking.k8s.io/v1</code>. Sempre confira a versão suportada pelo cluster.</li>
             </ul>
@@ -8864,7 +8864,7 @@ kubectl get pods --field-selector status.phase!=Running</code></pre>
 6. Deploy em cluster de nuvem (EKS/AKS)</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Omitir limites de memória no container:</strong> Uma aplicação JVM sem limites declarados pode consumir toda a memória do nó do Kubernetes e sofrer OOMKilled pelo kernel do Linux.</li>
             </ul>

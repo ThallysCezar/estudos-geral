@@ -966,8 +966,8 @@ git merge --abort</code></pre>
       <div class="ph"><span class="num">03</span><div><h2>Cirurgia: cherry-pick e bisect</h2><p>Dois comandos que quase ninguém usa e que resolvem problemas caros em minutos.</p></div></div>
 
       <article class="topic" id="c1">
-        <div class="th"><h3>Cherry-pick: transportar um commit, com rastro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
-        <p class="direto"><b>Direto:</b> aplica a mudança de um commit específico sobre o branch atual, criando um commit <b>novo</b>. E sempre com <code class="i">-x</code>, que grava de onde ele veio.</p>
+        <div class="th"><h3>Cherry-pick: transportar um commit, com rastro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">exemplo</span></div></div>
+        <p class="direto"><b>Direto:</b> aplica a mudança de um commit específico sobre o branch atual, criando um commit <b>novo</b>. Use <code class="i">-x</code> quando a procedência no histórico for útil, por exemplo, ao levar uma correção entre branches públicos; não é obrigatório em todo fluxo.</p>
 
         <div class="caso"><b>o caso</b>
           <p>Uma correção crítica entrou na <code class="i">main</code>, e depois dela vieram três funcionalidades novas. O cliente está na <code class="i">release/1.4</code> e precisa <b>só</b> da correção.</p>
@@ -1027,7 +1027,7 @@ git cherry-pick --continue    # ou --abort, ou --skip</code></pre>
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>A Flag Obrigatória: -x</b>
-                    <p>Execute sempre <code>git cherry-pick -x &lt;commit-hash&gt;</code>. Ela anexa automaticamente na mensagem do commit a linha <code>(cherry picked from commit &lt;hash&gt;)</code>, garantindo rastreabilidade.</p>
+                    <p>Use <code>git cherry-pick -x &lt;commit-hash&gt;</code> quando trouxer um commit de uma branch pública ou compartilhada e quiser registrar sua origem. A opção inclui uma linha <code>(cherry picked from commit &lt;hash&gt;)</code> na mensagem; em branches privadas, o time pode escolher outra convenção de rastreabilidade.</p>
                   </div>
                 </div>
               </div>
@@ -1069,7 +1069,7 @@ git cherry-pick --continue    # ou --abort, ou --skip</code></pre>
                 <p class="te-instrucao">Qual comando executa a operação com as melhores práticas de auditoria?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A flag -x adiciona automaticamente a linha 'cherry picked from commit...' ao corpo da mensagem, garantindo rastreabilidade formal.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A flag -x registra o SHA de origem na mensagem, útil especialmente quando o commit veio de uma branch pública ou compartilhada. Isso ajuda a rastrear a origem, mas não substitui link para PR, ticket ou revisão conforme o processo do time.">
                     <span class="te-letter">A</span> git checkout release/v2.0 && git cherry-pick -x a1b2c3d
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O merge --squash não aceita um único hash arbitrário de outra árvore com precisão e não anexa os metadados de rastreabilidade de auditoria do -x.">
@@ -1094,7 +1094,7 @@ git cherry-pick --continue    # ou --abort, ou --skip</code></pre>
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">A flag <code>-x</code> instrui o Git a adicionar uma linha padronizada na mensagem do commit: <code>(cherry picked from commit &lt;hash-original&gt;)</code>.<br>Isso garante <strong>rastreabilidade técnica e conformidade de auditoria</strong>, permitindo saber exatamente em qual commit e PR a mudança original foi concebida e revisada.</p>
+        <p class="tf-resposta">A flag <code>-x</code> adiciona à mensagem uma linha no formato <code>(cherry picked from commit &lt;hash-original&gt;)</code>. Ela registra o commit de origem, especialmente útil ao selecionar commits de uma branch pública ou compartilhada. Não identifica, por si só, o PR ou a aprovação que originou a mudança; associe os metadados exigidos pelo fluxo da equipe.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -1388,8 +1388,8 @@ git bisect run ./reproduz.sh</code></pre>
       </article>
 
       <article class="topic" id="d2">
-        <div class="th"><h3>O reflog: quase nada se perde de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
-        <p class="direto"><b>Direto:</b> o reflog registra <b>todo movimento</b> local de HEAD e das refs, com o SHA anterior. Commits órfãos continuam no repositório por cerca de 30 dias.</p>
+        <div class="th"><h3>O reflog: quase nada se perde de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">exemplo</span></div></div>
+        <p class="direto"><b>Direto:</b> o reflog registra atualizações recentes de referências locais, incluindo o HEAD. Ele pode ajudar a encontrar um commit após reset ou troca de branch, mas não é backup permanente: entradas expiram conforme configuração e manutenção do repositório.</p>
 
         <div class="caso"><b>o caso</b>
           <p><code class="i">git reset --hard HEAD~3</code> no branch errado. Três commits de trabalho "sumiram". O impulso é reclonar e refazer.</p>
@@ -1444,7 +1444,7 @@ git fsck --lost-found</code></pre>
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Quase Nada se Perde de Verdade no Git</b>
-                    <p>Mesmo após um <code>git reset --hard</code> acidental ou deletar uma branch com <code>git branch -D</code>, os objetos continuam existindo no disco (loose objects) por padrão por pelo menos 30 a 90 dias antes do Garbage Collector (git gc) agir.</p>
+        <p>Após um reset ou remoção de branch, o commit pode continuar recuperável pelo reflog ou enquanto o objeto ainda existir. Os padrões de expiração do reflog são configuráveis (com prazos diferentes para entradas alcançáveis e inalcançáveis), e o garbage collection pode remover objetos sem referência. Recupere o SHA imediatamente e crie uma referência de segurança; não conte com uma janela fixa de recuperação.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -2615,7 +2615,7 @@ git commit --fixup=<sha> && git rebase -i --autosquash <base>
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Assinatura Criptográfica de Commits (GPG / SSH)</b>
-                    <p>Qualquer pessoa pode configurar qualquer nome e e-mail no `git config user.name/email`. A assinatura com chaves GPG ou SSH privadas garante que o commit foi emitido pelo autor legítimo (Verified badge).</p>
+                    <p>Qualquer pessoa pode configurar nome e e-mail no Git. Uma assinatura GPG ou SSH válida demonstra que o commit foi assinado por quem controla a chave correspondente; associar essa chave a uma identidade depende de configuração e verificação da plataforma. Chave comprometida ou mal protegida continua sendo um risco.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -2670,7 +2670,7 @@ git commit --fixup=<sha> && git rebase -i --autosquash <base>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não garante a assinatura criptográfica dos commits (GPG/SSH) e não impõe formalmente a linearidade do histórico na branch protegida.">
                     <span class="te-letter">B</span> Configurar aprovação obrigatória por gerentes de projeto via interface web, bloqueando a deleção de branches remotas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! As regras de branch protection garantem revisão por pares, validação de chaves criptográficas (GPG/SSH) para não-repúdio e histórico linear sem merge commits.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto quando essas regras estão configuradas e aplicadas pela plataforma: branch protection pode exigir revisão, verificações e, se habilitado, commits assinados ou histórico linear. A assinatura identifica controle de chave, não prova sozinha quem a controla.">
                     <span class="te-letter">C</span> Configurar Branch Protection com aprovações obrigatórias via CODEOWNERS, exigir assinatura criptográfica de commits (Require signed commits) e impor histórico estritamente linear.
                   </button>
                 </div>

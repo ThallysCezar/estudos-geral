@@ -365,7 +365,7 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
         <div class="th"><h3>Não existe melhor prática — existe trade-off</h3><div class="badges"><span class="badge b-ess">a tese</span><span class="badge b-ver">vale pelos 5 livros</span></div></div>
         <p class="direto"><b>Direto:</b> a frase que abre e fecha o livro é que <em>tudo em arquitetura é uma troca</em>. Se uma solução parece não ter custo, você ainda não achou o custo. O trabalho do arquiteto não é encontrar a resposta certa — é tornar explícito o que se ganha e o que se paga, e escolher conscientemente.</p>
         <div class="caso"><b>o caso</b>
-          <p>Uma startup de pagamentos com 15 engenheiros e 300 requisições por segundo decide migrar seu monolito funcional em Java para uma malha distribuída de 35 microsserviços orientados a eventos, sob o argumento de que 'microsserviços são o padrão moderno da indústria'. Seis meses depois, o tempo médio para lançar uma alteração de regra de cobrança subiu de 2 dias para 3 semanas, os custos de infraestrutura na nuvem quadruplicaram com cluster Kubernetes e observabilidade distribuída, e falhas intermitentes de consistência eventual geraram divergência financeira diária no ledger contábil.</p>
+          <p><b>Cenário hipotético:</b> uma startup considera dividir um monólito funcional em muitos microsserviços porque essa arquitetura parece moderna. A equipe deve explicitar qual limite de domínio, escala independente, autonomia de deploy ou requisito organizacional justifica a divisão. Sem isso, chamadas de rede, operação, observabilidade e consistência distribuída podem aumentar o custo de mudança; o impacto real deve ser medido na própria equipe e no produto.</p>
           <p>O arquiteto que assumiu o resgate aplicou a Primeira Lei da Arquitetura de Software de Richards & Ford: não existe melhor prática abstrata, apenas trade-offs contextuais. O ganho teórico de desacoplamento de deploy não compensou o custo real de latência de rede, serialização gRPC e reconciliação assíncrona para uma equipe de 15 pessoas. A decisão consciente foi consolidar os serviços em um Monolito Modular, reduzindo a complexidade operacional a zero e preservando as fronteiras de domínio via módulos em tempo de compilação.</p>
         </div>
         <div class="analogia"><i class="ic">≈</i><p><b>Como escolher onde morar.</b> Perto do trabalho custa mais caro e é menor. Longe é maior e barato, e você perde duas horas por dia. Não existe a casa certa — existe a que pesa melhor <em>para você, agora</em>. E quem apresenta um imóvel só listando as qualidades está vendendo, não aconselhando.</p></div>
@@ -664,7 +664,7 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Adotar Microsserviços Apenas Pela 'Moda' em Times Pequenos:</b>
-                    <p>Uma equipe de 4 desenvolvedores gerenciando 20 microsserviços gastará 70% do seu tempo mantendo pipelines de CI/CD, clusters Kubernetes, tracing e contratos de rede, sobrando quase nenhum tempo para gerar valor de negócio. Adote o estilo adequado ao tamanho do time!</p>
+        <p><b>Cenário hipotético:</b> uma equipe pequena passa a operar muitos serviços sem plataforma ou automação suficientes. O esforço com pipelines, observabilidade, contratos e plantões pode reduzir o tempo disponível para o produto. Não existe uma proporção fixa entre tamanho do time e custo; observe autonomia de deploy, frequência de incidentes, tempo de mudança e trabalho operacional antes de decidir a granularidade.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -2099,7 +2099,7 @@ cobranca-service ──→ banco de cobrança
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Estrutura padrão de engenharia para 95% dos casos de backend: <strong>ArrayList para coleções sequenciais e HashMap / HashSet para buscas e filtros por chave única</strong>.</p>
+                    <p>Escolhas comuns em Java: <strong>ArrayList</strong> para percorrer ou acessar por índice e <strong>HashMap/HashSet</strong> para lookup por chave ou pertencimento. Complexidade média não descreve todos os casos; ordem, concorrência, cardinalidade, mutabilidade e custo de memória também influenciam a estrutura adequada.</p>
                   </div>
                 </div>
               </div>

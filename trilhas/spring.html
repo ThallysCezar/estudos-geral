@@ -802,7 +802,7 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a1">
         <div class="th"><h3>IoC e ApplicationContext: quem constrói os seus objetos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação de e-commerce instanciou a classe concreta `CieloPaymentGateway` diretamente usando o operador `new` em 32 controllers e services espalhados. Quando a empresa negociou taxas melhores com a Stone e precisou trocar o provedor, o time gastou 3 semanas refatorando código manual e corrigindo falhas de compilação em 40 arquivos. Com o princípio de Inversão de Controle (IoC) e injeção de dependência via interface, a troca exigiu alterar apenas um `@Configuration` central em 15 minutos.</p>
         </div>
 
@@ -873,7 +873,7 @@ public class PaymentConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Injeção por Campo (<code>@Autowired private Gateway g;</code>):</strong> Dificulta testes unitários (força uso de reflexão suja), mascara excesso de responsabilidades e impede criação de campos <code>final</code> imutáveis.</li>
             <li><strong>Ciclos Circulares de Dependência (A depende de B, que depende de A):</strong> A partir do Spring Boot 2.6+, dependências circulares lançam <code>BeanCurrentlyInCreationException</code> no startup por padrão, travando o deploy imediatamente.</li>
@@ -901,7 +901,7 @@ public class PaymentConfig {
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Injeção por Construtor Estrita</b>
-                    <p>Garante imutabilidade (campos final), evita dependências circulares silenciosas e permite instanciar a classe em testes puros com JUnit sem Spring.</p>
+                    <p>Construtores explícitos e campos <code>final</code> tornam as dependências visíveis e impedem trocar a referência depois da construção — embora <code>final</code> não torne automaticamente imutável o objeto referenciado. Esse desenho facilita testes sem subir o contexto Spring e ajuda a detectar ciclos no grafo de dependências.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -945,7 +945,7 @@ public class PaymentConfig {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a inicialização de uma aplicação de e-commerce no Spring Boot 3.3. Ao rodar o serviço, o console exibe:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a inicialização de uma aplicação de e-commerce no Spring Boot 3.3. Ao rodar o serviço, o console exibe:</p>
                 <pre class="te-code"><code>***************************
 APPLICATION FAILED TO START
 ***************************
@@ -998,7 +998,7 @@ The dependencies of some of the beans in the application context form a cycle:
       <article class="topic" id="a2">
         <div class="th"><h3>BeanDefinition e o registry: a receita antes do prato</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O tempo de inicialização (startup) de um microsserviço no Kubernetes saltou de 4 segundos para 46 segundos após a importação de uma biblioteca legada que forçava o escaneamento de 18.000 classes de terceiros. Durante um pico de tráfego, o Horizontal Pod Autoscaler (HPA) disparou novas réplicas, mas elas demoraram tanto para registrar seus `BeanDefinition` que o tráfego acumulou e derrubou o cluster. A exclusão de pacotes irrelevantes no registry restaurou a subida em 3.2s.</p>
         </div>
 
@@ -1059,7 +1059,7 @@ System.out.println("Escopo: " + bd.getScope());
 System.out.println("Lazy Init: " + bd.isLazyInit());</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <p>Se você tentar injetar ou obter um bean dentro de um <code>BeanFactoryPostProcessor</code>, você força a instanciação precoce (*early initialization*) daquele bean, ignorando outros processadores e gerando beans que não possuem proxies de segurança, transação ou tracing aplicados!</p>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -1128,7 +1128,7 @@ System.out.println("Lazy Init: " + bd.isLazyInit());</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um time de plataforma quer registrar um bean programaticamente em tempo de inicialização antes que qualquer outro componente de negócio seja criado:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um time de plataforma quer registrar um bean programaticamente em tempo de inicialização antes que qualquer outro componente de negócio seja criado:</p>
                 <pre class="te-code"><code>// Como alterar ou criar metadados de beans antes da instanciação?
 @Component
 public class CustomRegistryModifier implements BeanFactoryPostProcessor {
@@ -1180,7 +1180,7 @@ public class CustomRegistryModifier implements BeanFactoryPostProcessor {
       <article class="topic" id="a3">
         <div class="th"><h3>Resolução de dependências: qual bean vence</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um deploy noturno de correção crítica, o contêiner falhou no boot com `NoUniqueBeanDefinitionException: expected single matching bean but found 2: emailNotificador, smsNotificador`. Um desenvolvedor criou um novo bean implementando a interface `Notificador` sem adicionar `@Primary` ou `@Qualifier` no ponto de injeção, impedindo a subida de todas as instâncias e forçando rollback emergencial.</p>
         </div>
 
@@ -1263,7 +1263,7 @@ public class RoteadorNotificacao {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Múltiplos <code>@Primary</code>:</strong> Declarar <code>@Primary</code> em duas implementações causa <code>NoUniqueBeanDefinitionException</code> com mensagem confusa informando que mais de um bean primário foi encontrado.</li>
             <li><strong>Casamento por nome frágil:</strong> Confiar no nome do parâmetro Java pode falhar se a compilação ocorrer sem a flag <code>-parameters</code> do <code>javac</code>, fazendo o parâmetro virar <code>arg0</code> no bytecode.</li>
@@ -1335,7 +1335,7 @@ public class RoteadorNotificacao {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você possui duas implementações da interface Notificador registradas no Spring:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você possui duas implementações da interface Notificador registradas no Spring:</p>
                 <pre class="te-code"><code>@Component("notificadorEmail")
 public class NotificadorEmail implements Notificador { ... }
 
@@ -1390,7 +1390,7 @@ public class AlertaService {
       <article class="topic" id="a4">
         <div class="th"><h3>Escopos e ObjectProvider: quanto tempo o objeto vive</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor injetou um bean de escopo `prototype` com estado mutável diretamente como campo de um `@Service` (que por padrão é `singleton`). Como o Spring injeta a dependência apenas uma vez no momento da criação do singleton, todas as 4.000 requisições simultâneas compartilharam a mesma instância do prototype, misturando dados cadastrais de clientes diferentes sob concorrência. A correção exigiu o uso de `ObjectProvider<PrototypeBean>` para obter instâncias novas sob demanda.</p>
         </div>
 
@@ -1458,7 +1458,7 @@ public class AuditService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Estado mutável em Bean Singleton:</strong> Colocar variáveis de instância mutáveis (ex: <code>private User currentUser;</code>) em um <code>@Service</code> ou <code>@RestController</code> causa <strong>vazamento de dados entre requisições concorrentes</strong> de usuários diferentes!</li>
             <li><strong>Leak de Memória em Prototype:</strong> Se o bean prototype alocar conexões ou arquivos externos, como o Spring não chama <code>@PreDestroy</code> nele, você causará vazamento de recursos do sistema operacional.</li>
@@ -1510,7 +1510,7 @@ public class AuditService {
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Beans Singleton devem ser 100% livres de estado mutável (Stateless). Toda variável de cliente deve transitar apenas como parâmetros de métodos ou variáveis locais da stack de execução.</p>
+                    <p>Um bean singleton é uma instância compartilhada pelo container. Estado mutável por requisição dentro desse objeto pode gerar condições de corrida; prefira dados locais ou parâmetros e proteja qualquer estado compartilhado com desenho explícito. Singleton não significa que todo bean precise ser matematicamente stateless, mas exige atenção à concorrência e ao ciclo de vida.</p>
                   </div>
                 </div>
               </div>
@@ -1530,7 +1530,7 @@ public class AuditService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor injetou um bean de escopo Prototype dentro de um serviço Singleton para gerar relatórios com estado limpo a cada exportação:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor injetou um bean de escopo Prototype dentro de um serviço Singleton para gerar relatórios com estado limpo a cada exportação:</p>
                 <pre class="te-code"><code>@Component
 @Scope("prototype")
 public class RelatorioGerador {
@@ -1588,7 +1588,7 @@ public class ExportadorService {
       <article class="topic" id="a5">
         <div class="th"><h3>Lifecycle e BeanPostProcessor: quando o objeto vira outro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um método anotado com `@PostConstruct` executou uma consulta pesada de 30 segundos no banco para pré-aquecer um cache de produtos durante o bootstrap. A probe de readiness do Kubernetes disparou `Readiness probe failed: connection refused` e matou o Pod antes que o contexto do Spring terminasse de subir, entrando em um ciclo infinito de CrashLoopBackOff. A rotina foi movida para um listener assíncrono do evento `ApplicationReadyEvent`.</p>
         </div>
 
@@ -1673,7 +1673,7 @@ public class CacheWarmupService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Chamar métodos do próprio bean com anotações de proxy de dentro de <code>@PostConstruct</code>:</strong> Durante o <code>@PostConstruct</code>, o proxy AOP AINDA NÃO FOI APLICADO (ele é aplicado no passo posterior). Chamar um método <code>@Transactional</code> dentro de <code>@PostConstruct</code> não abrirá transação no banco!</li>
             <li><strong>Lógicas lentas bloqueantes no <code>@PostConstruct</code>:</strong> Inicializações pesadas (ex: baixar 500MB de dados da nuvem) dentro de <code>@PostConstruct</code> bloqueiam o startup inteiro da aplicação, fazendo orquestradores como o Kubernetes matarem o Pod por timeout de Readiness Probe.</li>
@@ -1745,7 +1745,7 @@ public class CacheWarmupService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor configurou uma rotina para carregar e aquecer dados no cache ao iniciar o sistema:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor configurou uma rotina para carregar e aquecer dados no cache ao iniciar o sistema:</p>
                 <pre class="te-code"><code>@Service
 public class CacheWarmupService {
     
@@ -1798,7 +1798,7 @@ public class CacheWarmupService {
       <article class="topic" id="a6">
         <div class="th"><h3>@Configuration, @Bean e eventos de aplicação</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ioc & container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um engenheiro declarou métodos `@Bean` dentro de uma classe anotada com `@Component` em vez de `@Configuration(proxyBeanMethods = true)`. Quando um método `@Bean` chamou o outro método diretamente para reutilizar a conexão com o banco, o Spring não interceptou com o proxy CGLIB e executou o método Java puro, instanciando dois pools de conexão HikariCP independentes e esgotando as conexões do banco de dados.</p>
         </div>
 
@@ -1875,7 +1875,7 @@ public class AuditoriaEventListener {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Abrir nova transação em <code>AFTER_COMMIT</code>:</strong> Se o ouvinte anotado com <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> tentar salvar algo no banco com <code>@Transactional</code> padrão (REQUIRED), a conexão já foi commitada e os novos dados NÃO serão persistidos a menos que você declare <code>@Transactional(propagation = Propagation.REQUIRES_NEW)</code>.</li>
             <li><strong>Eventos síncronos travando requisição:</strong> Por padrão, <code>@EventListener</code> roda de forma <strong>síncrona</strong> na mesma thread da requisição HTTP. Se o ouvinte demorar 5 segundos para chamar uma API externa, o usuário final esperará 5 segundos. Use <code>@Async</code> para torná-lo assíncrono.</li>
@@ -1947,7 +1947,7 @@ public class AuditoriaEventListener {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou um fluxo de emissão de pedidos usando eventos internos do Spring:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou um fluxo de emissão de pedidos usando eventos internos do Spring:</p>
                 <pre class="te-code"><code>@Transactional
 public void concluirPedido(Pedido p) {
     pedidoRepository.save(p);
@@ -2013,7 +2013,7 @@ public class NotificadorListener {
       <article class="topic" id="b1">
         <div class="th"><h3>SpringApplication: o bootstrap em ordem fixa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um job batch encerrou sua execução chamando `System.exit(0)` de forma abrupta em vez de fechar o contexto com `SpringApplication.exit(context)`. Como a JVM foi terminada sem o shutdown hook do Spring, os métodos anotados com `@PreDestroy` não foram invocados, deixando 160 conexões do pool de banco abertas como sessões zumbis no PostgreSQL que travaram o faturamento da manhã seguinte.</p>
         </div>
 
@@ -2094,7 +2094,7 @@ public class DataSeederRunner implements ApplicationRunner {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Lazy Initialization em Produção (<code>spring.main.lazy-initialization=true</code>):</strong> Embora reduza o tempo de boot localmente, adia a instanciação de beans para a primeira requisição do usuário. Se houver um erro de configuração de banco ou bean faltando, a aplicação sobe "com sucesso" e quebra na cara do primeiro cliente em produção (*fail-late* em vez de *fail-fast*).</li>
             <li><strong>Lançar exceções não tratadas dentro de um <code>ApplicationRunner</code>:</strong> Qualquer exceção lançada dentro de um <code>CommandLineRunner</code> aborta o processo da JVM imediatamente com exit code não zero.</li>
@@ -2166,7 +2166,7 @@ public class DataSeederRunner implements ApplicationRunner {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um engenheiro quer passar parâmetros customizados de linha de comando para a inicialização de uma aplicação Spring Boot:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um engenheiro quer passar parâmetros customizados de linha de comando para a inicialização de uma aplicação Spring Boot:</p>
                 <pre class="te-code"><code>// Execução no terminal:
 // java -jar app.jar --ambiente=prod --tentativas=3
 
@@ -2220,7 +2220,7 @@ public class Inicializador implements ApplicationRunner {
       <article class="topic" id="b2">
         <div class="th"><h3>Component scan: por que aquele bean existe</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um novo controller de checkout foi criado no pacote `com.empresa.pagamento`, enquanto a classe principal anotada com `@SpringBootApplication` estava no pacote `com.empresa.app`. Como o Component Scan analisa por padrão apenas o pacote base e seus subpacotes, o Spring ignorou o controller e todos os endpoints de pagamento retornaram HTTP 404 Not Found em produção após o release.</p>
         </div>
 
@@ -2240,7 +2240,7 @@ public class Inicializador implements ApplicationRunner {
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Mais de 50% dos erros de iniciantes no Spring ("NoSuchBeanDefinitionException: No qualifying bean of type...") decorrem simplesmente de colocar classes em pacotes irmãos ou fora da árvore do pacote raiz da classe principal.</p>
+                    <p>Uma causa comum de <code>NoSuchBeanDefinitionException</code> é o componente não estar registrado no contexto: ele pode estar fora do component scan, sem anotação/configuração, condicionado por perfil ou propriedade, ou exigir um tipo/qualificador diferente. Comece conferindo o pacote da classe principal e o scan, mas investigue também as outras condições de criação do bean.</p>
           </div>
         </div>
           </div>
@@ -2288,7 +2288,7 @@ public class Application {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Classes no pacote raiz padrão (default package sem nome):</strong> Colocar a classe <code>Application.java</code> solta em <code>src/main/java</code> sem pacote faz o Spring tentar escanear todos os JARs de todo o classpath, degradando o tempo de boot e frequentemente causando estouro de Metaspace.</li>
             <li><strong>Colisão de Nomes Simples de Beans:</strong> Duas classes com o mesmo nome em pacotes diferentes (ex: <code>com.app.v1.OrderService</code> e <code>com.app.v2.OrderService</code>) geram colisão de bean name <code>orderService</code>, lançando <code>ConflictingBeanDefinitionException</code>.</li>
@@ -2360,7 +2360,7 @@ public class Application {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a estrutura de diretórios de um projeto Spring Boot:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a estrutura de diretórios de um projeto Spring Boot:</p>
                 <pre class="te-code"><code>src/main/java
 ├── com.loja.app
 │   └── MinhaAppApplication.java (@SpringBootApplication)
@@ -2411,7 +2411,7 @@ public class Application {
       <article class="topic" id="b3">
         <div class="th"><h3>Auto-configuração e condições: a mágica desmontada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>A adição acidental da dependência do Spring Security no `pom.xml` de um microsserviço público disparou a auto-configuração padrão do framework. O Spring gerou uma senha aleatória no log e bloqueou todas as requisições da API com código HTTP 401 Unauthorized, paralisando o aplicativo móvel de 300.000 usuários por 45 minutos até o time declarar o filtro customizado de permissão.</p>
         </div>
 
@@ -2474,7 +2474,7 @@ public class CustomRedisAutoConfiguration {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Auto-configuração indesejada ativada por dependência transitiva:</strong> Adicionar uma biblioteca externa que traga dependências de mensageria ou banco de dados embutido (H2) pode fazer o Spring Boot tentar inicializar recursos indesejados. Solução: <code>@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)</code>.</li>
             <li><strong>Erro de digitação em <code>@ConditionalOnProperty</code>:</strong> Errar o nome da propriedade no yaml faz o bean nunca ser registrado, e a aplicação falha silenciosamente sem avisar que a funcionalidade está desativada.</li>
@@ -2546,7 +2546,7 @@ public class CustomRedisAutoConfiguration {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um arquiteto quer criar um módulo corporativo que só configure um cliente do Redis se a biblioteca Jedis estiver presente no classpath e se o usuário tiver habilitado a propriedade no properties:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um arquiteto quer criar um módulo corporativo que só configure um cliente do Redis se a biblioteca Jedis estiver presente no classpath e se o usuário tiver habilitado a propriedade no properties:</p>
                 <pre class="te-code"><code>@AutoConfiguration
 @ConditionalOnClass(name = "redis.clients.jedis.Jedis")
 @ConditionalOnProperty(name = "empresa.cache.tipo", havingValue = "redis")
@@ -2598,7 +2598,7 @@ public class RedisAutoConfiguration {
       <article class="topic" id="b4">
         <div class="th"><h3>Environment e a ordem de precedência</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma variável de ambiente de sistema `SPRING_DATASOURCE_URL` configurada no cluster Kubernetes sobrescreveu a propriedade do arquivo `application-prod.yml` que apontava para a réplica de leitura do banco de dados. Sem perceber a precedência de configuração, todo o tráfego pesado de relatórios foi roteado para a instância primária de escrita, elevando a carga da CPU do banco para 100%.</p>
         </div>
 
@@ -2662,7 +2662,7 @@ spring:
 # SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=30</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Propriedade de perfil ativo sobreposta acidentalmente:</strong> Definir <code>spring.profiles.active=dev</code> dentro do <code>application.yaml</code> empacotado no JAR impede que orquestradores externos chaveiem o profile sem usar variáveis de linha de comando forçadas.</li>
             <li><strong>Conflito entre <code>.properties</code> e <code>.yaml</code>:</strong> Se ambos existirem na mesma pasta, arquivos <code>.properties</code> possuem precedência superior a arquivos <code>.yaml</code>, causando confusão quando alguém edita o yaml e nada muda.</li>
@@ -2734,7 +2734,7 @@ spring:
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Em um cluster Kubernetes, uma aplicação possui as seguintes configurações concorrentes para a mesma propriedade:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Em um cluster Kubernetes, uma aplicação possui as seguintes configurações concorrentes para a mesma propriedade:</p>
                 <pre class="te-code"><code># No application.properties dentro do JAR:
 server.port=8080
 
@@ -2786,7 +2786,7 @@ server.port=8081
       <article class="topic" id="b5">
         <div class="th"><h3>@ConfigurationProperties: configuração como contrato</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma propriedade de timeout configurada via `@Value("${api.timeout:5000}")` foi espalhada em 14 classes de serviço. Quando o timeout corporativo precisou ser reduzido para 2000ms, um dos serviços foi esquecido com 5000ms por erro de digitação da chave, gerando inconsistências de tolerância a falhas. A centralização das propriedades em uma classe `@ConfigurationProperties` tipada com validação Jakarta (`@Min`, `@NotNull`) corrigiu o problema em toda a base.</p>
         </div>
 
@@ -2853,7 +2853,7 @@ public class StripeService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Falta da dependência de validação:</strong> Se colocar <code>@Validated</code> e <code>@NotNull</code> mas não incluir o starter <code>spring-boot-starter-validation</code> (Hibernate Validator), as anotações são simplesmente ignoradas e nenhuma validação ocorre no startup!</li>
             <li><strong>Classes mutáveis com Getters/Setters:</strong> Usar classes mutáveis normais para propriedades abre brechas para que métodos de negócio alterem os valores de configuração em tempo de execução, gerando bugs de concorrência imprevisíveis. Prefira Records imutáveis.</li>
@@ -2925,7 +2925,7 @@ public class StripeService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a criação de um contrato de configuração imutável para uma fila de integração em Java moderno:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a criação de um contrato de configuração imutável para uma fila de integração em Java moderno:</p>
                 <pre class="te-code"><code>@Validated
 @ConfigurationProperties(prefix = "integracao.fila")
 public record FilaProperties(
@@ -2976,7 +2976,7 @@ public record FilaProperties(
       <article class="topic" id="b6">
         <div class="th"><h3>Starter e auto-config própria: a estrada pavimentada</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot & starters</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma grande organização mantinha 35 microsserviços duplicando 500 linhas de configuração de telemetria, logs em JSON e autenticação corporativa em cada repositório. Quando a equipe de segurança exigiu atualizar o padrão de criptografia, a mudança levou 4 meses de trabalho manual. A criação de um Spring Boot Starter interno padronizou todas as dependências em uma única linha no `pom.xml`, viabilizando atualizações globais em horas.</p>
         </div>
 
@@ -3073,7 +3073,7 @@ public class AuditAutoConfiguration {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Esquecer o <code>@ConditionalOnMissingBean</code>:</strong> Se o seu starter não declarar essa anotação nos métodos <code>@Bean</code>, ele impedirá os times desenvolvedores de sobrescreverem beans específicos para casos excepcionais, tornando a biblioteca rígida e odiada pelos times.</li>
             <li><strong>Poluição de dependências transitivas:</strong> Incluir dependências desnecessárias com escopo <code>compile</code> no starter em vez de <code>provided</code> ou <code>optional</code> força dependências pesadas e versões conflitantes na aplicação consumidora.</li>
@@ -3148,7 +3148,7 @@ public class AuditAutoConfiguration {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um time de arquitetura criou uma biblioteca de auditoria customizada para todos os microsserviços da empresa em Spring Boot 3.3. Ao adicionar a dependência nos projetos, os beans de auditoria não foram carregados automaticamente.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um time de arquitetura criou uma biblioteca de auditoria customizada para todos os microsserviços da empresa em Spring Boot 3.3. Ao adicionar a dependência nos projetos, os beans de auditoria não foram carregados automaticamente.</p>
                 
                 <p class="te-instrucao">Onde a classe de auto-configuração deve ser registrada no JAR da biblioteca para ser reconhecida no Spring Boot 3+?</p>
 
@@ -3201,7 +3201,7 @@ public class AuditAutoConfiguration {
       <article class="topic" id="c1">
         <div class="th"><h3>Proxy JDK e CGLIB: o objeto que não é o seu</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação falhou na inicialização com `BeanNotOfRequiredTypeException` porque um desenvolvedor tentou injetar uma classe concreta gerenciada por `@Transactional` quando o Spring estava configurado com proxies dinâmicos do JDK (que só criam proxies baseados em interfaces). A equipe precisou entender que o Spring substitui os objetos originais por proxies em tempo de execução e habilitar o CGLIB (`proxyTargetClass = true`).</p>
         </div>
 
@@ -3277,7 +3277,7 @@ public class ProxyVerifier implements CommandLineRunner {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Métodos <code>private</code> ou <code>package-private</code> com <code>@Transactional</code>:</strong> O CGLIB não consegue sobrescrever métodos privados. A anotação é solenemente ignorada e nenhuma transação é aberta!</li>
             <li><strong>Métodos ou Classes marcados com <code>final</code>:</strong> A JVM proíbe a geração de subclasses de classes <code>final</code>. Se você usar Kotlin ou Java com classes <code>final</code> sem o plugin <em>all-open</em>, os proxies não serão criados.</li>
@@ -3349,7 +3349,7 @@ public class ProxyVerifier implements CommandLineRunner {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou um método de negócio crítico anotado com @Transactional, mas marcou o método como 'public final':</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou um método de negócio crítico anotado com @Transactional, mas marcou o método como 'public final':</p>
                 <pre class="te-code"><code>@Service
 public class ContaService {
     
@@ -3402,7 +3402,7 @@ public class ContaService {
       <article class="topic" id="c2">
         <div class="th"><h3>AOP: pointcut, advice e ordem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aspecto de log de auditoria foi configurado para rodar em torno de métodos de pagamento sem explicitar a anotação `@Order`. Como a ordem de execução dos proxies é indefinida por padrão, o aspecto de log executou antes do aspecto de segurança (`SecurityContextPersistenceFilter`), registrando nos arquivos de log corporativo senhas e dados de requisições que nem sequer tinham sido autenticadas.</p>
         </div>
 
@@ -3467,7 +3467,7 @@ public @interface TrackTime {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Esquecer de lançar a exceção original em <code>@Around</code>:</strong> Engolir exceções no bloco catch de um advice impede que o <code>TransactionInterceptor</code> veja que houve erro, provocando <strong>commits indevidos de dados corrompidos</strong>!</li>
             <li><strong>Expressões de Pointcut excessivamente amplas:</strong> Um pointcut mal configurado como <code>execution(* com.app..*(..))</code> interceptará todos os métodos de todas as classes, incluindo getters/setters e DTOs, degradando em até 10x a latência global da aplicação.</li>
@@ -3539,7 +3539,7 @@ public @interface TrackTime {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um time criou um Aspect para medir o tempo de execução de consultas críticas usando @Around:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um time criou um Aspect para medir o tempo de execução de consultas críticas usando @Around:</p>
                 <pre class="te-code"><code>@Aspect
 @Component
 public class MedidorTempoAspect {
@@ -3594,7 +3594,7 @@ public class MedidorTempoAspect {
       <article class="topic" id="c3">
         <div class="th"><h3>Self-invocation: por que a anotação "não funciona"</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um método público `processarPedido()` chamou internamente o método `this.salvarTransacional()` dentro da mesma classe. Como a invocação foi feita diretamente pela referência `this` sem passar pelo proxy interceptor do Spring, a anotação `@Transactional` não surtiu nenhum efeito. Uma falha posterior de emissão fiscal não realizou rollback no banco, deixando pedidos corrompidos na base.</p>
         </div>
 
@@ -3669,7 +3669,7 @@ public class PedidoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <p>O bug mais silencioso: desenvolvedor cria <code>@Async</code> em um método privado ou chamado internamente por <code>this.metodoAsync()</code>. O método executa de forma <strong>bloqueante e síncrona</strong> na mesma thread do Tomcat sem avisar ninguém, gerando lentidão brutal nas APIs sob carga.</p>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -3738,7 +3738,7 @@ public class PedidoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere o seguinte serviço de auditoria em produção:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere o seguinte serviço de auditoria em produção:</p>
                 <pre class="te-code"><code>@Service
 public class AuditoriaService {
     
@@ -3795,7 +3795,7 @@ public class AuditoriaService {
       <article class="topic" id="c4">
         <div class="th"><h3>@Transactional: onde a fronteira realmente começa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor adicionou `@Transactional` em um método que fazia upload de um PDF de 15MB para um bucket na nuvem com duração de 4 segundos. A conexão física do banco de dados ficou travada durante todo o tráfego de rede do upload, esgotando o pool HikariCP de 30 conexões e paralisando 100% dos usuários da API em 2 minutos. A transação foi refatorada para cobrir estritamente a gravação no banco após o upload.</p>
         </div>
 
@@ -3866,7 +3866,7 @@ public void processarPedidoComChamadaExterna(Long id) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Chamadas de I/O externo ou APIs HTTP lentas dentro de <code>@Transactional</code>:</strong> Esse é o motivo número 1 de esgotamento de conexões (<em>Connection Pool Starvation</em>) no HikariCP. Mantenha a transação o mais curta possível, executando chamadas de rede FORA da transação de banco.</li>
             <li><strong>Rollback padrão do Spring:</strong> Por padrão de especificação, o Spring <strong>SÓ DA ROLLBACK EM RUNTIMEEXCEPTION</strong> (exceções não checadas)! Se o seu método lançar uma <code>Exception</code> checada ou <code>IOException</code>, o Spring dá COMMIT normalmente! Declare sempre <code>@Transactional(rollbackFor = Exception.class)</code>.</li>
@@ -3938,7 +3938,7 @@ public void processarPedidoComChamadaExterna(Long id) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a rotina bancária de emissão de boletos com débito de taxa em conta corrente:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a rotina bancária de emissão de boletos com débito de taxa em conta corrente:</p>
                 <pre class="te-code"><code>@Transactional // Sem configurar rollbackFor!
 public void cobrarTaxa(Conta conta) throws TaxaBancariaException { // Checked Exception!
     contaRepo.debitarTaxa(conta.getId(), 15.00);
@@ -3989,7 +3989,7 @@ public void cobrarTaxa(Conta conta) throws TaxaBancariaException { // Checked Ex
       <article class="topic" id="c5">
         <div class="th"><h3>Propagation e rollback: compor sem quebrar a atomicidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de pagamento com `@Transactional(propagation = Propagation.REQUIRES_NEW)` gravou um registro de débito em uma nova transação física e capturou a exceção localmente. O método pai sofreu rollback, mas o registro do filho foi commitado com sucesso no banco, gerando um débito financeiro sem que o pedido de e-commerce correspondente existisse no sistema.</p>
         </div>
 
@@ -4056,7 +4056,7 @@ public class PagamentoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>UnexpectedRollbackException:</strong> Se o método interno com propagação <code>REQUIRED</code> lançar uma <code>RuntimeException</code> que é capturada pelo método pai via <code>try/catch</code>, a transação foi marcada internamente como <em>rollback-only</em>. Quando o pai tenta comitar achando que tratou o erro, o Spring detecta e lança <code>UnexpectedRollbackException</code>!</li>
             <li><strong>Deadlock de Pool Hikari:</strong> Se o tamanho máximo do seu pool for 10 conexões e 10 requisições simultâneas chamarem um método com <code>REQUIRES_NEW</code>, todas as 10 conexões são alocadas no primeiro nível e nenhuma consegue a segunda conexão, travando a aplicação inteira em deadlock.</li>
@@ -4128,7 +4128,7 @@ public class PagamentoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a execução do seguinte fluxo transacional com tratamento de erro:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a execução do seguinte fluxo transacional com tratamento de erro:</p>
                 <pre class="te-code"><code>@Transactional
 public void processarPedido(Pedido p) {
     pedidoRepo.salvar(p);
@@ -4182,7 +4182,7 @@ public void processarPedido(Pedido p) {
       <article class="topic" id="c6">
         <div class="th"><h3>Isolamento, retry e cache: quando os proxies se empilham</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">data & persistência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma classe combinava `@Retryable` e `@Transactional` sem controle de ordem. Em caso de falha transitória de rede, o retry executava dentro da mesma transação original que o banco de dados já havia marcado irreversivelmente como `Rollback-Only`, disparando `UnexpectedRollbackException` em todas as tentativas subsequentes sem dar chance de recuperação.</p>
         </div>
 
@@ -4245,7 +4245,7 @@ public class SaldoService {
 public class PrecedenceConfig {}</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Cache dessincronizado após Rollback:</strong> Se você usa <code>@CachePut</code> em um método que dá rollback no banco, o cache em memória (ou Redis) é atualizado com o dado novo enquanto o banco de dados desfez a alteração, gerando inconsistência grave entre o cache e o banco!</li>
             <li><strong>Isolamento SERIALIZABLE com Pool Concorrente:</strong> Usar nível de isolamento excessivamente rígido sem retry causa enxurrada de exceções de serialização (PostgreSQL erro <code>40001: serialization_failure</code>) sob tráfego concorrente.</li>
@@ -4317,7 +4317,7 @@ public class PrecedenceConfig {}</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um gateway de pagamento tenta reprocessar transações que sofrem falha de concorrência no banco de dados usando Spring Retry e Spring Transactional:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um gateway de pagamento tenta reprocessar transações que sofrem falha de concorrência no banco de dados usando Spring Retry e Spring Transactional:</p>
                 <pre class="te-code"><code>@Retryable(retryFor = ConcorrenciaException.class, maxAttempts = 3)
 @Transactional
 public void processarPagamento(Pagamento p) {
@@ -4374,7 +4374,7 @@ public void processarPagamento(Pagamento p) {
       <article class="topic" id="d1">
         <div class="th"><h3>Servlet container e FilterChain: antes do Spring existir</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um filtro HTTP customizado para validação de assinatura HMAC consumiu o payload da requisição chamando `request.getReader()`. Como o fluxo do Servlet InputStream só pode ser lido uma única vez, quando a requisição chegou ao `DispatcherServlet` o corpo estava vazio, gerando erro HTTP 400 `HttpMessageNotReadableException` para todas as requisições com corpo JSON. A solução exigiu encapsular a requisição em um `ContentCachingRequestWrapper`.</p>
         </div>
 
@@ -4454,7 +4454,7 @@ public class FilterRegistrationConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Tentar ler o corpo da requisição (<code>request.getInputStream()</code>) em um Filter:</strong> O stream de bytes do corpo HTTP só pode ser lido <strong>uma única vez</strong>! Se o seu filtro ler os bytes para logar o JSON, quando a requisição chegar no Jackson do Spring MVC ele encontrará o stream esgotado e lançará <code>HttpMediaTypeNotSupportedException</code> ou corpo vazio. Use <code>ContentCachingRequestWrapper</code>.</li>
             <li><strong>Vazamento de <code>MDC</code> / <code>ThreadLocal</code>:</strong> Como o Tomcat reutiliza threads do pool, esquecer de limpar o MDC no bloco <code>finally</code> fará requisições de clientes diferentes herdarem o Correlation ID ou usuário da requisição anterior!</li>
@@ -4526,7 +4526,7 @@ public class FilterRegistrationConfig {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou um filtro de auditoria para logar o corpo JSON de todas as requisições HTTP POST que chegam na API:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou um filtro de auditoria para logar o corpo JSON de todas as requisições HTTP POST que chegam na API:</p>
                 <pre class="te-code"><code>public class LogBodyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) {
@@ -4578,7 +4578,7 @@ public class FilterRegistrationConfig {
       <article class="topic" id="d2">
         <div class="th"><h3>DispatcherServlet: o pipeline de uma requisição</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma exceção inesperada de banco de dados vazou sem tratamento pelo `DispatcherServlet`, e o servidor embutido devolveu a página de erro HTML padrão do Tomcat contendo a stack trace completa, o nome das tabelas e a versão do PostgreSQL. A falha violou requisitos de segurança PCI-DSS e foi corrigida com um `@RestControllerAdvice` global mapeando todas as falhas para contratos JSON controlados.</p>
         </div>
 
@@ -4640,7 +4640,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>NoHandlerFoundException silencioso:</strong> Por padrão, quando uma URL inexistente é chamada (404), o Spring repassa para o erro do Tomcat em vez de disparar seu <code>@ControllerAdvice</code>, a menos que configurado com <code>spring.mvc.throw-exception-if-no-handler-found=true</code>.</li>
             <li><strong>Sobrescrita acidental do WebMvc:</strong> Usar a anotação <code>@EnableWebMvc</code> em uma classe de configuração desativa completamente as auto-configurações do Spring Boot para MVC (incluindo tratamento padrão de estáticos e converters), quebrando o comportamento esperado da aplicação!</li>
@@ -4712,7 +4712,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Durante uma auditoria de performance, o time notou que uma requisição para '/api/pedidos/123' executa em 3ms no código Java, mas demora 25ms para entregar a resposta ao cliente. O payload é uma árvore JSON complexa com milhares de itens:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Durante uma auditoria de performance, o time notou que uma requisição para '/api/pedidos/123' executa em 3ms no código Java, mas demora 25ms para entregar a resposta ao cliente. O payload é uma árvore JSON complexa com milhares de itens:</p>
                 
                 <p class="te-instrucao">Qual componente do pipeline do DispatcherServlet é responsável por traduzir o objeto Java retornado pelo Controller no fluxo de bytes JSON enviado na rede?</p>
 
@@ -4757,7 +4757,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
       <article class="topic" id="d3">
         <div class="th"><h3>@RestController e binding: traduzir HTTP em comando</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um controller declarou parâmetros de busca com tipo primitivo `int` sem valor padrão (`@RequestParam int pagina`). Requisições legítimas que não enviavam o parâmetro disparavam `IllegalStateException` com código HTTP 500 no servidor em vez de HTTP 400 Bad Request. A migração para `Integer` com `defaultValue = "0"` normalizou os contratos de busca.</p>
         </div>
 
@@ -4827,7 +4827,7 @@ public ResponseEntity&lt;PedidoResponse&gt; obterPorId(@PathVariable("id") UUID 
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Retornar Entidades JPA diretamente no Controller:</strong> Isso é uma armadilha clássica! Retornar entidades causa loops infinitos de serialização JSON com relacionamentos bidirecionais (<code>StackOverflowError</code>) e dispara dezenas de queries adicionais não intencionais de atributos Lazy (o problema do N+1 disfarçado de JSON). SEMPRE retorne DTOs ou Records imutáveis.</li>
             <li><strong>Tipos primitivos em <code>@RequestParam</code> opcionais:</strong> Declarar <code>int page</code> sem valor padrão lança <code>IllegalStateException</code> se o cliente não enviar o parâmetro (porque <code>null</code> não pode ser atribuído a um <code>int</code> primitivo). Use <code>Integer page</code> ou <code>@RequestParam(defaultValue = "0") int page</code>.</li>
@@ -4899,7 +4899,7 @@ public ResponseEntity&lt;PedidoResponse&gt; obterPorId(@PathVariable("id") UUID 
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou um endpoint de exclusão de usuário:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou um endpoint de exclusão de usuário:</p>
                 <pre class="te-code"><code>@DeleteMapping("/usuarios/{id}")
 public ResponseEntity<Void> excluir(@PathVariable Long id) {
     usuarioService.excluir(id);
@@ -4948,7 +4948,7 @@ public ResponseEntity<Void> excluir(@PathVariable Long id) {
       <article class="topic" id="d4">
         <div class="th"><h3>DTO, Jackson e validação na fronteira</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um endpoint de atualização de perfil recebia a própria entidade JPA `Usuario` no `@RequestBody` em vez de um DTO restrito. Um atacante enviou no JSON o campo `isAdmin: true` que não existia no formulário frontend, e o Hibernate atualizou a coluna no banco de dados (vulnerabilidade clássica de Mass Assignment). Adoção estrita de DTOs com Java records imutáveis e validação `@Valid` eliminou a brecha.</p>
         </div>
 
@@ -5017,7 +5017,7 @@ public @interface CpfValido {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Esquecer a anotação <code>@Valid</code> no Controller:</strong> Se você colocar todas as anotações corretas no Record DTO (<code>@NotBlank</code>, <code>@Positive</code>), mas esquecer de colocar <code>@Valid</code> antes do <code>@RequestBody</code> no Controller, o Spring simplesmente NÃO valida nada e o objeto corrompido segue direto para o serviço!</li>
             <li><strong>Desserialização polimórfica insegura:</strong> Configurar <code>enableDefaultTyping()</code> no Jackson pode abrir brechas gravíssimas de execução remota de código (RCE) via desserialização maliciosa.</li>
@@ -5089,7 +5089,7 @@ public @interface CpfValido {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um endpoint de cadastro de clientes recebe um payload JSON. Se o usuário enviar um email inválido ou nome em branco, o Spring deve bloquear o fluxo automaticamente:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um endpoint de cadastro de clientes recebe um payload JSON. Se o usuário enviar um email inválido ou nome em branco, o Spring deve bloquear o fluxo automaticamente:</p>
                 <pre class="te-code"><code>public record ClienteDTO(
     @NotBlank(message = "Nome é obrigatório") String nome,
     @Email(message = "Email inválido") String email
@@ -5143,7 +5143,7 @@ public ResponseEntity<?> criar(@RequestBody ClienteDTO dto) { // Falta anotaçã
       <article class="topic" id="d5">
         <div class="th"><h3>Filter, interceptor e advice: três camadas, três escopos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe implementou um log de auditoria em um `HandlerInterceptor` do Spring MVC e descobriu semanas depois que requisições bloqueadas por falta de autenticação nunca eram registradas. O problema ocorreu porque o Spring Security atua na camada de `Filter` do Servlet Container, barrando o tráfego muito antes do pipeline do Spring MVC ser acionado.</p>
         </div>
 
@@ -5239,7 +5239,7 @@ public class GlobalResponseEnvelopeAdvice implements ResponseBodyAdvice&lt;Objec
 public record ApiEnvelope&lt;T&gt;(T data, Instant timestamp) {}</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Lançar exceção dentro de um Filter:</strong> Exceções lançadas dentro de um <code>Filter</code> <strong>NÃO SÃO CAPTURADAS</strong> por <code>@ExceptionHandler</code> nem por <code>@ControllerAdvice</code> (porque o ControllerAdvice mora dentro do DispatcherServlet)! Elas sobem direto para o Tomcat e viram uma página de erro HTML 500 feia a menos que você trate no próprio filtro.</li>
             <li><strong>postHandle não executa se o controller lançar exceção:</strong> Se o método do controller falhar, o <code>postHandle</code> é pulado diretamente para o tratamento de erro. Nunca use <code>postHandle</code> para liberar recursos críticos (sempre use <code>afterCompletion</code>).</li>
@@ -5311,7 +5311,7 @@ public record ApiEnvelope&lt;T&gt;(T data, Instant timestamp) {}</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um arquiteto precisa implementar três funcionalidades distintas em uma API:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um arquiteto precisa implementar três funcionalidades distintas em uma API:</p>
                 <pre class="te-code"><code>1. Injetar um correlationId/traceId único no MDC do log para todas as requisições HTTP antes de qualquer processamento.
 2. Medir o tempo de execução de cada método de Controller específico anotado com @AuditarMetrica.
 3. Transformar todas as exceções NegocioException lançadas pelo domínio em respostas JSON padronizadas com HTTP 422.</code></pre>
@@ -5358,7 +5358,7 @@ public record ApiEnvelope&lt;T&gt;(T data, Instant timestamp) {}</code></pre>
       <article class="topic" id="d6">
         <div class="th"><h3>Erros como contrato: ProblemDetail e versionamento</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">web mvc & rest</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um aplicativo móvel quebrava aleatoriamente após releases porque os microsserviços retornavam erros com estruturas incompatíveis (`{"erro": "msg"}` em um serviço e `{"message": "erro"}` em outro). A padronização corporativa adotando a especificação RFC 7807 (`ProblemDetail`) no Spring Boot 3 unificou todas as respostas de erro sob o mesmo schema estruturado com status, tipo e detalhes rastreáveis.</p>
         </div>
 
@@ -5429,7 +5429,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Vazamento de Stacktrace em Produção:</strong> Retornar a mensagem interna da exceção ou o stacktrace dentro de <code>detail</code> expõe detalhes de infraestrutura (versão do driver JDBC, nomes de tabelas e IPs internos), abrindo brechas de segurança de acordo com a OWASP. Em produção, retorne mensagens genéricas de negócio e guarde o stacktrace apenas nos logs com Correlation ID.</li>
             <li><strong>Versionamento por URL vs Header:</strong> Quebrar contratos de API em produção sem estratégia de versionamento (seja por URL <code>/api/v2/</code> ou por header <code>X-API-Version: 2</code>) derruba instantaneamente aplicativos mobile desatualizados que não podem ser forçados a atualizar.</li>
@@ -5501,7 +5501,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere o tratamento global de exceções de saldo insuficiente em um banco digital usando ProblemDetail do Spring Boot 3+:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere o tratamento global de exceções de saldo insuficiente em um banco digital usando ProblemDetail do Spring Boot 3+:</p>
                 <pre class="te-code"><code>@RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -5565,7 +5565,7 @@ public class GlobalExceptionHandler {
       <article class="topic" id="e1">
         <div class="th"><h3>DataSource e HikariCP: o pool que ninguém dimensiona</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor configurou o pool de conexões HikariCP com 150 conexões em cada um dos 10 Pods da aplicação, apontando para um banco PostgreSQL de 8 vCPUs. Sob carga, as 1.500 conexões simultâneas causaram contenção de troca de contexto no banco, elevando a latência média de 3ms para 420ms e derrubando a CPU do PostgreSQL a 100%. A redução do pool para 15 conexões por Pod reduziu a latência para 2.9ms com apenas 22% de CPU.</p>
         </div>
 
@@ -5621,7 +5621,7 @@ spring:
       leak-detection-threshold: 2000 # Alerta se conexão ficar presa > 2s</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Connection Leak (Vazamento de Conexão):</strong> Se algum código abrir uma conexão JDBC manual ou JPA sem fechá-la no bloco <code>try-with-resources</code>, ou se uma transação ficar travada esperando uma API externa, o pool esgota suas 15 conexões e <strong>trava todas as requisições subsequentes</strong> com erro <code>SQLTransientConnectionException: Connection is not available, request timed out after 3000ms</code>.</li>
             <li><strong>maxLifetime maior que o timeout do firewall/AWS NAT:</strong> Roteadores de nuvem derrubam conexões TCP inativas após 350 segundos. Se o <code>max-lifetime</code> do Hikari for maior, a aplicação tenta usar uma conexão que já foi fechada pelo firewall, gerando erros súbitos de <em>Connection reset by peer</em>.</li>
@@ -5693,7 +5693,7 @@ spring:
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Sua API em Spring Boot recebe 500 req/s. Sob pico, usuários recebem erro 500 e os logs mostram: 'SQLTransientConnectionException: Connection is not available, request timed out after 30000ms'. O pool máximo configurado é 50 e o banco possui 8 vCPUs. Investigando o código, você encontra:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Sua API em Spring Boot recebe 500 req/s. Sob pico, usuários recebem erro 500 e os logs mostram: 'SQLTransientConnectionException: Connection is not available, request timed out after 30000ms'. O pool máximo configurado é 50 e o banco possui 8 vCPUs. Investigando o código, você encontra:</p>
                 <pre class="te-code"><code>@Transactional
 public OrderResponse processarPedido(OrderRequest request) {
     Order order = orderRepository.save(new Order(request));
@@ -5745,7 +5745,7 @@ public OrderResponse processarPedido(OrderRequest request) {
       <article class="topic" id="e2">
         <div class="th"><h3>JdbcTemplate: tirar o boilerplate sem esconder o banco</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um processo de sincronização de catálogo inseria 60.000 produtos disparando `jdbcTemplate.update()` linha a linha em um loop Java. O roundtrip de rede individual com o banco fez a carga demorar 52 minutos. A conversão para `jdbcTemplate.batchUpdate()` em lotes de 1.000 registros reduziu o tempo total de processamento para apenas 1.8 segundo.</p>
         </div>
 
@@ -5819,7 +5819,7 @@ public Optional&lt;ClienteResumo&gt; buscarPorId(Long id) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Concatenação de Strings no SQL (SQL Injection):</strong> Nunca faça <code>jdbcClient.sql("SELECT * FROM users WHERE nome = '" + nome + "'")</code>. Isso abre brecha direta para injeção de SQL. Sempre utilize parâmetros nomeados (<code>:param</code>) ou posicionais (<code>?</code>).</li>
             <li><strong>Retornar listas gigantes sem paginação:</strong> Executar um <code>.list()</code> em uma tabela com 500 mil registros puxará todos os dados para o Heap da JVM de uma vez só, resultando em <code>java.lang.OutOfMemoryError: Java heap space</code>.</li>
@@ -5891,7 +5891,7 @@ public Optional&lt;ClienteResumo&gt; buscarPorId(Long id) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você precisa executar uma consulta com parâmetros dinâmicos usando JdbcTemplate garantindo proteção estrita contra SQL Injection:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você precisa executar uma consulta com parâmetros dinâmicos usando JdbcTemplate garantindo proteção estrita contra SQL Injection:</p>
                 <pre class="te-code"><code>String sql = "SELECT id, nome, email FROM usuarios WHERE status = ? AND criado_em >= ?";
 List<UsuarioDto> lista = jdbcTemplate.query(
     sql,
@@ -5942,7 +5942,7 @@ List<UsuarioDto> lista = jdbcTemplate.query(
       <article class="topic" id="e3">
         <div class="th"><h3>RowMapper, parâmetros nomeados e batch</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um `RowMapper` manual recuperava valores por índice posicional (`rs.getString(2)`). Após uma manutenção que adicionou uma coluna no início da query SQL, o CPF do usuário passou a ser salvo no campo de telefone de 20.000 clientes cadastrados. A migração para `NamedParameterJdbcTemplate` e mapeamento explícito por nome de coluna (`rs.getString("cpf")`) eliminou o risco.</p>
         </div>
 
@@ -6016,7 +6016,7 @@ public class PedidoRowMapper implements RowMapper&lt;Pedido&gt; {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Lotes com milhões de registros de uma vez:</strong> Tentar passar uma lista de 500.000 itens em um único <code>batchUpdate</code> estoura a memória do driver JDBC e o limite de parâmetros do motor SQL (PostgreSQL tem limite de 65.535 parâmetros por query). Fragmente em pedaços (*chunks*) de 1.000 em 1.000 registros.</li>
             <li><strong>JPA com geração de ID <code>GenerationType.IDENTITY</code>:</strong> Se você usa JPA com auto-incremento (IDENTITY) no banco, o Hibernate <strong>DESATIVA O BATCHING SILENCIOSAMENTE</strong> porque precisa executar o insert imediatamente para obter o ID gerado! Use <code>GenerationType.SEQUENCE</code>.</li>
@@ -6088,7 +6088,7 @@ public class PedidoRowMapper implements RowMapper&lt;Pedido&gt; {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Para importar 50.000 transações bancárias, um desenvolvedor usou um loop chamando jdbcTemplate.update() para cada linha e o processo demorou 6 minutos. Ao trocar para batchUpdate com batch size de 1.000, o tempo caiu para 8 segundos.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Para importar 50.000 transações bancárias, um desenvolvedor usou um loop chamando jdbcTemplate.update() para cada linha e o processo demorou 6 minutos. Ao trocar para batchUpdate com batch size de 1.000, o tempo caiu para 8 segundos.</p>
                 <pre class="te-code"><code>String sql = "INSERT INTO lancamentos (conta_id, valor, data) VALUES (?, ?, ?)";
 jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
     @Override
@@ -6144,7 +6144,7 @@ jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
       <article class="topic" id="e4">
         <div class="th"><h3>Sincronização transacional: como os DAOs se encontram</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um componente de infraestrutura abriu uma conexão física diretamente com `dataSource.getConnection()` dentro de um fluxo anotado com `@Transactional`. Como a conexão criada manualmente não participava do `TransactionSynchronizationManager` do Spring, o rollback disparado pelo Spring no final do método não cancelou o comando executado no DAO manual, gerando inconsistência de dados.</p>
         </div>
 
@@ -6209,7 +6209,7 @@ if (TransactionSynchronizationManager.isSynchronizationActive()) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Disparar threads assíncronas (<code>CompletableFuture.runAsync()</code>):</strong> A transação e o <code>ThreadLocal</code> <strong>NÃO são herdados por novas threads</strong> por padrão! Se dentro do método transacional você disparar uma nova thread para salvar algo, ela executará em outra conexão, fora da transação pai, quebrando o isolamento.</li>
             <li><strong>Lançar exceção dentro de <code>afterCommit()</code>:</strong> Como o commit do banco de dados JÁ OCORREU fisicamente, se o seu código no <code>afterCommit</code> lançar uma exceção, o banco NÃO volta atrás! O usuário receberá um erro 500, mas o pedido estará salvo no banco.</li>
@@ -6281,7 +6281,7 @@ if (TransactionSynchronizationManager.isSynchronizationActive()) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja o código abaixo executado ao cadastrar um cliente:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja o código abaixo executado ao cadastrar um cliente:</p>
                 <pre class="te-code"><code>@Transactional
 public void cadastrarCliente(ClienteRequest request) {
     clienteRepository.save(new Cliente(request));
@@ -6333,7 +6333,7 @@ public void cadastrarCliente(ClienteRequest request) {
       <article class="topic" id="e5">
         <div class="th"><h3>Locking, isolamento e concorrência sob alta carga</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois nós de um microsserviço executaram simultaneamente a confirmação de uso de um cupom de desconto promocional sob concorrência de 15.000 requisições/s. Sem controle de concorrência, o mesmo cupom limitado a 1 uso foi utilizado 4 vezes. A aplicação de Pessimistic Write Lock (`@Lock(LockModeType.PESSIMISTIC_WRITE)`) serializou o acesso à linha no banco e impediu o uso duplicado.</p>
         </div>
 
@@ -6409,7 +6409,7 @@ public class EstoqueService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Deadlock em Banco de Dados com Pessimistic Lock:</strong> Se a Transação 1 travar a Conta A e tentar travar a Conta B, enquanto a Transação 2 travar a Conta B e tentar travar a Conta A simultaneamente, o banco entra em Deadlock! O banco mata uma das transações com erro <code>40P01: deadlock_detected</code>. Solução: sempre trave múltiplos recursos em ordem determinística (ex: ordenar por ID crescente antes de travar).</li>
             <li><strong>Trava Pessimista Segurada por Muito Tempo:</strong> Fazer chamadas de rede externas ou operações demoradas enquanto segura um <code>FOR UPDATE</code> enfileira dezenas de conexões esperando a trava, esgotando o pool HikariCP em segundos.</li>
@@ -6481,7 +6481,7 @@ public class EstoqueService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Dois clientes tentam comprar simultaneamente a última unidade de um produto em um e-commerce de alto tráfego. O método abaixo foi implementado:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois clientes tentam comprar simultaneamente a última unidade de um produto em um e-commerce de alto tráfego. O método abaixo foi implementado:</p>
                 <pre class="te-code"><code>@Transactional
 public void reservarEstoque(Long produtoId) {
     Produto produto = produtoRepository.findById(produtoId).orElseThrow();
@@ -6535,7 +6535,7 @@ public void reservarEstoque(Long produtoId) {
       <article class="topic" id="e6">
         <div class="th"><h3>JPA depois do JDBC: o que a automação esconde</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">security & oauth2</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma query de atualização em massa executada com `@Modifying` no Spring Data JPA não configurou `clearAutomatically = true`. Como o contexto de persistência manteve as entidades desatualizadas no cache de primeiro nível (First-Level Cache), as operações subsequentes dentro da mesma transação continuaram lendo os dados antigos da memória, gerando cálculos incorretos de comissão.</p>
         </div>
 
@@ -6597,7 +6597,7 @@ public class ClienteService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>O Problema do N+1:</strong> Se você consultar 100 Pedidos com relacionamento <code>@OneToMany</code> para Itens (com fetch padrão LAZY), e iterar sobre os pedidos acessando <code>pedido.getItens()</code>, o Hibernate disparará <strong>1 query inicial + 100 queries adicionais</strong> ao banco (101 queries no total), destruindo a performance da aplicação! Solução: use <code>JOIN FETCH</code> no JPQL ou <code>@EntityGraph</code>.</li>
             <li><strong>Open Session In View (OSIV) ativo por padrão:</strong> O Spring Boot mantém a conexão do banco aberta até o término da renderização do JSON no Controller para permitir carregamento tardio de proxies Lazy. Isso mantém conexões presas por dezenas de milissegundos a mais. Desative sempre em produção: <code>spring.jpa.open-in-view=false</code>.</li>
@@ -6669,7 +6669,7 @@ public class ClienteService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Em uma API de faturamento, a propriedade spring.jpa.open-in-view está configurada como false. O seguinte método de consulta é invocado por um controller REST:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Em uma API de faturamento, a propriedade spring.jpa.open-in-view está configurada como false. O seguinte método de consulta é invocado por um controller REST:</p>
                 <pre class="te-code"><code>@Transactional(readOnly = true)
 public List<Pedido> listarPedidos() {
     return pedidoRepository.findAll(); // Mapeamento: @OneToMany(fetch = FetchType.LAZY) private List<ItemPedido> itens;
@@ -6735,7 +6735,7 @@ public List<PedidoDto> listar() {
       <article class="topic" id="f1">
         <div class="th"><h3>SecurityFilterChain: onde a proteção realmente mora</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma configuração do Spring Security continha a declaração `.requestMatchers("/**").permitAll()` acidentalmente posicionada antes da regra de proteção das rotas administrativas. Durante um escaneamento de vulnerabilidade externo, foi identificado que todo o painel de controle administrativo `/admin/**` estava acessível publicamente na internet sem exigência de autenticação.</p>
         </div>
 
@@ -6805,7 +6805,7 @@ if (auth != null && auth.isAuthenticated()) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Prefixo de Roles (<code>hasRole</code> vs <code>hasAuthority</code>):</strong> O método <code>hasRole("ADMIN")</code> exige internamente que a permissão na lista de autoridades do Spring contenha o prefixo <code>ROLE_</code> (ou seja, <code>ROLE_ADMIN</code>). Se o seu token JWT enviar apenas <code>ADMIN</code>, a permissão será negada com HTTP 403! Use <code>hasAuthority("ADMIN")</code> se não quiser o prefixo <code>ROLE_</code>.</li>
             <li><strong>Endpoints de Actuator expostos acidentalmente:</strong> Não proteger endpoints sensíveis do Actuator como <code>/actuator/env</code> ou <code>/actuator/heapdump</code> permite que invasores baixem dumps de memória contendo senhas e chaves privadas em texto puro!</li>
@@ -6877,7 +6877,7 @@ if (auth != null && auth.isAuthenticated()) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja o SecurityFilterChain abaixo configurado em um microsserviço Spring Boot 3.x:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja o SecurityFilterChain abaixo configurado em um microsserviço Spring Boot 3.x:</p>
                 <pre class="te-code"><code>@Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
@@ -6930,7 +6930,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
       <article class="topic" id="f2">
         <div class="th"><h3>Authentication: transformar credencial em identidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um `AuthenticationProvider` customizado realizava a validação de senhas com comparação simples de strings (`password.equals(dbPassword)`). Além de permitir senhas não hasheadas, a operação era vulnerável a timing attacks na rede. A substituição pelo `BCryptPasswordEncoder` com salt automático e tempo de cálculo calibrado blindou a autenticação.</p>
         </div>
 
@@ -7004,7 +7004,7 @@ public class AutenticacaoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Ataque de Temporização (Timing Attack):</strong> Se o seu código verificar se o usuário existe antes de calcular o hash, invasores conseguem medir o tempo de resposta em milissegundos para enumerar quais e-mails existem ou não na sua base! O <code>DaoAuthenticationProvider</code> mitiga isso calculando um hash falso mesmo quando o usuário não existe.</li>
             <li><strong>Fator de Custo do BCrypt excessivamente alto (&gt; 15):</strong> Cada incremento no custo dobra o tempo de CPU. Um custo 16 pode demorar 2 segundos por login, travando os cores de CPU do seu pod sob um pico de acessos.</li>
@@ -7076,7 +7076,7 @@ public class AutenticacaoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Em uma aplicação Spring Boot, você precisa obter programaticamente o usuário logado dentro de uma camada de serviço de domínio:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Em uma aplicação Spring Boot, você precisa obter programaticamente o usuário logado dentro de uma camada de serviço de domínio:</p>
                 <pre class="te-code"><code>Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 if (auth != null && auth.isAuthenticated()) {
     String username = auth.getName();
@@ -7126,7 +7126,7 @@ if (auth != null && auth.isAuthenticated()) {
       <article class="topic" id="f3">
         <div class="th"><h3>Authorization: proteger a operação, não só a URL</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um endpoint REST permitia baixar faturas via `/faturas/{id}` validando apenas se o usuário estava autenticado no sistema, mas sem verificar se a fatura pertencia àquele usuário específico (falha grave de autorização IDOR). Qualquer cliente autenticado conseguia baixar faturas de outras empresas alterando o ID na URL. A inclusão de `@PreAuthorize("@faturaSecurity.isDono(#id)")` resolveu a brecha.</p>
         </div>
 
@@ -7197,7 +7197,7 @@ public class SegurancaContaEvaluator {
 public SaldoDTO consultarSaldo(Long contaId) { ... }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Self-Invocation em Method Security:</strong> Assim como no <code>@Transactional</code>, se um método público da sua classe chamar internamente <code>this.metodoProtegidoPorPreAuthorize()</code>, o proxy é ignorado e <strong>qualquer usuário desautorizado conseguirá executar a operação</strong>!</li>
             <li><strong>Uso perigoso de <code>@PostAuthorize</code> com métodos de escrita:</strong> O <code>@PostAuthorize</code> só valida o retorno DEPOIS que o método executou. Se você colocar <code>@PostAuthorize</code> em um método que deleta ou altera dados no banco, os dados JÁ TERÃO SIDO ALTERADOS antes de a exceção 403 ser lançada!</li>
@@ -7269,7 +7269,7 @@ public SaldoDTO consultarSaldo(Long contaId) { ... }</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor adicionou @PreAuthorize em um método de alteração salarial, mas esqueceu de anotar a classe de configuração com @EnableMethodSecurity:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor adicionou @PreAuthorize em um método de alteração salarial, mas esqueceu de anotar a classe de configuração com @EnableMethodSecurity:</p>
                 <pre class="te-code"><code>@Service
 public class FuncionarioService {
 
@@ -7321,7 +7321,7 @@ public class FuncionarioService {
       <article class="topic" id="f4">
         <div class="th"><h3>Sessão, CSRF e CORS: três coisas que não se confundem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma API REST para aplicativo mobile começou a retornar código HTTP 403 Forbidden para todos os métodos POST após a atualização do Spring Boot. O problema ocorreu porque a proteção CSRF, desenhada para aplicações web baseadas em sessão e cookies no navegador, veio ativada por padrão e rejeitava as requisições mobile sem token. A desativação explícita de CSRF em APIs stateless normalizou o tráfego.</p>
         </div>
 
@@ -7396,7 +7396,7 @@ public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSourc
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Desativar CSRF em aplicações com autenticação baseada em Cookies:</strong> Se o seu sistema armazena a sessão em cookies de navegador (como em painéis Thymeleaf ou com <code>SameSite=None</code>), desativar o CSRF permite que links maliciosos executem transferências bancárias na conta do usuário logado!</li>
             <li><strong>Usar <code>@CrossOrigin</code> no Controller em vez de configuração global:</strong> Espalhar <code>@CrossOrigin</code> em controllers pontuais não cobre requisições de erro tratadas pelo Spring Boot, causando erros de CORS intermitentes exatamente quando a API retorna erros 400 ou 500.</li>
@@ -7468,7 +7468,7 @@ public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSourc
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um frontend em React rodando em http://localhost:3000 tenta fazer POST para uma API Spring Boot em http://localhost:8080. O console do navegador exibe: 'Access to fetch at http://localhost:8080 from origin http://localhost:3000 has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No Access-Control-Allow-Origin header is present'.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um frontend em React rodando em http://localhost:3000 tenta fazer POST para uma API Spring Boot em http://localhost:8080. O console do navegador exibe: 'Access to fetch at http://localhost:8080 from origin http://localhost:3000 has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No Access-Control-Allow-Origin header is present'.</p>
                 <pre class="te-code"><code>@Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
@@ -7521,7 +7521,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       <article class="topic" id="f5">
         <div class="th"><h3>OAuth2 Resource Server e JWT: validar não é decodificar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de pagamentos apenas decodificava os dados do JWT com `Base64` para extrair o ID do usuário sem validar a assinatura criptográfica RSA com as chaves públicas do Authorization Server (Keycloak). Um atacante forjou um token com permissão de administrador e efetuou transações ilícitas. A configuração correta de `oauth2ResourceServer().jwt()` ativou a validação criptográfica estrita em todas as requisições.</p>
         </div>
 
@@ -7585,7 +7585,7 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Ataque do Algoritmo "none":</strong> Se você usar bibliotecas antigas ou desabilitar checagem de algoritmo, invasores podem enviar um token com cabeçalho <code>"alg": "none"</code> sem assinatura, e a aplicação aceita o token corrompido como válido! O Spring Security bloqueia isso por padrão exigindo algoritmos assimétricos explícitos.</li>
             <li><strong>Clock Skew (Divergência de Relógio de Servidores):</strong> Se o servidor do Identity Provider e o servidor da aplicação tiverem uma diferença de horário de apenas 30 segundos, o Spring pode rejeitar tokens recém-gerados com erro <code>JwtValidationException: Jwt used before issued</code>. O Spring permite configurar uma tolerância: <code>jwtValidator.setClockSkew(Duration.ofSeconds(60))</code>.</li>
@@ -7657,7 +7657,7 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você configurou o Resource Server no application.yml apontando para o Keycloak:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você configurou o Resource Server no application.yml apontando para o Keycloak:</p>
                 <pre class="te-code"><code>spring:
   security:
     oauth2:
@@ -7707,7 +7707,7 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
       <article class="topic" id="f6">
         <div class="th"><h3>Headers, segredos e testes de segurança</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência & async</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>A chave privada de assinatura de tokens foi versionada em texto puro dentro do arquivo `application.properties` em um repositório compartilhado com dezenas de desenvolvedores terceirizados. Um ex-prestador utilizou a chave para gerar tokens válidos e acessar dados em produção. A migração para injeção de segredos via Kubernetes Secrets e AWS Secrets Manager com rotação automatizada eliminou o risco.</p>
         </div>
 
@@ -7786,7 +7786,7 @@ class PedidoControllerSecurityTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Chaves e senhas commitadas no histórico do Git:</strong> Commitar uma senha no <code>application.yaml</code> e depois apagá-la no commit seguinte NÃO resolve o problema: a senha continua gravada para sempre no histórico do Git. Utilize ferramentas como <code>git-secrets</code> ou <em>TruffleHog</em> na esteira de CI/CD para bloquear commits com segredos.</li>
             <li><strong>Testes rodando com <code>@AutoConfigureMockMvc(addFilters = false)</code>:</strong> Desativar os filtros de segurança nos testes para "facilitar a escrita do teste" mascara vulnerabilidades críticas. O teste passa verde no CI, mas a aplicação quebra em produção com erros de autorização.</li>
@@ -7858,7 +7858,7 @@ class PedidoControllerSecurityTest {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja o teste de controller abaixo escrito com Spring Security Test:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja o teste de controller abaixo escrito com Spring Security Test:</p>
                 <pre class="te-code"><code>@WebMvcTest(RelatorioController.class)
 class RelatorioControllerTest {
 
@@ -7923,7 +7923,7 @@ class RelatorioControllerTest {
       <article class="topic" id="g1">
         <div class="th"><h3>RestClient e WebClient: a fronteira com o outro serviço</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço utilizava o `RestTemplate` legado para consumir 15 APIs externas sob tráfego de 2.000 req/s. Como o cliente realizava I/O bloqueante com uma thread de SO para cada requisição, as 200 threads do pool do Tomcat esgotaram rapidamente, causando indisponibilidade geral. A refatoração para o moderno `RestClient` com HTTP/2 e Virtual Threads reduziu o consumo de memória em 70% e triplicou a vazão da API.</p>
         </div>
 
@@ -7999,7 +7999,7 @@ public ViaCepClient viaCepClient(RestClient restClient) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Bloquear threads reativas no WebClient (<code>.block()</code>):</strong> Se você estiver em um ecossistema reativo WebFlux e chamar <code>.block()</code> no <code>WebClient</code> dentro de uma thread do Netty EventLoop, a JVM lança <code>IllegalStateException: block()/blockFirst() [..] are blocking, which is not supported on threads from [..] ParallelScheduler</code>, travando o event loop de todos os outros usuários.</li>
             <li><strong>Timeouts infinitos no RestTemplate legado:</strong> Por padrão de projeto antigo, o <code>RestTemplate</code> vinha com timeout infinito. Uma única falha de rede externa congelava o microsserviço inteiro.</li>
@@ -8071,7 +8071,7 @@ public ViaCepClient viaCepClient(RestClient restClient) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você precisa configurar um RestClient no Spring Boot 3.2+ com pool de conexões e timeouts explícitos de conexão (2s) e leitura (5s) para consumir um parceiro externo de pagamentos:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você precisa configurar um RestClient no Spring Boot 3.2+ com pool de conexões e timeouts explícitos de conexão (2s) e leitura (5s) para consumir um parceiro externo de pagamentos:</p>
                 <pre class="te-code"><code>@Bean
 public RestClient paymentRestClient(RestClient.Builder builder) {
     var requestFactory = new JdkClientHttpRequestFactory();
@@ -8126,7 +8126,7 @@ public RestClient paymentRestClient(RestClient.Builder builder) {
       <article class="topic" id="g2">
         <div class="th"><h3>Timeout, retry e circuit breaker: falhar sem derrubar todo mundo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma indisponibilidade temporária de 2 minutos em uma API de cálculo de frete de terceiros provocou um efeito dominó que derrubou 8 microsserviços internos, pois nenhum deles tinha Circuit Breaker ou timeouts curtos configurados. A implementação de Resilience4j com Circuit Breaker e fallback estático permitiu que o carrinho continuasse vendendo com frete padrão estimado enquanto a API externa se recuperava.</p>
         </div>
 
@@ -8211,7 +8211,7 @@ public class FreteService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Fazer Retry em métodos NÃO-IDEMPOTENTES:</strong> Se você configurar Retry em uma operação de pagamento com cartão de crédito via HTTP POST sem chave de idempotência, uma falha de timeout de leitura fará sua aplicação cobrar o cartão do cliente <strong>3 vezes seguidas</strong>!</li>
             <li><strong>Retry Storm (Tempestade de Repetições):</strong> Quando um serviço remoto começa a falhar e 10.000 clientes simultâneos executam retries imediatos sem backoff exponencial nem jitter (ruído aleatório), eles multiplicam o tráfego por 3x, transformando uma instabilidade leve em um ataque de negação de serviço (DDoS) involuntário contra a própria infraestrutura.</li>
@@ -8283,7 +8283,7 @@ public class FreteService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um serviço de catálogo consulta o serviço de recomendações usando CircuitBreaker e Retry do Resilience4j com método de fallback:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço de catálogo consulta o serviço de recomendações usando CircuitBreaker e Retry do Resilience4j com método de fallback:</p>
                 <pre class="te-code"><code>@CircuitBreaker(name = "recomendacoesCB", fallbackMethod = "obterRecomendacoesFallback")
 @Retry(name = "recomendacoesRetry")
 public List<ProdutoDto> buscarRecomendacoes(Long clienteId) {
@@ -8341,7 +8341,7 @@ public List<ProdutoDto> obterRecomendacoesFallback(Long clienteId, Throwable t) 
       <article class="topic" id="g3">
         <div class="th"><h3>RabbitMQ: exchange, binding e fila</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um produtor Spring AMQP postava mensagens em uma Direct Exchange sem nenhuma fila vinculada (sem binding). Como a propriedade `mandatory` e os `publisher-confirms` estavam desativados por padrão, o broker descartava silenciosamente os eventos e a aplicação achava que tinham sido entregues, perdendo 12.000 notificações de pedidos de clientes.</p>
         </div>
 
@@ -8424,7 +8424,7 @@ public class PedidoEventPublisher {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Mensagem sem rota descartada silenciosamente (*Black Hole*):</strong> Se você publicar em uma exchange com uma routing key que não casa com nenhum binding existente, por padrão o RabbitMQ <strong>descarta a mensagem no lixo</strong> sem avisar o produtor! Ative a flag <code>mandatory = true</code> e configure um <code>ReturnsCallback</code> no RabbitTemplate.</li>
             <li><strong>Filas não duráveis (Transient Queues):</strong> Declarar filas com <code>durable(false)</code> significa que, se o servidor do RabbitMQ for reiniciado, a fila e todas as milhares de mensagens acumuladas são permanentemente deletadas da memória!</li>
@@ -8496,7 +8496,7 @@ public class PedidoEventPublisher {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere uma Exchange do tipo Topic chamada 'pedidos.topic' e duas filas com os seguintes bindings de routing key:<br>- Fila A: <code>pedido.sp.*</code><br>- Fila B: <code>pedido.#</code></p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere uma Exchange do tipo Topic chamada 'pedidos.topic' e duas filas com os seguintes bindings de routing key:<br>- Fila A: <code>pedido.sp.*</code><br>- Fila B: <code>pedido.#</code></p>
                 <pre class="te-code"><code>// Produtor publica com routing key: "pedido.sp.urgente"
 rabbitTemplate.convertAndSend("pedidos.topic", "pedido.sp.urgente", payload);</code></pre>
                 <p class="te-instrucao">Quais filas receberão a mensagem publicada?</p>
@@ -8542,7 +8542,7 @@ rabbitTemplate.convertAndSend("pedidos.topic", "pedido.sp.urgente", payload);</c
       <article class="topic" id="g4">
         <div class="th"><h3>@RabbitListener, ack e DLQ: o ciclo de vida da mensagem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um `@RabbitListener` encontrou uma mensagem corrompida com erro de deserialização JSON. Como a configuração padrão não possuía Dead Letter Queue (DLQ) nem limite de retry, a mensagem rejeitada voltava imediatamente para o início da fila e era consumida novamente, rodando em loop infinito a 8.000 vezes por segundo e travando a CPU do contêiner até o esgotamento total.</p>
         </div>
 
@@ -8610,7 +8610,7 @@ spring:
           multiplier: 2.0</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Prefetch desregulado (Prefetch infinito = 0):</strong> Se você deixar o prefetch com valor 0 ou muito alto, o RabbitMQ despejará milhares de mensagens no buffer da memória do consumidor de uma só vez. Se o processamento for pesado, a JVM estoura a memória com <code>OutOfMemoryError</code> enquanto outros pods consumidores ficam ociosos sem trabalho!</li>
             <li><strong>Loop infinito de NACK com <code>requeue = true</code>:</strong> Rejeitar mensagens com flag de requeue ativada sem limite de contagem de tentativas trava a fila indefinidamente e gera gigabytes de logs de stacktrace.</li>
@@ -8682,7 +8682,7 @@ spring:
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um listener RabbitMQ processa pagamentos. Se o serviço do banco falhar, o listener deve retentar até 3 vezes e, se persistir, descartar da fila original direcionando para a Dead Letter Queue:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um listener RabbitMQ processa pagamentos. Se o serviço do banco falhar, o listener deve retentar até 3 vezes e, se persistir, descartar da fila original direcionando para a Dead Letter Queue:</p>
                 <pre class="te-code"><code>@RabbitListener(queues = "pagamentos.queue")
 public void processarPagamento(PagamentoDto dto) {
     // Processamento de pagamento
@@ -8730,7 +8730,7 @@ public void processarPagamento(PagamentoDto dto) {
       <article class="topic" id="g5">
         <div class="th"><h3>Idempotência e transactional outbox</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um endpoint confirmava a compra no banco de dados e publicava o evento no broker de mensageria diretamente no controller. Uma oscilação de rede fez a chamada ao broker falhar após o commit do banco, deixando o pedido confirmado mas sem notificar o estoque nem a nota fiscal. A implementação do padrão Transactional Outbox garantiu que a gravação do pedido e do evento ocorram na mesma transação atômica do banco.</p>
         </div>
 
@@ -8799,7 +8799,7 @@ public class CheckoutService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Worker de Polling da tabela Outbox sem Lock Skip Locked:</strong> Se você rodar múltiplas réplicas da sua aplicação lendo a tabela de outbox com <code>SELECT * FROM outbox WHERE status = 'PENDENTE'</code>, múltiplos pods lerão os mesmos eventos ao mesmo tempo! No PostgreSQL, use sempre <code>FOR UPDATE SKIP LOCKED</code> para leitura concorrente limpa entre réplicas.</li>
             <li><strong>Não limpar eventos antigos da tabela Outbox:</strong> Se não houver um job de purga periódica de eventos já publicados, a tabela <code>outbox_events</code> acumula dezenas de milhões de linhas, degradando o espaço em disco e os índices do banco de produção.</li>
@@ -8834,7 +8834,7 @@ public class CheckoutService {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Idempotência no Consumidor</b>
-                    <p>Em sistemas distribuídos, 'Exactly-Once delivery' ponta a ponta não existe; brokers entregam At-Least-Once. O consumidor DEVE ser idempotente registrando message_id processados em uma tabela com chave primária única.</p>
+                    <p>Uma garantia exactly-once precisa declarar seu escopo. Brokers podem redeliver conforme o protocolo e a configuração; o consumidor deve lidar com repetição quando ela for possível, por exemplo com idempotência ou deduplicação. Uma tabela de IDs é uma opção, não o único desenho, e o registro precisa ser atômico com o efeito protegido.</p>
                   </div>
                 </div>
               </div>
@@ -8871,7 +8871,7 @@ public class CheckoutService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja o fluxo de gravação e publicação usando Transactional Outbox em um serviço financeiro:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja o fluxo de gravação e publicação usando Transactional Outbox em um serviço financeiro:</p>
                 <pre class="te-code"><code>@Transactional
 public Pedido criarPedido(CriarPedidoCommand cmd) {
     Pedido pedido = pedidoRepo.save(new Pedido(cmd));
@@ -8909,7 +8909,7 @@ public Pedido criarPedido(CriarPedidoCommand cmd) {
               <div class="tf-card">
                 <div class="tf-face tf-front">
                   <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">Por que a garantia de entrega da maioria dos brokers de mensageria é 'At-Least-Once' e não 'Exactly-Once'?</p>
+                  <p class="tf-pergunta">Por que a confirmação de um broker não garante que o efeito de negócio no banco ocorreu exatamente uma vez?</p>
                   <span class="tf-hint">Dica: Pense em falhas de rede no momento do envio do ACK de confirmação →</span>
                 </div>
                 <div class="tf-face tf-back">
@@ -8929,7 +8929,7 @@ public Pedido criarPedido(CriarPedidoCommand cmd) {
       <article class="topic" id="g6">
         <div class="th"><h3>@Async, agendamento e virtual threads</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">cloud & microsserviços</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um método anotado com `@Async` foi executado sem configuração de um `TaskExecutor` dedicado. O Spring utilizou o executor padrão `SimpleAsyncTaskExecutor`, que cria uma nova thread do sistema operacional para cada execução concorrente. Durante uma campanha de marketing com 15.000 requisições simultâneas, o Linux Kernel atingiu o limite de threads do sistema e travou a máquina com `OutOfMemoryError: unable to create new native thread`.</p>
         </div>
 
@@ -8940,16 +8940,16 @@ public Pedido criarPedido(CriarPedidoCommand cmd) {
           <p>É o suporte nativo do Spring para execução paralela assíncrona (<code>@Async</code>), tarefas agendadas recorrentes (<code>@Scheduled</code>) e a revolução das <strong>Virtual Threads (Project Loom)</strong> introduzida oficialmente no <strong>Spring Boot 3.2+ com Java 21</strong>.</p>
         </div>
 
-            <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Threads tradicionais do sistema operacional são como navios de cruzeiro de 100 mil toneladas (cada uma aloca 1MB de memória da pilha no SO). Virtual Threads da JVM são como caiaques leves (alocam apenas poucos bytes no Heap e podem existir em milhões simultaneamente sem sobrecarregar a máquina).</p></div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> threads de plataforma são como trabalhadores que ocupam um posto enquanto executam ou aguardam. Uma Virtual Thread é uma tarefa leve que pode ceder o posto em operações bloqueantes compatíveis, permitindo que a JVM o reutilize. O custo não é um número fixo de bytes nem a quantidade de tarefas é ilimitada: memória, CPU, pinning e serviços externos continuam limitando o sistema.</p></div>
 
             <div class="duo">
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
-            <p>Permite que operações de I/O bloqueante (consultas JDBC, chamadas HTTP REST, leituras de disco) não travem threads caras do sistema operacional, elevando a capacidade de requisições simultâneas do Spring Boot para dezenas de milhares por segundo.</p>
+            <p>Em operações de I/O compatíveis, uma thread virtual que bloqueia pode liberar a thread portadora para outras tarefas. Isso pode aumentar a concorrência de aplicações com muita espera, mas não garante taxa de requisições: driver, banco, pool de conexões, CPU e limites de downstream precisam suportar a carga.</p>
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Antes do Java 21, para atingir alta concorrência sem travar threads era obrigatório adotar frameworks reativos difíceis de debugar (WebFlux, Mono, Flux). Com Virtual Threads, você continua escrevendo código sequencial síncrono e simples (imperativo), obtendo a mesma performance e throughput de código reativo!</p>
+            <p>Antes de Virtual Threads, aplicações já podiam alcançar alta concorrência com eventos, callbacks, pools e APIs assíncronas, entre outras abordagens. Virtual Threads oferecem uma alternativa imperativa que pode simplificar certos workloads de I/O, mas não substituem automaticamente WebFlux nem prometem o mesmo desempenho: compare consumo, latência, throughput e compatibilidade das bibliotecas.</p>
           </div>
         </div>
           </div>
@@ -8991,9 +8991,9 @@ public class CleanupScheduledTask {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
-            <li><strong>Thread Pinning com <code>synchronized</code>:</strong> Se uma Virtual Thread executar uma chamada de I/O bloqueante dentro de um bloco <code>synchronized</code> ou método nativo C/JNI, ela fica <strong>presa (pinned)</strong> à thread nativa do SO, impedindo o unmount e anulando os benefícios de escala! Use <code>ReentrantLock</code> em vez de <code>synchronized</code>.</li>
+            <li><strong>Pinning conforme JDK e chamada:</strong> no Java 21–23, certos bloqueios em <code>synchronized</code> mantinham a Virtual Thread na carrier; o Java 24 removeu esse caso. Chamadas nativas/foreign ainda podem piná-la. Use JFR para diagnosticar e não substitua locks sem evidência do problema.</li>
             <li><strong>Tarefas <code>@Scheduled</code> duplicadas em Microsserviços:</strong> Se você tiver 5 pods da sua aplicação rodando no Kubernetes, todas as 5 instâncias executarão o método <code>@Scheduled</code> no mesmo segundo (enviando 5 e-mails duplicados para o mesmo cliente)! Use bibliotecas de trava distribuída como <strong>ShedLock</strong> com Redis ou banco relacional.</li>
           </ul>
         </div>
@@ -9019,14 +9019,14 @@ public class CleanupScheduledTask {
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Virtual Threads no Java 21+ e Spring Boot 3.2+</b>
-                    <p>Com <code>spring.threads.virtual.enabled=true</code>, o Spring troca as pesadas Platform Threads do SO (1MB de stack) por Virtual Threads ultraleves gerenciadas pela JVM (poucos bytes), permitindo milhões de tarefas simultâneas de I/O.</p>
+                    <p>Com <code>spring.threads.virtual.enabled=true</code> em versões compatíveis do Spring Boot e Java, o framework pode usar Virtual Threads em executores suportados. O custo por thread depende da JVM e da carga; a configuração não cria capacidade ilimitada nem aumenta os limites do banco ou de serviços externos.</p>
                   </div>
                 </div>
                 <div class="tr-item">
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Cuidado com Pinning de Virtual Threads</b>
-                    <p>Evite blocos <code>synchronized</code> contendo I/O bloqueante dentro de Virtual Threads, pois isso prende a Carrier Thread (thread nativa do SO) no Java 21. Prefira <code>ReentrantLock</code>.</p>
+                    <p>No Java 21–23, I/O bloqueante dentro de <code>synchronized</code> podia prender a carrier; no Java 24 esse caso foi corrigido. Chamadas nativas/foreign ainda podem causar pinning. Verifique JFR e versão do JDK antes de alterar a sincronização.</p>
                   </div>
                 </div>
               </div>
@@ -9063,7 +9063,7 @@ public class CleanupScheduledTask {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma aplicação Spring Boot 3.2 rodando no Java 21 tem a seguinte propriedade no application.properties:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma aplicação Spring Boot 3.2 rodando no Java 21 tem a seguinte propriedade no application.properties:</p>
                 <pre class="te-code"><code>spring.threads.virtual.enabled=true</code></pre>
                 <p class="te-instrucao">Qual é o impacto prático dessa única linha de configuração no servidor web embutido (Tomcat) e nas tarefas @Async?</p>
 
@@ -9088,12 +9088,12 @@ public class CleanupScheduledTask {
               <div class="tf-card">
                 <div class="tf-face tf-front">
                   <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
-                  <p class="tf-pergunta">Por que devemos preferir ReentrantLock a blocos synchronized ao utilizar Virtual Threads no Java 21?</p>
-                  <span class="tf-hint">Dica: Pense no fenômeno de thread pinning na Carrier Thread do SO →</span>
+                  <p class="tf-pergunta">Como investigar pinning ao usar Virtual Threads e decidir se um lock precisa mudar?</p>
+                  <span class="tf-hint">Dica: Considere a versão do JDK e o tipo de chamada bloqueante →</span>
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">No Java 21, blocos <strong><code>synchronized</code></strong> contendo operações bloqueantes de I/O causam <strong>Pinning</strong>: a Virtual Thread fica 'colada' à Carrier Thread nativa do sistema operacional, impedindo que a thread nativa seja liberada para atender outras tarefas. Com <strong><code>ReentrantLock</code></strong>, o pinning não ocorre e a JVM consegue suspender e desalocar a Carrier Thread perfeitamente.</p>
+                  <p class="tf-resposta">Use JFR para observar eventos de pinning e correlacioná-los com latência e throughput. No Java 21–23, bloqueios em <code>synchronized</code> podiam piná-la; o Java 24 removeu esse caso. Chamadas nativas/foreign ainda podem manter a carrier ocupada. Só altere o lock quando a medição indicar benefício e preserve a proteção contra concorrência.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -9116,7 +9116,7 @@ public class CleanupScheduledTask {
       <article class="topic" id="h1">
         <div class="th"><h3>Teste de unidade sem Spring</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma suíte de testes unitários com 500 classes utilizava `@SpringBootTest` em todos os testes, subindo o contexto inteiro da aplicação para validar regras simples de cálculo matemático. O tempo de execução da suíte na esteira de CI demorava 18 minutos por commit. A reescrita dos testes com Mockito puro e instâncias diretas do Java sem subir o Spring derrubou o tempo de execução total para apenas 5.4 segundos.</p>
         </div>
 
@@ -9191,7 +9191,7 @@ void deveLancarExcecaoQuandoSaldoForInsuficiente() {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Mocks em excesso (*Mock Hell*):</strong> Mockar 8 dependências diferentes para testar um único método é um sintoma claro de <em>Code Smell</em> (Violação do Princípio da Responsabilidade Única - SRP). Quebre a classe em componentes menores.</li>
             <li><strong>Testar apenas o "Caminho Feliz":</strong> Deixar de testar cenários de borda (valores nulos, números negativos, listas vazias, timeouts) resulta em surpresas graves de <code>NullPointerException</code> no ambiente de produção.</li>
@@ -9263,7 +9263,7 @@ void deveLancarExcecaoQuandoSaldoForInsuficiente() {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja o teste unitário abaixo escrito para validar a regra de cálculo de frete:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja o teste unitário abaixo escrito para validar a regra de cálculo de frete:</p>
                 <pre class="te-code"><code>@ExtendWith(MockitoExtension.class)
 class FreteServiceTest {
 
@@ -9324,7 +9324,7 @@ class FreteServiceTest {
       <article class="topic" id="h2">
         <div class="th"><h3>Test slices: carregar só o pedaço necessário</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Desenvolvedores anotavam testes de controller com `@SpringBootTest`, o que forçava a inicialização de conexões de banco de dados, brokers de mensageria e caches distribuídos para testar apenas validação de DTOs HTTP. A substituição pelo slice `@WebMvcTest` isolou a camada web, permitindo mockar os services em memória e acelerando o pipeline de deploy em 12x.</p>
         </div>
 
@@ -9405,7 +9405,7 @@ class PedidoRepositorySliceTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Poluição de Context Cache com <code>@MockBean</code> divergente:</strong> Cada combinação diferente de <code>@MockBean</code> força o Spring a destruir e recriar um novo <code>ApplicationContext</code> na memória, aumentando dramaticamente o tempo total da suíte de testes.</li>
             <li><strong>Divergência entre H2 e o banco real:</strong> Usar banco H2 em memória nos testes de JPA enquanto produção roda PostgreSQL oculta bugs graves de sintaxe SQL nativa, tipos de dados (JSONB, UUID) e funções de data que só aparecem em produção.</li>
@@ -9477,7 +9477,7 @@ class PedidoRepositorySliceTest {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você precisa testar se o controller de clientes valida corretamente o CPF com anotação @CPF no DTO, retornando HTTP 400 Bad Request:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você precisa testar se o controller de clientes valida corretamente o CPF com anotação @CPF no DTO, retornando HTTP 400 Bad Request:</p>
                 <pre class="te-code"><code>@WebMvcTest(ClienteController.class)
 class ClienteControllerTest {
 
@@ -9538,7 +9538,7 @@ class ClienteControllerTest {
       <article class="topic" id="h3">
         <div class="th"><h3>Testcontainers: integração com a dependência de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe executava testes de integração contra um banco em memória H2. Todos os testes passavam com sucesso no CI, mas ao fazer o deploy em produção o sistema quebrou porque o PostgreSQL real não aceitava uma sintaxe específica de enum e funções nativas de JSONB que o H2 ignorava. A adoção do Testcontainers garantiu testes contra uma instância idêntica do PostgreSQL em contêiner Docker.</p>
         </div>
 
@@ -9554,7 +9554,7 @@ class ClienteControllerTest {
             <div class="duo">
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
-            <p>Elimina para sempre o clássico problema <em>"Na minha máquina funciona, mas em produção quebrou"</em>. Permite testar migrações Flyway/Liquibase, índices parciais do Postgres, tipos JSONB e Quorum Queues do RabbitMQ com fidelidade de 100%.</p>
+                    <p>Permite testar integrações contra instâncias reais de serviços em contêineres, reduzindo a diferença em relação a mocks. O ambiente ainda não reproduz toda a produção: topologia, versões, configuração, volume, latência e serviços externos podem diferir. Registre o que o teste cobre e mantenha testes de contrato e produção seguros.</p>
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
@@ -9610,7 +9610,7 @@ public abstract class AbstractIntegrationTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Subir um novo container Docker por classe de teste:</strong> Se cada classe de teste instanciar seu próprio container sem declarar como <code>static</code>, a suíte passará 15 minutos apenas iniciando e parando containers Docker, esgotando a memória RAM da máquina de build.</li>
             <li><strong>Ambientes de CI/CD sem suporte a Docker-in-Docker:</strong> Rodar Testcontainers em runners de CI (GitLab CI, GitHub Actions) exige configurar o acesso ao socket do Docker (<code>/var/run/docker.sock</code>).</li>
@@ -9682,7 +9682,7 @@ public abstract class AbstractIntegrationTest {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Veja a configuração de teste de integração com Testcontainers no Spring Boot 3.1+:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Veja a configuração de teste de integração com Testcontainers no Spring Boot 3.1+:</p>
                 <pre class="te-code"><code>@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class PedidoIntegrationTest {
@@ -9743,7 +9743,7 @@ class PedidoIntegrationTest {
       <article class="topic" id="h4">
         <div class="th"><h3>Actuator: health, liveness e readiness</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>A liveness probe do Kubernetes foi configurada apontando para `/actuator/health` global contendo checagem de banco de dados e mensageria. Durante uma lentidão passageira de 4 segundos no PostgreSQL, o Kubernetes julgou que a aplicação estava morta e reiniciou todos os 8 Pods da aplicação simultaneamente, agravando a indisponibilidade. O ajuste da probe para `/actuator/health/liveness` isolou o ciclo de vida do processo da saúde das dependências externas.</p>
         </div>
 
@@ -9817,7 +9817,7 @@ public class GatewayHealthIndicator implements HealthIndicator {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Timeout do Probe no Kubernetes menor que a resposta do Actuator:</strong> Se o seu banco estiver sob carga e o <code>/actuator/health</code> demorar 3 segundos para responder, e o Kubernetes estiver com <code>timeoutSeconds: 1</code>, o orquestrador assume que a aplicação morreu e mata o container em loop contínuo.</li>
             <li><strong>Vazamento de dados com <code>show-details: always</code>:</strong> Habilitar exibição pública detalhada expõe espaço livre em disco, versões de banco e detalhes internos para qualquer usuário não autenticado na internet.</li>
@@ -9889,7 +9889,7 @@ public class GatewayHealthIndicator implements HealthIndicator {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Sua aplicação consome mensagens pesadas na inicialização para aquecer um cache de produtos em memória. Durante os primeiros 45 segundos, ela não deve receber tráfego HTTP dos clientes externos, mas não deve ser morta pelo Kubernetes.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Sua aplicação consome mensagens pesadas na inicialização para aquecer um cache de produtos em memória. Durante os primeiros 45 segundos, ela não deve receber tráfego HTTP dos clientes externos, mas não deve ser morta pelo Kubernetes.</p>
                 <pre class="te-code"><code>management:
   endpoint:
     health:
@@ -9938,7 +9938,7 @@ public class GatewayHealthIndicator implements HealthIndicator {
       <article class="topic" id="h5">
         <div class="th"><h3>Micrometer, logs e traces: enxergar em produção</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de autenticação começou a apresentar erros 500 intermitentes em produção sob 50.000 usuários ativos. Como os logs não continham Correlation ID, a equipe de suporte levou 14 horas cruzando timestamps para correlacionar o erro com uma falha de conexão no LDAP. A ativação do Micrometer Tracing propagou o TraceId e SpanId em 100% dos logs automaticamente, reduzindo o tempo médio de diagnóstico (MTTR) para menos de 5 minutos.</p>
         </div>
 
@@ -10012,7 +10012,7 @@ public class FaturamentoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Explosão de Cardinalidade no Prometheus:</strong> Colocar variáveis com valores infinitos (como CPF, ID do usuário ou Timestamp) como tags de métricas (ex: <code>tag("userId", id)</code>) cria milhões de séries temporais na memória do Prometheus, travando o servidor de monitoramento com falta de RAM. Use tags com valores finitos e previsíveis (ex: <code>status</code>, <code>regiao</code>, <code>canal</code>).</li>
             <li><strong>Sampling Rate de 100% de Tracing sob Alto Tráfego:</strong> Rastrear 100% das requisições em uma aplicação que recebe 50.000 requisições por segundo consome dezenas de gigabytes de banda e disco no OpenTelemetry. Configure amostragem probabilística (ex: <code>probability: 0.1</code> para 10%).</li>
@@ -10084,7 +10084,7 @@ public class FaturamentoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você precisa registrar a duração de uma operação crítica de liquidação financeira no Micrometer:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você precisa registrar a duração de uma operação crítica de liquidação financeira no Micrometer:</p>
                 <pre class="te-code"><code>Timer timer = Timer.builder("financeiro.liquidacao.duracao")
                    .description("Tempo de liquidação de operações")
                    .tag("tipo_ativo", "ACOES") // Baixa cardinalidade
@@ -10134,7 +10134,7 @@ timer.record(() -> servicoLiquidacao.liquidar(operacao));</code></pre>
       <article class="topic" id="h6">
         <div class="th"><h3>Startup, shutdown gracioso e entrega</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um deploy automatizado no meio da tarde, o Kubernetes enviou um sinal `SIGTERM` e destruiu os Pods antigos enquanto 240 transações de pagamento estavam no meio do processamento, gerando estornos e pedidos incompletos. A ativação de `server.shutdown=graceful` no Spring Boot garantiu que os Pods rejeitassem novos tráfegos e aguardassem até 30 segundos para concluir todas as transações ativas antes de desligar.</p>
         </div>
 
@@ -10204,7 +10204,7 @@ public class CacheClusterClient implements DisposableBean {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>TerminationGracePeriodSeconds do Kubernetes menor que o timeout do Spring:</strong> Se o Kubernetes estiver configurado com <code>terminationGracePeriodSeconds: 15</code> e o Spring Boot estiver com <code>timeout-per-shutdown-phase: 30s</code>, o Kubernetes envia um <code>SIGKILL</code> violento aos 15 segundos, matando o pod antes que ele termine de drenar as requisições. O tempo do Kubernetes deve ser SEMPRE maior que o do Spring.</li>
             <li><strong>Loops infinitos em threads não-daemon:</strong> Threads manuais criadas sem serem daemon (<code>new Thread()</code>) impedem que a JVM desligue naturalmente, forçando o processo a travar até o timeout limite.</li>
@@ -10276,7 +10276,7 @@ public class CacheClusterClient implements DisposableBean {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você configurou o shutdown gracioso no application.properties de um microsserviço de pagamentos:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você configurou o shutdown gracioso no application.properties de um microsserviço de pagamentos:</p>
                 <pre class="te-code"><code>server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
                 <p class="te-instrucao">O que acontece exatamente no servidor Tomcat embutido quando a aplicação recebe o sinal SIGTERM do orquestrador?</p>
@@ -10322,7 +10322,7 @@ spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
       <article class="topic" id="h7">
         <div class="th"><h3>Capstone: OrderFlow, agora com Spring Boot</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes & observabilidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O capstone corporativo OrderFlow em Spring Boot foi submetido a um teste de carga extremo simulando a Black Friday com 25.000 requisições simultâneas por segundo. Combinando Spring Data JPA com pool HikariCP calibrado em 20 conexões, isolamento transacional estrito, Virtual Threads ativadas e graceful shutdown, a aplicação processou 1,5 milhão de pedidos em 1 hora com taxa de erro de 0.00% e latência P99 abaixo de 32ms.</p>
         </div>
 
@@ -10408,7 +10408,7 @@ public class CheckoutUseCase {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Falta de Idempotência no Consumidor:</strong> Se a rede falhar na confirmação do RabbitMQ, a mensagem de cobrança é reenviada pelo broker. Se o consumidor não checar a tabela de idempotência, o cliente é cobrado duas vezes pelo mesmo pedido.</li>
             <li><strong>Ausência de Métricas no Outbox:</strong> Se o worker de publicação do Outbox travar por qualquer razão e não houver um alerta no Prometheus monitorando o tamanho da fila de outbox pendente (<code>SELECT count(*) FROM outbox_events WHERE status = 'PENDING'</code>), os eventos acumulam silenciosamente sem ninguém perceber.</li>
@@ -10480,7 +10480,7 @@ public class CheckoutUseCase {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> No projeto OrderFlow, o método fecharPedido() precisa debitar o estoque, registrar a venda no banco relacional, notificar a esteira de logística via RabbitMQ e emitir métricas no Micrometer. Qual deve ser a sequência arquitetural segura?</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> No projeto OrderFlow, o método fecharPedido() precisa debitar o estoque, registrar a venda no banco relacional, notificar a esteira de logística via RabbitMQ e emitir métricas no Micrometer. Qual deve ser a sequência arquitetural segura?</p>
                 <pre class="te-code"><code>@Transactional
 public Pedido fecharPedido(Long pedidoId) {
     // 1. Debita estoque e atualiza status do pedido com lock
@@ -10589,7 +10589,7 @@ public Pedido fecharPedido(Long pedidoId) {
 // Você verá que não existe "mágica", apenas código Java puro bem arquitetado.</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Copiar e colar código do ChatGPT / StackOverflow sem ler:</strong> Inserir anotações e configurações aleatórias até o erro sumir gera aplicações instáveis cheias de efeitos colaterais ocultos que explodem sob alta concorrência.</li>
             <li><strong>Ignorar a Documentação Oficial:</strong> A documentação de referência do Spring (<em>docs.spring.io</em>) é uma das mais completas e detalhadas do mundo da computação. Ela deve ser sempre a sua fonte primária de verdade.</li>
@@ -10661,7 +10661,7 @@ public Pedido fecharPedido(Long pedidoId) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um engenheiro quer dominar a fundo a arquitetura de transações do Spring para uma promoção a Sênior. Ele tem 10 horas de estudo disponíveis.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um engenheiro quer dominar a fundo a arquitetura de transações do Spring para uma promoção a Sênior. Ele tem 10 horas de estudo disponíveis.</p>
                 <pre class="te-code"><code>// Opção 1: Assistir 10 horas de tutoriais em vídeo de forma passiva.
 // Opção 2: Estudar 3 horas de teoria, passar 4 horas implementando cenários de deadlock/rollback no código e 3 horas resolvendo flashcards e explicando o funcionamento para um colega.</code></pre>
                 <p class="te-instrucao">De acordo com os princípios da neurociência da aprendizagem (Active Recall / Desejável Dificuldade), qual estratégia garantirá retenção duradoura?</p>
@@ -10754,7 +10754,7 @@ https://docs.spring.io/spring-boot/reference/
 https://docs.spring.io/spring-framework/reference/</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Artigos desatualizados para Spring Boot 2.x:</strong> Cuidado com tutoriais antigos que recomendam estender <code>WebSecurityConfigurerAdapter</code> ou usar <code>javax.*</code> em vez de <code>jakarta.*</code>: no Spring Boot 3+ e Java 21, essas classes foram removidas da biblioteca e seu código não compilará.</li>
           </ul>
@@ -10825,7 +10825,7 @@ https://docs.spring.io/spring-framework/reference/</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você precisa decidir a stack para um novo produto e vê um vídeo na internet recomendando abandonar completamente bancos relacionais e usar apenas NoSQL distribuído.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você precisa decidir a stack para um novo produto e vê um vídeo na internet recomendando abandonar completamente bancos relacionais e usar apenas NoSQL distribuído.</p>
                 <pre class="te-code"><code>Decisão de Arquitetura:
 Cenário: Sistema contábil que exige transações financeiras ACID estritas e relatórios analíticos com junções complexas de tabelas.</code></pre>
                 <p class="te-instrucao">Qual postura crítica de engenharia deve prevalecer na escolha da tecnologia?</p>
@@ -10918,7 +10918,7 @@ Cenário: Sistema contábil que exige transações financeiras ACID estritas e r
 ab -n 100 -c 10 -p payload.json -T application/json http://localhost:8080/api/v1/pedidos</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Não simular lentidão de rede nos testes locais:</strong> Na sua máquina com banco de dados local na porta 5432, o tempo de resposta é de 0.1ms e nenhum bug de concorrência aparece. Em produção com rede real, a latência de 20ms expõe todas as condições de corrida. Use o Testcontainers com <em>Toxiproxy</em> para injetar latência nos seus testes de integração.</li>
           </ul>
@@ -10989,7 +10989,7 @@ ab -n 100 -c 10 -p payload.json -T application/json http://localhost:8080/api/v1
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Você encontrou um bug sutil onde uma anotação customizada de segurança não está interceptando chamadas internas de métodos na mesma classe. Você deseja confirmar a causa raiz diretamente na fonte.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Você encontrou um bug sutil onde uma anotação customizada de segurança não está interceptando chamadas internas de métodos na mesma classe. Você deseja confirmar a causa raiz diretamente na fonte.</p>
                 <pre class="te-code"><code>// Como um engenheiro sênior investiga a causa raiz?
 Opção A: Ficar trocando anotações aleatórias na esperança de que passe a funcionar.
 Opção B: Abrir a classe CglibAopProxy ou JdkDynamicAopProxy no debugger da IDE, colocar um breakpoint na chamada de método e inspecionar a pilha de interceptors.</code></pre>

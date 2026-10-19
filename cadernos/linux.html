@@ -831,7 +831,7 @@ umask          # mostra a mascara atual (022 e o comum)
       </article>
 
       <article class="topic" id="b2">
-        <div class="th"><h3>UID, GID e o volume que o container não escreve</h3><div class="badges"><span class="badge b-imp">container</span><span class="badge b-caso">caso real</span></div></div>
+        <div class="th"><h3>UID, GID e o volume que o container não escreve</h3><div class="badges"><span class="badge b-imp">container</span><span class="badge b-caso">exemplo</span></div></div>
         <p class="direto"><b>Direto:</b> o kernel compara <b>números</b>, não nomes. O nome de usuário é uma tradução feita por quem está olhando — e host e container têm tabelas diferentes.</p>
 
         <div class="caso"><b>o caso</b>
@@ -1025,7 +1025,7 @@ mv "$tmp" /destino/saida.txt
 
         <div class="gotcha"><b>armadilhas</b>
           <ul>
-            <li><b><code class="i">kill -9</code> por reflexo.</b> Ele garante que nada seja salvo. Tente TERM primeiro, sempre.</li>
+          <li><b><code class="i">kill -9</code> por reflexo.</b> SIGKILL não permite que o processo execute um handler de encerramento; dados em buffers da aplicação podem não ser descarregados. Tente SIGTERM primeiro quando houver tempo para cleanup, confirme o PID e use SIGKILL apenas quando o processo não encerra ou uma política exigir.</li>
             <li><b>Processo em estado D.</b> Nem o KILL resolve: ele está em I/O ininterrompível, esperando o disco ou a rede. O alvo é a causa do I/O.</li>
             <li><b>Handler que faz muita coisa.</b> O tempo é limitado pelo grace period. Feche conexões e saia; não tente processar a fila inteira.</li>
             <li><b>Ctrl+C que não mata o filho.</b> O SIGINT vai para o grupo em primeiro plano; um processo em segundo plano não recebe.</li>
@@ -1277,7 +1277,7 @@ Ao executar `docker stop` nesse container, o comando trava por exatamente 10 seg
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Porque a sintaxe <strong>Shell Form (<code>CMD comando</code>)</strong> executa o processo como filho de um shell (<code>/bin/sh -c</code>), e o shell <strong>não repassa sinais POSIX (como SIGTERM) para os processos filhos</strong>.<br>A sintaxe <strong>Exec Form (<code>CMD ["binario", "arg"]</code>)</strong> executa o programa diretamente como <strong>PID 1</strong>, garantindo o recebimento direto de sinais e o shutdown gracioso imediato.</p>
+                  <p class="tf-resposta">Na <strong>Shell Form (<code>CMD comando</code>)</strong>, um shell pode ficar entre o runtime e o processo, o que afeta como sinais chegam ao filho. A <strong>Exec Form (<code>CMD ["binario", "arg"]</code>)</strong> inicia o executável diretamente como PID 1 do contêiner, evitando essa camada. Isso facilita o encaminhamento de sinais, mas shutdown gracioso ainda depende do processo tratar o sinal e do tempo de encerramento configurado.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -1576,7 +1576,7 @@ Ao testar, os erros de conexão continuaram aparecendo no terminal em vez de ser
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">O kernel inicia ambos os processos <strong>simultaneamente e em paralelo</strong>.<br>A comunicação ocorre através de um <strong>buffer circular na memória RAM do kernel (geralmente 64KB)</strong>: se o buffer encher, cmd1 é pausado aguardando cmd2 consumir; se o buffer esvaziar, cmd2 aguarda novos dados, garantindo consumo de memória estritamente constante e previsível.</p>
+                  <p class="tf-resposta">O shell conecta a saída padrão do primeiro processo à entrada padrão do segundo. Os processos podem executar ao mesmo tempo, mas escalonamento e ritmo dependem do sistema. O kernel mantém um buffer limitado cujo tamanho varia por plataforma e configuração: se o consumidor demora, o buffer pode encher e aplicar backpressure ao produtor. Isso limita o armazenamento intermediário, mas não torna toda a pipeline de memória constante — cada processo ainda pode acumular dados internamente.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -1749,7 +1749,7 @@ grep "$(date -d '1 hour ago' +%H):" access.log |
       <div class="ph"><span class="num">06</span><div><h2>Os três sintomas de madrugada</h2><p>Disco cheio, memória que parece ter acabado, porta que não responde. Os três têm causa conhecida e diagnóstico de um minuto.</p></div></div>
 
       <article class="topic" id="f1">
-        <div class="th"><h3>O disco encheu e o <code class="ic">du</code> não acha o culpado</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">caso real</span></div></div>
+        <div class="th"><h3>O disco encheu e o <code class="ic">du</code> não acha o culpado</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-caso">exemplo</span></div></div>
         <p class="direto"><b>Direto:</b> quando <code class="i">df</code> e <code class="i">du</code> discordam, a diferença é um arquivo <b>apagado que ainda está aberto</b>. É quase sempre isso.</p>
 
         <div class="caso"><b>o caso</b>
@@ -1978,7 +1978,7 @@ java -XX:MaxRAMPercentage=75 -jar app.jar</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Entrar em Pânico ao Ver Memória em 95% no Linux:</b>
-                    <p>Ver 95% de uso no servidor Linux é perfeitamente normal e saudável se 70% for buffers/cache de disco. Limpar o cache manualmente com `drop_caches` apenas degrada a performance do sistema forçando leituras lentas no SSD.</p>
+        <p>Um percentual alto de memória usada não basta para diagnosticar pressão: Linux usa RAM livre como cache e pode recuperá-la quando necessário. Observe <code>MemAvailable</code>, swap, OOM events, pressão de memória e comportamento da aplicação. Evite limpar caches com <code>drop_caches</code> como rotina: isso pode piorar o desempenho e não corrige a causa de falta de memória.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">

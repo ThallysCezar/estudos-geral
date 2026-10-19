@@ -804,7 +804,7 @@ table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spaci
       <article class="topic" id="a1">
         <div class="th"><h3>Nuvem é o datacenter de outra pessoa — com uma API na frente</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um script automatizado de CI/CD criava e destruía instâncias via API sem tratar rate limiting de requisições na AWS CloudControl API. Durante um deploy com falha em loop na madrugada, o script disparou 85.000 requisições em 12 minutos, atingindo o throttling da conta inteira. Todas as chamadas de API da nuvem foram bloqueadas com erro `429 Too Many Requests`, impedindo o Auto Scaling de subir novas máquinas durante um pico matinal e causando 45 minutos de indisponibilidade geral. A implementação de Exponential Backoff com Jitter e verificação de concorrência normalizou as chamadas.</p>
         </div>
 
@@ -905,7 +905,7 @@ public class CloudDiscoveryService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Ilusão da "Capacidade Infinita":</b> Achar que você pode escalar centenas de máquinas a qualquer momento. Toda conta da nuvem possui limites estritos (quotas/service limits) e as próprias regiões podem sofrer esgotamento temporário de tipos específicos de instâncias (ex: <code>InsufficientInstanceCapacityError</code>). <i>Prevenção:</i> Monitore quotas via Service Quotas e configure Auto Scaling com múltiplos tipos de instâncias similares.</li>
             <li><b>A Falsa Premissa de "A Nuvem é Sempre Mais Barata":</b> Migrar sistemas legados para a nuvem sem alterar arquitetura (estratégia Lift-and-Shift cego). Uma aplicação que consome CPU e RAM constantes 24 horas por dia em servidores próprios costuma ser mais cara na nuvem sob demanda. O ganho financeiro da nuvem só se concretiza com automação de escala, desligamento em horários ociosos e compra de instâncias reservadas / Savings Plans.</li>
@@ -951,7 +951,7 @@ public class CloudDiscoveryService {
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>A Nuvem Mal Usada é Mais Cara Que Bare Metal:</b>
-                    <p>Se você apenas migrar suas VMs legadas 'como estão' (Lift-and-Shift) sem desligar instâncias ociosas, sem redimensionar (rightsizing) e sem automação, sua fatura na nuvem pode ser 3x maior que o custo de servidores próprios. A economia só existe com elasticidade!</p>
+                    <p>Lift-and-shift pode aumentar ou reduzir o custo total, conforme utilização, licenças, rede, armazenamento, suporte, operação e modelo de cobrança. Compare custo total de propriedade e custo por unidade de negócio; elasticidade pode ajudar quando há capacidade ociosa ou picos, mas não é a única fonte de valor da nuvem.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -1023,8 +1023,8 @@ public class CloudDiscoveryService {
       <article class="topic" id="a2">
         <div class="th"><h3>IaaS, PaaS e SaaS: quanto trabalho você delega</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">níveis de abstração</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Uma startup hospedou sua aplicação core em máquinas IaaS (EC2) puras para economizar R$ 1.200/mês comparado ao PaaS. Seis meses depois, uma vulnerabilidade crítica de Kernel Linux (Dirty Pipe) foi descoberta e explorada, sequestrando duas instâncias que estavam com patching defasado há 90 dias. O resgate e a auditoria custaram R$ 180.000. A migração das cargas de trabalho de backend para PaaS gerenciado (Cloud Run / App Runner) transferiu a responsabilidade de patching do SO e runtime diretamente ao provedor.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+                    <p><b>Cenário hipotético:</b> uma equipe compara VMs, contêiner gerenciado e PaaS. Em IaaS, o cliente costuma administrar o sistema operacional convidado e o runtime; em serviços mais gerenciados, parte da manutenção da plataforma passa ao provedor. A fronteira exata depende do serviço. PaaS não transfere a responsabilidade pelo código, identidades, dados, configuração e controles que continuam sob gestão do cliente.</p>
         </div>
 
         <div class="topic-split">
@@ -1045,7 +1045,7 @@ public class CloudDiscoveryService {
             <p>Serve para escolher intencionalmente onde alocar a energia de engenharia da empresa:</p>
             <ul>
               <li><b>IaaS (EC2, Azure VM, Compute Engine):</b> Ideal para sistemas legados, softwares com dependências específicas de kernel ou quando se exige controle fino sobre flags de socket e discos dedicados.</li>
-              <li><b>PaaS (AWS App Runner, Azure Container Apps, Google Cloud Run):</b> Ideal para microsserviços modernos e APIs web, permitindo focar 100% no código de negócio e delegação total de patches do SO.</li>
+                    <li><b>PaaS (por exemplo, serviços gerenciados de aplicação/contêiner):</b> reduz o trabalho com partes da plataforma, como provisionamento e manutenção do host, conforme o contrato do serviço. A equipe ainda responde pela aplicação, dados, identidade, configuração, dependências e controles que o provedor não gerencia.</li>
             </ul>
           </div>
           <div class="pilar-box p-importa">
@@ -1116,7 +1116,7 @@ management.endpoints.web.exposure.include=health,info
 management.endpoint.health.probes.enabled=true</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Assumir Persistência em Sistema de Arquivos Local:</b> Em PaaS e Serverless, o disco local do container é efêmero e volátil. Salvar uploads de clientes em <code>/tmp</code> ou <code>/var/uploads</code> causará perda catastrófica de arquivos assim que o container for reciclado ou escalar para outra réplica. <i>Solução:</i> Armazenamento de arquivos deve SEMPRE utilizar S3 ou Blob Storage.</li>
             <li><b>Manter Estado em Memória RAM (Sessões HTTP Não-Compartilhadas):</b> Em PaaS, novas instâncias sobem e descem dinamicamente. Se a autenticação depender de <code>HttpSession</code> em memória, o cliente será deslogado a cada requisição roteada para outra réplica. <i>Solução:</i> Utilize tokens JWT stateless ou armazene sessões no Redis gerenciado.</li>
@@ -1161,7 +1161,7 @@ management.endpoint.health.probes.enabled=true</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>IaaS Exige Gestão Contínua de Patches de SO:</b>
-                    <p>Se você escolher IaaS (EC2), a responsabilidade de aplicar atualizações de segurança do Linux (OpenSSL, kernel patches) e rodar antivírus é 100% sua! Se seu servidor for invadido por uma CVE conhecida de Linux, a culpa não é do provedor de nuvem.</p>
+                    <p>Em IaaS, o cliente normalmente administra o sistema operacional convidado e precisa planejar patches, hardening e resposta a vulnerabilidades. O provedor continua responsável por componentes da infraestrutura sob seu controle. Consulte o modelo de responsabilidade compartilhada do serviço; responsabilidades específicas variam entre produtos.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -1233,7 +1233,7 @@ management.endpoint.health.probes.enabled=true</code></pre>
       <article class="topic" id="a3">
         <div class="th"><h3>Responsabilidade compartilhada: a linha que define de quem é a culpa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">segurança</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um banco de dados gerenciado em nuvem teve dados corrompidos após um script de migração com `DROP TABLE` incorreto executado por um estagiário. O CTO abriu chamado no suporte do provedor esperando restauração imediata, mas descobriu que a retenção de snapshots automatizados estava desativada por configuração manual do time. O provedor comprovou pelo modelo de responsabilidade compartilhada que backups lógicos e controle de acesso são de total responsabilidade do cliente, gerando 36 horas de paralisação para reconstruir o banco via logs de auditoria.</p>
         </div>
 
@@ -1241,9 +1241,9 @@ management.endpoint.health.probes.enabled=true</code></pre>
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>O <b>Modelo de Responsabilidade Compartilhada (Shared Responsibility Model)</b> é o contrato fundamental de segurança da nuvem que estabelece com precisão cirúrgica a fronteira entre as obrigações do provedor e as do cliente:
-          <br>• <b>Segurança DA Nuvem (Security OF the Cloud):</b> Responsabilidade 100% do provedor (AWS/Azure/GCP). Cobre a segurança física dos prédios, controle biométrico dos datacenters, proteção contra enchentes/incêndios, manutenção do hardware de servidores, descarte seguro de discos rígidos e integridade dos hypervisors.
-          <br>• <b>Segurança NA Nuvem (Security IN the Cloud):</b> Responsabilidade 100% do cliente. Cobre a configuração de firewalls (Security Groups), permissões de acesso (IAM), criptografia de dados, proteção de chaves de API, regras de banco de dados e correção de vulnerabilidades no código da sua aplicação.</p>
+          <p>O <b>Modelo de Responsabilidade Compartilhada (Shared Responsibility Model)</b> descreve como provedor e cliente dividem tarefas de segurança. A fronteira depende do serviço e do modelo contratado; consulte a matriz específica do produto:
+          <br>• <b>Segurança da nuvem (Security of the Cloud):</b> o provedor protege componentes da infraestrutura que opera, como instalações e hardware. A fronteira varia pelo tipo de serviço e contrato; IaaS, PaaS e SaaS distribuem responsabilidades de formas diferentes.
+          <br>• <b>Segurança na nuvem (Security in the Cloud):</b> em geral inclui configuração, identidades, dados e aplicação sob controle do cliente; em serviços gerenciados, tarefas de sistema operacional e plataforma podem ser do provedor. Verifique a divisão concreta, em vez de tratar segurança como 100% de uma parte.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Como alugar um cofre em uma agência bancária de primeira linha. O banco garante a blindagem das paredes, as câmeras de vigilância, o alarme com sensores sísmicos e os seguranças armados na porta. No entanto, a senha do segredo do seu cofre, a lista de pessoas autorizadas e o que você coloca lá dentro são responsabilidades exclusivamente suas. Se você colar um post-it com a senha na fechadura do cofre ou esquecer a porta aberta, o banco não foi violado — a negligência foi sua e o prejuízo é total.</p></div>
@@ -1255,7 +1255,7 @@ management.endpoint.health.probes.enabled=true</code></pre>
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Estatísticas do setor (Gartner e relatórios de segurança corporativa) comprovam que mais de <b>95% dos vazamentos de dados na nuvem acontecem por erro de configuração do cliente</b> (como buckets S3 públicos, credenciais vazadas em repositórios Git ou portas 22/3389 abertas para <code>0.0.0.0/0</code>) e não por invasões aos servidores físicos do provedor.</p>
+                    <p>Configurações e credenciais sob controle do cliente são fontes importantes de risco em nuvem, mas não há uma porcentagem única aplicável a todos os incidentes e provedores. A segurança também depende do serviço, das responsabilidades compartilhadas, das vulnerabilidades, da identidade, da rede e da operação. Use relatórios com escopo e metodologia explícitos antes de citar estatísticas.</p>
           </div>
         </div>
           </div>
@@ -1317,7 +1317,7 @@ public class SecureS3Factory {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Commits de Chaves de Acesso Permanentes (Access Key & Secret Key):</b> Versionar arquivos <code>.env</code> ou <code>application.properties</code> com credenciais no GitHub. Bots varrem commits em menos de 60 segundos e criam dezenas de instâncias de mineração na sua conta. <i>Prevenção:</i> Use roles temporárias (IAM Roles para EC2/ECS/EKS) e ferramentas de pré-commit (como <code>git-secrets</code> ou <code>TruffleHog</code>).</li>
             <li><b>Criptografia em Repouso vs Autorização de Leitura:</b> Supor que ativar encriptação no disco protege contra vazamento via API. A encriptação em repouso impede que alguém roube o disco físico no datacenter; se a sua role IAM der permissão de <code>s3:GetObject</code> irrestrita, o invasor lerá os dados já descriptografados pela API.</li>
@@ -1352,7 +1352,7 @@ public class SecureS3Factory {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>O Maior Vetor de Incidentes em Nuvem</b>
-                    <p>Mais de 95% dos vazamentos de dados em nuvem ocorrem por <strong>erros de configuração do cliente</strong> (ex: bucket S3 aberto ao público, credenciais no Git), e NUNCA por invasão física do data center da AWS/Google.</p>
+                    <p>Configurações do cliente — como permissões excessivas, exposição involuntária e credenciais mal protegidas — são riscos relevantes, mas não se deve atribuir a elas uma fração universal dos incidentes nem excluir outras causas. Investigue o serviço afetado e a fronteira de responsabilidade aplicável.</p>
                   </div>
                 </div>
               </div>
@@ -1419,7 +1419,7 @@ public class SecureS3Factory {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">1. <strong>Segurança DA Nuvem (Provedor):</strong> segurança física dos data centers, hardware, cabos, geradores e o software do hipervisor e camadas de rede básica.<br>2. <strong>Segurança NA Nuvem (Cliente):</strong> configuração de regras de firewall, controle de usuários e permissões no IAM, criptografia, patches de SO e proteção dos dados do negócio.</p>
+                  <p class="tf-resposta">O provedor protege a infraestrutura que opera; o cliente configura e protege os recursos e dados sob sua administração. Em IaaS, o cliente geralmente administra o sistema operacional convidado; em PaaS e SaaS, parte maior da plataforma fica com o provedor. Identidade, dados, configuração e controles ainda podem ser compartilhados. Consulte a matriz do produto específico.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -1434,7 +1434,7 @@ public class SecureS3Factory {
       <article class="topic" id="a4">
         <div class="th"><h3>Regiões, zonas e o que "alta disponibilidade" significa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">topologia física</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um e-commerce colocou 4 réplicas de sua API em duas instâncias EC2, ambas alocadas na mesma zona de disponibilidade (`us-east-1a`). Durante uma tempestade com falha no gerador elétrico do datacenter dessa zona, ambas as instâncias caíram simultaneamente, tirando a loja do ar por 4 horas no meio da Black Friday. A reconfiguração da infraestrutura distribuindo os nós em Multi-AZ (`us-east-1a`, `us-east-1b`, `us-east-1c`) por trás de um Application Load Balancer eliminou o ponto único de falha zonal.</p>
         </div>
 
@@ -1454,7 +1454,7 @@ public class SecureS3Factory {
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <p>Serve para desenhar arquiteturas tolerantes a desastres (High Availability & Disaster Recovery):</p>
             <ul>
-              <li><b>Multi-AZ (Alta Disponibilidade):</b> Distribuir réplicas da aplicação e banco de dados em 2 ou 3 zonas da mesma região. Latência sub-milissegundo com failover automático e sem perda de dados.</li>
+              <li><b>Multi-AZ (Alta Disponibilidade):</b> distribuir componentes por zonas independentes da mesma região pode reduzir o impacto de uma falha de zona. Replicação, RPO, latência e failover dependem do serviço e da configuração; valide o comportamento e não presuma perda zero nem troca transparente.</li>
               <li><b>Multi-Região (Disaster Recovery):</b> Manter cópias em continentes diferentes para sobrevivência a falhas globais ou para aproximar os dados de usuários internacionais (reduzindo RTT de rede).</li>
             </ul>
           </div>
@@ -1519,7 +1519,7 @@ public class DatabaseConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Multi-Região Prematuro:</b> Tentar adotar arquitetura ativa/ativa em duas regiões sem necessidade de negócio comprovada. Replicar dados entre regiões distantes geograficamente (ex: Brasil e EUA) impõe latência de rede superior a 120ms, impedindo transações ACID síncronas e introduzindo conflitos de consistência eventual e faturas altíssimas de tráfego inter-regional.</li>
             <li><b>Custo de Transferência Inter-AZ Oculto:</b> Achar que trafegar dados entre duas zonas da mesma região é gratuito. Provedores cobram cerca de US$ 0,01 por GB transferido entre zonas. Se uma API na Zona A fizer queries pesadas ou streaming contínuo para um banco na Zona B, o custo de rede pode surpreender no fim do mês.</li>
@@ -1554,7 +1554,7 @@ public class DatabaseConfig {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Alta Disponibilidade (Multi-AZ)</b>
-                    <p>Alta Disponibilidade em nuvem significa rodar suas aplicações e réplicas de banco distribuídas em <strong>no mínimo duas ou três Zonas de Disponibilidade diferentes</strong> dentro da mesma região, conectadas por fibra óptica de latência sub-milissegundo.</p>
+                    <p>Alta disponibilidade pode exigir distribuir componentes por mais de uma zona, conforme o objetivo e os serviços escolhidos. Quantidade de zonas, conectividade, latência e replicação variam por provedor e produto; valide a arquitetura e seus objetivos de RTO/RPO em vez de assumir números universais.</p>
                   </div>
                 </div>
               </div>
@@ -1621,7 +1621,7 @@ public class DatabaseConfig {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta"><strong>Multi-AZ (Zonas de Disponibilidade):</strong> data centers distintos separados por dezenas de quilômetros na mesma região, conectados por fibra óptica proprietária com <strong>latência < 1ms</strong>, permitindo <strong>replicação síncrona</strong> sem perda de dados (RPO=0) e failover transparente.<br><strong>Multi-Região:</strong> regiões geográficas separadas por milhares de quilômetros ou oceanos, exigindo replicação <strong>assíncrona</strong> devido à velocidade da luz, com custo de egresso muito superior e maior complexidade de consistência de dados.</p>
+                  <p class="tf-resposta"><strong>Multi-AZ (Zonas de Disponibilidade):</strong> distribuir componentes por zonas na mesma região reduz pontos únicos de falha, mas latência, modo de replicação, RPO, failover e intervenção necessária variam por serviço e configuração. Não infira RPO=0 nem transparência sem consultar a documentação e testar.<br><strong>Multi-Região:</strong> regiões geográficas distintas aumentam isolamento e alcance, mas adicionam latência, custo e decisões de consistência; replicação pode ser síncrona ou assíncrona conforme produto e arquitetura, respeitando limites físicos e do serviço.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -1636,7 +1636,7 @@ public class DatabaseConfig {
       <article class="topic" id="a5">
         <div class="th"><h3>O mapa de tradução: os mesmos conceitos, cinco vocabulários</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a chave do documento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma migração de infraestrutura da AWS para o GCP, um time de DevOps traduziu um Security Group diretamente para uma regra de Firewall de VPC sem perceber que na AWS os grupos de segurança são stateful por padrão no tráfego de retorno, enquanto criaram regras no GCP que bloquearam o tráfego de saída efêmero. 12 microsserviços ficaram inacessíveis por 3 horas até que a equipe mapeou os conceitos de firewall e rotas entre os provedores.</p>
         </div>
 
@@ -1732,7 +1732,7 @@ public class AzureBlobStorageAdapter implements StoragePort {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Armadilha da Tradução Literal Cega:</b> Achar que serviços homólogos operam exatamente com as mesmas regras de limite ou concorrência. Por exemplo, o limite de requisições por partição no AWS DynamoDB difere substancialmente do Azure Cosmos DB. Sempre consulte a tabela de quotas do provedor de destino antes de migrar.</li>
             <li><b>Renomeações Comerciais Contínuas:</b> Confundir nomes de produtos em documentações desatualizadas (como Azure AD que se transformou em Microsoft Entra ID). Foque no conceito de protocolo (OAuth2/OIDC/SAML) para nunca ficar perdido.</li>
@@ -1855,7 +1855,7 @@ public class AzureBlobStorageAdapter implements StoragePort {
       <article class="topic" id="b1">
         <div class="th"><h3>A régua do compute: da VM ao serverless</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa colocou um processamento batch de fechamento contábil que rodava 14 horas seguidas em uma AWS Lambda com timeout máximo de 15 minutos. A função era abortada violentamente a cada 15 minutos, deixando transações pela metade e gerando 1.200 execuções repetidas com faturas infladas. A equipe reestruturou a carga transferindo o processamento longo para containers em instâncias sob demanda com ECS Fargate / VMs Spot, reservando Lambda apenas para eventos curtos de menos de 30 segundos.</p>
         </div>
 
@@ -1945,12 +1945,12 @@ gcloud run deploy orders-service \\
         System.out.printf("Heap Máximo Permitido: %d MB%n", maxHeapBytes / (1024 * 1024));
         
         // Em container gerenciado com 1 Core e 1GB RAM, a JVM reservará ~250MB para metadados/threads
-        // e ~750MB para o Heap (-XX:MaxRAMPercentage=75 por padrão)
+        // exemplo didático; o percentual efetivo depende da JVM/configuração e precisa ser medido
     }
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Falsa Economia do Serverless em Carga Constante:</b> Manter uma função Lambda com alto tráfego constante (ex: 50 requisições por segundo contínuas durante o mês inteiro) com 2GB de RAM alocados pode custar 3 a 5 vezes mais caro do que manter duas instâncias de container gerenciado ou uma VM reservada.</li>
             <li><b>Adoção do Kubernetes por Complexidade Inflacionada:</b> Times de 3 pessoas que escolhem EKS/Kubernetes completo e passam 70% do tempo configurando RBAC, Cert-Manager, Ingress Controllers e atualizando versões de control plane em vez de programar funcionalidades de produto.</li>
@@ -2067,7 +2067,7 @@ gcloud run deploy orders-service \\
       <article class="topic" id="b2">
         <div class="th"><h3>Escala automática: elasticidade de verdade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">elasticidade</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Auto Scaling Group foi configurado para escalar baseado exclusivamente no uso médio de CPU (> 70%). Durante uma liquidação relâmpago, o tráfego aumentou em 10.000 requisições por segundo em 40 segundos. Como a aplicação Java demorava 2 minutos para aquecer a JVM (warm-up) e baixar arquivos de modelo, as novas instâncias chegavam tarde demais, e as existentes já tinham caído por esgotamento de conexões TCP. A mudança para métricas de latência P99 e contagem de requisições no ALB, somada à otimização do startup e pré-aquecimento de instâncias, estabilizou a elasticidade.</p>
         </div>
 
@@ -2149,7 +2149,7 @@ public class OrderProcessingMetrics {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Gargalo Deslocado para o Banco de Dados (Database Connection Starvation):</b> Escalar a camada web de 4 para 40 réplicas. Se cada instância Java abrir um pool HikariCP com 20 conexões, a aplicação tentará abrir 800 conexões contra um banco PostgreSQL que suporta no máximo 200 conexões simultâneas. O banco atinge 100% de CPU por troca de contexto e todos os serviços caem juntos. <i>Solução:</i> Utilize Connection Poolers (como AWS RDS Proxy ou PgBouncer).</li>
             <li><b>Flapping / Trashing (Efeito Sanfona):</b> Subir réplicas precipitadamente e destruí-las 1 minuto depois. Instâncias levam tempo para aquecer (JIT compilation). Se a política de scale-in não tiver uma janela de cooldown (ex: 300 segundos), o sistema ficará destruindo e criando máquinas em loop infinito.</li>
@@ -2201,7 +2201,7 @@ public class OrderProcessingMetrics {
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Projete sua aplicação para ser 100% Stateless: novas instâncias de um Auto Scaling Group devem poder entrar e sair do ar a qualquer segundo sem dependência de dados locais.</p>
+                    <p>Evite manter estado de negócio exclusivamente na memória local se instâncias puderem ser substituídas. Sessões, arquivos e tarefas em andamento precisam de estratégia de persistência, compartilhamento ou recuperação; “stateless” não elimina a necessidade de tratar requisições interrompidas.</p>
                   </div>
                 </div>
               </div>
@@ -2266,7 +2266,7 @@ public class OrderProcessingMetrics {
       <article class="topic" id="b3">
         <div class="th"><h3>Serverless: o que é ótimo e o que ninguém conta</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">funções & eventos</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma API pública em Lambda em Node.js com conexão direta ao PostgreSQL sofreu cold starts de 3.200ms a cada surto de novos usuários após períodos de calmaria. Além disso, quando o tráfego subiu para 2.000 requisições simultâneas, 2.000 Lambdas independentes abriram 2.000 conexões de rede simultâneas no banco de dados, derrubando a CPU do Postgres para 100% por exaustão de pool. A adição de Provisioned Concurrency para eliminar cold starts e a instalação de um RDS Proxy / PgBouncer intermediário salvaram a operação.</p>
         </div>
 
@@ -2343,7 +2343,7 @@ public class OrderValidationHandler implements RequestHandler<APIGatewayProxyReq
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Esgotamento de Conexões do Banco por Concorrência Serverless:</b> Se 500 funções subirem simultaneamente para responder a um pico de requisições e cada uma abrir uma conexão JDBC tradicional com o PostgreSQL, o banco receberá 500 conexões novas de uma vez e travará com <code>too many connections</code>. <i>Solução:</i> Utilize AWS RDS Proxy ou bancos nativamente HTTP/Serverless como AWS Aurora Serverless v2 ou DynamoDB.</li>
             <li><b>Latência de Cold Start Afetando Usuários Interativos:</b> Colocar uma API síncrona pública para o aplicativo mobile em Java Lambda sem SnapStart. O usuário que abrir o app na hora de um cold start enfrentará uma tela branca de carregamento por 6 segundos.</li>
@@ -2460,8 +2460,8 @@ public class OrderValidationHandler implements RequestHandler<APIGatewayProxyReq
       <article class="topic" id="b4">
         <div class="th"><h3>Kubernetes gerenciado: o que o provedor tira das suas costas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">orquestração pronta</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um time operando um cluster Kubernetes autogerenciado em VMs puras perdeu o quorum do etcd após dois nós do control plane sofrerem falha de disco em sequência. O cluster inteiro entrou em estado somente-leitura e a restauração manual do snapshot do etcd demorou 14 horas de estresse com engenharia de plantão. A migração para EKS/GKE transferiu a gestão, replicação multi-AZ e recuperação automática do control plane e etcd para o provedor com SLA contratual de 99.95%.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+                    <p><b>Cenário hipotético:</b> uma equipe opera o control plane de um cluster e enfrenta perda de quorum do etcd. Um serviço Kubernetes gerenciado transfere parte dessa operação ao provedor, conforme a oferta escolhida; não elimina responsabilidades sobre workers, workloads, backups, compatibilidade, políticas e recuperação da aplicação. Consulte o SLA e o modelo de responsabilidade do serviço específico.</p>
         </div>
 
         <div class="topic-split">
@@ -2480,7 +2480,7 @@ public class OrderValidationHandler implements RequestHandler<APIGatewayProxyReq
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>A perda do <code>etcd</code> em um cluster Kubernetes manual significa a perda total do cérebro do cluster (todos os manifestos, segredos e rotas). Serviços gerenciados garantem SLA financeiro de 99.95% para o API Server e facilitam atualizações graduais de versão com zero downtime (rolling upgrades de versão do Kubernetes).</p>
+                    <p>O etcd guarda o estado persistido do cluster; perder seus dados pode impedir recuperar objetos e configurações sem backup válido. Kubernetes gerenciado reduz o trabalho sobre o control plane conforme o serviço contratado, mas não torna todo upgrade sem interrupção nem substitui plano de backup, compatibilidade de APIs, manutenção dos workers e testes de workload.</p>
           </div>
         </div>
 
@@ -2557,7 +2557,7 @@ spec:
               key: database.url</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Falsa Premissa de "Cluster Gerenciado Não Dá Trabalho":</b> O provedor gerencia o Control Plane, mas você continua precisando drenar nós (drain), migrar versões de APIs deprecadas e atualizar os AMIs dos Worker Nodes a cada versão nova do Kubernetes. Ignorar atualizações força o provedor a realizar upgrade forçado do control plane, quebrando manifestos antigos.</li>
             <li><b>Esgotamento de IPs na Subnet por Pods (VPC CNI):</b> Se a sua subnet privada tiver um bloco CIDR pequeno (ex: <code>/24</code> com 250 IPs) e você usar EKS VPC CNI, cada Pod e cada interface de rede secundária consumirá um IP real da VPC. O cluster travará com <code>FailedCreatePodSandBox</code> por falta de IPs livres na subnet.</li>
@@ -2585,7 +2585,7 @@ spec:
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Serviços Gerenciados (AWS EKS, GCP GKE, Azure AKS)</b>
-                    <p>O provedor gerencia 100% do Control Plane e do etcd com alta disponibilidade e SLA de 99.95%, além de automatizar a criação e substituição de Worker Nodes.</p>
+                    <p>O provedor administra o control plane dentro do escopo do serviço gerenciado e oferece condições de disponibilidade definidas no SLA correspondente. O cliente ainda administra componentes e decisões que o serviço não cobre; verifique worker nodes, rede, add-ons, backups e plano de recuperação.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -2680,7 +2680,7 @@ spec:
       <article class="topic" id="c1">
         <div class="th"><h3>A rede virtual: seu pedaço privado da nuvem</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação da rede</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Duas equipes de engenharia criaram VPCs separadas para pagamentos e compras, mas ambas utilizaram o mesmo bloco CIDR padrão `10.0.0.0/16`. Quando a diretoria exigiu interconectar as duas VPCs via VPC Peering para sincronização de dados interna, a sobreposição de IPs inviabilizou o roteamento e exigiu reconstruir e reendereçar toda a rede de um dos ambientes, consumindo 3 semanas de trabalho de migração. O planejamento prévio com blocos CIDR não conflitantes (`10.10.0.0/16` e `10.20.0.0/16`) tornou-se obrigatório.</p>
         </div>
 
@@ -2770,7 +2770,7 @@ spring.datasource.hikari.connection-timeout=3000
 spring.datasource.hikari.maximum-pool-size=20</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Blocos CIDR Sobrepostos (Overlap):</strong> Criar a VPC de dev com <code>10.0.0.0/16</code> e a de prod com <code>10.0.0.0/16</code> impede o emparelhamento (VPC Peering) ou ligação via VPN. Para interligá-las no futuro, exige-se NAT complexo ou reconstrução completa de uma das redes.</li>
             <li><strong>Esgotamento de IPs com Kubernetes:</strong> No AWS EKS (usando o VPC-CNI padrão), cada Pod consome um endereço IP real da subnet da VPC. Uma subnet <code>/24</code> (251 IPs úteis) é devorada em minutos quando a aplicação escala réplicas.</li>
@@ -2888,7 +2888,7 @@ spring.datasource.hikari.maximum-pool-size=20</code></pre>
       <article class="topic" id="c2">
         <div class="th"><h3>Sub-rede pública e privada: a distinção que quase ninguém entende</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um banco de dados MongoDB com dados sensíveis de cartões foi provisionado em uma sub-rede que possuía rota direta para um Internet Gateway (sub-rede pública) com IP público atribuído acidentalmente. Em menos de 48 horas, bots de varredura na internet descobriram a porta 27017 aberta e vazaram 120.000 registros de clientes. A correção isolou todos os bancos de dados em sub-redes puramente privadas sem rota para Internet Gateway, roteando tráfego de saída apenas através de um NAT Gateway controlado.</p>
         </div>
 
@@ -3037,7 +3037,7 @@ public class PaymentGatewayClient {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>A Pegadinha Bilionária do NAT Gateway:</strong> O NAT Gateway cobra ~US$ 0,045 por hora de existência + US$ 0,045 por cada Gigabyte processado. Se sua aplicação baixa gigabytes de imagens de um bucket S3 através da rota padrão, esse tráfego passa pelo NAT Gateway e gera faturas monstruosas. <em>Solução obrigatória:</em> crie um <b>VPC Gateway Endpoint</b> gratuito para o S3.</li>
             <li><strong>Single Point of Failure (SPOF) do NAT:</strong> Colocar apenas um NAT Gateway na AZ-A para atender subnets privadas de 3 AZs diferentes. Se a AZ-A cair, todas as instâncias perdem saída para a internet. Tenha 1 NAT Gateway por AZ em produção de missão crítica.</li>
@@ -3155,7 +3155,7 @@ public class PaymentGatewayClient {
       <article class="topic" id="c3">
         <div class="th"><h3>Grupos de segurança: o firewall que segue o recurso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor para testar um endpoint temporário adicionou uma regra no Security Group abrindo a porta 22 (SSH) para `0.0.0.0/0`. A regra foi esquecida por 3 meses até que um ataque de força bruta comprometeu uma máquina EC2, transformando-a em nó de botnet para mineração de criptomoedas. A adoção de regras referenciando IDs de Security Groups de origem (`sg-xxxx`) em vez de blocos de IP e a revogação de SSH público via AWS Systems Manager Session Manager (SSM) blindaram os acessos.</p>
         </div>
 
@@ -3268,7 +3268,7 @@ try (Socket socket = new Socket()) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Abrir <code>0.0.0.0/0</code> na porta 22 (SSH) ou 3389 (RDP):</strong> Bots varrem a internet inteira a cada 15 minutos procurando portas administrativas abertas com ataques de força bruta. Use AWS SSM Session Manager ou VPN corporativa, nunca IP público para gerência.</li>
             <li><strong>O Pesadelo da NACL Stateless:</strong> Se você configurar uma NACL na subnet e liberar a entrada na porta 443, mas esquecer de liberar a saída nas portas efêmeras (1024–65535), a requisição entra mas a resposta nunca volta, causando lentidão bizarra e chamados urgentes de clientes.</li>
@@ -3386,7 +3386,7 @@ try (Socket socket = new Socket()) {
       <article class="topic" id="c4">
         <div class="th"><h3>Balanceador de carga: a porta de entrada</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um Application Load Balancer teve o health check configurado para a rota raiz `/`, que batia no banco de dados para validar a home page inteira. Quando o banco de dados ficou ligeiramente lento, os health checks começaram a dar timeout em 5 segundos. O ALB marcou todas as 16 instâncias saudáveis como 'Unhealthy' ao mesmo tempo e removeu todo o tráfego, gerando indisponibilidade total enquanto as instâncias estavam na verdade funcionais. O apontamento do health check para um endpoint leve dedicado `/health` em memória sem dependências externas resolveu o falso positivo.</p>
         </div>
 
@@ -3481,7 +3481,7 @@ try (Socket socket = new Socket()) {
         include: health,info,metrics</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Deregistration Delay / Connection Draining Desativado:</strong> Ao fazer deploy contínuo, a nuvem desliga o container antigo imediatamente. Requisições de clientes que estavam no meio de um processamento sofrem interrupção abrupta (502 Bad Gateway). Configure <code>deregistration_delay.timeout_seconds = 30</code> para esperar as conexões terminarem.</li>
             <li><strong>Sessão Fixa (Sticky Sessions) em Aplicação State:</strong> Habilitar afinidade de sessão no balanceador para manter usuários amarrados à mesma instância. Isso quebra o auto-scaling: se 100 usuários pesados caírem na instância 1, ela estoura a CPU enquanto as instâncias 2 e 3 ficam ociosas. Guarde sessões no Redis e mantenha a aplicação 100% stateless.</li>
@@ -3599,7 +3599,7 @@ try (Socket socket = new Socket()) {
       <article class="topic" id="c5">
         <div class="th"><h3>DNS, CDN e a borda: encurtando a distância</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um site de streaming de vídeo servia todas as imagens e assets estáticos diretamente de um único bucket S3 em `us-east-1` (Norte da Virgínia). Usuários na América Latina e Europa enfrentavam tempo de carregamento de 2.800ms por página, e a fatura de data transfer out de S3 atingiu R$ 42.000 no mês. A ativação do CloudFront com cache nas bordas (Edge Locations) reduziu a latência percebida para 180ms e derrubou o custo de transferência em 68%.</p>
         </div>
 
@@ -3672,7 +3672,7 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
 &lt;!-- Cache-Control: public, max-age=31536000, immutable --&gt;</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Cachear Dados Sensíveis de Usuários:</strong> Esquecer de configurar <code>Cache-Control: private, no-store</code> em rotas autenticadas (ex: <code>/api/minha-conta</code>). A CDN armazena a resposta da conta do João e entrega na tela da Maria, gerando um incidente gravíssimo de LGPD/segurança.</li>
             <li><strong>TTL de DNS Alto Antes de Migrações:</strong> Manter um TTL de 86400s (24 horas) no registro de DNS e tentar fazer uma migração de emergência de servidores. Como provedores e roteadores respeitam o TTL de 1 dia, a alteração demora 24 horas para propagar no mundo inteiro. <em>Regra:</em> 1 semana antes de migrar, reduza o TTL para 300 segundos!</li>
@@ -3775,7 +3775,7 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Ela mantém réplicas dos conteúdos estáticos em <strong>centenas de Pontos de Presença (Edge Locations) geograficamente próximos dos usuários</strong>. Isso <strong>reduz a latência de carregamento para poucos milissegundos</strong> para o cliente final e <strong>absorve até 95% do volume de requisições na borda</strong>, impedindo que o servidor de origem seja sobrecarregado.</p>
+                  <p class="tf-resposta">Uma CDN mantém cópias em pontos de presença e pode servir conteúdo do local mais próximo, reduzindo viagens à origem quando cacheabilidade, chave, TTL e presença regional favorecem um hit. Não há uma latência nem percentual de absorção universal: conteúdo dinâmico, cache miss e configuração alteram o resultado.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -3790,7 +3790,7 @@ public ResponseEntity&lt;ProdutoDTO&gt; obterProduto(@PathVariable Long id) {
       <article class="topic" id="c6">
         <div class="th"><h3>Conectar a nuvem ao que você já tem: VPN e link dedicado</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa interconectou seu datacenter on-premise à AWS através de um único túnel VPN IPsec sobre internet pública. Durante um rompimento de fibra óptica na operadora de telecomunicações, o túnel caiu por 9 horas, interrompendo a emissão de notas fiscais integradas com o mainframe legado. A reestruturação da topologia implementou redundância com Direct Connect / ExpressRoute dedicado e failover automático para túneis VPN secundários com BGP dinâmico.</p>
         </div>
 
@@ -3897,7 +3897,7 @@ public class ItemBatchRepository {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Blocos de Endereço Sobrepostos entre On-Prem e Nuvem:</strong> Se o datacenter usa <code>10.100.0.0/16</code> e você criou a VPC da nuvem com <code>10.100.0.0/16</code>, nenhum pacote conseguirá trafegar pelo túnel. O roteador não tem como saber para onde mandar o pacote.</li>
             <li><strong>Link Dedicado Sem Backup de VPN:</strong> Direct Connect e ExpressRoute são cabos físicos de fibra sob rodovias e postes. Rompimentos por tratores ou obras ocorrem todos os anos. Se você não configurar uma VPN IPsec com failover automático via BGP como rota secundária, o datacenter ficará isolado.</li>
@@ -4021,7 +4021,7 @@ public class ItemBatchRepository {
       <article class="topic" id="d1">
         <div class="th"><h3>Objeto, bloco e arquivo: escolher errado dói por anos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a decisão</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe montou um bucket de armazenamento de objetos (S3) como sistema de arquivos local nas máquinas EC2 usando s3fs para salvar arquivos de log e banco de dados SQLite. Como armazenamento de objetos não suporta escritas atômicas por append nem lock de arquivos POSIX, as transações corromperam os bancos locais e a latência de IOPS destruiu a performance do sistema. A separação clara entre armazenamento em bloco (EBS) para banco de dados e armazenamento de arquivos distribuído (EFS/NFS) para múltiplos nós normalizou o IOPS.</p>
         </div>
 
@@ -4124,11 +4124,11 @@ public class DocumentStorageService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Bucket Público por Acidente:</strong> Deixar a opção <em>Block Public Access</em> desativada por descuido. Crawlers de segurança varrem a nuvem baixando terabytes de dados privados (RG, CPF, contratos) em buckets abertos. Use SCPs de organização para bloquear bucket público em 100% das contas.</li>
             <li><strong>Salvar Upload no Disco Efêmero do Container:</strong> O container processa o upload de um PDF e grava em <code>/tmp</code>. No dia seguinte, a aplicação sofre auto-scaling ou redeploy e o container antigo é destruído, deletando todos os arquivos dos clientes permanentemente.</li>
-            <li><strong>Montar S3 via FUSE (s3fs):</strong> Usar ferramentas que forçam o S3 a se comportar como disco de sistema operacional. A latência de metadados é absurda, não há atomicidade de lock de arquivos e a performance cai em 95% comparada a usar a API nativa.</li>
+            <li><strong>Tratar storage de objetos como filesystem POSIX:</strong> adaptadores FUSE podem ser úteis em alguns fluxos, mas semântica, latência e concorrência diferem de um disco local. Escolha API e ferramenta conforme o workload; valide operações de rename, lock, listagem, consistência e throughput.</li>
           </ul>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -4242,7 +4242,7 @@ public class DocumentStorageService {
       <article class="topic" id="d2">
         <div class="th"><h3>Classes de armazenamento e ciclo de vida: o dinheiro esquecido</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma plataforma gerava 500 GB de gravações de chamadas por dia e mantinha tudo na classe S3 Standard perpétua. Após 3 anos acumulando 550 TB de dados que quase nunca eram consultados após 30 dias, a conta de armazenamento atingiu R$ 68.000 mensais. A implementação de uma regra de ciclo de vida (Lifecycle Rule) migrando objetos para Standard-IA aos 30 dias, Glacier Instant Retrieval aos 90 dias e Glacier Deep Archive aos 365 dias reduziu a fatura para R$ 9.200/mês, economizando mais de R$ 700.000 ao ano.</p>
         </div>
 
@@ -4350,7 +4350,7 @@ Custo mensal no Deep Archive: US$ 49,50 / mês (Redução de 95,7%!)</code></pre
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>S3 Intelligent-Tiering em Arquivos Minúsculos:</strong> A classe Intelligent-Tiering monitora o acesso e move classes automaticamente, mas cobra uma taxa de monitoramento por cada 1.000 objetos e ignora arquivos menores que 128 KB. Se o bucket contiver milhões de JSONs de 2 KB, a taxa de monitoramento superará a economia de storage!</li>
             <li><strong>Versionamento Ativado Sem Expiração de Versões Não-Correntes:</strong> Ao sobrescrever um arquivo no S3 com versionamento ativo, o arquivo antigo vira uma "Noncurrent Version" que continua ocupando espaço e gerando cobrança integral para sempre.</li>
@@ -4468,7 +4468,7 @@ Custo mensal no Deep Archive: US$ 49,50 / mês (Redução de 95,7%!)</code></pre
       <article class="topic" id="d3">
         <div class="th"><h3>Durabilidade não é disponibilidade — e nenhuma das duas é backup</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe contava com a durabilidade de 99,999999999% (11 noves) do S3 como garantia de segurança dos dados. Uma falha de lógica em um script de limpeza executou um comando `aws s3 rm --recursive` que deletou 400.000 fotos de perfil de usuários da noite para o dia. O S3 apagou os dados com total fidelidade e durabilidade. O time aprendeu da pior forma que durabilidade não protege contra deleção acidental; a ativação de Versionamento, S3 Object Lock e replicação para bucket de backup em conta separada protegeu os ativos.</p>
         </div>
 
@@ -4550,7 +4550,7 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Backup na Mesma Conta AWS:</strong> Ter backups diários maravilhosos do banco de dados salvos em um bucket S3 dentro da mesma conta de produção. Quando a conta é invadida por um ataque com credencial roubada, o invasor deleta o banco RDS e deleta os backups no mesmo minuto.</li>
             <li><strong>O Teste de Restauração Nunca Realizado:</strong> A empresa fez backup religioso durante 3 anos. No dia em que o banco de dados quebrou, foram tentar restaurar o snapshot e descobriram que a chave KMS usada para criptografar o backup havia sido deletada 6 meses antes. <em>Backup sem teste de restauração periódica é apenas uma ilusão.</em></li>
@@ -4674,7 +4674,7 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
       <article class="topic" id="e1">
         <div class="th"><h3>Banco gerenciado: o que você deixa de fazer</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe ativou a janela de manutenção automática padrão do Amazon RDS sem definir horário específico. Às 14h de uma terça-feira em pleno pico de vendas, o provedor aplicou um patch de SO secundário e reiniciou a instância primária do banco. Como a réplica Multi-AZ precisou promover e os pools de conexão da aplicação não tinham retry nem backoff, todos os 3.000 checkouts ativos falharam com erro 500. O agendamento da janela de manutenção para a madrugada de domingo com failover testado em homologação evitou novos sustos.</p>
         </div>
 
@@ -4682,7 +4682,7 @@ resource "aws_s3_bucket_object_lock_configuration" "retention" {
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>Um <b>Banco de Dados Gerenciado (Database-as-a-Service - DBaaS)</b> é um serviço de banco de dados (relacional como PostgreSQL/MySQL ou NoSQL como DynamoDB/Cosmos DB) operado pela infraestrutura automatizada do provedor de nuvem. O provedor cuida de provisionamento de hardware, instalação do sistema operacional, patching de segurança do kernel, backups automáticos contínuos com Point-In-Time Recovery (PITR), monitoramento de integridade e failover automático de réplicas em segundos. O motor SQL permanece 100% padrão, garantindo total compatibilidade com drivers JDBC convencionais.</p>
+          <p>Um <b>Banco de Dados Gerenciado (Database-as-a-Service - DBaaS)</b> é um banco operado parcialmente pelo provedor de nuvem. Em geral, o provedor assume tarefas de infraestrutura e oferece recursos como patching, backups, monitoramento e recuperação, mas quais tarefas existem, como são configuradas e quem continua responsável dependem do produto e do plano contratado. PITR e failover não são universais nem necessariamente instantâneos; confira retenção, RPO/RTO, versões, extensões, limites e compatibilidade do motor. Drivers JDBC podem funcionar, mas isso não significa compatibilidade total de SQL ou de comportamento entre serviços.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Morar em um condomínio com equipe completa de zeladoria e engenharia predial. A administração do prédio cuida das bombas d'água, elevadores, geradores elétricos e manutenção da caixa d'água (infraestrutura do banco). Mas se você esquecer uma torneira aberta dentro do seu apartamento e inundar o chão (uma query sem índice consumindo 100% de CPU), a culpa é estritamente sua — e o zelador não vai entrar para fechar a sua torneira.</p></div>
@@ -4765,7 +4765,7 @@ spring.datasource.hikari.validation-timeout=1500
 spring.datasource.hikari.connection-timeout=3000</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Replication Lag Silencioso na Réplica de Leitura:</strong> Como a replicação para read replicas é assíncrona, se você gravar um pedido no banco primário e redirecionar imediatamente o usuário para a tela de detalhes lendo da réplica, o usuário pode tomar erro 404 (Pedido não encontrado) durante os 200ms de delay da replicação!</li>
             <li><strong>Desabilitar Backups Automáticos:</strong> Ao setar <code>backup_retention_period = 0</code>, a AWS desabilita imediatamente o Point-In-Time Recovery e congela a capacidade de criar réplicas de leitura.</li>
@@ -4844,7 +4844,7 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O PITR permite restaurar a base para qualquer segundo específico dentro da janela de retenção de backups usando os logs de transação.">
-                    <span class="te-letter">A</span> Point-in-Time Recovery (PITR): o RDS combina o snapshot automatizado com os logs de transação WAL contínuos para criar uma nova instância exatamente no estado de 14:31, sem perda de dados históricos.
+                    <span class="te-letter">A</span> Point-in-Time Recovery (PITR): quando suportado e configurado, permite solicitar a restauração para um instante dentro da janela de retenção. Normalmente é criada uma instância restaurada; valide granularidade, atraso, retenção e RPO. Dados gravados depois do instante escolhido não aparecem nessa restauração.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Se o UPDATE já sofreu commit, um ROLLBACK de banco de dados não tem efeito retroativo sobre transações encerradas.">
                     <span class="te-letter">B</span> Comando ROLLBACK executado no painel da AWS para desfazer as alterações registradas na tabela transacional afetada.
@@ -4883,7 +4883,7 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
       <article class="topic" id="e2">
         <div class="th"><h3>Relacional, documento, chave-valor e coluna: escolher pelo padrão de acesso</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rede social em crescimento modelou os feeds de atividades e histórico de visualizações de 5 milhões de usuários em tabelas relacionais com múltiplos JOINs pesados no MySQL. A latência de consulta ultrapassava 12 segundos e o banco esgotou IOPS e CPU. A migração do feed para um banco chave-valor NoSQL de altíssima escala (DynamoDB / Cassandra) com particionamento por usuário derrubou a latência para 6 milissegundos mesmo sob picos de 40.000 requisições por segundo.</p>
         </div>
 
@@ -4894,7 +4894,7 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
           <p>É o critério de seleção de banco de dados baseado estritamente na <b>forma como a aplicação consulta e manipula os dados (Access Patterns)</b>, e <em>nunca</em> por modismos de mercado ou volume abstrato de dados:
           <ul>
             <li><b>Relacional (SQL - PostgreSQL/MySQL):</b> Dados estruturados com relações complexas, múltiplos filtros dinâmicos, relatórios ad-hoc e necessidade inviolável de <b>Transações ACID</b> com integridade referencial estrita.</li>
-            <li><b>Chave-Valor (Key-Value - DynamoDB/Redis):</b> Acesso ultra veloz em milissegundos de um único dígito (Single-Digit Milliseconds) sempre buscando por uma chave primária conhecida (ex: <code>customer_id</code>).</li>
+            <li><b>Chave-valor (Key-Value - DynamoDB/Redis):</b> otimizado para acesso por chave conhecida e baixa latência em muitos workloads. O tempo real depende de região, rede, tamanho da operação, consistência, capacidade e carga; valide com medições do seu padrão de acesso.</li>
             <li><b>Documento (Document - MongoDB/Firestore):</b> Dados semi-estruturados aninhados em árvore hierárquica (JSON), onde todo o documento é lido e persistido em conjunto como uma unidade.</li>
             <li><b>Colunar / Analítico (OLAP - BigQuery/Redshift/ClickHouse):</b> Consultas agregadas (<code>SUM, AVG, COUNT</code>) sobre bilhões de linhas lendo apenas colunas específicas sem travar o processamento transacional.</li>
           </ul></p>
@@ -4908,7 +4908,7 @@ spring.datasource.hikari.connection-timeout=3000</code></pre>
             <p>Serve como régua prática para engenharia de software:</p>
             <ul>
               <li><b>A Regra de Ouro: Comece pelo Relacional:</b> O banco relacional moderno (PostgreSQL com suporte nativo a JSONB) atende com maestria 90% das cargas de trabalho corporativas mundiais.</li>
-              <li><b>Quando adicionar NoSQL:</b> Apenas quando houver um requisito técnico explícito que o relacional não suporte (ex: 100.000 writes/segundo constantes ou latência inferior a 5ms garantida).</li>
+              <li><b>Quando considerar NoSQL:</b> quando o modelo de acesso, escala, latência, disponibilidade ou operação justificar outro compromisso. Números como writes/s e milissegundos são metas a medir no serviço, região, chave de partição e carga escolhidos — nenhum banco garante esses resultados de forma universal.</li>
               <li><b>Cuidado com a Persistência Poliglota Prematura:</b> Colocar um banco diferente para cada serviço em times pequenos multiplica os custos de manutenção, backup e monitoramento por 5x.</li>
             </ul>
           </div>
@@ -4943,7 +4943,7 @@ SELECT * FROM pedidos WHERE detalhes_customizados @> '{"canal": "mobile", "cupom
           <p>Em sistemas distribuídos de banco de dados, você deve escolher entre <b>Consistência (C)</b> e <b>Disponibilidade (A)</b> durante uma Partição de Rede (P):</p>
           <ul>
             <li><b>CP (Consistência + Tolerância a Partição):</b> Se a rede entre dois datacenters falhar, o banco rejeita requisições de escrita para não salvar dados conflitantes (ex: MongoDB, HBase).</li>
-            <li><b>AP (Disponibilidade + Tolerância a Partição):</b> O banco aceita escritas nos dois datacenters isolados para não parar o cliente, mas adota <b>Consistência Eventual (Eventual Consistency)</b>: os dados sincronizam quando a rede voltar (ex: DynamoDB, Cassandra).</li>
+            <li><b>Consistência sob partição:</b> sistemas fazem escolhas diferentes sobre leituras, escritas e disponibilidade durante uma partição. Não classifique um produto inteiro como “AP” sem indicar operação, configuração e nível de consistência; serviços como DynamoDB oferecem opções de leitura e garantias específicas por API.</li>
           </ul>
         </div>
           </div>
@@ -4965,7 +4965,7 @@ SELECT * FROM pedidos WHERE detalhes_customizados @> '{"canal": "mobile", "cupom
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Reimplementar JOINs no Código da Aplicação:</strong> Escolher um banco de documentos NoSQL e descobrir que precisa relacionar Pedido, Cliente e Produto. Como o banco não tem JOIN, o desenvolvedor faz 10 loops no Java chamando o banco 10 vezes. A latência sobe de 5ms para 500ms.</li>
             <li><strong>Hot Partitioning no NoSQL:</strong> Escolher como Partition Key um atributo com baixa cardinalidade (ex: <code>status = ATIVO</code> ou a data <code>2026-09-20</code>). 99% do tráfego atinge o mesmo nó físico do cluster, gerando <em>ProvisionedThroughputExceededException</em> enquanto os outros nós ficam vazios.</li>
@@ -5083,7 +5083,7 @@ SELECT * FROM pedidos WHERE detalhes_customizados @> '{"canal": "mobile", "cupom
       <article class="topic" id="e3">
         <div class="th"><h3>Conexões: o gargalo invisível entre a aplicação e o banco</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java/Spring</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante uma campanha de marketing, o Auto Scaling subiu 80 instâncias de containers. Cada container estava configurado com um pool HikariCP de 50 conexões máximas com o PostgreSQL. O total de 4.000 conexões excedeu o parâmetro `max_connections = 500` do banco. O PostgreSQL passou a recusar novas conexões com `FATAL: remaining connection slots are reserved`, derrubando toda a aplicação. A introdução de um RDS Proxy / PgBouncer centralizado multiplexou as 4.000 conexões da aplicação em apenas 80 conexões reais no banco.</p>
         </div>
 
@@ -5172,7 +5172,7 @@ Teto máximo do Auto-Scaling:       15 réplicas
 # 4. hikaricp.connections.timeout.total -> Quantas requisições tomaram timeout</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Connection Leak (Vazamento de Conexão):</strong> Um desenvolvedor abre uma conexão JDBC manual ou transação com <code>@Transactional</code> que chama uma API externa HTTP lenta de 10 segundos antes de comitar. A conexão de banco fica sequestrada e o pool esgota em segundos. <em>Nunca faça chamadas de rede externas dentro de transações de banco!</em></li>
             <li><strong>Timeout do Pool Maior que o Timeout do HTTP:</strong> Se o <code>connection-timeout</code> do Hikari for de 30s e o timeout do balanceador for 10s, o cliente desiste da requisição, mas a thread da aplicação continua 20 segundos bloqueada disputando conexão à toa.</li>
@@ -5194,7 +5194,7 @@ Teto máximo do Auto-Scaling:       15 réplicas
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>O Custo de uma Conexão no Banco</b>
-                    <p>Cada conexão aberta em um banco relacional como PostgreSQL ou MySQL consome processos dedicados na CPU e de 5MB a 10MB de memória RAM no servidor do banco.</p>
+                    <p>Em alguns bancos, cada conexão corresponde a um processo ou sessão no servidor, mas memória e custo variam por produto, configuração e carga. Dimensione o limite total de conexões e meça; não trate uma faixa de MB como constante universal.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -5290,7 +5290,7 @@ Teto máximo do Auto-Scaling:       15 réplicas
       <article class="topic" id="e4">
         <div class="th"><h3>Cache: a otimização mais eficaz e mais perigosa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cluster Redis em nuvem que fazia cache de todo o catálogo de produtos reiniciou abruptamente após uma falha de hardware. No segundo seguinte, todas as 25.000 requisições simultâneas que bateram no cache e receberam cache miss foram repassadas diretamente ao banco de dados relacional primário (efeito manada / cache avalanche). O banco entrou em colapso em 10 segundos com CPU a 100%. A adição de TTLs aleatórios (jitter) e padrões de Circuit Breaker com proteção de mutex/lock para repopulação de cache protegeu o banco de dados.</p>
         </div>
 
@@ -5315,7 +5315,7 @@ Teto máximo do Auto-Scaling:       15 réplicas
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Em sistemas de comércio eletrônico, 95% das consultas de catálogo leem exatamente os mesmos 50 produtos mais populares. Fazer o banco relacional executar queries SQL repetitivas para esses produtos milhares de vezes por segundo consome CPU e memória sem nenhuma necessidade. O cache em memória responde a 100.000 requisições por segundo com latência de 1ms sem tocar no banco.</p>
+            <p><b>Cenário hipotético:</b> uma loja percebe que leituras repetidas de produtos populares pressionam o banco. Um cache pode servir parte delas sem consultar a origem em cada pedido, desde que haja política de expiração/invalidação e o nível de frescor seja aceitável. Taxa de hit, throughput e latência precisam ser medidos com o tamanho dos valores e a topologia reais.</p>
           </div>
         </div>
           </div>
@@ -5382,7 +5382,7 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Cache Tratado como Fonte da Verdade:</strong> Salvar dados críticos apenas no Redis sem persistência garantida. O Redis sofre reboot de manutenção e perde os dados em memória. <em>Cache é por definição volátil: se sumir, seu sistema deve continuar funcionando corretamente, apenas mais lento.</em></li>
             <li><strong>Chaves Sem TTL (Vazamento de Memória):</strong> Gravar milhões de chaves no Redis sem definir tempo de expiração. Em poucas semanas o cluster atinge <code>maxmemory</code>. Se a política de eviction for <code>noeviction</code>, o Redis rejeita qualquer nova escrita lançando <code>OOM command not allowed when used memory &gt; 'maxmemory'</code>.</li>
@@ -5506,7 +5506,7 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
       <article class="topic" id="f1">
         <div class="th"><h3>Identidade é o novo perímetro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma conta de desenvolvedor corporativo na nuvem não tinha autenticação multifator (MFA) ativada. A senha foi vazada em um dump de credenciais públicas na internet. Criminosos logaram no console AWS na madrugada, criaram 80 instâncias EC2 do tipo GPU para mineração de criptomoedas em 5 regiões diferentes e geraram uma dívida de US$ 48.000 em 48 horas. A imposição mandatória de MFA via SCP (Service Control Policy) e alerta imediato de GuardDuty no AWS Organizations bloqueou o vetor de invasão.</p>
         </div>
 
@@ -5608,7 +5608,7 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Políticas com Curingas Perigosos:</strong> Atribuir <code>"Action": "*"</code> e <code>"Resource": "*"</code> em roles de microsserviços "apenas para testar na sprint". O desenvolvedor esquece e essa política sobe para produção, transformando qualquer injeção de vulnerabilidade no app em comprometimento total da conta.</li>
             <li><strong>Ignorar os Logs do CloudTrail:</strong> O CloudTrail grava todas as chamadas de API executadas na conta. Se o time não enviar esses logs para o CloudWatch/Datadog com alertas de tentativas de acesso negado (AccessDenied) anormais, um ataque de enumeração de privilégios passará despercebido durante meses.</li>
@@ -5726,7 +5726,7 @@ public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
       <article class="topic" id="f2">
         <div class="th"><h3>Identidade de recurso: como acabar com a chave no código</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um programador cometeu o erro de incluir um par de chaves estáticas de acesso (`AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`) em um repositório público no GitHub. Em menos de 9 minutos, bots automatizados vasculharam o commit e utilizaram as credenciais com privilégios de Admin para criar recursos maliciosos. A revogação imediata das credenciais e a adoção de IAM Roles para instâncias EC2 / Workload Identity no Kubernetes eliminaram 100% das credenciais estáticas do código.</p>
         </div>
 
@@ -5844,7 +5844,7 @@ public class DatabaseSecretConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>IMDSv1 Vulnerável a SSRF:</strong> Permitir o uso do Instance Metadata Service v1 legado no EC2. Se a sua aplicação tiver uma falha de Server-Side Request Forgery (SSRF), o hacker faz a aplicação requisitar <code>http://169.254.169.254</code> e rouba o token da Role. <em>Obrigue sempre IMDSv2 com token de sessão e hop-limit = 1!</em></li>
             <li><strong>Uma Única IAM Role para Todos os Microsserviços:</strong> Criar uma "role-geral-da-empresa" compartilhada entre o serviço de catálogo e o serviço financeiro. Se o serviço de catálogo for invadido, o atacante ganha acesso aos dados financeiros.</li>
@@ -5962,7 +5962,7 @@ public class DatabaseSecretConfig {
       <article class="topic" id="f3">
         <div class="th"><h3>Criptografia: em repouso, em trânsito, e quem guarda a chave</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa configurou a criptografia de seus volumes EBS e bancos de dados usando uma chave gerenciada pelo cliente (CMK) no AWS KMS. Durante uma faxina de governança, um engenheiro deletou a chave KMS acreditando que ela não estava em uso. Imediatamente, todas as instâncias que precisavam reiniciar falharam e o banco de dados ficou inacessível, pois era impossível descriptografar os dados em repouso sem a chave. A proteção contra deleção com período de espera de 30 dias e políticas estritas de uso de KMS tornaram-se padrão obrigatório.</p>
         </div>
 
@@ -6051,7 +6051,7 @@ resource "aws_kms_alias" "pedidos_alias" {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Deletar a Chave KMS com Backups Ativos:</strong> Agendar a exclusão de uma chave KMS esquecendo que os snapshots diários do banco RDS dos últimos 5 anos foram criptografados com ela. Quando a chave é expurgada do KMS, todos os backups do passado se tornam 100% irrecuperáveis instantaneamente.</li>
             <li><strong>Gargalo e Custo de Chamadas ao KMS:</strong> Fazer chamadas diretas ao KMS a cada linha inserida em um loop de ETL processando 10 milhões de registros. Cada chamada ao KMS custa dinheiro e a API possui limites estritos de RPS (Request Per Second), gerando <code>ThrottlingException</code> e custos inesperados. Use Data Key Caching no SDK!</li>
@@ -6169,7 +6169,7 @@ resource "aws_kms_alias" "pedidos_alias" {
       <article class="topic" id="f4">
         <div class="th"><h3>Organizar contas: a fronteira mais forte que existe</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa mantinha os ambientes de desenvolvimento, homologação e produção dentro da mesmíssima conta AWS, separados apenas por tags e nomes de recursos. Durante um teste de carga em homologação, o script consumiu todo o limite de cota de rede e IOPS da conta, afetando diretamente as instâncias de produção que compartilhavam os mesmos limites. A segregação em contas AWS separadas sob o AWS Organizations isolou totalmente o raio de explosão (blast radius) entre ambientes.</p>
         </div>
 
@@ -6269,7 +6269,7 @@ resource "aws_kms_alias" "pedidos_alias" {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Explosão de Contas Sem Automação (Account Sprawl):</strong> Criar 50 contas manuais no clique de console sem infraestrutura automatizada (Landing Zone / Terraform / AWS Control Tower). O time perde o controle de onde os recursos estão e a nuvem paralela se instala.</li>
             <li><strong>SCPs que Bloqueiam Serviços Globais:</strong> Escrever uma regra de restrição de região que esquece de colocar <code>iam:*</code>, <code>route53:*</code> e <code>cloudfront:*</code> na lista de exceções. Como esses serviços são globais (não têm região fixa), a SCP bloqueia a criação de usuários e o DNS corporativo cai.</li>
@@ -6393,7 +6393,7 @@ resource "aws_kms_alias" "pedidos_alias" {
       <article class="topic" id="g1">
         <div class="th"><h3>Fila e tópico: a diferença que muda o desenho inteiro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe utilizou uma fila SQS direta no envio de eventos de novos cadastros de clientes. Quando os times de marketing e de análise de crédito precisaram consumir os mesmos dados, o primeiro serviço que lia a mensagem a consumia e apagava da fila, deixando os outros times no escuro. A reestruturação da arquitetura para o padrão Fanout publicando os eventos em um tópico SNS conectado a múltiplas filas SQS independentes permitiu que cada consumidor tivesse sua própria fila desacoplada.</p>
         </div>
 
@@ -6509,7 +6509,7 @@ public class PedidosQueueConsumer {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Visibility Timeout Mais Curto que o Tempo de Processamento:</strong> O SQS está configurado com Visibility Timeout de 15 segundos, mas a geração de um relatório em PDF leva 25 segundos. No segundo 16, a mensagem reaparece na fila, um segundo container a consome e o mesmo PDF é gerado duas vezes simultaneamente!</li>
             <li><strong>Tópico Sem Fila Intermediária:</strong> Publicar eventos em um Tópico SNS configurado para chamar diretamente endpoints HTTP dos consumidores. Se o servidor do consumidor estiver reiniciando no instante do disparo, a notificação se perde para sempre. <em>Sempre coloque uma fila SQS na frente de cada consumidor!</em></li>
@@ -6627,7 +6627,7 @@ public class PedidosQueueConsumer {
       <article class="topic" id="g2">
         <div class="th"><h3>Entrega ao menos uma vez: por que idempotência não é opcional</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o mais esquecido</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fila SQS configurada com visibilidade padrão de 30 segundos disparava o processamento de pedidos que demorava 45 segundos para finalizar. Como a mensagem reaparecia na fila antes de ser deletada, um segundo consumidor lia a mesma mensagem e disparava uma nova cobrança no cartão do cliente, gerando 1.500 cobranças duplicadas em um final de semana. O ajuste do Visibility Timeout para cobrir o pior caso somado à verificação estrita de chave de idempotência no banco de dados sanou o problema.</p>
         </div>
 
@@ -6635,7 +6635,7 @@ public class PedidosQueueConsumer {
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>É a garantia matemática e computacional de praticamente todos os sistemas de mensageria em escala de nuvem: <b>At-Least-Once Delivery (Entrega Ao Menos Uma Vez)</b>. Por causa das falhas de rede inerentes a ambientes distribuídos (onde um ACK pode ser perdido mesmo após o processamento bem-sucedido), a nuvem garante que a mensagem <em>nunca será perdida</em>, mas <b>não garante que ela será entregue apenas uma única vez</b>. A sua mensagem <b>vai</b> ser entregue duplicada em produção. A <b>Idempotência</b> é a propriedade do consumidor de processar a mesma mensagem 10 vezes consecutivas gerando exatamente o mesmo efeito final de se tivesse processado apenas uma vez.</p>
+                    <p>At-least-once significa que o mecanismo pode repetir a entrega até haver confirmação segundo sua configuração e contrato; a mensagem pode ser processada mais de uma vez. Isso reduz certos riscos de perda, mas não significa que “nunca será perdida”: falhas, retenção, configuração e limites do serviço importam. O consumidor deve tolerar redelivery, por exemplo registrando uma chave de operação na mesma transação que aplica o efeito de negócio.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>Analogia do mundo real:</b> Um botão de elevador ou confirmação de presença em evento. Apertar o botão do 5º andar 1 vez acende a luz e chama o elevador. Apertar o botão 15 vezes seguidas com pressa não faz 15 elevadores chegarem nem quebra o motor: o comando é naturalmente idempotente. Por outro lado, um caixa eletrônico que cospe R$ 100,00 toda vez que o sinal da rede cai não é idempotente: o cliente sai milionário e o banco quebra.</p></div>
@@ -6651,7 +6651,7 @@ public class PedidosQueueConsumer {
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>A ilusão do "Exactly-Once Delivery" teórico é impossível sem travar todos os nós da rede em protocolos lentos de Two-Phase Commit (2PC). Em sistemas de pagamento reais, transações duplicadas significam cobranças indevidas no cartão de crédito do cliente, envios duplicados de mercadorias físicas de estoque e faturas fiscais emitidas duas vezes gerando autuações da Receita Federal.</p>
+                    <p>Garantias exactly-once têm escopo: um broker ou stream pode coordenar etapas dentro do próprio sistema, mas não torna automaticamente atômicos efeitos em um banco, gateway de pagamento e serviço externo. Em pagamentos, modele uma chave de idempotência e reconciliação com o provedor; não suponha que 2PC seja a única alternativa para coordenar sistemas.</p>
           </div>
         </div>
 
@@ -6729,7 +6729,7 @@ public class IdempotencyRepository {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Registrar Idempotência Fora da Transação de Banco:</strong> Registrar a chave no Redis ou na tabela antes de executar o método de negócio. A aplicação quebra no meio do caminho por falta de memória: a chave ficou registrada no Redis, mas o pedido nunca foi faturado e o cliente fica sem mercadoria para sempre. <em>A gravação da chave de idempotência e a regra de negócio DEVEM ocorrer na MESMA transação ACID do banco!</em></li>
             <li><strong>Efeitos Colaterais em APIs Externas Sem Idempotency Key:</strong> A aplicação chama o gateway de pagamentos da Cielo/Stripe. Se o método sofrer reentrega, a cobrança se repete no cartão. Envie sempre um header <code>Idempotency-Key: &lt;event-id&gt;</code> na requisição HTTP externa para que a Stripe recuse a duplicação na ponta dela!</li>
@@ -6782,7 +6782,7 @@ public class IdempotencyRepository {
                   <span class="tr-icon">💡</span>
                   <div>
                     <b>Modelo Mental de Decisão Técnica:</b>
-                    <p>Em arquiteturas distribuídas na nuvem, nunca assuma garantias mágicas de 'exatamente uma vez' (Exactly-Once). <strong>Projete todo consumidor para ser idempotente por padrão!</strong></p>
+                    <p>Em arquiteturas distribuídas, leia a garantia do serviço e identifique seu escopo. Consumidores que podem receber redelivery devem prever duplicatas — frequentemente com idempotência, chave de operação e tratamento de resultado incerto — mas o desenho depende da semântica da fila e do efeito de negócio.</p>
                   </div>
                 </div>
               </div>
@@ -6807,7 +6807,7 @@ public class IdempotencyRepository {
                 <p class="te-instrucao">O que acontecerá quando outro worker pegar a mesma mensagem e como o sistema deve estar preparado para evitar cobrança duplicada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Filas distribuídas como SQS garantem entrega at-least-once. O consumidor deve ser idempotente para tratar reprocessamentos com segurança.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A fila pode entregar novamente conforme sua semântica e configuração. O consumidor precisa tolerar duplicatas e usar um mecanismo de deduplicação/idempotência que cubra o efeito de negócio.">
                     <span class="te-letter">A</span> A mensagem será reprocessada; para evitar duplicidade, o consumidor deve verificar se o ID já existe usando chave de idempotência.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O SQS não sabe se o worker concluiu o trabalho; sem o recebimento do deleteMessage, a mensagem volta à fila após o Visibility Timeout.">
@@ -6832,7 +6832,7 @@ public class IdempotencyRepository {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta"><strong>At-Least-Once Delivery</strong> significa que a fila garante que a mensagem nunca será perdida, mas pode ser entregue <strong>mais de uma vez</strong> caso ocorram timeouts ou falhas de rede antes do consumidor confirmar a exclusão (ACK).<br>Por isso, a <strong>Idempotência</strong> é obrigatória: o consumidor deve rastrear os IDs de mensagens processadas para garantir que execuções duplicadas não gerem cobranças, reservas de estoque ou registros repetidos.</p>
+                  <p class="tf-resposta"><strong>At-least-once</strong> permite redelivery até a confirmação, de acordo com o contrato e a configuração da fila; por isso, um consumidor pode receber uma mensagem mais de uma vez. A aplicação deve tratar repetição: por exemplo, salvar um identificador único da operação e aplicar a mudança de negócio na mesma transação, quando ambos vivem no mesmo banco. Isso evita duplicidade nesse escopo, mas não cria uma transação global com serviços externos.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -6847,7 +6847,7 @@ public class IdempotencyRepository {
       <article class="topic" id="g3">
         <div class="th"><h3>Fila de mensagens mortas e reprocessamento</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma mensagem com payload JSON malformado travou o consumidor de uma fila SQS em produção: a cada leitura, a aplicação sofria erro fatal, a mensagem retornava para a fila e era consumida de novo no segundo seguinte, gerando 800.000 erros em 3 horas e bloqueando o processamento de mensagens normais. A vinculação de uma Dead Letter Queue (DLQ) com `maxReceiveCount = 3` isolou a mensagem venenosa automaticamente na terceira tentativa e manteve o fluxo em operação normal.</p>
         </div>
 
@@ -6928,7 +6928,7 @@ public void consumirPedido(String payload) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>DLQ Sem Alarme no CloudWatch/Datadog:</strong> Criar a DLQ e não criar um alarme para a métrica <code>ApproximateNumberOfMessagesVisible &gt; 0</code>. Mensagens de pedidos falham e se acumulam na DLQ por 14 dias até serem expurgadas silenciosamente sem nenhum desenvolvedor ser notificado. O negócio só descobre pelo Procon.</li>
             <li><strong>Redrive Sem Correção do Código:</strong> Um desenvolvedor vê 5.000 mensagens na DLQ e clica no botão "Start DLQ Redrive" antes de publicar o fix do bug no ar. As 5.000 mensagens voltam para a fila primária, falham 3 vezes novamente e retornam para a DLQ, gastando dinheiro de API à toa.</li>
@@ -7046,7 +7046,7 @@ public void consumirPedido(String payload) {
       <article class="topic" id="g4">
         <div class="th"><h3>Gateway de API: a porta de entrada dos serviços</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de backend interno foi exposto diretamente na internet sem proteção de rate limiting. Um cliente parceiro teve um bug em seu sistema e disparou 40.000 requisições por segundo para a API, esgotando todas as threads do servidor e gerando queda do serviço. A colocação de um API Gateway gerenciado na frente do microsserviço com políticas de throttling, rate limiting de 100 req/s por API Key e autenticação centralizada protegeu a estabilidade do backend.</p>
         </div>
 
@@ -7143,7 +7143,7 @@ public class SecurityHeaderFilter implements GlobalFilter, Ordered {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Lógica de Negócio Injetada no Gateway:</strong> Colocar regras complexas de validação de dados ou consultas a bancos de dados dentro de scripts no API Gateway. O gateway se transforma em um "monolito de borda" impossível de testar e com deployment acoplado. Mantenha o gateway focado em preocupações estritamente transversais de rede e auth.</li>
             <li><strong>Microsserviços Acessíveis sem Passar pelo Gateway:</strong> Deixar os microsserviços internos com IPs públicos abertos. Atacantes simplesmente ignoram o gateway e chamam a API interna diretamente sem rate limiting e sem autenticação. <em>Mantenha os microsserviços em subnets estritamente privadas!</em></li>
@@ -7267,7 +7267,7 @@ public class SecurityHeaderFilter implements GlobalFilter, Ordered {
       <article class="topic" id="h1">
         <div class="th"><h3>Log, métrica e rastreamento: três perguntas diferentes</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um incidente com chamadas falhando entre 6 microsserviços distribuídos, o time de engenharia gastou 5 horas abrindo painéis de logs de cada serviço individualmente tentando cruzar horários para entender onde a requisição havia quebrado. A ausência de distributed tracing impedia descobrir a causa raiz. A implementação de OpenTelemetry com injeção de Trace ID e Span ID em todos os cabeçalhos HTTP permitiu rastrear o caminho exato de cada requisição em menos de 10 segundos no painel de observabilidade.</p>
         </div>
 
@@ -7375,7 +7375,7 @@ public class ProcessadorPagamentoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Logs Textuais Não Estruturados:</strong> Emitir mensagens livres como <code>log.info("Erro no pedido " + id)</code>. É impossível fazer queries como <code>SELECT count(*) WHERE erro = 'TIMEOUT'</code> no CloudWatch Insights ou Loki. <em>Emita sempre logs em formato JSON estruturado com campos nominais!</em></li>
             <li><strong>Esquecer de Propagar Contexto em Threads Assíncronas:</strong> Ao usar <code>CompletableFuture.supplyAsync()</code> ou <code>@Async</code> em Java, a Thread local do MDC (Mapped Diagnostic Context) é perdida, e os logs disparados na thread paralela saem com <code>traceId</code> vazio, quebrando a correlação no meio do caminho.</li>
@@ -7493,7 +7493,7 @@ public class ProcessadorPagamentoService {
       <article class="topic" id="h2">
         <div class="th"><h3>Alarme que serve: sintoma, não causa</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe de infraestrutura configurou 45 alarmes baseados em causas pontuais ('CPU acima de 85% por 1 minuto', 'disco a 80%', 'uso de memória a 75%'). Os engenheiros recebiam mais de 120 mensagens no PagerDuty e Slack por dia, criando fadiga de alertas extrema. Durante uma queda real onde a taxa de erro 5xx subiu para 18% e as vendas zeraram, o alerta real foi ignorado no meio do ruído. A reestruturação de alarmes focando nos 4 sinais de ouro (taxa de erro, latência P99, tráfego e saturação de cliente) eliminou falsos positivos.</p>
         </div>
 
@@ -7588,7 +7588,7 @@ Resultado: Dispara apenas quando o cliente sofre. Resposta imediata em 5 minutos
         http.server.requests: 500ms, 1000ms, 2000ms</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Alarme Sem Runbook (Guia de Ação):</strong> O alarme acorda o engenheiro às 03h dizendo apenas "Memória em 85%". O engenheiro entra em pânico e não sabe se deve reiniciar a aplicação, escalar réplicas ou se o comportamento é esperado. <em>Todo alarme DEVE conter na descrição o link direto para o passo-a-passo exato de resolução (Runbook)!</em></li>
             <li><strong>Janela de Avaliação Curta Demais:</strong> Configurar o alarme para 1 único período de 30 segundos. Um pico legítimo de 35 segundos gera um alerta que se resolve sozinho no minuto seguinte, antes mesmo do plantonista conseguir desbloquear o notebook. Use no mínimo 3 períodos de avaliação.</li>
@@ -7706,7 +7706,7 @@ Resultado: Dispara apenas quando o cliente sofre. Resposta imediata em 5 minutos
       <article class="topic" id="h3">
         <div class="th"><h3>Custo da observabilidade: o serviço que vira o mais caro</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa configurou todos os microsserviços para emitir logs no nível `DEBUG` com retenção ilimitada no Amazon CloudWatch Logs. Em um único mês, o volume de ingestão de logs ultrapassou 45 Terabytes, resultando em uma fatura de CloudWatch de R$ 38.000, que superou o custo de todas as instâncias de computação da empresa somadas. A redução do nível para `INFO` em produção, a exclusão de rotas de health check da coleta e o ciclo de retenção configurado para 14 dias derrubaram a fatura em 82%.</p>
         </div>
 
@@ -7783,7 +7783,7 @@ public ResponseEntity&lt;OrderDTO&gt; buscarPedido(@PathVariable Long id) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Log de Payload Completo de Requisições:</strong> Imprimir o corpo JSON inteiro de requisições que contenham fotos ou payloads de 5 MB no log. Além do custo astronômico de ingestão por gigabyte no CloudWatch, isso viola normas de privacidade e LGPD caso trafegue senhas ou cartões.</li>
             <li><strong>Deixar Nível DEBUG Esquecido em Produção:</strong> Ligar <code>logging.level.org.springframework=DEBUG</code> ou <code>org.hibernate.SQL=DEBUG</code> para investigar um bug em produção na sexta-feira e esquecer ligado no fim de semana. Na segunda-feira de manhã, o CloudWatch ingeriu 500 GB de logs desnecessários gerando uma fatura surpresa.</li>
@@ -7907,7 +7907,7 @@ public ResponseEntity&lt;OrderDTO&gt; buscarPedido(@PathVariable Long id) {
       <article class="topic" id="i1">
         <div class="th"><h3>Por que clicar no painel não escala</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma equipe de infraestrutura configurou manualmente todas as regras de VPC, sub-redes, rotas e balanceadores de carga clicando no console da AWS para lançar um produto. Um ano depois, foi necessário criar um ambiente espelho para homologação e desastre em outra região. Nenhum engenheiro lembrava quais portas e flags haviam sido configuradas, gerando 6 semanas de tentativas e erros e falhas inexplicáveis. A adoção de Terraform para declarar 100% da topologia como código permitiu recriar ambientes inteiros em 12 minutos.</p>
         </div>
 
@@ -7963,7 +7963,7 @@ aws ec2 authorize-security-group-ingress --port 8080 ...
           <div class="topic-split-right">
             <div class="pilar-card p-usar">
           <div class="pilar-header"><span class="pilar-icon">🛠️</span> <b>3. Como usar / Como aplicar?</b></div>
-          <p>Configuração mandatória de Backend Remoto com State Locking no Terraform (S3 + DynamoDB):</p>
+          <p>Exemplo de backend remoto S3 com locking nativo. State locking evita que operações concorrentes alterem o mesmo estado ao mesmo tempo; habilite o backend e limite cuidadosamente quem pode ler ou gravar o arquivo:</p>
           <pre><code>terraform {
   required_version = ">= 1.8.0"
   
@@ -7971,7 +7971,7 @@ aws ec2 authorize-security-group-ingress --port 8080 ...
     bucket         = "empresa-terraform-state-prod"
     key            = "orderflow/core-infrastructure.tfstate"
     region         = "sa-east-1"
-    dynamodb_table = "terraform-state-locks" # Trava concorrente: impede 2 pessoas aplicando juntas!
+    use_lockfile = true # locking nativo do backend S3 em versões atuais do Terraform
     encrypt        = true
   }
 }</code></pre>
@@ -8012,11 +8012,11 @@ public class InfrastructureHealthCheckConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Desvio de Configuração Manual (Configuration Drift):</strong> O desenvolvedor faz um "ajuste rápido de emergência" pelo console web às 23h abrindo uma porta no firewall. No dia seguinte, a esteira de CI/CD roda o Terraform oficial: o Terraform detecta o desvio e desfaz a alteração manual, derrubando o fix de emergência! <em>Toda e qualquer mudança deve ser feita no código via PR!</em></li>
             <li><strong>Monolito de Estado (Blast Radius Excessivo):</strong> Colocar VPC, Kubernetes, Bancos de Dados e DNS em um único arquivo de estado gigante com 5.000 linhas. Um pequeno erro de digitação ao alterar um registro de DNS pode desencadear um plano de destruição da VPC inteira! <em>Separe estados por camadas (ex: rede-base, dados, aplicacao).</em></li>
-            <li><strong>Aplicar Terraform sem State Lock:</strong> Dois engenheiros ou duas esteiras de CI/CD executando <code>terraform apply</code> simultaneamente sem trava no DynamoDB. O arquivo de estado é corrompido, gerando recursos órfãos impossíveis de gerenciar.</li>
+          <li><strong>Aplicar Terraform sem state lock:</strong> operações concorrentes podem escrever sobre o mesmo estado e produzir divergências. Use o mecanismo de locking suportado pelo backend e mantenha versionamento/recuperação; locking reduz concorrência, mas não impede todos os erros de configuração.</li>
           </ul>
         </div>
           <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
@@ -8130,7 +8130,7 @@ public class InfrastructureHealthCheckConfig {
       <article class="topic" id="i2">
         <div class="th"><h3>Ferramentas: agnóstica ou nativa do provedor</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa adotou uma ferramenta de IaC proprietária com templates altamente acoplados a um provedor específico. Quando a diretoria assinou um contrato estratégico exigindo hospedar réplicas de contingência em um segundo provedor de nuvem, toda a equipe precisou descartar os templates e reescrever a automação do zero. A padronização em ferramentas agnósticas da indústria como Terraform/OpenTofu permitiu reutilizar módulos, boas práticas de revisão e pipelines de validação consistentes entre provedores.</p>
         </div>
 
@@ -8206,7 +8206,7 @@ public class InfrastructureHealthCheckConfig {
   -Dspring-boot.build-image.imageName=empresa/orderflow-service:v1.2.0</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Usar Módulos Públicos de Terceiros sem Auditoria:</strong> Baixar um módulo comunitário do Terraform Registry que cria dezenas de recursos secundários desnecessários (como NAT Gateways extras e instâncias superdimensionadas) inflando a fatura silenciosamente.</li>
             <li><strong>Tentativa de Abstração Genérica Multi-Cloud:</strong> Tentar escrever um módulo Terraform que cria "um bucket genérico" para AWS e Azure ao mesmo tempo. O código fica poluído com condicionais complexas que pegam o pior dos dois mundos. Escreva módulos limpos dedicados para cada provedor.</li>
@@ -8242,7 +8242,7 @@ public class InfrastructureHealthCheckConfig {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>O Arquivo de Estado (Terraform State - tfstate)</b>
-                    <p>O Terraform mantém um arquivo JSON (`terraform.tfstate`) mapeando o código aos recursos reais na nuvem. Deve ser guardado em storage remoto seguro (S3 com criptografia e DynamoDB para State Locking).</p>
+          <p>O Terraform mantém um arquivo de estado que associa a configuração aos recursos gerenciados. Em AWS, um backend S3 pode armazená-lo remotamente e usar locking nativo com <code>use_lockfile = true</code>; o mecanismo antigo via DynamoDB está depreciado. Proteja permissões e segredos, habilite recuperação adequada e valide a configuração da versão de Terraform usada.</p>
                   </div>
                 </div>
               </div>
@@ -8287,8 +8287,8 @@ public class InfrastructureHealthCheckConfig {
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Versionar o tfstate no Git é uma péssima prática: expõe segredos em texto puro e não fornece trava atômica distribuída durante execuções concorrentes.">
                     <span class="te-letter">A</span> Git LFS para versionar o arquivo terraform.tfstate dentro do repositório Git com comandos git pull obrigatórios antes de cada apply executado pelos desenvolvedores.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Remote Backend com S3 e DynamoDB garante bloqueio atômico durante o apply, prevenindo corrupção e divergências de estado.">
-                    <span class="te-letter">B</span> Remote Backend no S3 com versionamento e criptografia, aliado a DynamoDB para State Locking (bloqueio distribuído que impede execuções concorrentes).
+          <button class="te-opt" type="button" data-correct="true" data-rationale="O backend remoto centraliza o estado e o locking nativo evita operações concorrentes no mesmo arquivo. Isso reduz um tipo de conflito, mas ainda são necessários permissões mínimas, versionamento/recuperação e revisão do plano.">
+                    <span class="te-letter">B</span> Backend remoto no S3 com locking nativo do Terraform, versionamento e permissões restritas para o estado.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Compartilhamentos de rede locais não garantem bloqueio confiável e expõem o arquivo a corrupção por acessos simultâneos.">
                     <span class="te-letter">C</span> Compartilhamento do arquivo tfstate em pasta de rede NFS montada localmente nas estações de trabalho de todos os engenheiros da equipe de desenvolvimento.
@@ -8309,7 +8309,7 @@ public class InfrastructureHealthCheckConfig {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">1. <strong>State Locking (via DynamoDB):</strong> impede que dois pipelines ou desenvolvedores executem alterações simultâneas que corrompam o estado da infraestrutura.<br>2. <strong>Proteção e Criptografia:</strong> o `.tfstate` contém o mapeamento completo dos recursos e pode incluir segredos e senhas geradas em texto plano, exigindo bucket remoto privado (ex: S3) com criptografia KMS e versionamento.</p>
+        <p class="tf-resposta">1. <strong>State locking:</strong> evita que duas operações concorrentes escrevam o mesmo estado; no backend S3 atual, use o lockfile nativo do Terraform. O locking não torna seguro executar qualquer plano nem resolve drift.<br>2. <strong>Proteção:</strong> o state descreve os recursos e pode conter valores sensíveis. Restrinja leitura e escrita, use armazenamento remoto cifrado e configure recuperação/versionamento conforme a política da equipe.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -8324,7 +8324,7 @@ public class InfrastructureHealthCheckConfig {
       <article class="topic" id="i3">
         <div class="th"><h3>Esteira de entrega: do commit ao ambiente</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor realizou deploy manual conectando por SSH no servidor de produção e rodando `git pull` e `mvn package`. O build falhou por falta de memória RAM durante a compilação, deixando o processo Java antigo morto e a pasta de produção com arquivos inconsistentes. O serviço ficou fora do ar por 2 horas. A implantação de uma esteira de CI/CD automatizada com compilação isolada, execução de testes unitários e deploy blue/green sem intervenção humana eliminou falhas manuais.</p>
         </div>
 
@@ -8368,7 +8368,7 @@ public class InfrastructureHealthCheckConfig {
           </div>
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
-            <p>Os estudos do DORA (DevOps Research and Assessment) comprovam estatisticamente: equipes de alta performance que implantam alterações múltiplas vezes por dia em pequenos lotes têm <b>7 vezes menos falhas em produção</b> e se recuperam de incidentes <b>2.600 vezes mais rápido</b> do que empresas que realizam "janelas de deploy trimestrais na virada de mês". Deploys pequenos reduzem drasticamente o raio de risco.</p>
+                    <p>Pesquisas do DORA comparam grupos de desempenho em métricas de entrega e estabilidade; os números variam conforme período, amostra e definição de cada métrica. Mudanças menores tendem a tornar revisão, diagnóstico e rollback mais localizados, mas não garantem estabilidade: testes, observabilidade, controles de deploy e recuperação continuam necessários.</p>
           </div>
         </div>
           </div>
@@ -8449,7 +8449,7 @@ class PedidoIntegrationTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Reconstruir a Imagem por Ambiente (Anti-padrão Mortal):</strong> Compilar um jar para homologação e rodar outro build Maven separado para produção. Como dependências externas transitivas podem ter sido atualizadas nesse intervalo, a versão de produção recebe código diferente do que foi validado em homologação! <em>Promova SEMPRE a mesma imagem com tag de commit SHA!</em></li>
             <li><strong>Usar a Tag <code>latest</code> em Produção:</strong> Apontar os deployments do Kubernetes para <code>image: orderflow:latest</code>. Se o deploy falhar, o Kubernetes não consegue identificar o que mudou nem fazer rollback determinístico. Use sempre tags imutáveis com o hash do Git commit.</li>
@@ -8567,7 +8567,7 @@ class PedidoIntegrationTest {
       <article class="topic" id="i4">
         <div class="th"><h3>Marcação e governança: como saber o que é de quem</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma auditoria financeira na nuvem identificou R$ 45.000 mensais em custos de instâncias de máquinas virtuais, discos de snapshot órfãos e clusters abandonados, mas ninguém na empresa sabia a qual projeto ou equipe aqueles recursos pertenciam. Com medo de derrubar serviços em produção, ninguém autorizava deletar nada. A criação de políticas de marcação mandatória (Tags obrigatórias de `Environment`, `Owner`, `Project`) impediu a criação de recursos sem dono e viabilizou a faxina de custos.</p>
         </div>
 
@@ -8662,7 +8662,7 @@ public class EnvironmentTagLoader {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Divergência de Grafia e Casing em Tags:</strong> Ter times usando <code>Environment</code>, <code>environment</code>, <code>env</code> e <code>Ambiente</code>. No painel de billing, o provedor trata como 4 colunas completamente distintas, quebrando relatórios de BI de custos.</li>
             <li><strong>Recursos que Não Suportam Tags Diretamente:</strong> Nem todos os componentes de rede aceitam tags (ex: algumas associações de rotas ou regras individuais de firewall). Planeje o rateio proporcional desses custos residuais.</li>
@@ -8786,7 +8786,7 @@ public class EnvironmentTagLoader {
       <article class="topic" id="j1">
         <div class="th"><h3>Virtualização: a camada que tornou tudo isso possível</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação de banco de dados rodando em uma VM com alocação compartilhada sofria picos periódicos inexplicáveis de latência de 80ms para 1.400ms em horários aleatórios. A investigação revelou o problema do vizinho barulhento (noisy neighbor): outra VM hospedada no mesmo servidor físico de hardware estava consumindo 100% dos barramentos de I/O de disco. A migração da carga de trabalho para instâncias com hardware dedicado ou instâncias com suporte a Nitro/SR-IOV com I/O isolado estabilizou o throughput.</p>
         </div>
 
@@ -8873,7 +8873,7 @@ java -XX:+UseContainerSupport \\
      -jar orderflow-service.jar</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>CPU Steal Time Oculto:</strong> Em instâncias virtuais compartilhadas ou do tipo Burstable (t3/t4g), quando os créditos de CPU acabam, o hypervisor suspende a execução da sua VM para atender outros inquilinos. No Linux, a métrica <code>%st (Steal Time)</code> no comando <code>top</code> sobe para 40%: sua aplicação Java congela sem que o processo use 100% de CPU.</li>
             <li><strong>Tratar Container como VM:</strong> Tentar rodar múltiplos daemons (SSH, cron, app, nginx) dentro do mesmo container Docker achando que ele é uma máquina virtual. Isso quebra o gerenciamento de sinais UNIX (PID 1) e causa processos zumbis.</li>
@@ -8919,7 +8919,7 @@ java -XX:+UseContainerSupport \\
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Confundir Virtual Machine (VM) com Contêiner:</b>
-                    <p>Uma VM virtualiza o hardware completo e inclui um Sistema Operacional convidado (Guest OS) inteiro com seu próprio kernel. Um contêiner (Docker) compartilha o mesmo kernel do SO host, sendo 10x mais leve e iniciando em milissegundos!</p>
+                    <p>Uma VM executa um sistema operacional convidado com seu próprio kernel sobre hardware virtualizado. Contêineres isolam processos e compartilham o kernel do host no ambiente Linux; isso costuma reduzir overhead, mas não existe uma proporção universal de tamanho ou tempo de inicialização. Arquitetura, imagem, aplicação e plataforma alteram a comparação.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -8991,7 +8991,7 @@ java -XX:+UseContainerSupport \\
       <article class="topic" id="j2">
         <div class="th"><h3>Nuvem privada e o papel real da VMware</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma instituição financeira tentou construir uma 'nuvem privada' interna mantendo processos burocráticos manuais: para cada nova VM solicitada, um analista precisava preencher uma planilha e provisionar o ambiente manualmente no VMware vCenter em até 5 dias úteis. As equipes de desenvolvimento burlavam o processo e contratavam nuvem pública no cartão de crédito corporativo para não atrasar entregas. O incidente provou que virtualização local só vira nuvem quando acompanhada de automação por API e autoatendimento.</p>
         </div>
 
@@ -9094,7 +9094,7 @@ public class HybridInfrastructureConfig {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Chamar Datacenter Legado de "Nuvem Privada":</strong> Criar máquinas manuais no vCenter através de chamados em tickets de Service Desk com prazo de 15 dias. Sem API aberta, sem portal de autoatendimento e sem medição automatizada, isso é apenas um datacenter virtualizado tradicional, e não uma nuvem privada.</li>
             <li><strong>Elasticidade Falsa Limitada ao Hardware Comprado:</strong> A nuvem privada só escala até o limite dos racks físicos comprados. Na Black Friday, se o hardware físico atingir 100% de capacidade, não existe como "chamar a API para puxar mais servidores": comprar novas máquinas exige processo de licitação e entrega de 90 dias.</li>
@@ -9212,7 +9212,7 @@ public class HybridInfrastructureConfig {
       <article class="topic" id="j3">
         <div class="th"><h3>Híbrida e multi-nuvem: separando o real do discurso</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um arquiteto projetou uma aplicação para rodar o frontend no GCP e o banco de dados na AWS, realizando chamadas síncronas a cada requisição de usuário pela internet pública. A latência de rede entre os provedores adicionou 65ms a cada consulta, e os custos de transferência de saída (egress fees) atingiram R$ 28.000 no primeiro mês. O time aprendeu que arquiteturas multi-nuvem síncronas através da internet são contraproducentes; cada serviço deve manter sua autonomia de dados dentro do mesmo ecossistema regional.</p>
         </div>
 
@@ -9320,7 +9320,7 @@ cloud:
   region: brazilsouth</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Latência Transitória Entre Nuvens Distintas:</strong> Uma chamada HTTP entre a região da AWS em São Paulo (sa-east-1) e a região da Azure em São Paulo (Brazil South) via internet pública varia de 5ms a 45ms dependendo de rotas de operadoras de telecomunicações. Integrar transações financeiras síncronas entre nuvens causa instabilidade e timeouts imprevisíveis.</li>
             <li><strong>Fadiga Operacional da Equipe:</strong> Exigir que a mesma equipe de plantão domine profundamente IAM, VPCs, Route Tables, métricas e firewalls de AWS e Azure ao mesmo tempo. Na hora do incidente às 02h da manhã, o engenheiro confunde as ferramentas e o tempo de resolução triplica.</li>
@@ -9438,7 +9438,7 @@ cloud:
       <article class="topic" id="j4">
         <div class="th"><h3>Migrar: as estratégias e a ordem certa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa tentou migrar uma aplicação monolítica de 15 anos para a nuvem usando a abordagem 'Rehost' (Lift and Shift) cego, copiando uma VM de 64 GB de RAM com banco de dados e arquivos locais compartilhados sem nenhuma adaptação. A fatura mensal subiu em 400% em relação ao datacenter próprio e a aplicação caía toda vez que a instância era reciclada pelo provedor. A reestruturação da migração separando o banco de dados para um serviço gerenciado e os arquivos para S3 estabilizou os custos e a resiliência.</p>
         </div>
 
@@ -9528,7 +9528,7 @@ public class MigracaoDualWriteService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Fazer Lift & Shift e Esperar Redução Automática de Custos:</strong> Migrar uma VM de 64 GB de RAM que rodava ociosa a 4% no datacenter para uma instância correspondente na nuvem pública. Como a nuvem cobra por recurso alocado, a fatura sairá <em>mais cara</em> do que o datacenter! <em>Execute sempre o Right-Sizing antes ou logo após a migração!</em></li>
             <li><strong>Ignorar as Dependências Ocultas de Rede:</strong> Migrar o servidor web para a nuvem mantendo o banco no datacenter on-premises sem testar a latência. Se a página inicial fizer 80 chamadas SQL sequenciais, a latência de 20ms da rede transformará uma página de 200ms em um pesadelo de 2 segundos.</li>
@@ -9652,7 +9652,7 @@ public class MigracaoDualWriteService {
       <article class="topic" id="k1">
         <div class="th"><h3>Por que a conta veio maior: os quatro eixos de cobrança</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço de replicação de dados entre regiões (`us-east-1` e `eu-west-1`) enviava 20 Terabytes de logs brutos descompactados por dia. O time monitorou os custos de CPU e memória das instâncias EC2, que pareciam baixos, mas foi surpreendido por uma cobrança de US$ 14.000 em taxa de transferência de dados de saída entre regiões (Cross-Region Data Transfer). A ativação de compressão Zstandard nos payloads e o agrupamento de tráfego dentro da mesma região derrubaram o custo de rede em 78%.</p>
         </div>
 
@@ -9712,13 +9712,13 @@ public class MigracaoDualWriteService {
         </div>
             <div class="pilar-card p-funciona">
           <div class="pilar-header"><span class="pilar-icon">⚙️</span> <b>5. Como funciona por baixo dos panos? A Matriz de Tarifação de Rede</b></div>
-          <p>Como os provedores cobram a transferência de rede por gigabyte:</p>
+          <p>O custo de transferência depende do provedor, serviço, região, direção e caminho de rede. Use esta leitura conceitual para localizar itens da fatura; confirme os preços atuais na página oficial de cada serviço antes de estimar custo.</p>
           <ul>
-            <li><b>Internet -> Nuvem (Ingress):</b> <b>US$ 0,00</b> (100% gratuito em qualquer volume).</li>
-            <li><b>Mesma AZ -> Mesma AZ (IP Privado):</b> <b>US$ 0,00</b> (tráfego gratuito dentro do mesmo datacenter).</li>
-            <li><b>Inter-AZ (Zona A -> Zona B na mesma região):</b> <b>US$ 0,01 / GB</b> em cada direção (total US$ 0,02 / GB).</li>
-            <li><b>Inter-Region (São Paulo -> Virgínia):</b> <b>US$ 0,02 a US$ 0,08 / GB</b>.</li>
-            <li><b>Nuvem -> Internet (Egress para clientes externos):</b> <b>US$ 0,09 a US$ 0,15 / GB</b>! (Use CDN para pagar metade deste valor!).</li>
+            <li><b>Entrada da internet para a nuvem:</b> pode não ter tarifa de transferência em alguns serviços, mas regras e exceções variam; confirme também custos de processamento, NAT, gateway e solicitações.</li>
+            <li><b>Tráfego dentro da mesma zona:</b> pode ser gratuito em alguns caminhos e produtos; valide a documentação de cobrança e o serviço envolvido.</li>
+            <li><b>Tráfego entre zonas:</b> pode gerar cobranças de transferência em uma ou mais pontas, além de processamento de rede.</li>
+            <li><b>Tráfego entre regiões:</b> costuma ter tarifa própria, definida por origem, destino e serviço.</li>
+            <li><b>Saída para internet ou outra nuvem:</b> pode gerar custo de egress. CDN pode reduzir tráfego de origem em cargas cacheáveis, mas não garante economia nem substitui calcular o custo total.</li>
           </ul>
         </div>
           </div>
@@ -9739,7 +9739,7 @@ public class MigracaoDualWriteService {
     # Reduz um payload JSON de 400 KB para 65 KB trafegados na rede!</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Estimar Somente o Custo de vCPU e RAM:</strong> O arquiteto calcula a infraestrutura somando apenas o preço de tabela do EC2. Ao entrar em produção, descobre que NAT Gateways, logs no CloudWatch, tráfego inter-AZ e snapshots dobraram o valor real da fatura.</li>
             <li><strong>Ambientes de Homologação Rodando 24 Horas:</strong> Deixar 10 instâncias de homologação ligadas nas noites e finais de semana. Em um mês com 720 horas, a equipe só trabalha ~180 horas: 75% do dinheiro gasto em homologação é puro desperdício. Desligue via automação!</li>
@@ -9857,7 +9857,7 @@ public class MigracaoDualWriteService {
       <article class="topic" id="k2">
         <div class="th"><h3>Modelos de compra: sob demanda, compromisso e capacidade ociosa</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma empresa utilizava 100% de suas instâncias de banco de dados e servidores de produção essenciais no modelo Sob Demanda (On-Demand) pagando valor integral por 3 anos seguidos. A contratação de Savings Plans e Instâncias Reservadas com compromisso de 1 a 3 anos para a capacidade base estável gerou um desconto imediato de 42% na conta mensal sem alterar uma única linha de código ou infraestrutura.</p>
         </div>
 
@@ -9945,7 +9945,7 @@ spring:
     timeout-per-shutdown-phase: 45s # Dá até 45s para o worker terminar a mensagem atual do SQS</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & FinOps)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Riscos comuns & FinOps)</b>
           <ul>
             <li><strong>Rodar Banco de Dados ou Aplicações Stateful em Spot:</strong> Colocar o nó primário do PostgreSQL ou um broker do Kafka em instâncias Spot. O provedor retoma a máquina no meio da tarde e corrompe o estado dos discos ou causa failover desnecessário. <em>Spot é estritamente para aplicações stateless e processamento tolerante a interrupção!</em></li>
             <li><strong>Savings Plans Rígidos por Família de Instâncias:</strong> Contratar EC2 Instance Savings Plans amarrado à família <code>c5</code> por 3 anos. Seis meses depois a AWS lança a família <code>c7g</code> (Graviton) 40% mais rápida e barata, mas sua empresa é obrigada a continuar usando a máquina antiga para não perder o dinheiro. <em>Prefira sempre Compute Savings Plans (flexíveis para qualquer família, região ou Fargate/Lambda)!</em></li>
@@ -10063,7 +10063,7 @@ spring:
       <article class="topic" id="k3">
         <div class="th"><h3>Colocar o custo no fluxo de engenharia</h3><div class="badges"><span class="badge b-imp">importante</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor alterou um pipeline de processamento em lote para rodar a cada 5 minutos em vez de 1 vez ao dia, gerando 288 execuções diárias de instâncias de alto custo. O erro só foi descoberto 45 dias depois quando o departamento financeiro recebeu a fatura com um estouro orçamentário de R$ 60.000. A inclusão da ferramenta Infracost no pull request do CI e a ativação de alarmes de AWS Budgets diários alertaram variações anômalas de custo antes do fechamento do mês.</p>
         </div>
 
@@ -10144,7 +10144,7 @@ public class OrderCheckoutService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Otimização sem Métricas de Negócio:</strong> Fazer downgrade de uma instância de banco de dados para economizar US$ 50/mês e fazer a latência subir de 10ms para 300ms, causando abandono de carrinho de compras que custa US$ 5.000 em vendas perdidas. <em>Custo nunca deve ser otimizado isoladamente sem olhar para a experiência do usuário!</em></li>
             <li><strong>FinOps como Força-Tarefa Isolada Trimestral:</strong> Montar um "comitê de redução de custos" que faz um mutirão de 2 semanas e depois se dissolve. Sem processos automatizados, em 6 meses o desperdício volta ao patamar original.</li>
@@ -10262,7 +10262,7 @@ public class OrderCheckoutService {
       <article class="topic" id="k4">
         <div class="th"><h3>OrderFlow na nuvem: o capstone dos cinco documentos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o fechamento</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O sistema OrderFlow enfrentou um apagão de 3 horas durante uma grande campanha promocional: o frontend caiu por saturação de conexões, a API falhou por cold start de funções serverless sem limite de concorrência, o banco relacional travou por exaustão de pool e as mensagens de faturamento se perderam porque foram enviadas sem fila persistente. A arquitetura de produção foi reconstruída unindo CDN na borda, API Gateway com rate limiting, banco gerenciado com pooler, e mensageria assíncrona com DLQ, suportando 50.000 usuários simultâneos com estabilidade.</p>
         </div>
 
@@ -10492,7 +10492,7 @@ public class OrderCheckoutController {
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Concentrar o tráfego em uma única AZ mantém ponto único de falha, e replicação assíncrona cross-region pode perder transações confirmadas.">
                     <span class="te-letter">B</span> Balanceador NLB roteando todo o tráfego exclusivamente para uma única AZ com réplica assíncrona do banco em outra região internacional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A combinação de computação distribuída Multi-AZ, banco com replicação síncrona e mensageria assíncrona garante alta disponibilidade sem perda de dados.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto como direção de projeto, não como garantia automática: redundância Multi-AZ, replicação e mensageria precisam ser configuradas e testadas. RPO, RTO, consistência e falhas comuns dependem do serviço e da arquitetura; não prometa ausência de perda sem definir o escopo.">
                     <span class="te-letter">C</span> Deploy Multi-AZ (mínimo 3 AZs): ALB para pods EKS distribuídos por TopologySpreadConstraints, Aurora com failover síncrono e SQS para picos.
                   </button>
                 </div>
@@ -10627,7 +10627,7 @@ class LocalStackAwsLabTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Parar no Vídeo:</strong> Assistir a cursos com velocidade 2x deitado no sofá. A sensação de progresso é alta e o aprendizado real é quase nulo. Sem terminal, não há retenção.</li>
             <li><strong>Copiar e Colar Comandos de Tutoriais:</strong> Copiar o bloco de código do StackOverflow ou Medium sem ler cada linha. No dia seguinte, quando uma flag mudar, você não saberá consertar.</li>
@@ -10806,7 +10806,7 @@ class LocalStackAwsLabTest {
 4. Guia de Otimização do Spring Boot para GraalVM e Containers</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Colecionador de Cursos Inacabados:</strong> Comprar 10 cursos em promoções na Udemy e não terminar nenhum. Fazer um único curso completo de ponta a ponta digitando cada laboratório gera 10x mais resultado profissional.</li>
             <li><strong>Achar que Certificação Substitui Experiência Prática:</strong> Ter 3 certificações no LinkedIn, mas travar na entrevista técnica quando o avaliador pede para escrever um manifesto de Terraform ou diagnosticar um erro 504 no Load Balancer.</li>
@@ -11003,7 +11003,7 @@ class LocalStackAwsLabTest {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><strong>Esquecer Recursos Ligados no Laboratório:</strong> Criar um banco de dados Multi-AZ e um NAT Gateway para testar um tutorial no sábado e esquecer ligado no fim de semana. Na segunda-feira, a conta de R$ 200 chega no seu cartão de crédito pessoal. <em>Sempre configure alarme de orçamento de US$ 5 antes de iniciar o laboratório e rode <code>terraform destroy</code> ao terminar a sessão de estudo!</em></li>
             <li><strong>Não Ler as Letras Miúdas do Free Tier:</strong> Achar que "Free Tier" significa que qualquer máquina é gratuita. Apenas instâncias da família <code>t2.micro/t3.micro</code> e até 30 GB de disco EBS estão na camada gratuita. Criar uma máquina <code>m5.large</code> gera cobrança imediatamente.</li>

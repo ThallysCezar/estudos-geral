@@ -4,6 +4,7 @@ import path from 'node:path';
 const files = [
   'cadernos/biblioteca.html',
   'cadernos/conceitos-backend.html',
+  'cadernos/financas-investimentos.html',
   'cadernos/git.html',
   'cadernos/ingles.html',
   'cadernos/linux.html',

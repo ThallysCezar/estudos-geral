@@ -1,7 +1,7 @@
 /* ==================== PAINEL DE PROGRESSO GLOBAL (CONSOLIDADO) ====================
  * - Calcula em tempo real no localStorage o progresso acumulado de todo o acervo.
  * - Consolida:
- *   1. Tópicos das 8 Trilhas e 7 Cadernos (487 tópicos totais).
+ *   1. Tópicos das 8 Trilhas e 8 Cadernos (502 tópicos totais).
  *   2. Missões e Projetos do Laboratório (18 projetos).
  *   3. Desafios Práticos de Fixação / Quizzes acertados (459 questões).
  *   4. Streak diário e XP acumulado do Microlearning.
@@ -11,7 +11,7 @@
 (function() {
   "use strict";
 
-  var TOTAL_TOPICOS = 487;
+  var TOTAL_TOPICOS = 502;
   var TOTAL_PROJETOS = 18;
   var TOTAL_QUIZZES = 459;
 
@@ -31,7 +31,8 @@
     "git-completo-CL-trilha-v1",
     "ingles-tecnico-completo-CL-trilha-v1",
     "oratoria-completo-CL-trilha-v1",
-    "site.governanca-seguranca.progress.v1"
+    "site.governanca-seguranca.progress.v1",
+    "site.financas-investimentos.progress.v1"
   ];
 
   function getTopicsDone() {

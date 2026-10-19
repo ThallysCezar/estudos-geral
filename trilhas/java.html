@@ -801,8 +801,8 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
       <article class="topic" id="a1">
         <div class="th"><h3>A JVM e a promessa de rodar em qualquer lugar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um microsserviço de pagamentos rodando em contêiner Kubernetes com limite estrito de 1GB de RAM foi configurado com a flag `-Xmx1g`, sob a suposição de que a JVM consumiria apenas a memória Heap. Em horário de pico, a JVM alocou 260MB adicionais para Metaspace, stacks de threads e buffers de rede NIO direto. O Linux Kernel identificou violação de cgroup e matou o processo instantaneamente com Exit Code 137 (OOMKilled), derrubando 14.000 requisições ativas. O incidente foi resolvido configurando `-XX:MaxRAMPercentage=75`, reservando 25% para a memória nativa da plataforma.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> uma JVM recebe limite de memória do contêiner e a heap é configurada para consumir todo esse limite. A memória total do processo também inclui estruturas nativas, stacks, buffers e código compilado; se o cgroup ficar sem memória, o kernel pode encerrar o processo, inclusive sem um <code>OutOfMemoryError</code> Java. <code>-XX:MaxRAMPercentage</code> ajuda a dimensionar a heap, mas o percentual adequado depende da carga e deve ser medido.</p>
         </div>
 
         <div class="topic-split">
@@ -905,10 +905,10 @@ jcmd</code></pre>
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>UnsupportedClassVersionError:</b> Ocorre quando o projeto é compilado com um JDK mais recente (ex: Java 21, bytecode 65.0) e tentamos executá-lo em um servidor que tem apenas uma JVM antiga instalada (ex: Java 17, bytecode 61.0). A JVM rejeita o arquivo imediatamente com falha de major version. <i>Prevenção:</i> Use a tag <code>&lt;release&gt;17&lt;/release&gt;</code> no <code>maven-compiler-plugin</code> para garantir compatibilidade caso o target de deploy seja anterior.</li>
-            <li><b>Armadilha do Container Memory Limit (OOMKilled pelo Linux):</b> Achar que a JVM consome apenas o valor de <code>-Xmx</code>. Além da Heap, a JVM consome memória nativa: Metaspace (classes), Thread Stacks (1MB por thread de plataforma), CodeCache e buffers de rede NIO (Direct Memory). Se o Pod/Container Kubernetes tiver limite estrito de 1GB e você setar <code>-Xmx1g</code>, o Linux Kernel matará o processo com <b>Exit Code 137 (OOMKilled)</b>. <i>Solução:</i> Use <code>-XX:MaxRAMPercentage=75</code> e reserve 25% para a memória nativa da JVM.</li>
+            <li><b>Armadilha do limite de memória do contêiner:</b> <code>-Xmx</code> limita a heap, não todo o processo. Metaspace, stacks, Code Cache e buffers nativos também consomem memória; o tamanho de uma stack varia com plataforma e configuração. Se o processo ultrapassar o limite do cgroup, o kernel pode encerrá-lo (frequentemente reportado como OOMKilled/137). Use <code>-XX:MaxRAMPercentage</code> como ponto de partida e meça heap, RSS e memória nativa sob carga representativa.</li>
             <li><b>Falsa lentidão de "Cold Start":</b> Fazer testes de carga nos primeiros 30 segundos do deploy e achar que a aplicação não aguenta concorrência. Como a JVM precisa de aquecimento (warm-up) para compilar o bytecode em código nativo, os primeiros milissegundos sempre apresentam latência mais alta. Em Kubernetes, configure o <code>startupProbe</code> para dar tempo ao JIT antes de abrir o tráfego de produção.</li>
           </ul>
         </div>
@@ -934,7 +934,7 @@ jcmd</code></pre>
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Divisão do Processo: Heap vs Memória Nativa</b>
-                    <p>A memória de um processo Java é a soma da Heap (-Xmx) + Metaspace + Stacks de Threads (1MB cada) + CodeCache + Buffers NIO off-heap.</p>
+                    <p>O processo Java usa heap, Metaspace, stacks de threads, CodeCache, buffers diretos e memória de bibliotecas nativas. O valor de <code>-Xmx</code> limita a heap, não o consumo total; cada parcela depende da JVM, do sistema e da carga.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -951,7 +951,7 @@ jcmd</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Pegadinha Fatal de Produção (Exit Code 137 / OOMKilled):</b>
-                    <p>Nunca configure o <code>-Xmx</code> igual ao limite de memória do container no Kubernetes! A JVM consome cerca de 20% a 30% além da Heap com memória nativa. Use sempre <code>-XX:MaxRAMPercentage=75</code> para evitar que o Linux Kernel mate seu Pod.</p>
+          <p>Não assuma que o limite do contêiner está disponível integralmente para a heap. O consumo fora da heap varia com número de threads, bibliotecas, buffers e carga. <code>-XX:MaxRAMPercentage</code> pode calcular um teto inicial relativo à memória reconhecida pela JVM, mas não reserva uma margem universal; acompanhe o RSS e ajuste o percentual a partir de testes.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -978,7 +978,7 @@ jcmd</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> No Kubernetes, um Pod Java com limite estrito de <code>resources.limits.memory: 2Gi</code> foi configurado com a flag JVM estática <code>-Xmx2048m</code>. Sob pico de tráfego com 200 threads ativas e conexões HTTP abertas, o Pod é abortado abruptamente pelo cluster com status <strong>OOMKilled</strong> e exit code 137. O log do Pod não contém <code>OutOfMemoryError: Java heap space</code>. O que aconteceu?</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> No Kubernetes, um Pod Java com limite estrito de <code>resources.limits.memory: 2Gi</code> foi configurado com a flag JVM estática <code>-Xmx2048m</code>. Sob pico de tráfego com 200 threads ativas e conexões HTTP abertas, o Pod é abortado abruptamente pelo cluster com status <strong>OOMKilled</strong> e exit code 137. O log do Pod não contém <code>OutOfMemoryError: Java heap space</code>. O que aconteceu?</p>
                 <pre class="te-code"><code>resources:
   limits:
     memory: "2Gi"
@@ -991,8 +991,8 @@ env:
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A ausência de swap não causa SIGKILL instantâneo pelo kernel sem log de GC, e o Kubernetes tradicionalmente opera sem swap.">
                     <span class="te-letter">A</span> O G1GC falhou ao alocar blocos de memória contígua por ausência de partição swap no nó do Kubernetes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O cgroup do container avalia o RSS total do processo. Heap (-Xmx2048m) somado a thread stacks, Metaspace e buffers NIO estoura 2Gi, levando o kernel Linux a disparar OOMKilled (exit code 137). Usar -XX:MaxRAMPercentage=75 reserva margem segura para memória nativa.">
-                    <span class="te-letter">B</span> A JVM estourou o cgroup de 2Gi somando Metaspace, stacks de threads e Direct Memory ao Heap; configure -XX:MaxRAMPercentage=75.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A heap é apenas parte da memória contabilizada pelo cgroup. Dimensione heap e memória nativa em conjunto; use MaxRAMPercentage como um controle possível, depois meça RSS, pools, buffers e margem em carga representativa.">
+                    <span class="te-letter">B</span> O processo pode ultrapassar o limite somando heap e memória nativa; dimensione o conjunto e valide com métricas do contêiner.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Esgotamento de descritores de arquivo ou threads gera Too many open files ou OutOfMemoryError: unable to create native thread, não OOMKilled pelo cgroup.">
                     <span class="te-letter">C</span> O container atingiu o teto de descritores de sockets TCP e threads ativas estipulado na política de segurança e quotas de recursos do namespace do cluster.
@@ -1028,7 +1028,7 @@ env:
       <article class="topic" id="a2">
         <div class="th"><h3>Bytecode e ClassLoader: o carregamento por dentro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante o deploy de uma atualização de segurança em um cluster com 12 instâncias, todas as réplicas falharam no startup com `LinkageError: loader constraint violation`. Dois JARs transitivos no classpath continham versões incompatíveis da mesma biblioteca Jackson, e ClassLoaders diferentes tentaram carregar definições conflitantes da classe `ObjectMapper`. A esteira de CI/CD foi paralisada até a execução de `mvn dependency:tree` para isolar e excluir a dependência transitiva conflitante.</p>
         </div>
 
@@ -1151,7 +1151,7 @@ System.out.println("Bootstrap Loader (nativo C++): " + bootstrapLoader); // exib
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Parent Delegation Model</b>
-                    <p>Antes de carregar qualquer classe, o ClassLoader sempre consulta o pai: Bootstrap (C++) → Platform → Application. Garante que classes fundamentais venham da raiz confiável.</p>
+          <p>O modelo comum de delegação é parent-first: um class loader consulta o pai antes de tentar carregar a classe local, protegendo classes centrais e favorecendo a identidade compartilhada de tipos. A hierarquia típica inclui Bootstrap, Platform e Application, mas servidores e plugins podem usar estratégias próprias, inclusive child-first. Por isso, não trate essa ordem como regra absoluta de todo class loader.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -1195,7 +1195,7 @@ System.out.println("Bootstrap Loader (nativo C++): " + bootstrapLoader); // exib
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Durante o deploy de uma aplicação Spring Boot, a primeira requisição que tenta acessar <code>CalculadoraFrete</code> falha com <code>ExceptionInInitializerError</code>. Imediatamente após, todas as outras requisições para a mesma API passam a falhar com o seguinte erro repetitivo:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Durante o deploy de uma aplicação Spring Boot, a primeira requisição que tenta acessar <code>CalculadoraFrete</code> falha com <code>ExceptionInInitializerError</code>. Imediatamente após, todas as outras requisições para a mesma API passam a falhar com o seguinte erro repetitivo:</p>
                 <pre class="te-code"><code>java.lang.NoClassDefFoundError: Could not initialize class com.loja.frete.CalculadoraFrete
     at com.loja.service.CheckoutService.processar(CheckoutService.java:48)</code></pre>
                 <p class="te-instrucao">O desenvolvedor verifica o JAR e a classe <code>CalculadoraFrete.class</code> está presente. Qual é a causa raiz desse comportamento?</p>
@@ -1241,8 +1241,8 @@ System.out.println("Bootstrap Loader (nativo C++): " + bootstrapLoader); // exib
       <article class="topic" id="a3">
         <div class="th"><h3>JIT: por que o Java acelera enquanto roda</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">performance</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um teste de carga executado nos primeiros 20 segundos após o deploy de um motor de buscas acusou latência P99 de 1.850ms, levando o time a acreditar que o novo algoritmo continha uma regressão grave. O problema era ausência de aquecimento (warm-up): após 2 minutos de tráfego, o compilador JIT C2 identificou os métodos quentes e compilou os loops críticos para código de máquina nativo da CPU, derrubando a latência P99 para 4.1ms sob 16.000 requisições por segundo.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><b>Cenário hipotético:</b> um teste começa logo após iniciar uma aplicação e mede latência maior que em regime estável. Uma hipótese é o aquecimento do JIT e de caches; outras incluem compilação, conexão com banco, carregamento de classes e efeito do próprio gerador de carga. Compare inicialização fria e regime estável, registre distribuição de latência e repita o teste antes de atribuir a diferença ao JIT.</p>
         </div>
 
         <div class="topic-split">
@@ -1267,7 +1267,7 @@ System.out.println("Bootstrap Loader (nativo C++): " + bootstrapLoader); // exib
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
             <ul>
-              <li><b>Auto-cura de performance:</b> A aplicação se otimiza sozinha para o perfil da carga de trabalho que recebe (ex: se 99% das requisições são PIX e 1% Cartão, o switch é compilado favorecendo o branch do PIX na CPU).</li>
+            <li><b>Otimização adaptativa:</b> o runtime coleta perfis de execução e pode compilar caminhos quentes com otimizações especulativas. Isso não significa que toda regra de negócio será reordenada para favorecer a requisição mais frequente; confirme o efeito com profiling e benchmarks reproduzíveis.</li>
               <li><b>Custo de infraestrutura reduzido:</b> Menos instâncias de servidores e containers são necessárias para atender milhões de requisições por segundo.</li>
             </ul>
           </div>
@@ -1333,7 +1333,7 @@ public void medirCalculo(Blackhole bh) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Microbenchmarks com System.currentTimeMillis():</b> Desenvolvedores que usam timers manuais para decidir se o algoritmo A é mais rápido que B. O JIT pode ter eliminado o código de um por Dead Code Elimination, ou o algoritmo medido primeiro sofreu o custo do warm-up e o segundo rodou no código nativo quente. <i>Regra de ouro:</i> Jamais faça micro-benchmarking sem o JMH (Java Microbenchmark Harness).</li>
             <li><b>Métodos gigantes (Megamorphic / Giant Methods):</b> O JIT possui limites estritos de tamanho de bytecode para aplicar inlining (parâmetro <code>-XX:MaxInlineLevel</code> e limite padrão de 325 bytes para métodos compilados). Métodos gigantes com 500 linhas de lógica cheios de ifs não sofrem inlining e forçam o compilador a desistir das principais otimizações de registradores da CPU. <i>Prevenção:</i> Métodos curtos, focados e bem encapsulados não são apenas Clean Code — são aceleradores diretos do JIT!</li>
@@ -1405,7 +1405,7 @@ public void medirCalculo(Blackhole bh) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um engenheiro de dados implementou um loop para testar a velocidade de serialização de um objeto, gravando o tempo decorrido com System.nanoTime():</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um engenheiro de dados implementou um loop para testar a velocidade de serialização de um objeto, gravando o tempo decorrido com System.nanoTime():</p>
                 <pre class="te-code"><code>long inicio = System.nanoTime();
 for (int i = 0; i < 1_000_000; i++) {
     calcularHash(dados); // O retorno do método não é atribuído a nenhuma variável
@@ -1455,7 +1455,7 @@ System.out.println("Tempo por iteração: " + (duracao / 1_000_000) + " ns");</c
       <article class="topic" id="a4">
         <div class="th"><h3>Maven: dependências e build reproduzível</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">ecossistema</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma esteira de CI/CD quebrou no sábado de madrugada sem nenhuma alteração de código no repositório. Uma biblioteca de terceiros configurada com range de versão dinâmico `[1.4.0,)` no `pom.xml` publicou uma versão com breaking change no Maven Central. O build de produção baixou a versão nova automaticamente e quebrou o empacotamento. A correção exigiu fixar versões estritas e adicionar o `versions-maven-plugin` para bloquear dependências dinâmicas.</p>
         </div>
 
@@ -1545,7 +1545,7 @@ mvn dependency:analyze               # Detecta dependências declaradas mas não
 &lt;/project&gt;</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>NoSuchMethodError por colisão de dependências transitivas:</b> O projeto compila normalmente porque na compilação o compilador usou a interface da versão nova, mas em runtime a regra de "Nearest Definition" colocou no classpath o JAR da versão antiga. Ao invocar o método, a JVM explode com <code>java.lang.NoSuchMethodError</code>. <i>Solução:</i> Execute <code>mvn dependency:tree -Dincludes=groupId:artifactId</code>, descubra quem trouxe o JAR antigo e use a tag <code>&lt;exclusions&gt;</code> no POM para bani-lo.</li>
             <li><b>Uso inadvertido de dependências com versão SNAPSHOT:</b> Usar dependências terminadas em <code>-SNAPSHOT</code> em ambiente de homologação ou produção. O Maven busca a versão mais recente diariamente, gerando builds não reproduzíveis onde o sistema funcionava de manhã e parou à tarde sem ninguém alterar o commit do projeto.</li>
@@ -1617,7 +1617,7 @@ mvn dependency:analyze               # Detecta dependências declaradas mas não
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Sua aplicação declara a dependência <code>auth-gateway:1.0</code>, que por sua vez depende de <code>crypto-core:2.0</code> (distância 2). Outra dependência direta do seu POM, <code>audit-logger:3.0</code>, depende de <code>common-utils:1.2</code>, que depende de <code>crypto-core:1.0</code> (distância 3). Em produção, ao autenticar um usuário, ocorre a falha:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Sua aplicação declara a dependência <code>auth-gateway:1.0</code>, que por sua vez depende de <code>crypto-core:2.0</code> (distância 2). Outra dependência direta do seu POM, <code>audit-logger:3.0</code>, depende de <code>common-utils:1.2</code>, que depende de <code>crypto-core:1.0</code> (distância 3). Em produção, ao autenticar um usuário, ocorre a falha:</p>
                 <pre class="te-code"><code>java.lang.NoSuchMethodError: 'byte[] com.empresa.crypto.Hasher.sha256(byte[], byte[])'
     at com.empresa.auth.AuthService.autenticar(AuthService.java:32)</code></pre>
                 <p class="te-instrucao">Sabendo que esse método existe na versão 2.0 do crypto-core, qual foi a decisão do Maven e como corrigi-la?</p>
@@ -1663,7 +1663,7 @@ mvn dependency:analyze               # Detecta dependências declaradas mas não
       <article class="topic" id="a5">
         <div class="th"><h3>As versões que importam: 8, 11, 17 e 21</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">evolução</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma fintech processando 45.000 transações/segundo migrou seu core bancário de Java 8 para Java 21 LTS. A ativação do Garbage Collector ZGC geracional e das Virtual Threads reduziu o tempo de pausa de GC de 720ms para menos de 1ms e diminuiu o consumo de memória RAM dos contêineres em 38%, permitindo desligar 14 instâncias na nuvem e economizando R$ 28.000 mensais em infraestrutura.</p>
         </div>
 
@@ -1674,7 +1674,7 @@ mvn dependency:analyze               # Detecta dependências declaradas mas não
           <p>O modelo de lançamentos do Java moderno adota uma versão nova a cada 6 meses, com versões <b>LTS (Long-Term Support)</b> lançadas a cada 2 anos (a partir do Java 17). As versões que definem o mercado e as migrações corporativas são as 4 LTS históricas: <b>Java 8</b> (2014), <b>Java 11</b> (2018), <b>Java 17</b> (2021) e <b>Java 21</b> (2023).</p>
         </div>
 
-            <div class="analogia"><i class="ic">≈</i><p><b>Como as gerações de automóveis.</b> O Java 8 inventou a injeção eletrônica (lambdas e streams). O Java 11 padronizou o chassi moderno e os freios ABS (módulos e HTTP/2). O Java 17 trouxe a aerodinâmica e os sensores inteligentes de bordo (records, sealed classes e pattern matching). O Java 21 colocou um motor turbo elétrico híbrido (Virtual Threads) que multiplica a potência do carro em 10 vezes sem você precisar reaprender a dirigir.</p></div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Como as gerações de automóveis.</b> Cada versão LTS adicionou recursos úteis: lambdas e Streams no Java 8; APIs e melhorias de plataforma no Java 11; records e sealed classes finalizados no Java 17; Virtual Threads finalizadas no Java 21. A analogia não implica ganho automático de desempenho: o efeito depende de como o recurso é usado e deve ser medido.</p></div>
 
             <div class="duo">
           <div class="pilar-box p-serve">
@@ -1762,7 +1762,7 @@ public record ItemDTO(String sku, BigDecimal preco) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais de Migração)</b>
+          <b>⚠️ 7. Onde a migração pode falhar? (Armadilhas comuns)</b>
           <ul>
             <li><b>Migração do Java 8 para 11+: Módulos e Remoção do Java EE:</b> Classes como <code>javax.xml.bind.*</code> (JAXB) e <code>javax.annotation.*</code> que vinham dentro do JDK 8 foram expurgadas no Java 11. Aplicações que dependem dessas classes quebram com <code>NoClassDefFoundError</code> no boot se as dependências modernas (<code>jakarta.xml.bind-api</code>) não forem adicionadas explicitamente no POM.</li>
             <li><b>Migração do Java 11 para 17: Forte Encapsulamento da JVM (JEP 396/403):</b> No Java 17, o acesso ilegal por reflexão a pacotes internos da JVM (como <code>sun.misc.Unsafe</code>) foi bloqueado por padrão. Frameworks legados e bibliotecas de mock desatualizadas explodem com <code>InaccessibleObjectException</code>. <i>Solução:</i> Atualize todas as bibliotecas para versões compatíveis com Java 17+ antes de trocar a JVM.</li>
@@ -1841,7 +1841,7 @@ public record ItemDTO(String sku, BigDecimal preco) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Sua equipe está migrando uma aplicação crítica em Java 8 com Spring Boot legado para <strong>Java 17</strong>. Durante a inicialização no Kubernetes, a aplicação explode com o seguinte erro:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Sua equipe está migrando uma aplicação crítica em Java 8 com Spring Boot legado para <strong>Java 17</strong>. Durante a inicialização no Kubernetes, a aplicação explode com o seguinte erro:</p>
                 <pre class="te-code"><code>java.lang.reflect.InaccessibleObjectException: Unable to make field private final java.lang.String java.lang.String.value accessible: module java.base does not "opens java.lang" to unnamed module</code></pre>
                 <p class="te-instrucao">Qual é a causa raiz exata e a solução arquitetural recomendada?</p>
 
@@ -1892,7 +1892,7 @@ public record ItemDTO(String sku, BigDecimal preco) {
       <article class="topic" id="b1">
         <div class="th"><h3>Referências, null e passagem por valor</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um job batch de faturamento noturno que processava 120.000 faturas foi interrompido na metade por uma `NullPointerException` não tratada em um método auxiliar que esperava um objeto `Endereco` e recebeu `null`. O faturamento atrasou 6 horas e gerou multas contratuais. A refatoração introduziu checagens preventivas com `Objects.requireNonNull` e modelagem de presença obrigatória na raiz do domínio.</p>
         </div>
 
@@ -1982,7 +1982,7 @@ System.out.println(meu.getStatus()); // Imprime "PAGO"!</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Retornar ou aceitar Coleções Mutáveis sem Cópia Defensiva:</b> Uma classe expõe <code>public List&lt;Item&gt; getItens() { return this.itens; }</code>. O chamador recebe a referência direta da lista interna do objeto e faz <code>itens.clear()</code> do lado de fora! O estado interno do seu objeto de domínio foi corrompido sem passar pelas regras de negócio. <i>Solução:</i> Sempre retorne <code>Collections.unmodifiableList(itens)</code> ou <code>List.copyOf(itens)</code>.</li>
             <li><b>Autoboxing de Null gerando NPE Silencioso:</b> Chamar um método que recebe um <code>long</code> primitivo e passar uma variável <code>Long</code> wrapper que está com valor <code>null</code>. O compilador insere um <code>.longValue()</code> invisível para fazer o unboxing, e o código explode com <code>NullPointerException</code> na linha da chamada.</li>
@@ -2054,7 +2054,7 @@ System.out.println(meu.getStatus()); // Imprime "PAGO"!</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere o seguinte trecho de código executado por um serviço financeiro:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere o seguinte trecho de código executado por um serviço financeiro:</p>
                 <pre class="te-code"><code>public class GestorConta {
     public static void processar(Conta conta, double valor) {
         conta.creditar(valor); // Passo 1
@@ -2110,7 +2110,7 @@ System.out.println(meu.getStatus()); // Imprime "PAGO"!</code></pre>
       <article class="topic" id="b2">
         <div class="th"><h3>Primitivos, wrappers e por que dinheiro nunca é double</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">bug caro</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um sistema de liquidação de câmbio utilizou o tipo primitivo `double` para calcular centavos de IOF e taxas de spread em milhares de transações diárias. O erro de precisão binária inerente ao padrão IEEE 754 (como `0.1 + 0.2 = 0.30000000000000004`) acumulou uma discrepância contábil de R$ 4.312,89 no fechamento do dia. A migração para `BigDecimal` com escala explícita e arredondamento `HALF_EVEN` eliminou as perdas financeiras.</p>
         </div>
 
@@ -2195,7 +2195,7 @@ System.out.println(soma.compareTo(new BigDecimal("0.3")) == 0);
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>equals() vs compareTo() no BigDecimal:</b> <code>new BigDecimal("1.0").equals(new BigDecimal("1.00"))</code> retorna <b>FALSE</b>! O método <code>equals</code> compara o valor E a escala de precisão. Se você usar <code>BigDecimal</code> como chave em um <code>HashSet</code> ou <code>HashMap</code>, "1.0" e "1.00" serão considerados chaves totalmente diferentes! <i>Solução:</i> Para comparar valores monetários, use sempre <code>a.compareTo(b) == 0</code> ou <code>TreeSet</code>.</li>
             <li><b>ArithmeticException: Non-terminating decimal expansion:</b> Ocorre ao dividir números que resultam em dízima periódica sem passar a escala e o arredondamento: <code>new BigDecimal("10").divide(new BigDecimal("3"))</code>. A JVM explode imediatamente em produção com <code>java.lang.ArithmeticException</code>. <i>Solução:</i> Sempre passe <code>divide(divisor, casasDecimais, RoundingMode.HALF_EVEN)</code>.</li>
@@ -2268,7 +2268,7 @@ System.out.println(soma.compareTo(new BigDecimal("0.3")) == 0);
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um e-commerce calculava o saldo de cashback somando valores double em um loop de fechamento de faturamento. Ao comparar se o saldo atingiu exatamente R$ 10,00 para liberar o resgate, a validação sempre falhava:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um e-commerce calculava o saldo de cashback somando valores double em um loop de fechamento de faturamento. Ao comparar se o saldo atingiu exatamente R$ 10,00 para liberar o resgate, a validação sempre falhava:</p>
                 <pre class="te-code"><code>double saldo = 0.0;
 for (int i = 0; i < 100; i++) {
     saldo += 0.10; // 100 parcelas de 10 centavos
@@ -2321,7 +2321,7 @@ if (saldo == 10.0) {
       <article class="topic" id="b3">
         <div class="th"><h3>String: imutabilidade, pool, Unicode e charset</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um gerador de relatórios fiscais em lote concatenava linhas de texto usando o operador `+` dentro de um loop de 150.000 iterações. Como `String` é imutável em Java, o loop instanciou mais de 150.000 objetos temporários na Heap, consumindo 8GB de RAM e disparando pausas severas de Garbage Collector de 35 segundos. A substituição por `StringBuilder` pré-alocado reduziu o tempo de processamento de 48 segundos para 190 milissegundos.</p>
         </div>
 
@@ -2411,7 +2411,7 @@ String res = sb.toString();
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Comparação com == em vez de .equals():</b> Literais literais usam o String Pool, logo <code>"teste" == "teste"</code> é true. Mas se uma string vem do banco de dados, da rede HTTP ou de um <code>new String()</code>, ela vive em outro endereço do Heap! O código <code>status == "ATIVO"</code> falha silenciosamente em produção. Regra inquebrável: <b>Strings são sempre comparadas com <code>.equals()</code></b>.</li>
             <li><b>getBytes() sem especificar Charset padrão:</b> Fazer <code>string.getBytes()</code> sem passar <code>StandardCharsets.UTF_8</code>. O método usa o charset padrão do Sistema Operacional. No Windows pode ser Windows-1252 e no Linux UTF-8. Ao transferir os bytes entre máquinas, caracteres com acentos (como "ação") se transformam em lixo ilegível.</li>
@@ -2483,7 +2483,7 @@ String res = sb.toString();
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um serviço bancário recebe arquivos de extrato e converte linhas em bytes para envio por socket TCP:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço bancário recebe arquivos de extrato e converte linhas em bytes para envio por socket TCP:</p>
                 <pre class="te-code"><code>// Código em produção
 String linhaExtrato = "TRANSFERÊNCIA R$ 1.500,00";
 byte[] payload = linhaExtrato.getBytes(); // Sem especificar charset!
@@ -2531,7 +2531,7 @@ enviarSocket(payload);</code></pre>
       <article class="topic" id="b4">
         <div class="th"><h3>Tempo: Instant, ZonedDateTime, Duration e Clock</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 8+</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um agendador de débitos automáticos utilizava a classe legada `java.util.Date` e o fuso horário local do servidor. Durante a transição de horário em servidores de regiões diferentes, 2.800 cobranças foram processadas duas vezes ou canceladas por vencimento prematuro. A refatoração completa para `Instant` em UTC na persistência e injeção de `Clock` controlável nos testes de unidade corrigiu as falhas temporais.</p>
         </div>
 
@@ -2630,7 +2630,7 @@ String formatada = prazo.format(fmt);</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Bug do "Dia de 24 horas" que quebra no Horário de Verão:</b> Fazer <code>instant.plus(24, ChronoUnit.HOURS)</code> achando que avançou "1 dia civil". No dia da entrada do horário de verão, o dia tem 23 horas; na saída, tem 25 horas! Se você somar 24 horas puras em um agendamento de remédio das 08:00, o paciente receberá o aviso às 09:00 ou 07:00 no dia seguinte. <i>Solução:</i> Para datas civis de calendário, manipule com <code>ZonedDateTime.plusDays(1)</code> que ajusta automaticamente a transição do fuso.</li>
             <li><b>Usar LocalDateTime para persistir transações em banco:</b> <code>LocalDateTime</code> não tem fuso! Se sua API salva "2026-05-10 14:00:00" e o banco de dados está rodando em UTC, mas a API está no Brasil (UTC-3), quando o relatório for gerado na nuvem ele exibirá a transação como se tivesse ocorrido 3 horas antes ou depois. <i>Solução:</i> Transações financeiras e logs sempre usam <code>Instant</code> ou <code>OffsetDateTime</code> com UTC explícito.</li>
@@ -2702,7 +2702,7 @@ String formatada = prazo.format(fmt);</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um gateway de pagamentos valida a expiração de um token de autorização. O teste unitário falhava intermitentemente dependendo da carga da CPU no pipeline de CI/CD:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um gateway de pagamentos valida a expiração de um token de autorização. O teste unitário falhava intermitentemente dependendo da carga da CPU no pipeline de CI/CD:</p>
                 <pre class="te-code"><code>public class ValidadorToken {
     public boolean expirou(Token token) {
         // Chamada direta do relógio do sistema operacional
@@ -2758,7 +2758,7 @@ String formatada = prazo.format(fmt);</code></pre>
       <article class="topic" id="c1">
         <div class="th"><h3>Encapsulamento: o objeto que não aceita estado inválido</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">design</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma entidade de domínio `ContaBancaria` com getters e setters públicos anêmicos permitiu que um desenvolvedor júnior alterasse o saldo diretamente via `conta.setSaldo(novoValor)` em um endpoint promocional, contornando a validação de limite de crédito e o registro no livro-razão. A falha gerou um rombo de R$ 85.000 antes de ser detectada na conciliação noturna. O encapsulamento foi corrigido tornando os campos privados e expondo apenas métodos de negócio protegidos (`debitar()`, `creditar()`).</p>
         </div>
 
@@ -2868,7 +2868,7 @@ pedido.setStatus(null);     // Estado corrompido!</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Vazamento de Referência de Coleções Mutáveis:</b> Você declara <code>private final List&lt;Item&gt; itens;</code>. No construtor você faz <code>this.itens = itens;</code>. O chamador passa uma lista que ele ainda tem a referência no controller. Cinco minutos depois, outra thread faz <code>itens.add(novoItemIlegal)</code>. O seu objeto teve seu estado alterado sem passar pelo construtor ou por nenhum método de validação! <i>Solução:</i> Sempre faça <code>this.itens = List.copyOf(itens);</code>.</li>
             <li><b>Uso cego de frameworks de mapeamento (ModelMapper / MapStruct sem validação):</b> Copiar DTOs diretamente para Entidades via reflexão burla construtores blindados, instanciando entidades com campos nulos e quebrando as invariantes de negócio silenciosamente.</li>
@@ -2940,7 +2940,7 @@ pedido.setStatus(null);     // Estado corrompido!</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou a seguinte classe de domínio para gerenciar um Pedido de compra:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou a seguinte classe de domínio para gerenciar um Pedido de compra:</p>
                 <pre class="te-code"><code>public class Pedido {
     private final List<Item> itens = new ArrayList<>();
     
@@ -2995,7 +2995,7 @@ pedido.setStatus(null);     // Estado corrompido!</code></pre>
       <article class="topic" id="c2">
         <div class="th"><h3>Interfaces, composição e polimorfismo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">design</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um motor de regras tributárias desenhado com uma hierarquia rígida de herança com 5 níveis de classes abstratas tornou-se impossível de estender quando uma nova legislação exigiu regras combinadas de dois estados simultâneos. A refatoração para interfaces enxutas e composição com o padrão Strategy desacoplou o cálculo em componentes plugáveis, reduzindo a complexidade ciclomática de 42 para 4.</p>
         </div>
 
@@ -3103,7 +3103,7 @@ public class NotificadorComLog implements Notificador {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Armadilha do Default Method que gera Estado Oculto:</b> Interfaces devem definir contratos de comportamento, não carregar lógica complexa com estado mutável. Tentar usar interfaces como "traits" cheios de lógica acoplada dificulta rastrear de onde veio um bug.</li>
             <li><b>Violação do Princípio de Substituição de Liskov (LSP):</b> Criar uma subclasse que sobrescreve um método da interface lançando <code>UnsupportedOperationException</code> (ex: uma lista somente leitura que lança erro no <code>add()</code>). Qualquer código polimórfico que receba essa lista quebrará em produção ao tentar utilizá-la normalmente.</li>
@@ -3175,7 +3175,7 @@ public class NotificadorComLog implements Notificador {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um arquiteto precisa projetar o envio de notificações em um e-commerce (Email, SMS, WhatsApp e futuramente Push Notification). Ele deve decidir entre criar uma classe base abstrata herdada ou uma interface com composição:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um arquiteto precisa projetar o envio de notificações em um e-commerce (Email, SMS, WhatsApp e futuramente Push Notification). Ele deve decidir entre criar uma classe base abstrata herdada ou uma interface com composição:</p>
                 <pre class="te-code"><code>// Opção 1: Herança
 public abstract class NotificadorBase { /* 200 linhas de template method */ }
 public class EmailNotificador extends NotificadorBase { ... }
@@ -3226,7 +3226,7 @@ public class EmailNotificador implements Notificador { ... }</code></pre>
       <article class="topic" id="c3">
         <div class="th"><h3>Imutabilidade, records e sealed: modelagem sem boilerplate</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 17 · 21</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um objeto DTO mutável contendo dados de pagamento compartilhado entre threads assíncronas teve seu campo de chave PIX alterado concorrentemente por uma rotina de enriquecimento de dados, transferindo R$ 12.000 para o favorecido errado. A substituição de classes convencionais com setters por `record` imutável no Java 21 eliminou mutações concorrentes em tempo de compilação.</p>
         </div>
 
@@ -3328,7 +3328,7 @@ public record Coordenada(double lat, double lon) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Ilusão da "Imutabilidade Superficial" (Shallow Immutability):</b> Um <code>record Pedido(Long id, List&lt;Item&gt; itens)</code> tem o campo <code>itens</code> final. A <i>referência</i> não muda, mas a lista interna continua sendo mutável! Se quem instanciou passar um <code>new ArrayList&lt;&gt;()</code>, qualquer um pode adicionar itens após a criação. <i>Solução:</i> Use o construtor compacto para forçar cópia defensiva: <code>public Pedido { itens = List.copyOf(itens); }</code>.</li>
             <li><b>Uso de Records como Entidades JPA/Hibernate:</b> Entidades JPA exigem construtor sem argumentos (no-arg constructor) para carregar dados do banco e dependem de proxies de subclasses para lazy loading. Como records são <code>final</code> e exigem inicialização de todos os campos no construtor canônico, <b>records NÃO devem ser usados como entidades do Hibernate</b>; use records para DTOs, projections e value objects.</li>
@@ -3400,7 +3400,7 @@ public record Coordenada(double lat, double lon) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a seguinte modelagem de pagamentos em Java 21 usando Sealed Interfaces e Pattern Matching:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a seguinte modelagem de pagamentos em Java 21 usando Sealed Interfaces e Pattern Matching:</p>
                 <pre class="te-code"><code>public sealed interface Pagamento permits Pix, Cartao, Boleto {}
 
 public record Pix(String chave, BigDecimal valor) implements Pagamento {}
@@ -3459,7 +3459,7 @@ public String autorizar(Pagamento p) {
       <article class="topic" id="c4">
         <div class="th"><h3>equals, hashCode e Optional: identidade e ausência</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">contrato</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma classe de domínio `ItemEstoque` teve o método `equals` sobrescrito para comparar apenas o código SKU, mas o desenvolvedor esqueceu de sobrescrever o método `hashCode`. Ao armazenar 80.000 itens em um `HashSet`, o método `set.contains()` passou a retornar `false` para itens idênticos, gerando compras duplicadas de estoque no valor de R$ 340.000.</p>
         </div>
 
@@ -3566,7 +3566,7 @@ repo.buscar(1L).ifPresent(this::enviarEmailBoasVindas);</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Objeto Fantasma: Mutar a chave de um HashMap:</b> Inserir um objeto como chave em um <code>HashMap</code> ou em um <code>HashSet</code> e depois alterar um atributo que faz parte do cálculo do <code>hashCode()</code> (ex: <code>usuario.setId(99L)</code>). O hash mudou, mas o objeto continua no bucket antigo. O método <code>contains()</code> retorna <code>false</code>, <code>remove()</code> não consegue deletá-lo e o objeto vaza na memória Heap para sempre! <i>Regra de ouro:</i> Chaves de Mapas e elementos de Sets devem ser rigorosamente <b>imutáveis</b>.</li>
             <li><b>Optional como Atributo de Classe ou Parâmetro de Método:</b> Declarar <code>private Optional&lt;String&gt; email;</code> dentro de uma Entidade ou DTO. O <code>Optional</code> não é serializável (não implementa <code>Serializable</code>), quebrando sessões HTTP e caches do Redis. Além disso, causa desperdício de memória no Heap criando um wrapper de objeto extra. <i>Regra:</i> Use <code>Optional</code> exclusivamente como tipo de retorno de métodos.</li>
@@ -3638,7 +3638,7 @@ repo.buscar(1L).ifPresent(this::enviarEmailBoasVindas);</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor criou a classe <code>Cliente</code> sobrescrevendo apenas o método <code>equals()</code> por CPF, mas deixou o método <code>hashCode()</code> padrão herdado de <code>Object</code>:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor criou a classe <code>Cliente</code> sobrescrevendo apenas o método <code>equals()</code> por CPF, mas deixou o método <code>hashCode()</code> padrão herdado de <code>Object</code>:</p>
                 <pre class="te-code"><code>Cliente c1 = new Cliente("123.456.789-00", "Carlos");
 Cliente c2 = new Cliente("123.456.789-00", "Carlos");
 
@@ -3696,7 +3696,7 @@ System.out.println("Set contém c2? " + clientesAtivos.contains(c2));</code></pr
       <article class="topic" id="d1">
         <div class="th"><h3>Generics: erasure, invariância e a regra PECS</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 5+</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um framework interno de mensageria utilizou raw types (`List lista = new ArrayList()`) para contornar avisos de compilação. Meses depois, uma nova rotina inseriu um objeto `String` onde a aplicação esperava `MensagemPayload`, disparando `ClassCastException` em tempo de execução no meio da liquidação de ordens da bolsa de valores.</p>
         </div>
 
@@ -3776,7 +3776,7 @@ TypeReference&lt;List&lt;Usuario&gt;&gt; tipo = new TypeReference&lt;&gt;() {};
 List&lt;Usuario&gt; usuarios = objectMapper.readValue(json, tipo);</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A tentação de usar Raw Types (Tipos Crus):</b> Usar <code>List</code> solta em vez de <code>List&lt;String&gt;</code>. Isso desativa completamente todas as checagens do compilador e permite que uma thread adicione um <code>Date</code> dentro de uma lista que outra parte do sistema espera que seja de <code>String</code>, explodindo com <code>ClassCastException</code> horas depois longe da causa-raiz.</li>
             <li><b>Arrays Genéricos são Proibidos:</b> Fazer <code>new T[10]</code> ou <code>new List&lt;String&gt;[10]</code> não compila! Arrays em Java são <i>reificados</i> (sabem seu tipo em runtime e checam em cada atribuição) e são <i>covariantes</i> (<code>String[]</code> é um <code>Object[]</code>). Misturar arrays com o apagamento de tipos dos Generics criaria buracos mortais de segurança de memória (Heap Pollution). <i>Solução:</i> Use sempre <code>List&lt;T&gt;</code> em vez de arrays genéricos.</li>
@@ -3848,7 +3848,7 @@ List&lt;Usuario&gt; usuarios = objectMapper.readValue(json, tipo);</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor sênior projetou um método genérico para filtrar e transferir transações financeiras de uma lista de origem para uma lista de auditoria:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor sênior projetou um método genérico para filtrar e transferir transações financeiras de uma lista de origem para uma lista de auditoria:</p>
                 <pre class="te-code"><code>// Assinatura do método
 public static <T> void transferir(List<? extends T> origem, List<? super T> destino) {
     for (T item : origem) {
@@ -3898,8 +3898,8 @@ public static <T> void transferir(List<? extends T> origem, List<? super T> dest
       <article class="topic" id="d2">
         <div class="th"><h3>List, Set, Map e Queue: escolher pela operação dominante</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um endpoint de consulta de permissões executava `lista.contains(permissao)` dentro de um loop de 50.000 verificações por segundo. Por usar `ArrayList`, cada busca exigia varredura linear $O(N)$, elevando o uso de CPU para 100% e gerando latência de 8 segundos. A simples troca da coleção de consulta para `HashSet` ($O(1)$) derrubou o tempo de resposta para 6 milissegundos.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><strong>Cenário hipotético, com números apenas para o exercício:</strong> um endpoint verifica permissões repetidamente usando `ArrayList.contains`, que percorre a lista em O(n). Substituir a estrutura de consulta por `HashSet` pode reduzir o custo médio das buscas para O(1), mas o ganho medido depende do volume, da distribuição dos hashes, da alocação e do restante do endpoint. Faça benchmark representativo e preserve a semântica de igualdade/ordem exigida pelo caso.</p>
         </div>
 
         <div class="topic-split">
@@ -3915,7 +3915,7 @@ public static <T> void transferir(List<? extends T> origem, List<? super T> dest
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <ul>
-              <li><b>ArrayList:</b> A escolha padrão para 95% dos casos de listas. Acesso aleatório ultrarrápido por índice (O(1)) e alta localidade de cache de CPU (elementos contíguos na RAM).</li>
+              <li><b>ArrayList:</b> opção comum para listas com leitura por índice e iteração. Acesso por índice é O(1) na estrutura; inserir/remover no meio desloca elementos e o custo real depende do volume, padrão de uso e alocações.</li>
               <li><b>HashSet:</b> Deduplicação instantânea e verificação de existência (<code>contains</code>) em tempo constante O(1).</li>
               <li><b>TreeSet / TreeMap:</b> Coleções mantidas rigorosamente ordenadas por árvore Rubro-Negra (Red-Black Tree), permitindo buscas por intervalo (Range Queries: <code>subMap()</code>, <code>headMap()</code>) em O(log N).</li>
               <li><b>ArrayDeque:</b> A implementação definitiva para filas (FIFO) e pilhas (LIFO), superior tanto ao arcaico <code>Stack</code> quanto ao ineficiente <code>LinkedList</code>.</li>
@@ -3977,7 +3977,7 @@ Task t = fila.pollFirst();</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>ConcurrentModificationException ao iterar e remover:</b> Fazer <code>for (Item i : lista) { if (i.expirado()) lista.remove(i); }</code>. O iterador interno do for-each mantém um contador <code>expectedModCount</code>. Ao chamar <code>lista.remove()</code> diretamente na lista, o <code>modCount</code> diverge e o iterador lança <code>ConcurrentModificationException</code> na próxima iteração! <i>Solução:</i> Use <code>lista.removeIf(Item::expirado);</code> (Java 8+) ou use <code>iterator.remove()</code> explicitamente.</li>
             <li><b>Achar que List.of() aceita null ou mutação:</b> Fazer <code>List&lt;String&gt; l = List.of("A", null);</code> lança <code>NullPointerException</code> imediatamente no build da lista! E chamar <code>l.add("B")</code> lança <code>UnsupportedOperationException</code>. Coleções de conveniência do Java 9+ são estritamente imutáveis e rejeitam nulos por design.</li>
@@ -4049,7 +4049,7 @@ Task t = fila.pollFirst();</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um sistema de processamento de pedidos de e-commerce precisa remover elementos duplicados de uma lista de IDs mantendo rigorosamente a <strong>mesma ordem cronológica</strong> em que os IDs chegaram na requisição:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um sistema de processamento de pedidos de e-commerce precisa remover elementos duplicados de uma lista de IDs mantendo rigorosamente a <strong>mesma ordem cronológica</strong> em que os IDs chegaram na requisição:</p>
                 <pre class="te-code"><code>List<String> idsBrutos = List.of("A", "B", "A", "C", "B");
 // Qual coleção usar para desduplicar preservando a ordem A -> B -> C?</code></pre>
                 <p class="te-instrucao">Qual estrutura do framework de coleções Java atende esse requisito com tempo O(1) de acesso?</p>
@@ -4095,7 +4095,7 @@ Task t = fila.pollFirst();</code></pre>
       <article class="topic" id="d3">
         <div class="th"><h3>HashMap por dentro: hash, colisão, árvore e resize</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">entrevista</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um coletor de telemetria inseriu 1.500.000 métricas em um `HashMap` instanciado com o construtor padrão (capacidade inicial 16 e load factor 0.75). O mapa sofreu 19 operações de redimensionamento e rehash completas na Heap sob alta concorrência, travando a thread principal por 7 segundos. A inicialização com capacidade pré-calculada eliminou todos os rehashes.</p>
         </div>
 
@@ -4183,7 +4183,7 @@ Map&lt;Long, Cliente&gt; clientes = new HashMap&lt;&gt;(capacidadeInicial);
 // ✅ ZERO resizes de tabela durante todo o carregamento!</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>HashMap Tradicional NÃO É Thread-Safe (Loop Infinito / Corrupção de Dados):</b> Usar <code>HashMap</code> comum compartilhado entre múltiplas threads concorrentes sem sincronização. Durante um <code>resize()</code> simultâneo, ponteiros de nós são reescritos concorrentemente. No Java 7 isso gerava um ciclo circular na lista encadeada travando a CPU em 100% de loop infinito; no Java 8+ corrompe os buckets e faz chamadas de <code>get()</code> retornarem <code>null</code> para chaves existentes ou lançarem <code>ClassCastException</code>. <i>Solução:</i> Em ambiente multi-thread, use <b>obrigatoriamente <code>ConcurrentHashMap</code></b>!</li>
             <li><b>Chaves com HashCode Constante:</b> Sobrescrever uma classe com <code>public int hashCode() { return 1; }</code>. Todos os milhões de objetos caem no mesmo bucket único! O HashMap perde toda a vantagem de O(1) e se degrada para O(log N) na árvore, aumentando o consumo de memória e a latência de busca.</li>
@@ -4255,7 +4255,7 @@ Map&lt;Long, Cliente&gt; clientes = new HashMap&lt;&gt;(capacidadeInicial);
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Dois desenvolvedores implementaram um cache simples compartilhado entre várias threads HTTP usando um HashMap estático comum sem sincronização:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois desenvolvedores implementaram um cache simples compartilhado entre várias threads HTTP usando um HashMap estático comum sem sincronização:</p>
                 <pre class="te-code"><code>public class SessaoCache {
     private static final Map<String, Usuario> sessoes = new HashMap<>();
     
@@ -4291,7 +4291,7 @@ Map&lt;Long, Cliente&gt; clientes = new HashMap&lt;&gt;(capacidadeInicial);
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">O Load Factor é a taxa de ocupação máxima permitida antes de o HashMap dobrar o tamanho do seu array interno (resize). O valor padrão é <strong>0.75 (75%)</strong>. Esse número representa o equilíbrio ideal matematicamente comprovado entre custo de tempo de busca e economia de espaço em memória.</p>
+                  <p class="tf-resposta">O load factor participa do cálculo do limiar de redimensionamento do <code>HashMap</code>. Na implementação usual do JDK, o padrão é <strong>0,75</strong>, uma escolha de compromisso entre colisões e espaço — não um ótimo matemático universal. Se você conhece o volume esperado, pode pré-dimensionar o mapa e evitar redimensionamentos durante a carga.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -4306,7 +4306,7 @@ Map&lt;Long, Cliente&gt; clientes = new HashMap&lt;&gt;(capacidadeInicial);
       <article class="topic" id="d4">
         <div class="th"><h3>Lambdas e interfaces funcionais</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 8</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma expressão lambda criada dentro de um listener HTTP capturou implicitamente a referência da classe externa (`this`), que mantinha uma cópia inteira do payload de 20MB da requisição. Como o listener tinha ciclo de vida longo, o Garbage Collector foi impedido de liberar os 20MB, acumulando 6GB de vazamento de memória após 300 requisições e derrubando o servidor.</p>
         </div>
 
@@ -4404,7 +4404,7 @@ pedidos.sort(
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Pegadinha das Variáveis "Effectively Final":</b> Tentar alterar uma variável local externa de dentro de uma lambda: <code>int total = 0; lista.forEach(i -> total += i);</code> não compila! Como a lambda pode ser executada em outra thread após o método original ter retornado (e seu stack frame ter sido destruído), a JVM exige que variáveis locais capturadas sejam <b>efetivamente finais</b> (não reatribuídas).</li>
             <li><b>Captura Oculta de Referência (Memory Leak):</b> Se uma lambda referencia um atributo de instância de uma classe (ex: <code>() -> this.limite</code>), a lambda captura silenciosamente uma referência forte ao <code>this</code>. Se essa lambda for passada para um listener ou executor estático assíncrono de longa vida, o objeto inteiro dono do método nunca poderá ser coletado pelo Garbage Collector!</li>
@@ -4476,7 +4476,7 @@ pedidos.sort(
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor tenta somar os valores de uma lista de transações utilizando um consumidor lambda e uma variável local inteira:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor tenta somar os valores de uma lista de transações utilizando um consumidor lambda e uma variável local inteira:</p>
                 <pre class="te-code"><code>int total = 0;
 List<Integer> valores = List.of(10, 20, 30);
 valores.forEach(v -> {
@@ -4525,7 +4525,7 @@ valores.forEach(v -> {
       <article class="topic" id="d5">
         <div class="th"><h3>Streams: pipeline, laziness e Collectors</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 8</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor adicionou `.parallelStream()` em uma rotina que consultava uma API externa com latência de 200ms. Como streams paralelos utilizam por padrão o pool comum da JVM (`ForkJoinPool.commonPool()`), todas as threads do processador ficaram presas em I/O bloqueante, paralisando todas as outras operações da aplicação que dependiam do pool compartilhado.</p>
         </div>
 
@@ -4630,7 +4630,7 @@ for (Cliente c : clientes) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Armadilha Fatal do <code>parallelStream()</code>:</b> Chamar <code>lista.parallelStream()</code> achando que tudo vai ficar mais rápido. Todas as chamadas de <code>parallelStream()</code> do seu servidor compartilham um <b>único pool global estático</b> da JVM: o <code>ForkJoinPool.commonPool()</code>. Se uma thread do parallelStream fizer uma chamada bloqueante lenta (como I/O de disco ou HTTP), ela sequestra as threads do pool comum e <b>paralisa todos os outros parallelStreams da aplicação inteira</b>! <i>Regra de ouro:</i> <code>parallelStream()</code> é exclusivamente para processamento matemático puro de CPU em listas gigantes, nunca para I/O!</li>
             <li><b>Tentar reutilizar um Stream consumido:</b> Fazer <code>Stream&lt;T&gt; s = lista.stream(); s.count(); s.collect(...);</code>. Um Stream só pode ser consumido uma única vez. Na segunda chamada terminal ele lança imediatamente <code>IllegalStateException: stream has already been operated upon or closed</code>.</li>
@@ -4702,7 +4702,7 @@ for (Cliente c : clientes) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um serviço de contabilidade agrupa clientes por CPF usando a Stream API para converter uma lista em um Map:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço de contabilidade agrupa clientes por CPF usando a Stream API para converter uma lista em um Map:</p>
                 <pre class="te-code"><code>List<Cliente> clientes = obterClientesDaBase(); // Contém 2 registros com o mesmo CPF
 Map<String, Cliente> mapa = clientes.stream()
     .collect(Collectors.toMap(Cliente::getCpf, c -> c));</code></pre>
@@ -4755,7 +4755,7 @@ Map<String, Cliente> mapa = clientes.stream()
       <article class="topic" id="e1">
         <div class="th"><h3>Exceções: checked, unchecked e a causa raiz</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um bloco `catch (Exception e) {}` silencioso sem log engoliu uma `SQLException` de chave duplicada em um microsserviço de checkout. O sistema retornou código HTTP 200 para o cliente enquanto nenhuma linha foi gravada no banco, gerando 1.200 reclamações de clientes que pagaram mas não receberam seus pedidos.</p>
         </div>
 
@@ -4846,7 +4846,7 @@ Map<String, Cliente> mapa = clientes.stream()
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Perda da Causa Raiz (Lost Root Cause):</b> Fazer <code>catch (IOException e) { throw new ServiceException("Erro no arquivo"); }</code> sem passar o <code>e</code> no construtor. Quando a aplicação quebrar no servidor, o log mostrará apenas "Erro no arquivo", sem dizer se foi disco cheio, permissão negada ou timeout de rede! <b>SEMPRE passe a causa original: <code>new ServiceException("...", e)</code></b>.</li>
             <li><b>Capturar <code>Throwable</code> ou <code>Error</code> indiscriminadamente:</b> Fazer <code>catch (Throwable t)</code>. Isso intercepta erros fatais da JVM como <code>OutOfMemoryError</code>, <code>StackOverflowError</code> e <code>VirtualMachineError</code>. A JVM está morrendo por falta de memória e o seu código tenta continuar rodando em um estado de corrupção total de heap! <i>Regra:</i> Capture apenas <code>Exception</code> ou suas subclasses específicas.</li>
@@ -4918,7 +4918,7 @@ Map<String, Cliente> mapa = clientes.stream()
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Durante uma pane em produção, o log do Kibana exibiu apenas a seguinte mensagem vaga a cada 2 segundos, sem nenhum stacktrace anexado:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Durante uma pane em produção, o log do Kibana exibiu apenas a seguinte mensagem vaga a cada 2 segundos, sem nenhum stacktrace anexado:</p>
                 <pre class="te-code"><code>// Código encontrado no repositório
 try {
     processarTransacao(transacao);
@@ -4969,7 +4969,7 @@ try {
       <article class="topic" id="e2">
         <div class="th"><h3>try-with-resources e a posse dos recursos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 7+</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de exportação de notas fiscais abria conexões JDBC e fluxos de arquivos sem `try-with-resources`. Após 6 horas de operação contínua, o servidor Linux esgotou o limite de descritores de arquivos por processo (`Too many open files - errno 24`), impedindo novas conexões de rede e forçando um reinício emergencial de toda a infraestrutura.</p>
         </div>
 
@@ -5074,7 +5074,7 @@ try (InputStream in = new FileInputStream(arquivo)) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Streams que Envolvem Recursos Externos (Unwrapped Streams):</b> Criar um <code>BufferedReader</code> em volta de um <code>FileReader</code> fora do try: <code>FileReader fr = new FileReader(f); try (BufferedReader br = new BufferedReader(fr)) ...</code>. Se a instanciação do <code>BufferedReader</code> falhar, o <code>FileReader</code> fica aberto vazando o descritor de arquivo do SO! <i>Solução:</i> Instancie o recurso diretamente dentro dos parênteses do try: <code>try (BufferedReader br = Files.newBufferedReader(path))</code>.</li>
             <li><b>AutoCloseable que lança Exception Genérica:</b> Criar sua classe implementando <code>AutoCloseable</code> e manter a assinatura <code>void close() throws Exception</code>. Isso obriga quem chama a capturar <code>Exception</code> genérica. <i>Regra:</i> Ao implementar <code>AutoCloseable</code>, especifique a exceção exata (ex: <code>throws IOException</code>) ou remova o <code>throws</code> se o fechamento for garantido e não lançar exceções.</li>
@@ -5146,7 +5146,7 @@ try (InputStream in = new FileInputStream(arquivo)) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a execução do seguinte código onde tanto a leitura quanto o fechamento do recurso disparam exceções:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a execução do seguinte código onde tanto a leitura quanto o fechamento do recurso disparam exceções:</p>
                 <pre class="te-code"><code>class RecursoCritico implements AutoCloseable {
     public void executar() { throw new RuntimeException("Falha na execução"); }
     public void close() { throw new RuntimeException("Falha no fechamento"); }
@@ -5200,7 +5200,7 @@ public static void testar() {
       <article class="topic" id="e3">
         <div class="th"><h3>Testes: comportamento, integração e determinismo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma suíte de testes de integração continha 25 testes com chamadas a `Thread.sleep(200)` para aguardar eventos assíncronos. Em máquinas com CPU sobrecarregada na esteira de CI, os testes falhavam intermitentemente em 35% das execuções, atrasando o pipeline de deploy em mais de 4 horas por dia até a substituição dos sleeps por asserções reativas com Awaitility.</p>
         </div>
 
@@ -5292,7 +5292,7 @@ void validarCpf(String cpf, boolean resultadoEsperado) {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Mito Perigoso do Banco H2 em Testes de Integração:</b> Usar banco em memória H2 nos testes achando que ele se comporta igual ao PostgreSQL ou Oracle de produção. O H2 aceita tipos de dados diferentes, não possui as mesmas funções de data, não valida locks pessimistas da mesma forma e aceita sintaxes que explodem em produção com erro de SQL! <i>Solução:</i> Use <b>Testcontainers</b> para rodar o mesmo banco de dados real em Docker nos testes de integração.</li>
             <li><b>Testes que dependem do Relógio da Máquina ou Ordem de Execução:</b> Testes que usam <code>Thread.sleep()</code> para esperar operações assíncronas. Em uma máquina potente o sleep de 100ms passa; no servidor de CI sob carga pesada o sleep termina antes da thread concluir e o teste falha aleatoriamente! <i>Solução:</i> Use a biblioteca <b>Awaitility</b> para aguardar condições com polling inteligente ou injete um <code>Clock</code> fixo.</li>
@@ -5364,7 +5364,7 @@ void validarCpf(String cpf, boolean resultadoEsperado) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma equipe mantinha 500 testes de integração usando banco H2 em memória. Ao migrar a aplicação para PostgreSQL em produção, uma consulta com cláusula JSONB ('WHERE dados->>'status' = 'PAGO'') e paginação quebrou com erro de sintaxe SQL:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma equipe mantinha 500 testes de integração usando banco H2 em memória. Ao migrar a aplicação para PostgreSQL em produção, uma consulta com cláusula JSONB ('WHERE dados->>'status' = 'PAGO'') e paginação quebrou com erro de sintaxe SQL:</p>
                 <pre class="te-code"><code>@SpringBootTest
 @AutoConfigureTestDatabase // Usando H2 em memória nos testes
 class PedidoRepositoryTest {
@@ -5416,7 +5416,7 @@ class PedidoRepositoryTest {
       <article class="topic" id="e4">
         <div class="th"><h3>Troubleshooting: sintoma, hipótese, evidência</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">habilidade-mãe</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação bancária congelou em produção sem emitir uma única linha de log de erro. O time gastou 4 horas reiniciando instâncias até que um engenheiro sênior executou `jcmd <pid> Thread.print`: a saída revelou instantaneamente que 180 threads estavam travadas em Deadlock disputando os mesmos monitores de sincronização em ordens inversas.</p>
         </div>
 
@@ -5510,7 +5510,7 @@ log.info("Processando pedido total={}", valor);
 // {"timestamp":"2026-09-20T10:30:00Z","traceId":"a91f-4b","userId":"123","message":"Processando..."}</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Mito do "Reinicia que Resolve" sem Coleta de Dumps:</b> O container trava com 100% de CPU ou esgotamento de memória. O desenvolvedor dá <code>docker restart</code> imediatamente. A aplicação volta temporariamente, mas <b>todas as evidências foram destruídas</b>! Duas horas depois ela trava novamente no pico de tráfego. <i>Regra de ouro:</i> Configure a flag da JVM <code>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps/oom.hprof</code> para que a JVM tire o dump automaticamente antes de morrer!</li>
             <li><b>A Armadilha da Causa Sintomática vs Causa Raiz:</b> A métrica mostra 100% de CPU. A conclusão precipitada é: "precisamos de mais pods/máquinas maiores". Ao coletar o Thread Dump, descobre-se que a CPU estava em 100% porque o Garbage Collector estava em Full GC contínuo tentando desesperadamente liberar 20 MB de heap que estavam bloqueados por um memory leak de coleção estática! Aumentar a CPU não resolveria nada; a causa era memória.</li>
@@ -5582,7 +5582,7 @@ log.info("Processando pedido total={}", valor);
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma API Java parou de responder requisições em produção. A CPU está em 0% e o consumo de memória está estável em 600MB. Ao executar 'jcmd <pid> Thread.print', você encontra 150 threads no seguinte estado:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma API Java parou de responder requisições em produção. A CPU está em 0% e o consumo de memória está estável em 600MB. Ao executar 'jcmd <pid> Thread.print', você encontra 150 threads no seguinte estado:</p>
                 <pre class="te-code"><code>"http-nio-8080-exec-12" #45 daemon prio=5 os_prio=0 tid=0x00007f nid=0x2b waiting on condition
    java.lang.Thread.State: WAITING (parking)
     at jdk.internal.misc.Unsafe.park(Native Method)
@@ -5638,7 +5638,7 @@ log.info("Processando pedido total={}", valor);
       <article class="topic" id="f1">
         <div class="th"><h3>Arquivos: Path, charset e leitura em fluxo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma rotina de conciliação bancária tentou ler um arquivo de extrato de 3.8GB usando `Files.readAllLines(path)`. A JVM tentou alocar todas as linhas simultaneamente em objetos `String` na memória Heap, gerando `java.lang.OutOfMemoryError: Java heap space` imediato. A reescrita com `Files.lines()` processou o arquivo em streaming mantendo o consumo de memória estável em apenas 32MB de RAM.</p>
         </div>
 
@@ -5649,13 +5649,13 @@ log.info("Processando pedido total={}", valor);
           <p>O <b>Java NIO.2 (New I/O)</b>, introduzido no pacote <code>java.nio.file</code> (com as classes <b><code>Path</code></b> e <b><code>Files</code></b>), é a API moderna de manipulação de sistemas de arquivos que substituiu a antiga e problemática <code>java.io.File</code>. Ela estabelece a distinção clara entre <b>I/O de Bytes</b> (binários puros como imagens e PDFs: <code>InputStream</code>/<code>OutputStream</code>) e <b>I/O de Caracteres</b> (textos como CSV, JSON e logs: <code>Reader</code>/<code>Writer</code>), mediada obrigatoriamente por um <b>Charset explícito (UTF-8)</b>.</p>
         </div>
 
-            <div class="analogia"><i class="ic">≈</i><p><b>O canudo de refrigerante vs o balde de água.</b> Se você precisa beber 10 litros de água (ler um arquivo de log de 2 GB), você não tenta engolir os 10 litros de uma vez só em um único copo gigante (fazer <code>Files.readAllBytes()</code> ou <code>Files.readAllLines()</code>, o que estoura a memória Heap com OOM). Você usa um canudo (um <code>Stream</code> de I/O em fluxo contínuo ou <code>Files.lines()</code>): a água sobe gole por gole (linha por linha), você processa o gole e descarta, mantendo o consumo de memória RAM do seu processo sempre constante em poucos megabytes, seja o arquivo de 1 MB ou de 50 GB.</p></div>
+            <div class="analogia"><i class="ic">≈</i><p><b>O canudo de refrigerante vs o balde de água.</b> Para ler um arquivo grande, carregar tudo com <code>readAllBytes()</code> ou <code>readAllLines()</code> pode exigir memória proporcional ao arquivo e causar pressão de heap. <code>Files.lines()</code> permite processar linhas em fluxo; o consumo não é necessariamente constante: depende do tamanho da maior linha, do processamento e de buffers. Feche o stream (por exemplo, com try-with-resources) e teste com dados representativos.</p></div>
 
             <div class="duo">
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <ul>
-              <li><b>Processamento de Arquivos Gigantes sem OOM:</b> Ler arquivos de exportação e conciliação bancária de gigabytes com complexidade de memória O(1) usando <code>Files.lines(path)</code> sob um Stream preguiçoso.</li>
+              <li><b>Processamento de arquivos grandes em fluxo:</b> percorrer linhas com <code>Files.lines(path)</code> evita materializar o arquivo inteiro, mas o consumo depende da maior linha, dos buffers e da lógica que processa cada registro.</li>
               <li><b>Operações Atômicas de Arquivos no SO:</b> Mover ou renomear arquivos de forma atômica com <code>StandardCopyOption.ATOMIC_MOVE</code> (essencial para evitar que outros processos leiam arquivos incompletos pela metade).</li>
               <li><b>Navegação e Busca Recursiva Eficiente:</b> Percorrer diretórios com <code>Files.walk()</code> e <code>Files.find()</code> sem carregar listas pesadas de metadados em memória.</li>
             </ul>
@@ -5716,7 +5716,7 @@ for (String l : linhas) {
 // Crash imediato: OutOfMemoryError!</code></pre>
             </div>
             <div class="depois">
-              <div class="lab">Streaming O(1) de Memória</div>
+              <div class="lab">Streaming sem materializar o arquivo</div>
               <pre><code>// ✅ Consome linha por linha sob demanda
 // Memória RAM utilizada: menos de 2 MB constantes!
 try (Stream&lt;String&gt; stream = Files.lines(path)) {
@@ -5726,7 +5726,7 @@ try (Stream&lt;String&gt; stream = Files.lines(path)) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Esquecer de Fechar o <code>Files.lines()</code> (File Descriptor Leak):</b> <code>Files.lines()</code> retorna um <code>Stream&lt;String&gt;</code> que mantém o arquivo aberto no Sistema Operacional! Diferente dos streams de coleções que não precisam de fechamento, <b>o Stream retornado por Files.lines() implementa AutoCloseable</b>. Se você usá-lo sem <code>try-with-resources</code>, o descritor de arquivo fica aberto até o próximo GC. Em um servidor Linux, ao atingir o limite <code>ulimit -n</code> (ex: 1024 arquivos abertos), o servidor rejeita todas as novas conexões HTTP com <code>IOException: Too many open files</code>!</li>
             <li><b>Manipulação de Strings de Caminho na Mão:</b> Concatenar caminhos com barras manuais: <code>"/pasta/" + subpasta + "/" + nome</code>. No Windows isso gera separadores invertidos e abre brechas de segurança graves de <b>Path Traversal (CWE-22)</b> se o nome do arquivo vier de um input de usuário (ex: <code>../../etc/passwd</code>). <i>Solução:</i> Use sempre <code>Path.of("pasta", subpasta, nome).normalize()</code>.</li>
@@ -5747,7 +5747,7 @@ try (Stream&lt;String&gt; stream = Files.lines(path)) {
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>Streaming com Files.lines()</b>
-                    <p>Processe arquivos grandes linha a linha usando Files.lines(path). Isso consome apenas a memória de uma linha por vez, permitindo processar arquivos de 50GB em um container com 512MB de RAM.</p>
+                    <p><code>Files.lines(path)</code> permite percorrer as linhas sem materializar o arquivo inteiro, mas ainda há buffers, objetos e o custo da maior linha. Um arquivo de 50 GB não cabe automaticamente em qualquer container de 512 MB: processe em fluxo, limite acumulação, feche o stream e valide o caso real.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -5798,7 +5798,7 @@ try (Stream&lt;String&gt; stream = Files.lines(path)) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um microsserviço de conciliação financeira processa arquivos CSV de 4 GB enviados diariamente pelos bancos parceiros. O código foi escrito da seguinte forma:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um microsserviço de conciliação financeira processa arquivos CSV de 4 GB enviados diariamente pelos bancos parceiros. O código foi escrito da seguinte forma:</p>
                 <pre class="te-code"><code>Path arquivo = Paths.get("/dados/extrato_gigante.csv");
 List<String> linhas = Files.readAllLines(arquivo); // Leitura completa para memória!
 for (String linha : linhas) {
@@ -5813,7 +5813,7 @@ for (String linha : linhas) {
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A ausência de BOM não impede leitura de texto e não causa erros fatais de memória na JVM.">
                     <span class="te-letter">B</span> Ocorre IllegalCharsetNameException por ausência de marcação BOM no início do arquivo CSV de conciliação bancária.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Files.readAllLines carrega todas as linhas como objetos String no Heap de uma vez só, excedendo 1GB. Files.lines() processa o arquivo sob demanda via Stream sem reter o arquivo completo na memória.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto para o cenário: readAllLines materializa a lista de linhas e pode exigir muita memória. Files.lines permite processar em fluxo sem carregar a lista completa; o consumo ainda depende de buffers, maior linha e lógica do consumidor.">
                     <span class="te-letter">C</span> Ocorre OutOfMemoryError por alocação total da lista na Heap; use Files.lines() dentro de try-with-resources para leitura em fluxo.
                   </button>
                 </div>
@@ -5847,7 +5847,7 @@ for (String linha : linhas) {
       <article class="topic" id="f2">
         <div class="th"><h3>HttpClient: timeout, retry, backoff e idempotência</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 11+</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um cliente HTTP interno consumia uma API de cotação de moedas sem configurar `connectTimeout` e `readTimeout`. Durante uma instabilidade na operadora de telecomunicações, o gateway remoto parou de responder sem fechar a conexão TCP. Todas as 200 threads do pool de requisições ficaram bloqueadas indefinidamente, travando o microsserviço inteiro.</p>
         </div>
 
@@ -5933,7 +5933,7 @@ if (response.statusCode() == 200) {
     });</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Efeito Manada (Thundering Herd) por Retries Imediatos:</b> Quando o serviço B fica lento, 100 instâncias do serviço A recebem timeout e disparam retries no mesmo milissegundo. O serviço B, que estava apenas oscilando, é bombardeado com o triplo de tráfego de retries e cai de vez! <i>Solução:</i> Use sempre <b>Exponential Backoff com Jitter</b> (adicionando um atraso randômico entre as tentativas) e limite o número máximo de retries para 2 ou 3.</li>
             <li><b>Retries em Operações Não-Idempotentes:</b> Um <code>POST /pedidos</code> dá timeout após 5 segundos. O cliente assume que a requisição falhou e retenta. Mas o servidor <i>já havia processado o pedido</i>; apenas a resposta HTTP de volta para o cliente se perdeu na rede! O cliente acaba com 2 pedidos gerados e cobrados no cartão. <i>Solução:</i> Só aplique retry automático em métodos naturalmente idempotentes (<code>GET</code>, <code>PUT</code>, <code>DELETE</code>), ou exija <code>Idempotency-Key</code> em requisições POST.</li>
@@ -6005,7 +6005,7 @@ if (response.statusCode() == 200) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um gateway de pagamento dispara uma requisição POST de cobrança de R$ 500,00 para o adquirente. Após 5 segundos, a conexão TCP sofre timeout de leitura sem que a resposta HTTP chegue. A transação foi efetuada pelo adquirente, mas o cliente Java não sabe disso.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um gateway de pagamento dispara uma requisição POST de cobrança de R$ 500,00 para o adquirente. Após 5 segundos, a conexão TCP sofre timeout de leitura sem que a resposta HTTP chegue. A transação foi efetuada pelo adquirente, mas o cliente Java não sabe disso.</p>
                 <pre class="te-code"><code>// Código do desenvolvedor júnior
 try {
     httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -6056,7 +6056,7 @@ try {
       <article class="topic" id="f3">
         <div class="th"><h3>Parsing e fronteiras não confiáveis</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">segurança</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um endpoint público que recebia XML de notas fiscais não desativou entidades externas no parser `DocumentBuilderFactory`. Um atacante enviou um payload malicioso com ataque XXE (XML External Entity) que permitiu a leitura do arquivo `/etc/shadow` e das variáveis de ambiente de produção contendo as credenciais de banco de dados.</p>
         </div>
 
@@ -6149,7 +6149,7 @@ public ResponseEntity&lt;Void&gt; criar(@Valid @RequestBody CriarUsuarioDTO dto)
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Ataque de Negação de Serviço por JSON Bombs (Billion Laughs / Deeply Nested JSON):</b> Um atacante envia um JSON válido com 10.000 colchetes aninhados <code>[[[[[...]]]]]</code>. O parser tradicional usa recursão na pilha para descer os nós e estoura um <code>StackOverflowError</code> fatal na JVM, derrubando a thread! <i>Solução:</i> O Jackson moderno (2.15+) possui limites estritos de segurança por padrão (<code>StreamReadConstraints.builder().maxNestingDepth(1000).build()</code>). Mantenha suas dependências sempre atualizadas.</li>
             <li><b>Uso da Serialização Nativa do Java (<code>ObjectInputStream</code>):</b> Nunca, sob nenhuma hipótese arquitetural moderna, use a serialização nativa do Java (<code>Serializable</code> com <code>readObject()</code>) para receber dados da rede ou de filas públicas. A serialização nativa do Java é considerada pelos próprios arquitetos da Oracle como "o maior erro de design da linguagem" devido à facilidade de exploração de gadgets de execução arbitrária. Use JSON, Protobuf ou Avro com esquemas estritos.</li>
@@ -6221,7 +6221,7 @@ public ResponseEntity&lt;Void&gt; criar(@Valid @RequestBody CriarUsuarioDTO dto)
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um serviço bancário recebe solicitações de PIX via JSON. Um invasor enviou um payload malicioso com valor negativo ('-500.00'), e o código realizou o débito sem validar:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço bancário recebe solicitações de PIX via JSON. Um invasor enviou um payload malicioso com valor negativo ('-500.00'), e o código realizou o débito sem validar:</p>
                 <pre class="te-code"><code>public record PixRequest(String chaveDestino, BigDecimal valor) {}
 
 // Endpoint Controller
@@ -6280,7 +6280,7 @@ public ResponseEntity<?> transferir(@RequestBody PixRequest req) {
       <article class="topic" id="g1">
         <div class="th"><h3>SQL: por que ele existe e por que não morre</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">1970 → hoje</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um relatório de fechamento financeiro trazia 800.000 linhas de vendas via JDBC para a memória da JVM para somar o faturamento em um loop em Java, consumindo 1.2GB de tráfego de rede e 45 segundos de execução. A substituição por uma consulta SQL nativa com `SUM(valor)` e índices adequados executou a agregação diretamente no PostgreSQL em 18 milissegundos.</p>
         </div>
 
@@ -6366,7 +6366,7 @@ BigDecimal total = jdbcTemplate.queryForObject(sql, BigDecimal.class);</code></p
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Perigo do SELECT * em Produção:</b> Utilizar <code>SELECT *</code> em entidades com dezenas de colunas ou campos <code>TEXT</code> / <code>BLOB</code> pesados. Isso impede o uso de <b>Covering Indexes</b> (índices que contêm todas as colunas da busca na própria árvore sem precisar ir na tabela principal) e multiplica o tráfego de rede entre a aplicação e o banco em até 20 vezes.</li>
             <li><b>Falta de Índices em Chaves Estrangeiras (FK):</b> O PostgreSQL e o MySQL não criam índices automáticos em colunas de Foreign Key! Ao fazer um <code>DELETE</code> ou <code>UPDATE</code> na tabela pai, o banco é forçado a travar com lock e escanear a tabela filha inteira para verificar a restrição, gerando deadlocks e travando a aplicação em produção.</li>
@@ -6438,7 +6438,7 @@ BigDecimal total = jdbcTemplate.queryForObject(sql, BigDecimal.class);</code></p
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma startup de pagamentos modelou contas e transações em um banco NoSQL documental sem suporte a transações ACID multi-documento. Sob um pico de concorrência, uma operação de transferência debitou R$ 1.000,00 da Conta A, mas um timeout de rede impediu a gravação do crédito na Conta B.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma startup de pagamentos modelou contas e transações em um banco NoSQL documental sem suporte a transações ACID multi-documento. Sob um pico de concorrência, uma operação de transferência debitou R$ 1.000,00 da Conta A, mas um timeout de rede impediu a gravação do crédito na Conta B.</p>
                 
                 <p class="te-instrucao">Qual princípio da sigla ACID foi violado nesse cenário e como um banco relacional previne essa anomalia?</p>
 
@@ -6483,7 +6483,7 @@ BigDecimal total = jdbcTemplate.queryForObject(sql, BigDecimal.class);</code></p
       <article class="topic" id="g2">
         <div class="th"><h3>JDBC: DataSource, driver, Connection e pool</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">a fundação de tudo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma API abria conexões diretas com o banco via `DriverManager.getConnection()` a cada requisição HTTP recebida. O handshake TCP, negociação TLS e autenticação consumiam 90ms em cada request. A introdução do pool HikariCP com 20 conexões pré-aquecidas reduziu o tempo de obtenção de conexão para 0.15ms, permitindo atender 10x mais requisições por segundo.</p>
         </div>
 
@@ -6561,7 +6561,7 @@ try (Connection conn = dataSource.getConnection();
 } // A conexão é devolvida automaticamente para o pool HikariCP AQUI!</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Connection Leak (Vazamento de Conexão):</b> Abrir uma conexão fora de um bloco <code>try-with-resources</code> e estourar uma exceção antes do <code>close()</code> ser chamado. A conexão nunca é devolvida ao pool. Após 20 erros desses, o pool atinge a capacidade máxima (<code>maximumPoolSize=20</code>) e <b>a aplicação inteira trava com <code>SQLTransientConnectionException: Connection is not available, request timed out</code></b>. <i>Solução:</i> Ative <code>setLeakDetectionThreshold(5000)</code> no HikariCP para receber um stack trace no log apontando o método culpado!</li>
             <li><b>Manter Conexão Aberta durante Chamadas HTTP Lentas:</b> Abrir uma transação de banco com conexão segura e, no meio dela, fazer uma chamada HTTP externa para uma API de terceiros que demora 8 segundos. Enquanto a thread espera a rede, a conexão do banco fica bloqueada sem fazer nada. Três requisições dessas esgotam o pool do seu microserviço. <i>Regra de ouro:</i> <b>Nunca faça I/O de rede externa com uma conexão de banco aberta!</b></li>
@@ -6633,7 +6633,7 @@ try (Connection conn = dataSource.getConnection();
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma API em Spring Boot foi configurada em um servidor com 4 cores de CPU e banco PostgreSQL dedicado de 4 vCPUs com SSD. O arquiteto configurou o pool HikariCP com o valor máximo de <code>maximum-pool-size: 300</code>. Sob carga alta, o tempo de resposta da API subiu de 15ms para 8.000ms e a CPU do banco atingiu 100% de uso.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma API em Spring Boot foi configurada em um servidor com 4 cores de CPU e banco PostgreSQL dedicado de 4 vCPUs com SSD. O arquiteto configurou o pool HikariCP com o valor máximo de <code>maximum-pool-size: 300</code>. Sob carga alta, o tempo de resposta da API subiu de 15ms para 8.000ms e a CPU do banco atingiu 100% de uso.</p>
                 
                 <p class="te-instrucao">Qual é o diagnóstico de engenharia para essa lentidão e a calibração recomendada?</p>
 
@@ -6678,7 +6678,7 @@ try (Connection conn = dataSource.getConnection();
       <article class="topic" id="g3">
         <div class="th"><h3>PreparedStatement e ResultSet: SQL injection morre aqui</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">segurança</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um desenvolvedor concatenou o parâmetro de busca do usuário diretamente na consulta SQL via `Statement` simples (`WHERE nome = '" + input + "'`). Uma exploração de SQL Injection com `' OR '1'='1` vazou a tabela completa de 650.000 cartões de crédito. A adoção estrita de `PreparedStatement` com bind de parâmetros parametrizados eliminou a vulnerabilidade em toda a base.</p>
         </div>
 
@@ -6770,7 +6770,7 @@ ResultSet rs = ps.executeQuery();
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Pegadinha do <code>getInt()</code> retornando ZERO para NULL:</b> Em SQL, uma coluna inteira pode ter o valor <code>NULL</code>. Se você chamar <code>int idade = rs.getInt("idade");</code> em uma coluna nula, o JDBC retorna <b>0 (zero primitivo)</b>! O seu sistema assume que a pessoa tem 0 anos em vez de não ter idade cadastrada! <i>Solução:</i> Sempre que a coluna for anulável, use <code>rs.getObject("idade", Integer.class)</code> para receber <code>null</code> ou cheque com <code>rs.wasNull()</code> logo após o get.</li>
             <li><b>O Mito da Cláusula <code>IN (...)</code> Dinâmica:</b> O PreparedStatement não aceita uma coleção como parâmetro único de <code>IN (?)</code>. Se você fizer <code>ps.setString(1, "1,2,3")</code>, o banco procura por um único registro cujo ID seja o texto literal "1,2,3". <i>Solução:</i> Gere pontos de interrogação dinâmicos conforme o tamanho da lista (<code>IN (?, ?, ?)</code>) ou passe um array SQL nativo com <code>conn.createArrayOf("INTEGER", array)</code>.</li>
@@ -6842,7 +6842,7 @@ ResultSet rs = ps.executeQuery();
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere os dois métodos de consulta a seguir implementados em um repositório legado:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere os dois métodos de consulta a seguir implementados em um repositório legado:</p>
                 <pre class="te-code"><code>// Consulta 1
 String sql1 = "SELECT * FROM contas WHERE titular = '" + nome + "'";
 Statement st = conn.createStatement();
@@ -6896,7 +6896,7 @@ ResultSet rs2 = ps.executeQuery();</code></pre>
       <article class="topic" id="g4">
         <div class="th"><h3>Transações: ACID e a mesma Connection</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma transferência entre contas correntes executava o débito em uma conexão JDBC e o crédito em outra conexão sem compartilhar a mesma transação física. Uma queda de energia no data center exatamente entre as duas chamadas debitou R$ 50.000 da conta de origem sem creditar na de destino, gerando uma quebra de integridade contábil e auditoria regulatória.</p>
         </div>
 
@@ -6987,7 +6987,7 @@ ResultSet rs2 = ps.executeQuery();</code></pre>
 // 7. Limpa o ThreadLocal e devolve a conexão ao pool</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Pegadinha do <code>@Transactional</code> com Chamada Interna (Self-Invocation):</b> Em Spring, chamar um método <code>@Transactional</code> a partir de outro método <i>dentro da mesma classe</i> (ex: <code>this.salvar()</code>). Como a chamada é direta na instância <code>this</code> e não passa pelo Proxy do Spring, <b>a anotação é completamente ignorada e o código roda SEM transação</b>! <i>Solução:</i> Mova o método transacional para outra classe de serviço ou injete a si mesmo.</li>
             <li><b>Rollback apenas para RuntimeException por Padrão:</b> Por padrão, o Spring <code>@Transactional</code> <b>SÓ faz rollback para subclasses de <code>RuntimeException</code></b>! Se o seu método lançar uma <i>Checked Exception</i> (como <code>IOException</code> ou <code>SQLException</code>), o Spring comita a transação mesmo com erro! <i>Solução:</i> Especifique sempre: <code>@Transactional(rollbackFor = Exception.class)</code>.</li>
@@ -7059,7 +7059,7 @@ ResultSet rs2 = ps.executeQuery();</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou um método de checkout com a anotação @Transactional do Spring:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou um método de checkout com a anotação @Transactional do Spring:</p>
                 <pre class="te-code"><code>@Transactional
 public void finalizarPedido(Pedido pedido) {
     pedidoRepository.salvar(pedido); // 1. Grava no banco e adquire locks de estoque
@@ -7112,7 +7112,7 @@ public void finalizarPedido(Pedido pedido) {
       <article class="topic" id="g5">
         <div class="th"><h3>Isolamento, locks e o lost update</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">concorrência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Dois compradores clicaram no mesmo milissegundo para adquirir a última unidade de um produto em promoção sob o nível de isolamento padrão `Read Committed`. Ambos leram estoque igual a 1, subtraíram 1 e gravaram 0, vendendo a mesma mercadoria duas vezes (Lost Update). O problema foi mitigado com lock pessimista (`SELECT FOR UPDATE`) na linha do produto.</p>
         </div>
 
@@ -7201,7 +7201,7 @@ if (afetados == 0) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Deadlock de Banco de Dados por Inversão de Ordem de Locks:</b> A Transação 1 atualiza a Conta A e tenta atualizar a Conta B. Simultaneamente, a Transação 2 atualizou a Conta B e tenta atualizar a Conta A. Ambas ficam travadas esperando o lock uma da outra para sempre! O banco detecta o ciclo após alguns segundos e mata uma delas com <code>DeadlockException</code>. <i>Solução:</i> <b>Sempre adquira locks na mesma ordem canônica e previsível</b> (ex: sempre ordene os IDs antes de travar: <code>ORDER BY id ASC</code>).</li>
             <li><b>Lock Pessimista sem Timeout (Gargalo de Fila Infinita):</b> Fazer <code>SELECT FOR UPDATE</code> puro. Se a transação demorar, todas as outras requisições do sistema empilham esperando a trava sem desistir, saturando o pool HikariCP. <i>Solução:</i> Use sempre <code>SELECT FOR UPDATE NOWAIT</code> ou <code>SKIP LOCKED</code> para pular registros já travados (ideal para filas de mensageria em banco de dados).</li>
@@ -7273,7 +7273,7 @@ if (afetados == 0) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Dois clientes clicam simultaneamente para comprar o último assento disponível de um show. As duas requisições leem que o assento está 'LIVRE' no mesmo instante e ambas tentam confirmar a compra:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois clientes clicam simultaneamente para comprar o último assento disponível de um show. As duas requisições leem que o assento está 'LIVRE' no mesmo instante e ambas tentam confirmar a compra:</p>
                 <pre class="te-code"><code>// Código sem controle de concorrência
 Assento assento = assentoRepo.findById(id); // Ambas as threads leem status LIVRE
 if (assento.isLivre()) {
@@ -7324,7 +7324,7 @@ if (assento.isLivre()) {
       <article class="topic" id="g6">
         <div class="th"><h3>Batch, streaming e paginação por keyset</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">volume</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma tela de auditoria permitia navegar até a página 20.000 de logs usando `OFFSET 1000000 LIMIT 50`. O banco de dados precisava ler e descartar 1 milhão de tuplas no disco antes de retornar as 50 linhas, levando 18 segundos por requisição. A migração para Keyset Pagination (`WHERE id > :ultimoId LIMIT 50`) reduziu o tempo de consulta para 4 milissegundos constante.</p>
         </div>
 
@@ -7348,7 +7348,7 @@ if (assento.isLivre()) {
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
             <ul>
-              <li><b>A Ilusão do OFFSET Paginado:</b> Quando você faz <code>OFFSET 100000 LIMIT 10</code>, o banco de dados <b>lê e processa fisicamente 100.010 linhas do disco</b> para descartar as primeiras 100.000 e entregar apenas 10! Conforme o usuário avança as páginas, a query fica exponencialmente mais lenta até travar o banco. Keyset Pagination roda em O(1) de tempo constante em qualquer página!</li>
+              <li><b>O custo potencial do OFFSET grande:</b> o banco precisa computar as linhas descartadas, e isso pode tornar páginas profundas mais caras; o plano, índices, filtros e dados influenciam o custo. Paginação por keyset evita percorrer um prefixo grande quando há índice compatível, mas costuma ter custo de busca indexada mais leitura da página — não O(1) universal — e exige ordenação estável.</li>
             </ul>
           </div>
         </div>
@@ -7414,7 +7414,7 @@ LIMIT 20;
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Lotes de Batch Grandes Demais (Heap OutOfMemoryError no Driver):</b> Tentar acumular 100.000 instruções no <code>addBatch()</code> sem chamar <code>executeBatch()</code> intermediário. O driver JDBC armazena os parâmetros em arrays de objetos no Heap; um lote desproporcional consome toda a memória do pod e causa OOM na aplicação. <i>Regra de ouro:</i> Mantenha o tamanho do lote de batch entre <b>200 e 1.000 registros</b> por execução.</li>
             <li><b>Keyset Pagination em Colunas com Valores Duplicados:</b> Tentar fazer keyset em colunas que não são estritamente únicas (ex: <code>WHERE data_criacao > :ultimaData</code>). Se houver 10 clientes criados no mesmíssimo timestamp, ao passar para a próxima página alguns clientes serão pulados e sumirão da listagem! <i>Solução:</i> Use sempre uma chave composta para desempate: <code>WHERE (data_criacao, id) > (:ultimaData, :ultimoId)</code>.</li>
@@ -7435,14 +7435,14 @@ LIMIT 20;
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>O Desastre do OFFSET em Big Data</b>
-                    <p>OFFSET 1.000.000 LIMIT 50 força o banco a escanear e carregar 1.000.050 linhas no disco para descartar o primeiro milhão. A performance degrada drasticamente conforme o usuário avança de página.</p>
+                    <p>OFFSET profundo exige computar as linhas ignoradas e pode ficar caro; o trabalho exato depende do plano e dos índices. Meça a consulta com <code>EXPLAIN (ANALYZE, BUFFERS)</code> usando dados representativos.</p>
                   </div>
                 </div>
                 <div class="tr-item">
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Paginação por Keyset (Cursor-Based)</b>
-                    <p>WHERE id > :ultimoId ORDER BY id ASC LIMIT 50. Como utiliza diretamente o índice B-Tree, o custo de busca é O(1) e a 1.000ª página responde com a mesma velocidade de 2ms da 1ª página!</p>
+                    <p><code>WHERE id &gt; :ultimoId ORDER BY id LIMIT 50</code> pode fazer uma busca por faixa em índice compatível e ler a próxima página, sem descartar todas as linhas anteriores. Custo e latência dependem do índice, filtro, distribuição, tamanho da página e concorrência; cursor também exige uma ordenação estável e não oferece salto arbitrário barato.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -7486,7 +7486,7 @@ LIMIT 20;
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma rotina de migração em Java precisa importar 1.000.000 de registros de um arquivo legado para o banco PostgreSQL. O desenvolvedor implementou um loop simples chamando 'preparedStatement.executeUpdate()' a cada linha lida:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma rotina de migração em Java precisa importar 1.000.000 de registros de um arquivo legado para o banco PostgreSQL. O desenvolvedor implementou um loop simples chamando 'preparedStatement.executeUpdate()' a cada linha lida:</p>
                 <pre class="te-code"><code>for (Registro r : registros) {
     ps.setString(1, r.getNome());
     ps.setBigDecimal(2, r.getValor());
@@ -7535,7 +7535,7 @@ LIMIT 20;
       <article class="topic" id="g7">
         <div class="th"><h3>Por que o JPA/Hibernate existe — e o que ele esconde</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">o próximo passo</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma consulta JPA com relacionamento `@OneToMany` em modo Lazy buscou 300 pedidos e, em seguida, iterou sobre a lista acessando os itens de cada pedido. O Hibernate disparou 1 query para os pedidos e 300 queries individuais subsequentes no banco de dados (o clássico N+1 queries), elevando a CPU do banco a 98%. O uso de `JOIN FETCH` consolidou o carregamento em uma única query executada em 28ms.</p>
         </div>
 
@@ -7636,7 +7636,7 @@ for (Pedido p : pedidos) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>LazyInitializationException (could not initialize proxy - no Session):</b> Tentar acessar um relacionamento Lazy (ex: <code>pedido.getItens()</code>) dentro de um Controller ou template HTML fora do escopo da transação <code>@Transactional</code>. O Hibernate substituiu a coleção por um Proxy virtual; quando o proxy tenta conectar no banco para carregar os dados, a conexão já foi devolvida ao pool e o código explode com erro! <i>Solução:</i> Carregue os relacionamentos necessários na camada de serviço com <code>JOIN FETCH</code> ou use DTOs projetados especificamente para a resposta. <b>Nunca ative a gambiarra <code>open-in-view=true</code></b>, pois ela segura conexões de banco presas durante a renderização HTTP!</li>
             <li><b>O Mito de chamar repo.save() para Atualizar Entidades:</b> Chamar <code>repo.save(entidade)</code> no final de um método anotado com <code>@Transactional</code>. Isso é completamente inútil e enganoso: se a entidade está no estado <i>Managed</i>, o Hibernate já vai gerar o UPDATE sozinho pelo Dirty Checking no commit. O <code>save()</code> só serve para entidades transientes novas ou desanexadas.</li>
@@ -7708,7 +7708,7 @@ for (Pedido p : pedidos) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um endpoint de listagem de pedidos de uma API REST começou a apresentar latência de 4.000ms. Ao ativar os logs de SQL ('spring.jpa.show-sql=true'), você nota que para uma única requisição HTTP o console cospe 101 queries SELECT sucessivas:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um endpoint de listagem de pedidos de uma API REST começou a apresentar latência de 4.000ms. Ao ativar os logs de SQL ('spring.jpa.show-sql=true'), você nota que para uma única requisição HTTP o console cospe 101 queries SELECT sucessivas:</p>
                 <pre class="te-code"><code>// Código do repositório
 @Query("SELECT p FROM Pedido p")
 List<Pedido> findAllPedidos(); 
@@ -7764,7 +7764,7 @@ pedidos.forEach(p -> System.out.println(p.getCliente().getNome())); // Dispara 1
       <article class="topic" id="h1">
         <div class="th"><h3>Injeção por construtor e o composition root</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">design</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um microsserviço utilizava injeção de dependência por campo privado (`@Autowired private PagamentoClient client`). Ao escrever testes unitários rápidos, os desenvolvedores não conseguiam injetar mocks sem inicializar o contexto pesado do Spring, aumentando o tempo dos testes para 40 segundos. A refatoração para injeção estrita por construtor permitiu testar a classe isolada em 1.5 milissegundo com mocks puros.</p>
         </div>
 
@@ -7871,7 +7871,7 @@ public class PedidoService {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Smelly Code dos Construtores com 12 Parâmetros:</b> Uma classe cujo construtor recebe 10 ou 12 dependências injetadas. Isso não é um problema da Injeção por Construtor — é o compilador esfregando na sua cara que essa classe <b>viola flagrantemente o Princípio da Responsabilidade Única (SRP)</b>! Ela se transformou em uma "Classe Deus" (God Class) que faz coisas demais. <i>Solução:</i> Quebre a classe em múltiplos serviços de domínio menores e mais focados.</li>
             <li><b>Dependência Circular (BeanCurrentlyInCreationException):</b> O Serviço A precisa do Serviço B no construtor, e o Serviço B precisa do Serviço A. O contêiner entra em loop infinito e aborta a subida da aplicação no deploy! <i>Solução:</i> Refatore para extrair a lógica compartilhada para um terceiro serviço C, ou inverta o fluxo usando eventos com <code>ApplicationEventPublisher</code>.</li>
@@ -7943,7 +7943,7 @@ public class PedidoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a classe a seguir utilizando injeção por campo direto:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a classe a seguir utilizando injeção por campo direto:</p>
                 <pre class="te-code"><code>@Service
 public class FaturamentoService {
     @Autowired
@@ -7996,7 +7996,7 @@ public class FaturamentoService {
       <article class="topic" id="h2">
         <div class="th"><h3>Ports e adapters: pacotes que protegem a regra</h3><div class="badges"><span class="badge b-prof">arquitetura</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma decisão corporativa de substituir o RabbitMQ pelo Apache Kafka exigiu alterar 42 classes de serviço de negócio porque o código de domínio estava fortemente acoplado aos tipos e anotações do Spring AMQP. A reescrita sob a Arquitetura Hexagonal (Ports &amp; Adapters) isolou a mensageria em uma interface de porta, permitindo que futuras trocas de infraestrutura exijam alterar apenas uma classe adaptadora.</p>
         </div>
 
@@ -8094,7 +8094,7 @@ public class SqsNotificacaoAdapter implements EnviarNotificacaoPort {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Anotar Entidades de Domínio com Anotações do JPA (<code>@Entity</code>, <code>@Table</code>):</b> O erro mais comum de times que tentam fazer Hexagonal: colocar <code>@Entity</code> e anotações do Hibernate diretamente na classe de domínio. Quando você faz isso, seu domínio deixou de ser puro: ele herdou as regras de dirty checking do Hibernate, proxies preguiçosos e a exigência de construtores vazios. <i>Solução:</i> Mantenha a entidade de domínio pura e crie uma entidade JPA separada na camada de infraestrutura com um conversor (Mapper) na fronteira.</li>
             <li><b>Overengineering em CRUDs Triviais:</b> Aplicar Arquitetura Hexagonal completa com 4 camadas e mappers para uma tabela simples de cadastro de CEPs que só faz INSERT e SELECT. Use Hexagonal para o Core Business de alta complexidade; para cadastros simples, use arquitetura em camadas tradicional.</li>
@@ -8166,7 +8166,7 @@ public class SqsNotificacaoAdapter implements EnviarNotificacaoPort {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma empresa de cartões quer garantir que suas regras de cálculo de juros e limites possam ser reutilizadas tanto em uma API REST quanto em um job de processamento em lote (Batch) e um worker do RabbitMQ:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma empresa de cartões quer garantir que suas regras de cálculo de juros e limites possam ser reutilizadas tanto em uma API REST quanto em um job de processamento em lote (Batch) e um worker do RabbitMQ:</p>
                 <pre class="te-code"><code>// Pacote: br.com.empresa.dominio.modelo
 public class CartaoCredito {
     // Regra pura em Java puro: zero imports de Spring, JPA ou Jackson!
@@ -8215,7 +8215,7 @@ public class CartaoCredito {
       <article class="topic" id="h3">
         <div class="th"><h3>Anotações, reflection e proxies: a mágica revelada</h3><div class="badges"><span class="badge b-prof">mecanismos</span><span class="badge b-ver">explica o Spring</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um método com a anotação `@Transactional` foi invocado internamente por outro método público da mesma classe (`this.executarOperacao()`). Por se tratar de uma auto-invocação direta sem passar pelo proxy dinâmico do Spring, a transação não foi interceptada nem aberta. Uma falha no final do método não disparou rollback e gravou dados inconsistentes no banco.</p>
         </div>
 
@@ -8323,7 +8323,7 @@ Notificador proxy = (Notificador) Proxy.newProxyInstance(
 proxy.enviar("cliente@email.com", "Sua fatura chegou!");</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Mistério do <code>@Transactional</code> que Não Funciona (Auto-Invocação):</b> Se o método <code>processar()</code> chama <code>this.salvarComTransacao()</code> dentro da mesma classe, a anotação <code>@Transactional</code> <b>não é executada</b>! Como a chamada foi feita em <code>this</code> (a instância real), o fluxo nunca passou pelo Proxy que envolvia a classe. Esse é o bug nº 1 relatado por desenvolvedores em fóruns de Spring. <i>Solução:</i> Mova o método transacional para outra classe injetada.</li>
             <li><b>Anotações de Segurança em Métodos <code>private</code>:</b> Colocar <code>@Transactional</code> ou <code>@Secured</code> em métodos privados. Como proxies (tanto JDK quanto CGLIB) só conseguem interceptar ou sobrescrever métodos públicos e protegidos, <b>a anotação em método privado é silenciosamente ignorada pelo Spring</b>!</li>
@@ -8395,7 +8395,7 @@ proxy.enviar("cliente@email.com", "Sua fatura chegou!");</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor implementou o seguinte serviço de processamento de pagamentos:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor implementou o seguinte serviço de processamento de pagamentos:</p>
                 <pre class="te-code"><code>@Service
 public class PagamentoService {
     
@@ -8483,7 +8483,7 @@ public class PagamentoService {
       <article class="topic" id="i1">
         <div class="th"><h3>Threads, interrupção e cancelamento cooperativo</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma thread de processamento em segundo plano capturou `InterruptedException` e engoliu a exceção sem rearmar a flag de interrupção com `Thread.currentThread().interrupt()`. Durante um deploy no Kubernetes, o contêiner não conseguiu realizar o shutdown gracioso e foi forçado a esperar o grace period de 30 segundos até ser terminado abruptamente com `SIGKILL` pelo orquestrador.</p>
         </div>
 
@@ -8508,7 +8508,7 @@ public class PagamentoService {
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
             <ul>
-              <li><b>Custo Físico da Thread de Plataforma:</b> Cada thread nativa aloca por padrão <b>1 MB de memória física fora da Heap</b> para sua Call Stack (parâmetro <code>-Xss1m</code>). Criar 2.000 threads nativas consome 2 GB de memória RAM só de pilhas, antes de alocar um único objeto no Java!</li>
+              <li><b>Custo de threads de plataforma:</b> cada thread tem uma stack nativa cujo tamanho reservado e efetivamente comprometido depende da JVM, do sistema operacional e de <code>-Xss</code>. Muitas threads podem consumir memória relevante; estime com a configuração real e meça o processo, em vez de multiplicar um valor padrão como se fosse universal.</li>
             </ul>
           </div>
         </div>
@@ -8576,7 +8576,7 @@ public class PagamentoService {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Thread Zumbi que Impede o Shutdown da JVM:</b> Threads criadas como "Non-Daemon" (padrão de <code>new Thread()</code>) continuam rodando mesmo depois que o método <code>main</code> termina. Se uma thread cair em um loop infinito que engole <code>InterruptedException</code>, o processo Java <b>nunca desliga</b>, forçando o Kubernetes a matar o container com <code>SIGKILL (Kill -9)</code> após 30 segundos com perda de dados! <i>Solução:</i> Use pools gerenciados e sempre restaure <code>Thread.currentThread().interrupt()</code>.</li>
             <li><b>Bloqueios em I/O Antigo (java.io) Não São Interrompíveis:</b> Métodos de leitura antigos como <code>socket.getInputStream().read()</code> ou <code>FileInputStream.read()</code> <b>não respondem a <code>thread.interrupt()</code></b>! A thread fica congelada no socket eternamente. <i>Solução:</i> Use canais <b>NIO (SocketChannel, FileChannel)</b> que implementam <code>InterruptibleChannel</code> e fecham o canal ao receber interrupção.</li>
@@ -8611,7 +8611,7 @@ public class PagamentoService {
                   <span class="tr-dot purple"></span>
                   <div class="tr-corpo">
                     <b>Design com Pools de Threads</b>
-                    <p>Nunca crie 'new Thread()' manualmente em código de produção corporativo. O custo de criação de uma OS thread é de 1MB de memória e milhares de ciclos de CPU. Gerencie sempre via ExecutorService.</p>
+                    <p>Evite criar threads sem controle em código de produção. Para threads de plataforma, use executores para limitar concorrência e administrar ciclo de vida; o custo de memória e criação depende do runtime e da configuração. Virtual Threads podem ser criadas por tarefa em workloads adequados, mas não limitam automaticamente o acesso a recursos externos.</p>
                   </div>
                 </div>
               </div>
@@ -8648,7 +8648,7 @@ public class PagamentoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um worker em background consome mensagens de uma fila. Durante o shutdown do servidor, a thread recebe um sinal de interrupção, mas continua rodando infinitamente:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um worker em background consome mensagens de uma fila. Durante o shutdown do servidor, a thread recebe um sinal de interrupção, mas continua rodando infinitamente:</p>
                 <pre class="te-code"><code>public void run() {
     while (true) {
         try {
@@ -8703,7 +8703,7 @@ public class PagamentoService {
       <article class="topic" id="i2">
         <div class="th"><h3>Java Memory Model: visibilidade e happens-before</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">o bug mais traiçoeiro</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma flag booleana de controle `private boolean ativo = true` era compartilhada entre duas threads de trabalho sem a palavra-chave `volatile`. A thread de leitura copiou a variável para o registrador L1 da CPU e nunca enxergou a alteração para `false` feita pela thread de escrita em outro núcleo, fazendo a rotina rodar em loop infinito até travar a CPU do servidor.</p>
         </div>
 
@@ -8802,7 +8802,7 @@ public class PagamentoService {
 }</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>O Loop Infinito Fantasma sem <code>volatile</code>:</b> Uma thread executa <code>while (!parar) { }</code> onde <code>parar</code> é um booleano comum sem <code>volatile</code>. O JIT C2 percebe que dentro do loop a variável <code>parar</code> nunca é alterada por aquele método. Otimização do JIT: ele faz <b>Hoisting</b> e transforma o código nativo em: <code>if (!parar) while (true) { }</code>! Mesmo que outra thread mude <code>parar = true</code> na memória RAM, a primeira thread ficará presa em loop infinito consumindo 100% de CPU para sempre!</li>
             <li><b>False Sharing (Falso Compartilhamento de Cache Line):</b> Duas threads atualizam duas variáveis <code>volatile</code> independentes que por azar de alocação caíram na <b>mesma linha de cache de 64 bytes</b> da CPU física (Cache Line). Toda vez que o Core 0 altera sua variável, ele invalida o cache do Core 1, gerando saturação de barramento e queda brutal de performance. <i>Solução:</i> O JDK resolve isso internamente usando a anotação <code>@jdk.internal.vm.annotation.Contended</code> que injeta 128 bytes de padding ao redor dos campos.</li>
@@ -8874,7 +8874,7 @@ public class PagamentoService {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere duas threads acessando simultaneamente um contador primitivo compartilhado marcado com volatile:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere duas threads acessando simultaneamente um contador primitivo compartilhado marcado com volatile:</p>
                 <pre class="te-code"><code>public class ContadorConcorrente {
     private volatile int contador = 0;
     
@@ -8925,7 +8925,7 @@ public class PagamentoService {
       <article class="topic" id="i3">
         <div class="th"><h3>synchronized, Lock, atomics e CAS</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um contador de visualizações concorrente utilizava a instrução simples `contador++`. Sob carga de 10.000 requisições simultâneas em múltiplos núcleos de CPU, a race condition entre leitura, incremento e gravação descartou mais de 3.200 incrementos reais. A substituição por `AtomicLong` garantiu precisão de 100% utilizando instruções atômicas de CPU (CAS - Compare-And-Swap) sem travar o processador.</p>
         </div>
 
@@ -9035,7 +9035,7 @@ public void incrementar() {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Esquecer de Destrancar o Lock no <code>finally</code>:</b> Chamar <code>lock.lock()</code> e esquecer de colocar o <code>lock.unlock()</code> dentro de um bloco <code>finally</code>. Se o código de negócio lançar uma <code>RuntimeException</code>, o lock fica trancado para sempre! Nenhuma outra thread do servidor conseguirá executar o método, gerando travamento total. <b>A chamada de unlock() SEMPRE deve estar dentro do finally</b>.</li>
             <li><b>O Problema ABA em Estruturas Lock-Free:</b> Uma thread lê o valor A. Enquanto ela processa, outra thread altera para B e volta para A. A primeira thread faz o CAS: "ainda é A? Sim!". Ela grava achando que nada mudou, mas o estado intermediário foi corrompido. <i>Solução:</i> O Java resolve isso com <b><code>AtomicStampedReference</code></b>, que associa um número de carimbo/versão atômico ao valor.</li>
@@ -9107,7 +9107,7 @@ public void incrementar() {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Dois desenvolvedores implementam uma transferência entre contas bancárias com synchronized nos objetos de origem e destino:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois desenvolvedores implementam uma transferência entre contas bancárias com synchronized nos objetos de origem e destino:</p>
                 <pre class="te-code"><code>public void transferir(Conta origem, Conta destino, double valor) {
     synchronized (origem) {
         synchronized (destino) {
@@ -9159,7 +9159,7 @@ public void incrementar() {
       <article class="topic" id="i4">
         <div class="th"><h3>Executors, filas e backpressure</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">produção</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um pool de threads criado com `Executors.newFixedThreadPool(20)` utilizou por padrão uma fila ilimitada `LinkedBlockingQueue`. Em uma Black Friday com 300.000 requisições repentinas, as tarefas enfileiradas acumularam na fila mais de 6GB de objetos até disparar `OutOfMemoryError` e derrubar a aplicação. A correção implementou `ThreadPoolExecutor` com fila limitada e política de rejeição `CallerRunsPolicy`.</p>
         </div>
 
@@ -9236,7 +9236,7 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
           </ul>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Uso de <code>Executors.newCachedThreadPool()</code> em APIs Web Públicas:</b> O cached thread pool cria novas threads sem limite nenhum (até atingir <code>Integer.MAX_VALUE</code>). Se sua API sofrer um ataque DDoS ou pico de 5.000 requisições simultâneas, o pool tenta criar 5.000 threads nativas. O Linux colapsa com <code>java.lang.OutOfMemoryError: unable to create native thread</code> e o servidor operacional cai por completo!</li>
             <li><b>Threads Anônimas sem Nomes Amigáveis:</b> Deixar o pool usar a <code>DefaultThreadFactory</code> (que nomeia as threads como "pool-1-thread-1"). Em um incidente com Thread Dump de produção, é impossível saber se aquela thread bloqueada pertencia ao processamento de relatórios, ao envio de emails ou à cobrança financeira! <b>Sempre nomeie suas threads</b>.</li>
@@ -9308,7 +9308,7 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um desenvolvedor criou um pool de processamento assíncrono para envio de notificações em uma promoção relâmpago de e-commerce:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um desenvolvedor criou um pool de processamento assíncrono para envio de notificações em uma promoção relâmpago de e-commerce:</p>
                 <pre class="te-code"><code>// Código em produção
 ExecutorService executor = Executors.newFixedThreadPool(20);
 
@@ -9359,7 +9359,7 @@ for (Notificacao n : loteMassivo) {
       <article class="topic" id="i5">
         <div class="th"><h3>CompletableFuture: compor chamadas assíncronas</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 8</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma página de checkout executava de forma sequencial síncrona 3 consultas HTTP: validar antifraude (300ms), checar estoque (250ms) e calcular frete (200ms), totalizando 750ms de latência. A composição dessas consultas com `CompletableFuture.allOf()` paralelizou as 3 chamadas nas threads disponíveis, derrubando o tempo total de resposta para 310ms.</p>
         </div>
 
@@ -9446,7 +9446,7 @@ f1.thenCombine(f2, Math::min)
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>supplyAsync() sem passar Executor Dedicado (Armadilha do ForkJoinPool):</b> Chamar <code>CompletableFuture.supplyAsync(() -> chamadaHttp())</code> sem passar um <code>Executor</code>. O Java joga a tarefa no pool compartilhado da JVM (<code>ForkJoinPool.commonPool()</code>). Se as chamadas forem I/O bloqueante lento, elas <b>esgotam as threads do commonPool e travam todos os outros CompletableFutures e parallelStreams do sistema inteiro</b>! <i>Regra de ouro:</i> <b>SEMPRE passe um pool dedicado para operações de I/O</b>.</li>
             <li><b>O get() sem Timeout:</b> Chamar <code>future.get()</code> sem especificar tempo limite. Se o serviço externo travar ou cair em deadlock, sua thread fica congelada para sempre. <i>Solução:</i> Use sempre <code>future.get(3, TimeUnit.SECONDS)</code> ou configure <code>orTimeout(3, TimeUnit.SECONDS)</code> (Java 9+).</li>
@@ -9518,7 +9518,7 @@ f1.thenCombine(f2, Math::min)
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um serviço de cotação de seguros consulta simultaneamente três parceiros externos (A, B e C) usando CompletableFuture para montar a melhor proposta comercial:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço de cotação de seguros consulta simultaneamente três parceiros externos (A, B e C) usando CompletableFuture para montar a melhor proposta comercial:</p>
                 <pre class="te-code"><code>ExecutorService poolIO = Executors.newFixedThreadPool(10);
 
 CompletableFuture<Cotacao> fA = CompletableFuture.supplyAsync(() -> apiA.cotar(), poolIO);
@@ -9568,15 +9568,15 @@ CompletableFuture<Cotacao> fB = CompletableFuture.supplyAsync(() -> apiB.cotar()
       <article class="topic" id="i6">
         <div class="th"><h3>Virtual threads: escalar a espera, não os recursos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 21 · a virada</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
-          <p>Um servidor Tomcat configurado com o limite clássico de 200 platform threads travou durante um pico de 1.500 usuários simultâneos porque todas as threads ficaram presas em I/O bloqueante aguardando queries do banco de dados. A ativação das Virtual Threads do Java 21 permitiu atender as 1.500 requisições concorrentes sem enfileiramento, reduzindo a utilização de memória RAM em 82%.</p>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p><em>Cenário hipotético:</em> um servidor Tomcat tem um limite de 200 threads de plataforma e recebe mais requisições simultâneas do que consegue processar enquanto parte delas espera por I/O. Virtual Threads podem reduzir o custo de representar tarefas bloqueadas e permitir mais concorrência, mas não aumentam a capacidade do banco, não eliminam filas e não garantem um percentual de economia. Compare latência, throughput, memória e saturação dos recursos antes e depois.</p>
         </div>
 
         <div class="topic-split">
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>As <b>Virtual Threads</b> (entregues oficialmente no <b>Java 21 LTS</b> através do <b>Project Loom</b> - JEP 444) são threads ultraleves gerenciadas diretamente pela <b>JVM em espaço de usuário</b>, e não pelo kernel do Sistema Operacional. Enquanto uma thread tradicional de plataforma (Platform Thread) exige 1 MB de stack fixo e é cara, uma Virtual Thread consome apenas <b>alguns kilobytes no Heap</b>, permitindo que uma única aplicação Java execute <b>milhões de threads simultâneas</b> com o modelo clássico, simples e legível de <i>uma thread por requisição (thread-per-request)</i>.</p>
+          <p>As <b>Virtual Threads</b> (finalizadas no <b>Java 21</b>, JEP 444) são threads leves da API Java que a JVM agenda sobre threads de plataforma. Ao bloquear em operações compatíveis, a tarefa pode ceder a thread portadora para outra virtual thread. Elas reduzem o custo de concorrência em workloads com muita espera, mas não tornam o trabalho de CPU mais rápido nem removem limites de banco, rede ou memória. Não há custo fixo universal em bytes nem uma quantidade garantida de threads; dimensione e teste o workload real. Consulte o <a href="https://openjdk.org/jeps/444" target="_blank" rel="noopener">JEP 444</a> e, para a mudança de pinning no Java 24, o <a href="https://openjdk.org/jeps/491" target="_blank" rel="noopener">JEP 491</a>.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>Os atores do teatro vs os personagens do roteiro.</b> Em uma peça de teatro com 1.000 personagens (1.000 Virtual Threads), você não contrata 1.000 atores humanos de verdade (1.000 Platform Threads do SO, o que faliria a companhia de teatro). Você contrata apenas 8 atores de elite (as <b>Carrier Threads</b> do SO, uma para cada core de CPU). O Personagem A entra em cena, fala sua fala e senta para esperar uma carta chegar (I/O bloqueante no banco). O ator humano não fica sentado esperando junto: ele troca de máscara no camarim, entra imediatamente em cena como o Personagem B e continua atuando. Quando a carta do Personagem A chega, qualquer ator livre veste a máscara do Personagem A e continua a história exatamente de onde ela parou.</p></div>
@@ -9585,8 +9585,8 @@ CompletableFuture<Cotacao> fB = CompletableFuture.supplyAsync(() -> apiB.cotar()
           <div class="pilar-box p-serve">
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <ul>
-              <li><b>O Fim da Complexidade Reativa (Bye-bye WebFlux e RxJava!):</b> Você não precisa mais escrever código ilegível e fragmentado cheio de <code>Mono</code>, <code>Flux</code> e operadores reativos para ter alta escala. Escreva código sequencial imperativo tradicional e tenha o mesmo throughput da programação reativa!</li>
-              <li><b>Throughput Máximo em Servidores Web:</b> APIs que atendem requisições que passam 95% do tempo esperando I/O (consultas de banco de dados, chamadas de rede HTTP, leitura de arquivos) passam a atender centenas de milhares de conexões simultâneas sem engasgar.</li>
+              <li><b>Concorrência com código imperativo:</b> em aplicações com muitas tarefas que passam tempo aguardando I/O, permite manter o estilo bloqueante e legível sem exigir uma thread de plataforma dedicada para cada tarefa em espera. Não substitui automaticamente WebFlux/RxJava: escolha conforme o modelo, as bibliotecas e os requisitos.</li>
+              <li><b>Maior concorrência em workloads de I/O:</b> pode reduzir o custo de atender muitas operações simultâneas, mas o throughput continua limitado por CPU, pools de conexão, serviços downstream, quotas e backpressure.</li>
               <li><b>Stack Traces e Debuggers Funcionam com Perfeição:</b> Ao contrário do inferno de depurar código reativo (onde o stack trace não aponta nada útil), nas Virtual Threads os stack traces preservam todo o histórico de chamadas de forma limpa.</li>
             </ul>
             <p class="repl"><b>Veio substituir:</b> O modelo reativo assíncrono complexo (WebFlux, Netty) e pools de threads nativos inflados.</p>
@@ -9594,7 +9594,7 @@ CompletableFuture<Cotacao> fB = CompletableFuture.supplyAsync(() -> apiB.cotar()
           <div class="pilar-box p-importa">
             <h4><span class="pilar-mini">💎</span> 4. Porque importa?</h4>
             <ul>
-              <li><b>A Maior Virada Arquitetural do Java em 20 Anos:</b> Permite que aplicações corporativas aumentem sua capacidade de tráfego em até 10 vezes sem aumentar os custos de memória e CPU na nuvem.</li>
+              <li><b>Modelo simples de concorrência:</b> facilita escrever uma tarefa por operação sem tratar cada espera como ocupação permanente de uma thread de plataforma. O ganho precisa ser validado com métricas do sistema completo.</li>
               <li><b>Nunca faça Pool de Virtual Threads:</b> Virtual Threads são tão baratas que não devem ser reutilizadas em pools! Crie uma para cada tarefa e descarte no final.</li>
             </ul>
           </div>
@@ -9676,9 +9676,9 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
-            <li><b>O Perigo do Thread Pinning (Fixação no Carrier):</b> Uma Virtual Thread <b>NÃO consegue ser desmontada</b> se ela fizer uma operação de I/O bloqueante dentro de um bloco ou método <code>synchronized</code>, ou dentro de chamadas nativas JNI! Quando isso acontece, ela fica <b>"presa" (pinned)</b> ao Carrier Thread do SO, sequestrando a thread nativa da CPU exatamente como o código legado fazia. <i>Solução:</i> Substitua blocos <code>synchronized</code> que envolvem I/O por <b><code>ReentrantLock</code></b> (que é 100% amigável ao Loom). Diagnostique no boot com a flag da JVM: <code>-Djdk.tracePinnedThreads=full</code>.</li>
+            <li><b>Pinning depende da versão e da chamada:</b> no Java 21–23, bloquear dentro de <code>synchronized</code> podia manter a Virtual Thread presa à carrier; o Java 24 removeu esse caso comum. Chamadas nativas/foreign ainda podem prender a carrier. Não troque sincronização mecanicamente: investigue eventos de pinning no JFR e valide a versão do JDK e as dependências.</li>
             <li><b>Uso em Operações CPU-Bound:</b> Virtual Threads <b>NÃO aceleram processamento numérico, cálculo de matrizes ou compressão de vídeo</b>! Se a tarefa passa 100% do tempo consumindo CPU sem fazer I/O, as Virtual Threads competirão pelos mesmos núcleos físicos sem benefício algum e ainda adicionarão uma leve sobrecarga de troca de continuations. Virtual Threads são exclusivamente para operações de I/O-Bound com espera de rede/disco!</li>
           </ul>
         </div>
@@ -9697,7 +9697,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>A Revolução do Project Loom</b>
-                    <p>Virtual Threads são threads leves gerenciadas no espaço de usuário pela JVM, e não pelo Kernel do sistema operacional. Cada thread custa poucos bytes na Heap em vez de 1MB de Stack nativo!</p>
+                    <p>Virtual Threads são threads leves agendadas pela JVM sobre threads de plataforma. Seu custo varia com estado, stack e workload; não compare um tamanho fixo de heap com um tamanho fixo de stack como regra universal.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -9711,7 +9711,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>A Armadilha do Thread Pinning</b>
-                    <p>Blocos synchronized legados e chamadas JNI nativas 'pregam' a Virtual Thread à Carrier Thread do SO (Pinning), impedindo sua desmontagem. Substitua synchronized por ReentrantLock em código de alto I/O!</p>
+                    <p>O comportamento de pinning depende do JDK. No Java 21–23, bloqueio em <code>synchronized</code> podia prender a carrier; o Java 24 removeu esse caso. Código nativo/foreign ainda pode piná-la. Use JFR para localizar ocorrências e só altere a sincronização após medir.</p>
                   </div>
                 </div>
               </div>
@@ -9748,7 +9748,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma equipe migrou uma API de microcrédito para Java 21 utilizando Virtual Threads com 'Executors.newVirtualThreadPerTaskExecutor()'. No entanto, sob carga pesada, as requisições travaram e a latência explodiu. Ao analisar com a flag '-Djdk.tracePinnedThreads=full', o console exibiu centenas de avisos de Pinning:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma equipe migrou uma API de microcrédito para Java 21 utilizando Virtual Threads com 'Executors.newVirtualThreadPerTaskExecutor()'. No entanto, sob carga pesada, as requisições travaram e a latência explodiu. Ao analisar com a flag '-Djdk.tracePinnedThreads=full', o console exibiu centenas de avisos de Pinning:</p>
                 <pre class="te-code"><code>Thread[#34,ForkJoinPool-1-worker-2,5,CarrierThreads]
     java.base/java.lang.VirtualThread$VThreadContinuation.onPinned(VirtualThread.java:183)
     com.empresa.ServicoLegado.consultarBanco(ServicoLegado.java:24) <== synchronized guardando socket</code></pre>
@@ -9761,8 +9761,8 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Virtual Threads operam normalmente com JDBC relacional, desde que não haja bloqueio em blocos synchronized.">
                     <span class="te-letter">B</span> O Java 21 restringe o uso de Virtual Threads apenas a drivers de banco de dados NoSQL assíncronos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Bloquear em I/O dentro de blocos synchronized ou chamadas nativas prende a Virtual Thread à Carrier Thread do SO (Thread Pinning), paralisando o pool de carrier threads. A documentação recomenda migrar para ReentrantLock.">
-                    <span class="te-letter">C</span> A Virtual Thread realizou I/O bloqueante dentro de bloco synchronized, prendendo a Carrier Thread nativa da JVM (Pinning); substitua por ReentrantLock.
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Correto para JDKs em que esse caso se aplica: pinning mantém a carrier ocupada durante a operação bloqueante e pode prejudicar escalabilidade. A causa depende da versão; no Java 24, synchronized deixou de causar esse pinning, enquanto chamadas nativas/foreign ainda podem fazê-lo. Diagnostique antes de mudar locks.">
+                    <span class="te-letter">C</span> A Virtual Thread pode ficar presa à carrier durante certos bloqueios; confira o JDK e a causa do pinning antes de escolher uma correção.
                   </button>
                 </div>
 
@@ -9780,7 +9780,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">Pools foram inventados porque threads tradicionais do SO são <strong>pesadas, consomem 1MB de memória e demoram para inicializar</strong>, exigindo reutilização. Virtual Threads são tão <strong>leves e baratas</strong> (custam poucos bytes na Heap) que criar uma thread por tarefa e descartá-la ao término é infinitamente mais rápido e seguro do que gerenciar pools.</p>
+                  <p class="tf-resposta">Pools de threads de plataforma limitam concorrência e amortizam custos de criação. Virtual Threads são leves o bastante para normalmente criar uma por tarefa, sem pool de reuso; ainda use limites explícitos para recursos escassos (por exemplo, semáforo para chamadas a um serviço) e trate cancelamento, timeout e erros.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -9801,7 +9801,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
       <article class="topic" id="j1">
         <div class="th"><h3>Memória do processo: heap, stacks, metaspace e nativa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">container</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação corporativa utilizava geração dinâmica de classes em runtime sem descarte das referências do ClassLoader. Com o passar dos dias, a área de memória nativa Metaspace atingiu o limite configurado e disparou `java.lang.OutOfMemoryError: Metaspace`. A falha forçou o rebalanceamento de contêineres e o ajuste de `-XX:MaxMetaspaceSize` com monitoramento proativo via JMX.</p>
         </div>
 
@@ -9809,7 +9809,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
           <div class="topic-split-left">
             <div class="pilar-card p-oque">
           <div class="pilar-header"><span class="pilar-icon">🎯</span> <b>1. O que é?</b></div>
-          <p>A <b>Memória Total do Processo Java (RSS - Resident Set Size)</b> vista pelo Sistema Operacional é muito maior do que apenas a <b>Heap</b> (definida por <code>-Xmx</code>). O processo da JVM é composto por 5 áreas físicas distintas de memória: <b>Java Heap</b> (onde vivem todas as instâncias de objetos), <b>Metaspace</b> (metadados de classes e constantes em memória nativa fora da heap), <b>Thread Stacks</b> (pilhas nativas de execução de 1MB por thread de plataforma), <b>CodeCache</b> (código de máquina compilado pelo JIT) e <b>Direct / Native Memory</b> (buffers de rede NIO alocados fora da heap para I/O).</p>
+          <p>A memória residente do processo Java não se limita à <b>heap</b> configurada por <code>-Xmx</code>. O consumo também pode incluir Metaspace, stacks nativas, Code Cache, buffers diretos e outras alocações nativas. A stack de cada thread tem tamanho configurável e pode variar conforme plataforma e opções da JVM; trate cada categoria como componente a observar, não como valor fixo por thread.</p>
         </div>
 
             <div class="analogia"><i class="ic">≈</i><p><b>O galpão de estoque vs o prédio comercial inteiro.</b> Pensar que a memória do Java é só o <code>-Xmx</code> é como alugar um prédio para sua empresa achando que a única área ocupada são as prateleiras de mercadoria no estoque (a Heap). Você esqueceu que precisa de corredores e escadas para os funcionários circularem (as Thread Stacks), da sala de arquivo morto com as plantas do prédio (o Metaspace), da central de ar-condicionado e servidores (o CodeCache) e da doca de carga e descarga de caminhões (a Direct Memory). Se você alugar um imóvel onde o teto máximo de espaço é exatamente o tamanho do estoque, as pessoas ficam sufocadas e a prefeitura interdita o prédio (o Linux dispara o OOM Killer).</p></div>
@@ -9819,7 +9819,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             <h4><span class="pilar-mini">🚀</span> 2. Para que serve?</h4>
             <ul>
               <li><b>Dimensionamento Correto de Containers Docker e Pods Kubernetes:</b> Configurar os limites de <code>resources.limits.memory</code> no YAML sem que o pod sofra crash misterioso com Exit Code 137.</li>
-              <li><b>Uso de Flags Modernas de Container:</b> Desde o Java 10+, a JVM respeita os limites de CPU e memória do container automaticamente via <code>-XX:+UseContainerSupport</code> e <code>-XX:MaxRAMPercentage=75</code>.</li>
+              <li><b>Suporte a limites de contêiner:</b> HotSpot reconhece limites de contêiner em versões modernas; confira a JVM e a configuração efetivas. <code>-XX:MaxRAMPercentage</code> define uma relação de heap com a memória reconhecida, mas 75% não é uma recomendação universal nem substitui medir RSS e memória nativa.</li>
               <li><b>Prevenção de Metaspace OutOfMemoryError:</b> Em aplicações com muitas classes geradas dinamicamente (frameworks com CGLIB, Groovy scripts, servidores com múltiplos deploys).</li>
             </ul>
           </div>
@@ -9868,7 +9868,7 @@ java -XX:NativeMemoryTracking=summary -jar app.jar
 # 2. Em outro terminal, inspecione a divisão exata de cada área em bytes:
 jcmd &lt;PID&gt; VM.native_memory summary
 
-# Saída real do comando:
+# Exemplo ilustrativo de saída; os valores variam por ambiente:
 # Total:  reserved=1680MB, committed=1220MB
 # - Java Heap:            reserved=1024MB, committed=1024MB
 # - Class (Metaspace):     reserved=112MB,  committed=98MB
@@ -9877,9 +9877,9 @@ jcmd &lt;PID&gt; VM.native_memory summary
 # - Internal (Direct):     reserved=35MB,   committed=35MB</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
-            <li><b>O Infame Exit Code 137 no Kubernetes (OOMKilled):</b> O container morre sem nenhum log de erro de <code>OutOfMemoryError</code> no arquivo de log do Java! O desenvolvedor fica perdido achando que a aplicação "desligou sozinha". <i>Diagnóstico:</i> Rode <code>kubectl describe pod</code>: se a razão for <code>OOMKilled (Exit Code 137 = 128 + 9 SIGKILL)</code>, foi o kernel do Linux que assassinou a JVM porque o consumo total de memória nativa ultrapassou o limite do Pod! <i>Solução:</i> Reduza <code>MaxRAMPercentage</code> para 70% ou aumente a memória do Pod.</li>
+            <li><b>O processo terminou com OOMKilled:</b> o kernel pode encerrar o processo por ultrapassar o limite do cgroup sem que a JVM consiga registrar um <code>OutOfMemoryError</code>. Consulte o estado e os eventos do Pod, além das métricas de RSS, heap e memória nativa. Reduza o consumo ou ajuste heap/limite com base em medições; 70% ou 75% não são percentuais universais.</li>
             <li><b>Vazamento de Direct Memory com Netty / Buffers NIO:</b> Bibliotecas que usam <code>ByteBuffer.allocateDirect()</code> para I/O de rede alocam memória nativa fora do Heap. Se esses buffers não forem liberados pelo GC ou limpos explicitamente, a memória do processo cresce continuamente até derrubar o servidor, sem que o monitor de Heap aponte nenhum problema!</li>
           </ul>
         </div>
@@ -9898,14 +9898,14 @@ jcmd &lt;PID&gt; VM.native_memory summary
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>A Conta Real da Memória (RSS Total)</b>
-                    <p>A memória de um processo Java no Linux é muito maior que o -Xmx: RSS = Heap + Metaspace + Stacks de Thread (N * 1MB) + CodeCache + Direct Memory NIO + buffers de bibliotecas nativas C++.</p>
+            <p>A memória residente do processo pode incluir páginas da heap, Metaspace, stacks, CodeCache, buffers diretos e bibliotecas nativas. <code>-Xmx</code> limita a heap, não o RSS total; as parcelas variam e nem todas são totalmente residentes ao mesmo tempo. Meça com métricas do processo e da JVM.</p>
                   </div>
                 </div>
                 <div class="tr-item">
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
-                    <b>A Regra dos 75% no Kubernetes</b>
-                    <p>Nunca iguale o -Xmx ao limite do Pod! Use sempre -XX:MaxRAMPercentage=75. Os 25% restantes são obrigatórios para a memória não-heap, evitando que o Linux Kernel dispare o OOMKilled (Exit Code 137).</p>
+                    <b>Heap e limite do contêiner</b>
+                    <p>Não assuma que toda a memória do Pod pode ser usada pela heap. Ajuste <code>-Xmx</code> ou <code>-XX:MaxRAMPercentage</code> junto com buffers, threads, agentes e bibliotecas nativas; monitore RSS e teste a margem sob carga. Nenhum percentual único evita OOM em toda aplicação.</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -9922,7 +9922,7 @@ jcmd &lt;PID&gt; VM.native_memory summary
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>O Erro Fatal de Ignorar Thread Stacks:</b>
-                    <p>Uma aplicação tradicional com 1.000 Platform Threads consome <strong>1 GB inteiro de memória RAM do sistema operacional apenas para as pilhas de execução das threads</strong> (1MB padrão por thread), fora a memória Heap! É por isso que Virtual Threads no Java 21 mudam radicalmente o custo de infraestrutura.</p>
+                    <p>Milhares de threads de plataforma podem tornar o uso de memória e o agendamento caros, mas não existe multiplicador universal de 1 MB residente por thread. Virtual Threads reduzem o custo de representar tarefas concorrentes que aguardam; valide consumo, pinning e limites do sistema na versão e no workload usados.</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -9949,12 +9949,12 @@ jcmd &lt;PID&gt; VM.native_memory summary
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um engenheiro de DevOps alocou um container Docker com 1.000 MB de RAM estrita no Kubernetes. O desenvolvedor configurou o serviço Java com a flag '-Xmx850m' e '-XX:MaxMetaspaceSize=128m'. Sob carga, a aplicação abriu 120 threads de plataforma ativas e buffers de rede NIO.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um engenheiro de DevOps alocou um container Docker com 1.000 MB de RAM estrita no Kubernetes. O desenvolvedor configurou o serviço Java com a flag '-Xmx850m' e '-XX:MaxMetaspaceSize=128m'. Sob carga, a aplicação abriu 120 threads de plataforma ativas e buffers de rede NIO.</p>
                 
                 <p class="te-instrucao">Após 10 minutos, o Kubernetes matou o Pod com exit code 137 (OOMKilled). Qual cálculo explica esse colapso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O kernel Linux analisa o RSS total do processo. Heap (850MB), Metaspace (128MB), thread stacks (120 * 1MB) e buffers NIO excederam os 1.000MB do container, motivando o encerramento imediato via SIGKILL (exit code 137).">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A memória da JVM inclui heap e componentes nativos. Se o consumo total ultrapassa o limite do cgroup, o kernel pode encerrar o processo com SIGKILL; stack size e demais categorias variam conforme configuração e plataforma, então confirme com métricas do ambiente.">
                     <span class="te-letter">A</span> A soma de Heap (850MB), Metaspace (128MB) e stacks de 120 threads (120MB) somou mais de 1.100MB, violando o teto de 1.000MB do cgroup.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As flags de alocação da JVM aceitam valores arbitrários em megabytes e não exigem potências de dois.">
@@ -9994,7 +9994,7 @@ jcmd &lt;PID&gt; VM.native_memory summary
       <article class="topic" id="j2">
         <div class="th"><h3>Garbage Collector: alcançabilidade, gerações e vazamento</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um `Map` estático utilizado como cache caseiro em memória guardava sessões de usuários sem política de expiração nem remoção por tempo (TTL). Após 72 horas de uptime, o mapa acumulou 4 milhões de entradas, forçando o Garbage Collector a executar pausas de Stop-the-World de 12 segundos para tentar liberar memória. A substituição por um cache Caffeine com limite máximo de entradas e expiração automática eliminou os travamentos.</p>
         </div>
 
@@ -10095,7 +10095,7 @@ Cache&lt;String, ObjetoPesado&gt; cache = Caffeine.newBuilder()
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Chamar <code>System.gc()</code> no Código:</b> Um desenvolvedor coloca <code>System.gc()</code> achando que está "limpando a memória". O método dispara um <b>Full GC explícito síncrono</b> que paralisa a JVM inteira (Stop-The-World total de todos os núcleos de CPU por até vários segundos!), destruindo o tempo de resposta da API. <i>Prevenção:</i> Desative chamadas explícitas com a flag da JVM: <code>-XX:+DisableExplicitGC</code>.</li>
             <li><b>Memory Leaks por ThreadLocal não limpo:</b> Usar <code>ThreadLocal</code> em aplicações com pool de threads HTTP (como Tomcat). Se você fizer <code>threadLocal.set(dados)</code> e esquecer de fazer <code>threadLocal.remove()</code> no bloco <code>finally</code>, o objeto fica preso na thread do pool. Como as threads do pool nunca morrem, <b>o objeto vaza no heap para sempre</b> e pode vazar dados confidenciais de um usuário para a requisição de outro cliente!</li>
@@ -10167,7 +10167,7 @@ Cache&lt;String, ObjetoPesado&gt; cache = Caffeine.newBuilder()
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma aplicação financeira começou a sofrer pausas de GC de 4 segundos a cada meia hora. Ao inspecionar o heap dump no Eclipse MAT, 80% da memória Heap de 4GB estava ocupada por milhões de instâncias de 'AuditoriaEvent':</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma aplicação financeira começou a sofrer pausas de GC de 4 segundos a cada meia hora. Ao inspecionar o heap dump no Eclipse MAT, 80% da memória Heap de 4GB estava ocupada por milhões de instâncias de 'AuditoriaEvent':</p>
                 <pre class="te-code"><code>public class EventBus {
     // Lista estática acumulando eventos sem desregistro
     private static final List<AuditoriaEvent> historico = new ArrayList<>();
@@ -10219,7 +10219,7 @@ Cache&lt;String, ObjetoPesado&gt; cache = Caffeine.newBuilder()
       <article class="topic" id="j3">
         <div class="th"><h3>Diagnóstico: jcmd, thread dump, heap dump e JFR</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kit de incidente</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um serviço de mensageria parou silenciosamente de processar mensagens sem emitir avisos nos logs da aplicação. Um engenheiro de confiabilidade conectou no contêiner via terminal e disparou `jcmd <pid> Thread.print`: o diagnóstico revelou que todas as threads consumidoras estavam em estado `WAITING` presas em um pool de banco exaurido, orientando a expansão imediata do pool HikariCP.</p>
         </div>
 
@@ -10301,7 +10301,7 @@ processarIntegracaoCielo();
 event.commit(); // Grava o evento na caixa-preta da JVM!</code></pre>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Tirar Heap Dump em Servidores com Heap Gigante (Disco Cheio & Pause STW):</b> Executar <code>jcmd GC.heap_dump</code> em um servidor com 32 GB de Heap alocado. O Heap Dump exige gravar um arquivo de 32 GB no disco! Se a partição <code>/tmp</code> tiver apenas 10 GB livres, o comando <b>enche o disco do servidor a 100%</b>, derruba o banco de dados e os logs, e ainda paralisa o processo da JVM em Stop-The-World por minutos durante a escrita! <i>Solução:</i> Aponte o dump para um volume com espaço sobrando ou use o <code>async-profiler</code> para profiling leve de alocações.</li>
             <li><b>Tirar apenas 1 Thread Dump em Incidentes de Lentidão:</b> Um único Thread Dump é uma foto estática de um microssegundo. Ele mostra uma thread rodando um método, mas você não sabe se ela terminou na hora seguinte ou se está travada há 10 minutos. <i>Regra de ouro:</i> <b>Colete sempre 3 Thread Dumps com intervalo de 5 a 10 segundos entre eles</b>. Se a mesma thread continuar na mesmíssima linha de execução nos 3 dumps, você encontrou o ponto de travamento!</li>
@@ -10373,7 +10373,7 @@ event.commit(); // Grava o evento na caixa-preta da JVM!</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Uma API em produção começou a apresentar picos intermitentes de latência em horários aleatórios do dia. O arquiteto quer ativar um perfilamento contínuo para descobrir se o culpado é contenção de banco ou pausas de locks, sem impactar a performance dos clientes.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma API em produção começou a apresentar picos intermitentes de latência em horários aleatórios do dia. O arquiteto quer ativar um perfilamento contínuo para descobrir se o culpado é contenção de banco ou pausas de locks, sem impactar a performance dos clientes.</p>
                 
                 <p class="te-instrucao">Qual a abordagem de diagnóstico recomendada pelas melhores práticas do ecossistema Java?</p>
 
@@ -10418,7 +10418,7 @@ event.commit(); // Grava o evento na caixa-preta da JVM!</code></pre>
       <article class="topic" id="j4">
         <div class="th"><h3>Performance: medir primeiro, otimizar depois</h3><div class="badges"><span class="badge b-prof">evidência</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Um time passou 2 semanas reescrevendo algoritmos de busca interna com estruturas complexas achando que isso aceleraria o sistema. Um diagnóstico realizado com JDK Flight Recorder (JFR) em produção revelou que 88% do tempo das requisições era gasto em serialização JSON ineficiente de objetos gigantes em um interceptor HTTP. A correção do interceptor levou 30 minutos e reduziu a latência global pela metade.</p>
         </div>
 
@@ -10490,7 +10490,7 @@ int x = (val &lt;&lt; 1) ^ mask;</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Otimizar Métodos que Representam 0.1% do Tempo Total:</b> Passar uma semana inteira reescrevendo um algoritmo de ordenação para deixá-lo 10 vezes mais rápido, sem perceber que aquele método só roda uma vez por dia e gasta 2 milissegundos. Enquanto isso, o endpoint de login que roda 5.000 vezes por segundo continua fazendo queries sem índice.</li>
             <li><b>Testar Performance com Base de Dados Vazia:</b> Rodar testes de carga em ambiente de homologação onde a tabela de clientes tem 50 linhas. Em 50 linhas, qualquer query com <code>SELECT *</code> e loops aninhados responde em 1 milissegundo. Em produção, com 10 milhões de linhas, o sistema entra em colapso. <i>Regra:</i> Teste sempre com volume de dados e massa estatística equivalentes ao ambiente real.</li>
@@ -10562,7 +10562,7 @@ int x = (val &lt;&lt; 1) ^ mask;</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um relatório de SLA de uma API exibe latência média de 45ms, considerada aceitável pela gerência. No entanto, o time de suporte recebe reclamações diárias de clientes corporativos enfrentando lentidões intoleráveis de mais de 8 segundos.</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um relatório de SLA de uma API exibe latência média de 45ms, considerada aceitável pela gerência. No entanto, o time de suporte recebe reclamações diárias de clientes corporativos enfrentando lentidões intoleráveis de mais de 8 segundos.</p>
                 
                 <p class="te-instrucao">Qual métrica estatística de observabilidade revela a verdade sobre a experiência desses clientes afetados?</p>
 
@@ -10607,7 +10607,7 @@ int x = (val &lt;&lt; 1) ^ mask;</code></pre>
       <article class="topic" id="j5">
         <div class="th"><h3>Segurança: entrada, segredos e dependências</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>A divulgação da vulnerabilidade Log4Shell (CVE-2021-44228) permitiu a execução remota de código (RCE) através de strings JNDI passadas em headers HTTP. Empresas com pipelines automatizados de auditoria de dependências (OWASP Dependency Check) identificaram e atualizaram o JAR da biblioteca em menos de 2 horas, enquanto sistemas sem governança de dependências levaram semanas para localizar quais microsserviços estavam vulneráveis.</p>
         </div>
 
@@ -10693,7 +10693,7 @@ boolean ok = encoder.matches(senhaDigitada, hashSalvoNoBanco);</code></pre>
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Commitar Segredos no Git (Mesmo Apagando no Commit Seguinte):</b> Subir um commit com uma chave de API da AWS ou senha de banco no GitHub e fazer um segundo commit apagando o arquivo. O histórico do Git é imutável: a chave fica gravada para sempre nos commits antigos! Robôs vasculham o GitHub e roubam credenciais em menos de 60 segundos após o push. <i>Regra de ouro:</i> Se comitou um segredo acidentalmente, considere-o <b>comprometido de imediato</b> e revogue/rotacione a credencial no provedor na mesma hora!</li>
             <li><b>Log Injection (Falsificação de Auditoria):</b> Fazer <code>log.info("Falha no login: " + usuario);</code>. Se o atacante digitar como nome de usuário: <code>admin\n[INFO] 2026-09-20 - Pagamento de R$ 1.000.000 autorizado com sucesso!</code>, o log grava uma linha falsa de auditoria que engana peritos forenses! <i>Solução:</i> Remova quebras de linha (<code>\r</code>, <code>\n</code>) de qualquer dado externo antes de logar.</li>
@@ -10765,7 +10765,7 @@ boolean ok = encoder.matches(senhaDigitada, hashSalvoNoBanco);</code></pre>
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Um endpoint de download de relatórios em Java recebia o nome do arquivo enviado pelo usuário no parâmetro da URL:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um endpoint de download de relatórios em Java recebia o nome do arquivo enviado pelo usuário no parâmetro da URL:</p>
                 <pre class="te-code"><code>@GetMapping("/relatorios/download")
 public ResponseEntity<Resource> baixar(@RequestParam("arquivo") String nome) {
     File f = new File("/app/relatorios/" + nome);
@@ -10814,7 +10814,7 @@ public ResponseEntity<Resource> baixar(@RequestParam("arquivo") String nome) {
       <article class="topic" id="j6">
         <div class="th"><h3>Runtime operável: config, logs, shutdown e container</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">produção</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Durante um rolling update no Kubernetes, centenas de pedidos em andamento foram corrompidos porque a aplicação recebia o sinal `SIGTERM` e encerrava o processo imediatamente, cortando transações no meio. A configuração de `server.shutdown=graceful` no Spring Boot e o ajuste do `terminationGracePeriodSeconds` no pod garantiram que todas as conexões em trânsito fossem finalizadas antes da destruição do contêiner.</p>
         </div>
 
@@ -10910,7 +10910,7 @@ log.info("Pedido " + id + " pago no valor de " + valor);
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>A Armadilha do Shell Script como PID 1 no Dockerfile:</b> Escrever no Dockerfile: <code>ENTRYPOINT ./entrypoint.sh</code> (sem usar a forma exec em colchetes ou sem usar <code>exec java -jar</code> no script). O script shell assume o PID 1. Quando o Kubernetes envia o <code>SIGTERM</code>, <b>o shell engole o sinal e não o repassa para a JVM</b>! A aplicação nunca roda o Shutdown Hook e é assassinada à força após 30 segundos com <code>SIGKILL</code>! <i>Solução:</i> Use sempre a sintaxe em colchetes: <code>ENTRYPOINT ["java", "-jar", "app.jar"]</code> ou termine o script com <code>exec java "$@"</code>.</li>
             <li><b>Gravar Logs em Arquivos Locais dentro do Container:</b> Configurar o Logback para gravar em <code>/var/log/app.log</code> dentro do container. Quando o pod reiniciar ou sofrer escala horizontal (HPA), o container antigo é destruído e <b>todos os logs daquela máquina são deletados para sempre</b>! Além disso, enche o disco do nó do Kubernetes. Em containers, logs são emitidos exclusivamente no <code>stdout</code>/<code>stderr</code>.</li>
@@ -10982,7 +10982,7 @@ log.info("Pedido " + id + " pago no valor de " + valor);
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Durante o deploy de uma nova versão no Kubernetes com rolling update, clientes que estavam no meio de transações de checkout receberam erro '502 Bad Gateway' e conexões TCP abortadas:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Durante o deploy de uma nova versão no Kubernetes com rolling update, clientes que estavam no meio de transações de checkout receberam erro '502 Bad Gateway' e conexões TCP abortadas:</p>
                 <pre class="te-code"><code># Configuração do Spring Boot
 server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=30s</code></pre>
@@ -11029,7 +11029,7 @@ spring.lifecycle.timeout-per-shutdown-phase=30s</code></pre>
       <article class="topic" id="j8">
         <div class="th"><h3>Além do horizonte: JNI, Panama, Valhalla e Vector API</h3><div class="badges"><span class="badge b-prof">aprofundar</span><span class="badge b-ver">o que vem por aí</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>Uma aplicação financeira de cálculo de risco utilizava código legado em C via Java Native Interface (JNI). Um ponteiro nulo no código C corrompia a memória física e derrubava a JVM inteira com segmentation fault (core dump) sem chance de tratamento em Java. A migração para a Project Panama Foreign Function &amp; Memory (FFM) API no Java 21 permitiu invocar bibliotecas nativas com tipagem segura e isolamento de falhas.</p>
         </div>
 
@@ -11121,7 +11121,7 @@ public class PanamaDemo {
           </div>
         </div>
           <div class="gotcha">
-          <b>⚠️ 7. Onde "quebra" em produção? (Falhas Reais & Armadilhas)</b>
+          <b>⚠️ 7. Onde "quebra" em produção? (Falhas comuns & Armadilhas)</b>
           <ul>
             <li><b>Acesso a Memória Nativa Fora de Escopo (Use-After-Free):</b> Tentar acessar um <code>MemorySegment</code> após a <code>Arena</code> que o alocou ter sido fechada. O Java lança <code>IllegalStateException: Already closed</code>, protegendo a JVM de sofrer crash de memória que em C resultaria em corrupção silenciosa ou falha de segmentação.</li>
             <li><b>A Ilusão de que o Valhalla tornará tudo Rápido sem Planejamento:</b> Value Objects eliminam a identidade de objeto (não aceitam <code>synchronized</code> no objeto nem herança de classes). Modelar classes que exigem identidade mutável como Value Objects não será permitido pelo compilador.</li>
@@ -11193,7 +11193,7 @@ public class PanamaDemo {
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> Considere a nova forma de interagir com memória nativa fora da Heap introduzida pelo Project Panama no Java moderno:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Considere a nova forma de interagir com memória nativa fora da Heap introduzida pelo Project Panama no Java moderno:</p>
                 <pre class="te-code"><code>try (Arena arena = Arena.ofConfined()) {
     // Aloca memória nativa fora da Heap com desalocação automática garantida
     MemorySegment segmento = arena.allocate(1024);
@@ -11243,7 +11243,7 @@ public class PanamaDemo {
       <article class="topic" id="j7">
         <div class="th"><h3>Capstone: OrderFlow, tudo isso num projeto só</h3><div class="badges"><span class="badge b-ver">projeto integrador</span></div></div>
         <div class="caso">
-          <b>💻 INCIDENTE REAL DE PRODUÇÃO</b>
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
           <p>O projeto capstone OrderFlow foi submetido a um teste de estresse simulando a abertura de vendas de ingressos de um show de grande porte: 12.000 requisições concorrentes por segundo. O sistema combinou Virtual Threads do Java 21, pool HikariCP dimensionado, idempotência com chave no banco e serialização enxuta com records, mantendo a latência P99 abaixo de 45ms com zero falhas de concorrência.</p>
         </div>
 
@@ -11427,7 +11427,7 @@ public record Pedido(Long id, Long clienteId, List&lt;Item&gt; itens, Pagamento 
               </div>
 
               <div class="te-body">
-                <p class="te-pergunta"><strong>Cenário de Produção:</strong> No projeto Capstone OrderFlow, você está revisando um Pull Request de uma funcionalidade crítica de fechamento de carrinho de compras que reúne concorrência, banco de dados e comunicação externa. O desenvolvedor submeteu a seguinte proposta:</p>
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> No projeto Capstone OrderFlow, você está revisando um Pull Request de uma funcionalidade crítica de fechamento de carrinho de compras que reúne concorrência, banco de dados e comunicação externa. O desenvolvedor submeteu a seguinte proposta:</p>
                 <pre class="te-code"><code>@Transactional
 public void processarCheckout(Long pedidoId) {
     Pedido pedido = repo.findById(pedidoId).orElseThrow();
@@ -11538,7 +11538,7 @@ public void processarCheckout(Long pedidoId) {
 // 4. Registre o comportamento observado em nota atômica</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Copiar código sem entender o modelo de memória:</strong> Utilizar concorrência ou streams paralelos sem entender threads de plataforma e contenção de travas derruba servidores sob carga de produção.</li>
             </ul>
@@ -11602,7 +11602,7 @@ public void processarCheckout(Long pedidoId) {
 5. Portais oficiais: dev.java, openjdk.org/jeps e baeldung.com</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Ignorar os JEPs oficiais:</strong> Deixar de ler a motivação e restrições descritas nos JEPs do OpenJDK ao adotar novidades (ex: Virtual Threads ou Scoped Values) e sofrer pinning em blocos sincronizados.</li>
             </ul>
@@ -11669,7 +11669,7 @@ public void processarCheckout(Long pedidoId) {
 4. Capstone OrderFlow: domínio, concorrência e testes</code></pre>
           </div>
           <div class="gotcha">
-            <b>7. Onde quebra em produção? (Falhas Reais &amp; Armadilhas)</b>
+            <b>7. Onde quebra em produção? (Falhas comuns &amp; Armadilhas)</b>
             <ul>
               <li><strong>Tratar o banco como repositório de coleções em memória:</strong> Trazer milhares de entidades com JPA para filtrar em Streams no Java em vez de utilizar cláusulas WHERE e paginação por Keyset no SQL.</li>
             </ul>

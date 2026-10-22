@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="O tema de hoje e a semana de estudos de backend: Java, Spring, Mensageria, Nuvem, Docker e Kubernetes, Arquitetura.">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Estudos · hoje</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
+  --line:#44475a66;--line2:#44475a;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+:focus-visible{outline:2px solid var(--purple);outline-offset:3px;box-shadow:0 0 0 4px rgba(189,147,249,.2)}
+button:active,.act:active,.island button:active,.btn-sim:active{transform:scale(.97)}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--ink);background:var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;min-height:100dvh;overflow-x:hidden}
+
+/* aura que deriva devagar, na cor do dia (GPU acelerada, sem layout reflow) */
+.aura-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;will-change:transform}
+.aura{position:absolute;inset:-20% -10%;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 18% 22%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 70%),
+    radial-gradient(34% 38% at 82% 12%,color-mix(in srgb,var(--accent) 17%,transparent),transparent 72%),
+    radial-gradient(46% 46% at 62% 88%,#bd93f91f,transparent 72%);
+  filter:blur(12px);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{
+  0%{transform:translate3d(-2%,-1%,0) scale(1)}
+  50%{transform:translate3d(2%,2%,0) scale(1.07)}
+  100%{transform:translate3d(-1%,1.5%,0) scale(1.02)}
+}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(#f8f8f21f 1px,transparent 1px);background-size:22px 22px;
+  mask-image:radial-gradient(80% 65% at 50% 28%,#000 0%,transparent 78%)}
+
+.wrap{position:relative;z-index:1;width:min(1120px,calc(100% - 44px));margin:auto}
+a{color:inherit}
+.mono{font-family:"Cascadia Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.kick{font:700 .63rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- topo ---------- */
+.island{position:sticky;top:16px;z-index:6;width:min(1120px,calc(100% - 32px));margin:16px auto;
+  display:flex;align-items:center;gap:9px;padding:11px 20px;
+  border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(18px)}
+.brand{font:800 .78rem/1 Inter,sans-serif;letter-spacing:.13em;margin-right:auto;white-space:nowrap}
+.brand i{font-style:normal;color:var(--accent);transition:color .8s var(--ease)}
+.island a{font-size:.76rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;white-space:nowrap;
+  transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.island a:hover{background:#ffffff0a;color:var(--ink)}
+.island a.on{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 48%,transparent)}
+
+/* ---------- hoje ---------- */
+.hero{padding:clamp(34px,7vh,86px) 0 0}
+.stamp{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.stamp .dt{font:700 .68rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--accent)}
+.stamp .ln{flex:1;min-width:30px;height:1px;background:linear-gradient(to right,color-mix(in srgb,var(--accent) 55%,transparent),transparent)}
+.stamp .clk{font:700 .68rem "Cascadia Code",monospace;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
+
+h1{margin:18px 0 0;font:500 clamp(3rem,10.5vw,7.6rem)/1.02 Georgia,serif;letter-spacing:-.055em}
+h1 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.06em .05em .12em;margin:-.06em -.05em -.12em}
+h1 .w>span{display:inline-block;transform:translateY(115%);animation:up 1s var(--ease) forwards;animation-delay:var(--d)}
+@keyframes up{to{transform:none}}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{margin:22px 0 0;max-width:58ch;color:var(--ink2);font-size:clamp(.95rem,1.5vw,1.1rem);line-height:1.62;
+  opacity:0;animation:fade 1s .55s var(--ease) forwards}
+@keyframes fade{to{opacity:1}}
+
+/* amanhã */
+.morrow{margin:30px 0 0;display:flex;align-items:center;gap:12px;opacity:0;animation:fade 1s .75s var(--ease) forwards}
+.morrow .dot{width:7px;height:7px;border-radius:50%;background:var(--nx);flex:none;
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--nx) 60%,transparent);animation:ping 3.4s var(--ease) infinite}
+@keyframes ping{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--nx) 55%,transparent)}
+  70%{box-shadow:0 0 0 11px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+.morrow span{font-size:.86rem;color:var(--muted)}
+.morrow b{color:var(--nx);font-weight:500}
+
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;opacity:0;animation:fade 1s .95s var(--ease) forwards}
+.act{position:relative;text-decoration:none;font-size:.85rem;padding:12px 20px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--accent) 52%,transparent);color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 12%,transparent);
+  transition:background .35s var(--ease)}
+.act:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+button.act{font-family:inherit;font-size:.85rem;cursor:pointer}
+.act.ghost{border-color:var(--line2);color:var(--ink);background:transparent}
+.act.ghost:hover{background:#ffffff0a}
+
+/* ---------- a semana ---------- */
+.wk{margin:clamp(56px,9vh,104px) 0 0}
+.wk .hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:13px;
+  border-bottom:1px solid var(--line)}
+.wk .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
+.day{position:relative;overflow:hidden;display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:22px;align-items:center;
+  padding:19px 16px 19px 18px;border-bottom:1px solid var(--line);text-decoration:none;
+  opacity:0;transform:translateY(12px);
+  animation:dayIn .8s var(--ease) forwards;animation-delay:var(--d);
+  transition:background .4s var(--ease)}
+@keyframes dayIn{to{opacity:1;transform:none}}
+.day:before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;border-radius:2px;
+  background:var(--c);transform:scaleY(0);transform-origin:top;transition:transform .5s var(--ease)}
+.day:hover:before{transform:scaleY(1)}
+.day:not(.sem):hover{background:color-mix(in srgb,var(--c) 8%,transparent);transform:translateX(5px)}
+.day .sig{font:700 .72rem "Cascadia Code",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+.day .mid{min-width:0}
+.day .tm{display:block;font:500 clamp(1.15rem,2.4vw,1.7rem)/1.2 Georgia,serif;letter-spacing:-.035em;color:var(--ink2);
+  transition:color .4s var(--ease)}
+.day:hover .tm{color:var(--ink)}
+.day .sub{display:block;margin-top:10px;color:var(--muted);font-size:.82rem;line-height:1.55;max-width:62ch}
+.day .rt{display:flex;align-items:center;gap:12px;flex:none}
+.day .ar{font:500 1.05rem Georgia,serif;color:var(--c);opacity:.5;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.day:hover .ar{opacity:1;transform:translateX(4px)}
+.day.now{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 13%,transparent),transparent 72%)}
+.day.now:before{transform:scaleY(1)}
+.day.now .tm{color:var(--ink)}
+.day.now .tag{display:inline-block;margin-left:12px;font:700 .58rem "Cascadia Code",monospace;letter-spacing:.1em;
+  background:var(--c);color:#282a36;border-radius:999px;padding:3px 8px;vertical-align:.28em}
+/* varredura lenta na linha de hoje */
+.day.now:after{content:"";position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--c) 13%,transparent),transparent);
+  animation:sweep 7s var(--ease) infinite}
+@keyframes sweep{0%{left:-42%}60%,100%{left:104%}}
+.day.rest{opacity:.62}
+.day.rest:hover{opacity:1}
+/* dia sem documento: informa, não convida ao clique */
+.day.sem{cursor:default}
+.day.sem:hover{background:transparent}
+.day.sem:hover:before{transform:scaleY(0)}
+.day.sem:hover .tm{color:var(--ink2)}
+.day .sel{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--c);opacity:.7;border:1px solid color-mix(in srgb,var(--c) 32%,transparent);
+  border-radius:999px;padding:6px 12px;white-space:nowrap}
+
+/* selo do dia de dois documentos */
+.day .sel.dois{color:var(--c);opacity:1;background:color-mix(in srgb,var(--c) 12%,transparent)}
+.day .horario{display:inline-block;margin-left:10px;font:600 .62rem "Cascadia Code",monospace;color:var(--muted);background:#ffffff0a;border:1px solid var(--line);border-radius:999px;padding:3px 9px;vertical-align:.22em}
+
+/* ---------- o modal da escolha ---------- */
+.mdl{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,#15161e 78%,transparent);backdrop-filter:blur(7px);
+  opacity:0;animation:mdlIn .32s var(--ease) forwards}
+.mdl[hidden]{display:none}
+@keyframes mdlIn{to{opacity:1}}
+.mdl .box{--c:var(--purple);position:relative;width:min(720px,100%);max-height:calc(100dvh - 40px);overflow:auto;
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);border-radius:26px;padding:30px 30px 22px;
+  background:radial-gradient(120% 130% at 0% 0%,color-mix(in srgb,var(--c) 12%,transparent),transparent 58%),var(--panel);
+  box-shadow:0 30px 90px #00000099;
+  transform:translateY(14px) scale(.985);animation:boxIn .42s .04s var(--ease) forwards}
+@keyframes boxIn{to{transform:none}}
+.mdl .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--c)}
+.mdl h3{margin:11px 0 0;font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.mdl .hist{margin:14px 0 0;color:var(--muted);font-size:.86rem;line-height:1.62;max-width:56ch}
+.mdl .hist b{color:var(--ink);font-weight:500}
+.mdl .x{position:absolute;top:14px;right:17px;cursor:pointer;background:none;border:0;line-height:1;
+  color:var(--soft);font:400 1.5rem Georgia,serif}
+.mdl .x:hover{color:var(--ink)}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opts.opts-4{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+@media(max-width:680px){
+  .opts.opts-4{grid-template-columns:1fr}
+}
+.opt{--o:var(--c);display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  border:1px solid color-mix(in srgb,var(--o) 26%,transparent);border-radius:19px;padding:17px 18px 15px;
+  background:color-mix(in srgb,var(--o) 6%,transparent);
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.opt:hover,.opt:focus-visible{border-color:color-mix(in srgb,var(--o) 62%,transparent);
+  background:color-mix(in srgb,var(--o) 13%,transparent);transform:translateY(-2px);outline:none}
+.opt .bg{display:inline-block;margin-bottom:11px;padding:4px 9px;border-radius:999px;
+  font:700 .55rem "Cascadia Code",monospace;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid color-mix(in srgb,var(--o) 40%,transparent);color:var(--o)}
+.opt .bg.mudo{color:var(--soft);border-color:var(--line2)}
+.opt strong{display:block;font:500 1.26rem Georgia,serif;letter-spacing:-.03em;color:var(--ink)}
+.opt em{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:.79rem;line-height:1.5}
+.opt .qd{display:block;margin-top:11px;font:.67rem "Cascadia Code",monospace;color:var(--soft)}
+
+.mdl .tally{margin:18px 0 0;font:.69rem "Cascadia Code",monospace;color:var(--soft);letter-spacing:.05em}
+.mdl .pe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.mdl .pe button,.mdl .pe a{cursor:pointer;font:inherit;font-size:.76rem;color:var(--muted);background:none;
+  border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.mdl .pe button:hover,.mdl .pe a:hover{color:var(--ink)}
+.mdl .pe .nb{margin-left:auto;text-decoration:none;cursor:default;color:var(--soft);font-size:.68rem;
+  font-family:"Cascadia Code",monospace}
+@media(max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .mdl .box{padding:24px 20px 18px;border-radius:22px}
+  .mdl .pe .nb{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.mdl,.mdl .box{animation:none;opacity:1;transform:none}}
+
+/* ---------- outros ---------- */
+.outros{margin:clamp(50px,8vh,84px) 0 0}
+.outros .hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:16px;
+  border-bottom:1px solid var(--line)}
+.outros .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
+
+.duv{--dv:var(--gold);
+  position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:26px;
+  align-items:center;margin-top:20px;padding:28px 30px;border-radius:26px;text-decoration:none;
+  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);
+  background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--dv) 11%,transparent),transparent 58%),var(--panel);
+  transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
+.duv:hover{border-color:color-mix(in srgb,var(--dv) 56%,transparent);transform:translateY(-4px);box-shadow:0 20px 45px #00000066,0 0 26px color-mix(in srgb,var(--dv) 16%,transparent)}
+
+.duv .mk{position:relative;flex:none;display:grid;place-items:center;width:82px;height:82px;border-radius:26px;
+  border:1px solid color-mix(in srgb,var(--dv) 42%,transparent);background:color-mix(in srgb,var(--dv) 8%,transparent);
+  font:500 2.5rem Georgia,serif;color:var(--dv);
+  animation:bob 5.5s var(--ease) infinite}
+.duv .mk:before{content:"";position:absolute;inset:-1px;border-radius:26px;
+  background:conic-gradient(from 0deg,transparent 0 68%,color-mix(in srgb,var(--dv) 52%,transparent) 82%,transparent 96%);
+  animation:spin 7s linear infinite;opacity:.75;
+  mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px))}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-2.5deg)}}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+.duv .bd{position:relative;z-index:1;min-width:0}
+.duv .kk{font:700 .62rem "Cascadia Code",monospace;letter-spacing:.17em;text-transform:uppercase;color:var(--dv)}
+.duv h3{margin:9px 0 9px;font:500 clamp(1.5rem,3vw,2rem)/1.08 Georgia,serif;letter-spacing:-.04em;color:var(--ink)}
+.duv p{margin:0;color:var(--muted);font-size:.87rem;line-height:1.6;max-width:64ch}
+.duv .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.duv .chips i{font-style:normal;font:.66rem "Cascadia Code",monospace;color:color-mix(in srgb,var(--dv) 84%,transparent);
+  border:1px solid color-mix(in srgb,var(--dv) 25%,transparent);border-radius:999px;padding:5px 11px}
+.duv .go{position:relative;z-index:1;flex:none;font:500 1.5rem Georgia,serif;color:var(--dv);opacity:.6;transition:transform .4s var(--ease),opacity .4s var(--ease)}
+.duv:hover .go{transform:translateX(5px);opacity:1}
+
+@media(max-width:680px){
+  .duv{grid-template-columns:auto minmax(0,1fr);gap:18px;padding:22px 20px}
+  .duv .go{display:none}
+  .duv .mk{width:62px;height:62px;border-radius:20px;font-size:1.9rem}
+}
+
+footer{margin:clamp(56px,9vh,96px) 0 44px;padding-top:24px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.77rem;line-height:1.7}
+footer a{color:var(--accent)}
+
+@media(max-width:680px){
+  .wrap{width:calc(100% - 28px)}
+  .island{width:calc(100% - 24px);flex-wrap:wrap;border-radius:22px;padding:10px 13px;gap:7px}
+  .island .brand{margin-right:0;width:100%;margin-bottom:2px;font-size:.72rem}
+  .island a,.island button.btn-act{font-size:.71rem;padding:6px 10px}
+  .island a.hide{display:none}
+  .day{grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 10px 16px 12px}
+  .day .rt{grid-column:2;margin-top:9px}
+  pre{overflow-x:auto;max-width:100%}
+  code{overflow-wrap:anywhere}
+  pre code{overflow-wrap:normal}
+  table{display:block;overflow-x:auto;max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .day.now:after{display:none}
+  .duv .mk:before{display:none}
+  h1 .w>span{transform:none}.lede,.morrow,.acts,.day{opacity:1;transform:none}
+}
+
+/* ---------- Command Palette & Backup Modals ---------- */
+.palette-scrim{position:fixed;inset:0;z-index:100;background:#0d0e14d9;backdrop-filter:blur(8px);display:grid;place-items:start center;padding:clamp(20px,10vh,80px) 16px 20px;opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.palette-scrim.open{opacity:1;pointer-events:auto}
+.palette-box{width:min(660px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:20px;box-shadow:0 24px 60px #000000a6;overflow:hidden;transform:translateY(-10px) scale(.98);transition:transform .24s var(--ease)}
+.palette-scrim.open .palette-box{transform:none}
+.palette-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);background:#1e1f29}
+.palette-head i{font-style:normal;color:var(--purple);font-size:1.1rem}
+.palette-input{flex:1;background:transparent;border:0;outline:none;color:var(--ink);font:500 1rem "Inter",sans-serif}
+.palette-input::placeholder{color:var(--soft)}
+.palette-kbd{font:700 .65rem "Cascadia Code",monospace;color:var(--muted);background:#282a36;padding:4px 8px;border-radius:6px;border:1px solid var(--line2)}
+.palette-results{max-height:min(420px,60vh);overflow-y:auto;padding:8px 0}
+.palette-item{display:flex;align-items:center;gap:12px;padding:11px 20px;text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
+.palette-item:hover,.palette-item.active{background:#ffffff0f;border-left-color:var(--purple)}
+.palette-item .p-tag{font:700 .6rem "Cascadia Code",monospace;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.palette-item .p-text{flex:1;min-width:0}
+.palette-item .p-title{font:600 .86rem "Inter",sans-serif;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-item .p-sub{font:400 .74rem Georgia,serif;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palette-empty{padding:28px 20px;text-align:center;color:var(--soft);font-style:italic;font-size:.88rem}
+
+/* Botões do island */
+.island button.btn-act{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 13px;font:600 .74rem "Inter",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease)}
+.island button.btn-act:hover{background:#ffffff0f;color:var(--ink);border-color:var(--purple)}
+.island button.btn-act kbd{font:700 .6rem "Cascadia Code",monospace;background:#ffffff14;padding:2px 5px;border-radius:4px;border:1px solid var(--line2)}
+
+/* Backup card/modal */
+.backup-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(500px,100%)}
+.backup-card h3{margin:0 0 8px;font:600 1.25rem Georgia,serif;color:var(--ink)}
+.backup-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);line-height:1.55}
+.backup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.backup-actions button{flex:1 1 140px;border-radius:12px;padding:12px 14px;border:1px solid var(--line2);background:#282a36;color:var(--ink);font:600 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.backup-actions button.primary{border-color:var(--purple);background:color-mix(in srgb,var(--purple) 18%,transparent);color:var(--purple)}
+.backup-actions button:hover{filter:brightness(1.2)}
+
+</style>
+<link rel="stylesheet" href="assets/css/pratica.css">
+<link rel="stylesheet" href="assets/css/pomodoro.css">
+</head>
+<body style="--accent:var(--cyan)">
+
+<div class="aura-wrap" id="auraWrap"><div class="aura" id="aura"></div></div>
+<div class="grain"></div>
+
+<nav class="island">
+  <div class="brand"><i>◆</i> ESTUDOS / BACKEND</div>
+  <button type="button" class="btn-act" id="btnPalette" title="Buscar no acervo completo (Ctrl+K)">🔍 Buscar <kbd>Ctrl+K</kbd></button>
+  <button type="button" class="btn-act" id="btnBackup" title="Fazer backup ou restaurar dados">💾 Backup</button>
+  <a href="acervo.html">o acervo completo</a>
+  <a href="lab/projetos.html">projetos</a>
+  <a href="ferramentas/prompt-studio.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">🧠 prompt studio</a>
+  <a href="ferramentas/refinador.html" style="color:var(--purple);font-weight:700;border-color:color-mix(in srgb,var(--purple) 45%,transparent);background:color-mix(in srgb,var(--purple) 10%,transparent)">✨ formatador</a>
+  <a href="ferramentas/pomodoro.html" style="color:var(--cyan);font-weight:700;border-color:color-mix(in srgb,var(--cyan) 45%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent)">pomodoro</a>
+  <a href="https://thallyscezar.github.io/docs-md/" target="_blank" rel="noopener noreferrer" style="color:var(--lime);font-weight:700;border-color:color-mix(in srgb,var(--lime) 45%,transparent);background:color-mix(in srgb,var(--lime) 10%,transparent)">📄 docs IA ↗</a>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="stamp">
+      <span class="dt" id="dt">—</span>
+      <span class="ln"></span>
+      <span class="clk" id="clk">--:--</span>
+    </div>
+
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+
+    <div class="morrow" id="morrow"><span class="dot"></span><span id="mtxt"></span></div>
+
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <!-- Painel de Progresso Geral Consolidado -->
+  <section id="progressMount"></section>
+
+  <!-- MicroLearning Diário -->
+  <section class="ml-section" id="microlearningMount"></section>
+
+  <section class="wk">
+    <div class="hd">
+      <h2>A semana</h2>
+      <span class="kick" style="color:var(--muted)">19:30 — 22:30 nos dias úteis</span>
+    </div>
+    <div id="wk"></div>
+  </section>
+
+  <section class="outros">
+    <div class="hd"><h2>Outros</h2></div>
+
+    <a class="duv" href="cadernos/conceitos-backend.html">
+      <span class="mk">?</span>
+      <span class="bd">
+        <span class="kk">fora da sequência</span>
+        <h3>Caderno de dúvidas</h3>
+        <p>Conceitos de Backend completo: o documento que não tem dia marcado. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa, em vez de criar um arquivo novo solto.</p>
+        <span class="chips"><i>gargalos e escala</i><i>race condition</i><i>locks</i><i>idempotência</i><i>rate limit</i><i>índices e JOINs</i><i>sessão vs JWT</i><i>OAuth2 e PKCE</i><i>observabilidade</i><i>deploy e rollback</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/financas-investimentos.html" style="--dv:var(--teal)">
+      <span class="mk">R$</span>
+      <span class="bd">
+        <span class="kk">objetivos, risco e escolhas</span>
+        <h3>Finanças e investimentos</h3>
+        <p>Um caderno para entender como começar: organizar orçamento, definir objetivo e prazo, formar reserva, comparar renda fixa, conhecer ações e FIIs, avaliar um plano educacional em três fases e entender aportes, custos e riscos. Sem carteira recomendada ou dados financeiros pessoais.</p>
+        <span class="chips"><i>reserva</i><i>renda fixa</i><i>ações e FIIs</i><i>plano por fases</i><i>aportes</i><i>fontes oficiais</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/biblioteca.html" style="--dv:var(--purple)">
+      <span class="mk">▤</span>
+      <span class="bd">
+        <span class="kk">a estante</span>
+        <h3>Biblioteca</h3>
+        <p>Os cinco livros que formaram o critério, num documento só — com a síntese de cada um e, principalmente, <b>onde os autores discordam</b>: é ali que mora o trade-off, e era invisível quando cada livro vivia no seu arquivo.</p>
+        <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i><i>ordem de leitura</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/git.html" style="--dv:var(--pink)">
+      <span class="mk">⑂</span>
+      <span class="bd">
+        <span class="kk">o histórico</span>
+        <h3>Git</h3>
+        <p>Um <b>grafo de snapshots imutáveis</b>, não uma pilha de versões — e é dessa confusão que quase todo problema nasce. Unifica os quatro roadmaps que estavam concorrendo no vault. Comece pelo marco 04: saber recuperar é o que dá coragem para usar o resto da ferramenta.</p>
+        <span class="chips"><i>cherry-pick -x</i><i>bisect</i><i>reflog</i><i>rebase -i --autosquash</i><i>--force-with-lease</i><i>worktree</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/linux.html" style="--dv:var(--orange)">
+      <span class="mk">$_</span>
+      <span class="bd">
+        <span class="kk">o térreo</span>
+        <h3>Linux e terminal</h3>
+        <p>O que estava faltando <b>embaixo</b> de todos os outros. Todo laboratório roda em container, o Docker fala em PID 1 e SIGTERM, a Nuvem exige teardown por comando — e nenhum documento explicava o terminal. Cada conceito aqui vem com o sintoma real: o container que ignora o Ctrl+C, o disco que encheu sem arquivo grande, o 137 sem exceção no log.</p>
+        <span class="chips"><i>SIGTERM × SIGKILL</i><i>PID 1</i><i>2&gt;&amp;1</i><i>grep sed awk</i><i>df × du</i><i>cgroup</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="cadernos/governanca-seguranca.html" style="--dv:var(--cyan)">
+      <span class="mk">G</span>
+      <span class="bd">
+        <span class="kk">decisão, risco e proteção</span>
+        <h3>Governança e segurança de TI</h3>
+        <p>Um caderno para entender como decisões, responsabilidades e controles se conectam: risco, IAM, privacidade e LGPD, desenvolvimento seguro, incidentes, continuidade e fornecedores.</p>
+        <span class="chips"><i>governança</i><i>risco</i><i>segurança</i><i>privacidade</i><i>continuidade</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="trilhas/system-design.html" style="--dv:var(--cyan)">
+      <span class="mk">⧉</span>
+      <span class="bd">
+        <span class="kk">o projeto inteiro</span>
+        <h3>System Design</h3>
+        <p>O nono não explica mecanismo — ensina a <b>escolher entre eles sob restrição</b>. Nenhum conceito aparece sozinho: cada um chega com o caso que o obriga a existir, e com a conta que decide. 10 mil requisições por segundo, 1 milhão de eventos, dois bilhões de usernames, um milhão de pedidos para paginar.</p>
+        <span class="chips"><i>L = λ × W</i><i>a escada de leitura</i><i>partition key</i><i>Bloom filter</i><i>keyset</i><i>falha parcial</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="trilhas/ia.html" style="--dv:var(--purple)" id="cardIA">
+      <span class="mk">◈</span>
+      <span class="bd">
+        <span class="kk">o que prevê · dois caminhos</span>
+        <h3>Inteligência Artificial</h3>
+        <p>Toda a área de IA do vault e a engenharia moderna: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir no modal.</p>
+        <span class="chips"><i>dois · escolher</i><i>V1 (Vault &amp; Fundações)</i><i>V2/V3 (6 Grandes Níveis)</i><i>tokens</i><i>RAG</i><i>pgvector</i><i>agentes</i><i>Test Harness</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+
+    <a class="duv" href="lab/projetos.html" style="--dv:var(--lime)">
+      <span class="mk">⌘</span>
+      <span class="bd">
+        <span class="kk">a bancada</span>
+        <h3>Laboratório de projetos</h3>
+        <p>Os documentos explicam; aqui você constrói. <b>19 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
+        <span class="chips"><i>19 projetos</i><i>18 aquecimentos</i><i>tudo local primeiro</i><i>R$ 0 obrigatório</i><i>OrderFlow como capstone</i></span>
+      </span>
+      <span class="go">↗</span>
+    </a>
+  </section>
+
+  <footer>
+    Caderno de estudos de <a href="https://github.com/ThallysCezar">Thallys Cézar</a>.
+  </footer>
+
+</main>
+
+<div class="mdl" id="mdl" hidden role="dialog" aria-modal="true" aria-labelledby="mdlT">
+  <div class="box" id="mdlBox"></div>
+</div>
+
+<aside id="pomodoro"></aside>
+
+<script defer src="assets/js/index.inline.js"></script>
+
+<!-- Modal da Paleta de Comandos -->
+<div class="palette-scrim" id="paletteScrim" hidden>
+  <div class="palette-box">
+    <div class="palette-head">
+      <i>⌘</i>
+      <input type="search" id="paletteInput" class="palette-input" placeholder="Buscar tópicos, arquivos ou projetos... (ex: outbox, hikari, kafka, jwt, r03)" autocomplete="off">
+      <span class="palette-kbd"><kbd>Esc</kbd> fechar</span>
+    </div>
+    <div class="palette-results" id="paletteResults"></div>
+  </div>
+</div>
+
+<!-- Modal de Backup e Restauração -->
+<div class="palette-scrim" id="backupModal" hidden>
+  <div class="backup-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <h3 style="margin:0 0 6px">Backup de Dados Locais</h3>
+      <button type="button" id="btnFecharBackup" style="background:none;border:0;color:var(--soft);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <p>Suas anotações, escolhas e dados ficam salvos localmente no navegador (<code class="mono" style="color:var(--teal)">localStorage</code>). Exporte um arquivo JSON para segurança ao limpar o cache ou trocar de máquina.</p>
+    <div class="backup-actions">
+      <button type="button" class="primary" id="btnExportarJson">⬇ Exportar JSON</button>
+      <button type="button" id="btnRestaurarJson">⬆ Restaurar JSON</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none">
+    </div>
+    <div id="backupMsg" style="margin-top:14px;font-size:.8rem;color:var(--teal);display:none"></div>
+  </div>
+</div>
+
+<script defer src="assets/js/microlearning-data.js"></script>
+<script defer src="assets/js/microlearning-widget.js"></script>
+<script defer src="assets/js/progress-widget.js"></script>
+<script defer src="assets/js/instant-nav.js"></script>
+<script defer src="assets/js/pomodoro.js"></script>
+
+</body>
+</html>

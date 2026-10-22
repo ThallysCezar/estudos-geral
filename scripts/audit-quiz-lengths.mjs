@@ -9,6 +9,7 @@ const files = [
   'cadernos/ingles.html',
   'cadernos/linux.html',
   'cadernos/oratoria.html',
+  'cadernos/python-para-java.html',
   'trilhas/arquitetura.html',
   'trilhas/docker-kubernetes.html',
   'trilhas/ia.html',

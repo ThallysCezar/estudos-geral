@@ -496,6 +496,7 @@ var PALETTE_DATA = [
   {t:"Oratória e comunicação",sub:"Defesa técnica de decisões, postmortems e SBI",cat:"CADERNO",url:"cadernos/oratoria.html",cor:"var(--gold)"},
   {t:"Governança e segurança de TI",sub:"Governança, risco, controles, IAM, privacidade e continuidade",cat:"CADERNO",url:"cadernos/governanca-seguranca.html",cor:"var(--cyan)"},
   {t:"Finanças e investimentos",sub:"Orçamento, reserva, risco, renda fixa e variável, plano por fases, aportes e fontes oficiais",cat:"CADERNO",url:"cadernos/financas-investimentos.html",cor:"var(--teal)"},
+  {t:"Python para quem vem de Java",sub:"Ambiente, tipagem, Pydantic, FastAPI, pytest e ponte para IA",cat:"CADERNO",url:"cadernos/python-para-java.html",cor:"var(--orange)"},
   {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"trilhas/mensageria.html#g2",cor:"var(--pink)"},
   {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j2",cor:"var(--rose)"},

@@ -31,6 +31,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | 14 | [Oratória & Comunicação](cadernos/oratoria.html) | Defesa técnica de decisões, postmortems blameless e modelo SBI |
 | — | [Governança e Segurança de TI](cadernos/governanca-seguranca.html) | Governança, risco, controles, IAM, privacidade, desenvolvimento seguro, incidentes e continuidade |
 | — | [Finanças e investimentos](cadernos/financas-investimentos.html) | Orçamento, objetivos, reserva, renda fixa e variável, plano educacional em três fases, aportes, custos e fontes oficiais; sem carteira recomendada |
+| — | [Python para quem vem de Java](cadernos/python-para-java.html) | Transição prática: ambiente, tipagem, Pydantic, FastAPI, pytest e a ponte para IA e agentes |
 
 ### 🛠️ Laboratório & Prática (`lab/`)
 | # | Documento | Foco |

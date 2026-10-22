@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python para quem vem de Java — trilha visual e conteúdo</title>
+<meta name="description" content="Python para desenvolvedores Java: ambiente, modelagem de dados e FastAPI, sempre partindo do equivalente no Java e no Spring.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/img-modal.css">
+<style>
+:root{
+  --bg:#282a36; --bg2:#21222c; --ink:#f8f8f2; --ink2:#dcdce0; --muted:#9aa1c0; --soft:#6272a4;
+  --line:#343746; --line2:#44475a; --card:#2f313f;
+  --brand:#bd93f9; --brand-s:#332a4e;
+  --teal:#50fa7b; --teal-s:#173726;
+  --gold:#f1fa8c; --gold-s:#36381e;
+  --violet:#ff79c6; --violet-s:#3d2135;
+  --rose:#ff5555; --rose-s:#3d2027;
+  --cyan:#8be9fd;
+  --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+::selection{background:var(--brand-s);color:var(--ink)}
+.ui{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:var(--soft)}
+.topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
+.brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
+.meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
+.meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
+.meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
+.meter p b{display:block;color:var(--ink);font-size:.82rem}
+.tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tools button{flex:1 1 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 8px;font:600 .74rem "Inter",sans-serif;cursor:pointer;transition:.15s;white-space:nowrap}
+.tools button:hover{color:var(--ink);border-color:var(--brand)}
+.tools button.on{background:var(--brand);color:#1e1f29;border-color:var(--brand)}
+.tools button[hidden]{display:none}
+.search{width:100%;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 11px;font:400 .82rem "Inter",sans-serif;margin-bottom:10px}
+.search::placeholder{color:var(--soft)}
+nav{overflow:auto;flex:1;padding-bottom:24px;font-family:"Inter","Segoe UI",sans-serif}
+nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:8px;border-left:2px solid transparent;font-size:.83rem;line-height:1.35}
+nav a.sec{color:var(--ink);font-weight:700;margin-top:14px;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;border:0;padding-left:2px}
+nav a.sec b{color:var(--brand);font-family:"Cascadia Code",monospace;margin-right:6px}
+nav a.sec:hover{color:var(--brand)}
+nav a.top{padding-left:20px;position:relative}
+nav a.top:hover{color:var(--ink);background:var(--brand-s)}
+nav a.top.active{color:var(--brand);border-left-color:var(--brand);background:var(--brand-s)}
+nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);font-weight:800;font-size:.78rem}
+nav a.hide{display:none}
+main{padding:0 clamp(20px,4vw,64px);min-width:0}
+.hero{padding:74px 0 34px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
+h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
+h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
+.hero .lede b{color:var(--ink)}
+.jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
+.jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
+.jump a:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.jump a b{display:block;font-size:.98rem;color:var(--ink);margin-bottom:2px}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:24px}
+.legenda div{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--card)}
+.legenda b{display:block;font:700 .72rem/1.3 "Inter",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.legenda span{font:400 .84rem/1.45 Georgia,serif;color:var(--muted)}
+section.part{padding:56px 0 4px;scroll-margin-top:8px}
+.ph{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--line2);margin-bottom:6px}
+.ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
+.ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
+.ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
+article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
+article.topic.hide{display:none}
+.th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:400;flex:1;min-width:260px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
+.badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.b-ess{background:var(--teal-s);color:var(--teal)}
+.b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
+.b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
+.direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
+.direto b{font-weight:700}
+article.topic p{margin:1rem 0 0}
+.analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
+.analogia p b{color:var(--gold)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
+.duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
+.duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
+.duo li{margin:.3rem 0}
+.duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
+.duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+figure.dg svg{display:block;width:100%;height:auto}
+figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
+.dg .b1{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.5}
+.dg .b2{fill:var(--brand-s);stroke:var(--brand);stroke-width:1.5}
+.dg .b3{fill:var(--bg2);stroke:var(--line2);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .b4{fill:var(--violet-s);stroke:var(--violet);stroke-width:1.5}
+.dg .b5{fill:var(--rose-s);stroke:var(--rose);stroke-width:1.5}
+.dg .b6{fill:var(--gold-s);stroke:var(--gold);stroke-width:1.5}
+.dg .bt{fill:var(--ink);font:600 11px "Inter",sans-serif;text-anchor:middle}
+.dg .bs{fill:var(--muted);font:9.3px "Cascadia Code",monospace;text-anchor:middle}
+.dg .l{stroke:var(--soft);stroke-width:1.6;fill:none}
+.dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
+.dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
+.dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
+.dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
+.gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
+.gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{white-space:nowrap;width:1%}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px;white-space:nowrap}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
+@media(max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
+}
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
+</style>
+<link rel="stylesheet" href="../assets/css/responsive-drawer.css">
+  <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="projeto-css">
+/* "Projeto do conceito": cada tópico constrói uma peça de um dos projetos da trilha. */
+.projeto{margin:18px 0 0;padding:16px 18px;border-radius:14px;border:1px solid color-mix(in srgb,var(--teal) 40%,transparent);background:color-mix(in srgb,var(--teal) 7%,transparent)}
+.pj-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;margin-bottom:6px}
+.pj-tag{color:var(--teal);font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.pj-onde{color:var(--muted);font:600 .78rem/1.3 "Inter",sans-serif}
+.pj-onde a{color:var(--muted)}
+.projeto p{margin:.45rem 0 0}
+.pj-ok b{color:var(--teal)}
+.pj-java{color:var(--muted);font-size:.9rem}
+.ciclo-pj{counter-reset:c;list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.55rem}
+.ciclo-pj li{counter-increment:c;display:grid;grid-template-columns:2rem 1fr;gap:.6rem;align-items:start}
+.ciclo-pj li::before{content:counter(c);display:grid;place-items:center;width:2rem;height:2rem;border-radius:10px;background:color-mix(in srgb,var(--teal) 18%,transparent);color:var(--teal);font:800 .85rem "Inter",sans-serif}
+pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",monospace;padding:14px 16px;border-radius:12px;background:var(--bg2);border:1px solid var(--line2)}
+</style>
+</head>
+<body>
+<div class="topbar"><i id="tp"></i></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><i>Py</i><b>Python para quem vem de Java</b></div>
+    <p class="sub">O que você já sabe no Java, do jeito Python.</p>
+    <div class="meter">
+      <div class="ring" id="ring"><span id="rpct">0%</span></div>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
+    </div>
+    <div class="tools">
+      <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
+      <button id="review" type="button" hidden>🎯 revisar (0)</button>
+      <button id="top" type="button">topo</button>
+      <button id="reset" type="button">zerar</button>
+    </div>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (venv, dataclass, Depends)" autocomplete="off">
+    <nav id="nav"></nav>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <span class="eyebrow">Python para quem vem de Java · outubro 2026</span>
+      <h1>O que você <em>já sabe</em>, do jeito <em>Python</em>.</h1>
+      <p class="lede">Não é um curso de Python do zero. Cada tópico parte do que você já faz no Java e no Spring, mostra o equivalente em Python, a diferença que pega e o erro comum de quem vem do Java. O caminho termina no FastAPI, que é a base do <b>Projeto 1 da trilha de IA</b>: Python aparece em quase todas as vagas de AI Engineer.</p>
+      <div class="jump">
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>do ambiente à API</a>
+      </div>
+      <div class="legenda">
+        <div><b>Sempre com a ponte</b><span>Cada tópico diz qual é o equivalente no Java e no Spring.</span></div>
+        <div><b>Diferença antes de sintaxe</b><span>O foco é o que muda de comportamento, não a lista de comandos.</span></div>
+        <div><b>Projeto do conceito</b><span>Cada tópico constrói uma peça do Projeto 1 da trilha de IA.</span></div>
+        <div><b>Piloto</b><span>Três tópicos por enquanto; os outros entram depois.</span></div>
+      </div>
+    </header>
+
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do ambiente à API</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
+
+        <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>Ambiente e projeto</h2><p>Antes de escrever código: onde o Python mora, onde ficam as dependências e como o projeto se descreve.</p></div></div>
+
+      <article class="topic" id="py-ambiente">
+        <div class="th"><h3>Ambiente, dependências e pyproject.toml</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> O <code>pyproject.toml</code> é o <code>pom.xml</code> do Python: descreve o projeto e as dependências. Cada projeto tem o próprio ambiente virtual (<code>.venv</code>), uma pasta com o interpretador e as bibliotecas só daquele projeto. Ferramentas como o <code>uv</code> criam o ambiente, instalam as dependências e travam as versões num arquivo de lock.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você instala o FastAPI com <code>pip install fastapi</code> direto no Python do sistema. Um mês depois, outro projeto precisa de uma versão diferente da mesma biblioteca, e atualizar uma quebra a outra. No Java isso não acontece porque o Maven resolve as dependências por projeto no <code>~/.m2</code> e monta o classpath de cada build. No Python, sem um ambiente virtual por projeto, todos os projetos dividem a mesma pasta de bibliotecas.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É como ter uma caixa de ferramentas por obra em vez de uma única caixa para todas. Cada obra leva só o que precisa, na versão que precisa, e o que acontece numa não estraga a outra.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python instalava pacotes num lugar global do sistema. Isso funcionava com um projeto por máquina e virou problema quando vários projetos com versões diferentes passaram a conviver.</p>
+            <div class="repl"><b>Veio substituir:</b> o <code>pip install</code> no Python do sistema e o <code>requirements.txt</code> sem versão travada, que davam builds diferentes em máquinas diferentes.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>O ambiente virtual é uma pasta (<code>.venv</code>) com um link para o interpretador e um diretório <code>site-packages</code> próprio. Ativar o ambiente só coloca essa pasta na frente do <code>PATH</code>; o <code>python</code> e o <code>pip</code> passam a apontar para ela.</p><p>O <code>pyproject.toml</code> declara as dependências com faixas de versão; o arquivo de lock (por exemplo, <code>uv.lock</code>) grava as versões exatas que foram resolvidas. É o mesmo papel das versões fixas no <code>pom.xml</code> com o <code>dependencyManagement</code>.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">um ambiente por projeto</text><rect x="8" y="34" width="92" height="28" rx="8" class="b1"/><text x="54" y="52" class="bs">pyproject.toml</text><path d="M102,48 L124,48" class="l"/><path d="M124,48 L117,44 L117,52 Z" class="h"/><rect x="126" y="34" width="90" height="28" rx="8" class="b2"/><text x="171" y="52" class="bs">uv sync</text><path d="M218,48 L240,48" class="l"/><path d="M240,48 L233,44 L233,52 Z" class="h"/><rect x="242" y="34" width="90" height="28" rx="8" class="b2"/><text x="287" y="52" class="bs">.venv/</text><text x="170" y="92" class="bs">pom.xml → mvn → ~/.m2 (no Java)</text><text x="170" y="122" class="bs">o .venv fica no projeto, não no sistema</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Ter builds reproduzíveis: qualquer pessoa (ou o CI, ou o Docker) recria o mesmo ambiente com um comando, sem depender do que está instalado na máquina.</p></div>
+          <div><h4>Por que é importante</h4><p>Quase todo "na minha máquina funciona" em Python vem daqui. É a primeira coisa que uma vaga de AI Engineer espera que você saiba fazer sem pensar, e a base de qualquer imagem Docker de projeto Python.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b><code>pom.xml</code> ↔ <code>pyproject.toml</code>; <code>mvn install</code> ↔ <code>uv sync</code>; <code>~/.m2</code> ↔ <code>.venv/</code> (só que por projeto); <code>mvn exec:java</code> ↔ <code>uv run</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>uv init meu-chat          # cria pyproject.toml
+cd meu-chat
+uv add fastapi uvicorn    # adiciona e trava no uv.lock
+uv add --dev pytest       # dependência só de desenvolvimento
+uv run uvicorn main:app --reload</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">pip, venv e Poetry: as outras formas</span></summary>
+          <div class="alem-body"><p>Sem o <code>uv</code>, o caminho padrão da própria linguagem é <code>python -m venv .venv</code>, ativar o ambiente e usar <code>pip install</code>. O Poetry é outra ferramenta popular que também usa o <code>pyproject.toml</code> e um lock. Em projetos antigos você vai encontrar <code>requirements.txt</code>: é só uma lista de pacotes, sem a descrição do projeto.</p><small class="alem-src">Ferramentas mudam rápido; confira na documentação qual é a recomendada hoje.</small></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Esquecer de ativar o ambiente</b> e instalar no Python do sistema. Com <code>uv run</code> isso não acontece.</li>
+            <li><b>Commitar a pasta <code>.venv</code>.</b> Ela vai no <code>.gitignore</code>; o que se commita é o <code>pyproject.toml</code> e o lock.</li>
+            <li><b>Não commitar o lock.</b> Sem ele, o build de amanhã pode trazer versões diferentes das de hoje.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>Crie o projeto do Projeto 1 da trilha de IA com <code>uv init</code>, adicione FastAPI e uvicorn, e suba um endpoint <code>/health</code> que devolve <code>{"status": "ok"}</code>.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> outra pessoa clona o repositório, roda <code>uv sync</code> e <code>uv run uvicorn main:app</code>, e o endpoint responde sem nenhum outro passo.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: ambiente, dependências e pyproject.toml</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>pyproject.toml é o pom.xml</b>
+                    <p>Descreve o projeto e as dependências; o lock grava as versões exatas.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Um .venv por projeto</b>
+                    <p>Pasta com interpretador e bibliotecas só daquele projeto; ativar só mexe no PATH.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Reproduzível</b>
+                    <p>Quem clona roda um comando e tem o mesmo ambiente.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Instalar tudo com pip no Python do sistema:</b><p>Funciona no primeiro projeto e quebra quando o segundo pede outra versão da mesma biblioteca.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>O classpath do Python é uma pasta.</strong> O que o Maven monta a cada build, o ambiente virtual guarda em disco, um por projeto.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-ambiente">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você clona um projeto Python de um colega. Ele tem <code>pyproject.toml</code> e <code>uv.lock</code>, mas nenhuma pasta <code>.venv</code>.</strong></p>
+                <p class="te-instrucao">Qual é o próximo passo?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Instalar no Python do sistema ignora o lock e mistura as versões com as de outros projetos.">
+                    <span class="te-letter">A</span> Rodar <code>pip install</code> de cada pacote listado no pyproject.toml, no Python do sistema, para ter tudo disponível globalmente.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O lock existe para isso: recriar o mesmo ambiente em qualquer máquina, isolado num .venv do projeto.">
+                    <span class="te-letter">B</span> Rodar <code>uv sync</code>, que cria o .venv do projeto e instala exatamente as versões do lock.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O .venv é descartável e depende da máquina; o que se compartilha é o pyproject.toml e o lock.">
+                    <span class="te-letter">C</span> Pedir ao colega a pasta .venv dele, compactada, porque o ambiente não pode ser recriado sem ela.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Qual o papel do arquivo de lock num projeto Python?</div>
+              <div class="tf-resposta">Gravar as versões exatas de todas as dependências (inclusive as indiretas) que foram resolvidas, para que qualquer máquina recrie o mesmo ambiente. O pyproject.toml diz o que você aceita; o lock diz o que foi instalado.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-ambiente">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Modelando dados</h2><p>Onde o Java usa POJO, record e DTO com Bean Validation, o Python tem classe comum, dataclass e Pydantic.</p></div></div>
+
+      <article class="topic" id="py-classes">
+        <div class="th"><h3>Classes, dataclass e duck typing</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Classe em Python não declara campos nem tipos obrigatórios: os atributos nascem no <code>__init__</code>. O <code>@dataclass</code> gera construtor, <code>__eq__</code> e <code>__repr__</code> a partir de campos anotados, como um <code>record</code>. Não há <code>interface</code>: se o objeto tem o método que você chama, funciona (duck typing); para declarar o contrato, existe o <code>Protocol</code>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você porta um DTO <code>Pedido</code> do Java e escreve uma classe com <code>__init__</code>, getters e setters. Fica com o dobro de linhas e ninguém no time usa getter em Python. Pior: você escreve <code>preco: int</code>, alguém passa <code>"10"</code> e nada reclama, porque a anotação de tipo não é verificada em tempo de execução.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Duck typing é contratar pelo que a pessoa sabe fazer, não pelo diploma. Se ela sabe dirigir, serve para motorista; o Java pediria a carteira (a interface) antes de deixar sentar no banco.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python nasceu dinâmico e pequeno, sem cerimônia de tipos. As anotações de tipo vieram depois, opcionais, e o <code>@dataclass</code> entrou para acabar com o código repetitivo das classes de dados.</p>
+            <div class="repl"><b>Veio substituir:</b> as classes escritas à mão, com <code>__init__</code>, <code>__eq__</code> e <code>__repr__</code> repetidos em cada uma, e os dicionários soltos usados como objeto.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Tudo é objeto e os atributos ficam num dicionário da instância; por isso dá para criar um atributo em qualquer momento. O <code>@dataclass</code> lê as anotações da classe e gera os métodos na hora em que a classe é definida. Com <code>frozen=True</code>, a instância fica imutável, como um <code>record</code>.</p><p>As anotações de tipo são só metadados: o interpretador não as confere. Quem confere é uma ferramenta estática (<code>mypy</code>, <code>pyright</code>) ou uma biblioteca em tempo de execução, como o Pydantic.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">três formas de modelar um dado</text><rect x="8" y="34" width="100" height="28" rx="8" class="b2"/><text x="58" y="52" class="bs">classe comum</text><rect x="120" y="34" width="100" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">@dataclass</text><rect x="232" y="34" width="100" height="28" rx="8" class="b2"/><text x="282" y="52" class="bs">Pydantic</text><text x="58" y="84" class="bs">tudo à mão</text><text x="170" y="84" class="bs">≈ record</text><text x="282" y="84" class="bs">≈ DTO + validação</text><text x="170" y="122" class="bs">dataclass não valida; Pydantic valida</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Modelar os dados do domínio com pouco código e escolher o nível de garantia: dataclass para dados internos, Pydantic quando os dados vêm de fora e precisam ser validados.</p></div>
+          <div><h4>Por que é importante</h4><p>Todo o ecossistema de IA em Python (FastAPI, LangChain, SDKs dos provedores) é construído em cima de modelos Pydantic e dataclasses. Entender a diferença entre anotar e validar evita a maior parte dos bugs de quem vem do Java.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>POJO ↔ classe comum; <code>record</code> ↔ <code>@dataclass(frozen=True)</code>; <code>interface</code> ↔ <code>Protocol</code>; Bean Validation ↔ Pydantic; Lombok ↔ não precisa.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>from dataclasses import dataclass
+from typing import Protocol
+
+@dataclass(frozen=True)
+class Pedido:              # ~ record Pedido(String id, int total)
+    id: str
+    total: int
+
+class Notificador(Protocol):   # ~ interface
+    def enviar(self, msg: str) -> None: ...
+
+def avisar(n: Notificador, p: Pedido) -> None:
+    n.enviar(f"pedido {p.id}: {p.total}")</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Pydantic: quando o tipo precisa ser verdade</span></summary>
+          <div class="alem-body"><p>Troque <code>@dataclass</code> por <code>class Pedido(BaseModel)</code> do Pydantic e o tipo passa a ser conferido na criação: <code>"10"</code> vira <code>10</code> e <code>"abc"</code> gera um erro claro. É o equivalente a um DTO com Bean Validation, e é o que o FastAPI usa para ler o corpo dos pedidos.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Achar que a anotação valida.</b> <code>total: int</code> aceita uma string em tempo de execução; só o Pydantic ou o <code>mypy</code> pegam.</li>
+            <li><b>Valor padrão mutável.</b> Em dataclass, <code>itens: list = []</code> é proibido; use <code>field(default_factory=list)</code>.</li>
+            <li><b>Escrever getters e setters.</b> Em Python se acessa o atributo direto; se precisar de lógica, use <code>@property</code> depois.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, crie os modelos <code>Mensagem</code> (dataclass, interna) e <code>PedidoChat</code> (Pydantic, corpo do endpoint), e um <code>Protocol</code> <code>ProvedorLLM</code> com um método <code>responder</code>, com uma implementação falsa para testes.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> o endpoint recusa um corpo inválido com erro 422, e você troca o provedor falso pelo real sem mudar a rota.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: classes, dataclass e duck typing</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>dataclass ≈ record</b>
+                    <p>Gera construtor, igualdade e repr; frozen=True deixa imutável.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Duck typing</b>
+                    <p>Vale o que o objeto faz; Protocol declara o contrato quando você quer.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Anotar não é validar</b>
+                    <p>Tipos são conferidos pelo mypy ou pelo Pydantic, não pelo interpretador.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Confiar na anotação de tipo como no Java:</b><p>O código roda com o tipo errado e o erro aparece longe, num lugar que não tem nada a ver com a origem.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Dado interno: dataclass. Dado que vem de fora: Pydantic.</strong> A fronteira do sistema é onde o tipo precisa ser verdade.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-classes">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Sua API recebe um JSON com o campo <code>total</code>, que deveria ser número. Às vezes o cliente manda <code>"12.5"</code> e às vezes <code>"doze"</code>.</strong></p>
+                <p class="te-instrucao">Como modelar o corpo do pedido?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O dataclass não converte nem valida: &quot;doze&quot; entra como string e o erro só aparece depois.">
+                    <span class="te-letter">A</span> Um @dataclass com total: float, porque a anotação de tipo faz o Python converter e recusar valores inválidos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas é o código repetitivo que os modelos existem para evitar, e o FastAPI não gera a documentação.">
+                    <span class="te-letter">B</span> Um dicionário comum e um if para cada campo, como se faria antes das anotações de tipo existirem.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Dado que vem de fora precisa ser validado na fronteira; o Pydantic faz a conversão e o erro.">
+                    <span class="te-letter">C</span> Um modelo Pydantic (BaseModel) com total: float, que converte "12.5" e recusa "doze" com um erro claro.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Qual a diferença entre @dataclass e um modelo Pydantic?</div>
+              <div class="tf-resposta">O dataclass só gera os métodos (construtor, igualdade, repr) e não confere os tipos. O Pydantic confere e converte os tipos na criação e devolve um erro claro quando o valor é inválido. Dataclass para dados internos; Pydantic para dados que vêm de fora.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-classes">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>API com FastAPI</h2><p>O Spring MVC do Python: rotas, validação, injeção de dependência e documentação, com bem menos configuração.</p></div></div>
+
+      <article class="topic" id="py-fastapi">
+        <div class="th"><h3>FastAPI: rotas, validação e injeção de dependência</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> FastAPI é um framework web em que a rota é uma função com decorator (<code>@app.get</code>), os parâmetros e o corpo são lidos e validados pelos tipos (com Pydantic) e as dependências são injetadas com <code>Depends()</code>. A documentação OpenAPI sai pronta em <code>/docs</code>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você precisa expor um modelo de IA numa API. No Spring seriam um controller, um DTO com Bean Validation, um service com <code>@Autowired</code> e o springdoc para a documentação. No FastAPI, uma função de dez linhas faz o mesmo: lê o corpo, valida, recebe o serviço injetado e aparece documentada. É por isso que as vagas de IA pedem FastAPI.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É o Spring Boot com as anotações viradas em tipos: em vez de dizer ao framework o que cada parâmetro é com <code>@RequestBody</code> e <code>@PathVariable</code>, você declara o tipo e ele deduz o resto.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Os frameworks web do Python (Flask, Django) são anteriores às anotações de tipo e ao async. O FastAPI foi feito em cima dos dois: usa os tipos para validar e documentar e roda sobre o ASGI, que suporta async.</p>
+            <div class="repl"><b>Veio substituir:</b> o Flask com validação escrita à mão e documentação separada, que era o caminho comum para APIs pequenas em Python.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Ao subir, o FastAPI lê a assinatura de cada função de rota. O que está no caminho vira parâmetro de path, tipos simples viram query string e modelos Pydantic viram o corpo. Com isso ele monta a validação e o schema OpenAPI.</p><p><code>Depends(funcao)</code> diz ao framework para chamar aquela função a cada pedido e passar o resultado; dá para encadear dependências e trocar por uma falsa nos testes com <code>app.dependency_overrides</code>. O servidor que roda a aplicação é o <code>uvicorn</code>, como o Tomcat embutido do Spring Boot.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">um pedido no FastAPI</text><rect x="6" y="34" width="70" height="28" rx="8" class="b2"/><text x="41" y="52" class="bs">HTTP</text><path d="M78,48 L96,48" class="l"/><path d="M96,48 L89,44 L89,52 Z" class="h"/><rect x="98" y="34" width="78" height="28" rx="8" class="b2"/><text x="137" y="52" class="bs">Pydantic</text><path d="M178,48 L196,48" class="l"/><path d="M196,48 L189,44 L189,52 Z" class="h"/><rect x="198" y="34" width="66" height="28" rx="8" class="b1"/><text x="231" y="52" class="bs">rota</text><path d="M266,48 L284,48" class="l"/><path d="M284,48 L277,44 L277,52 Z" class="h"/><rect x="286" y="34" width="48" height="28" rx="8" class="b2"/><text x="310" y="52" class="bs">JSON</text><text x="170" y="88" class="bs">Depends() injeta o que a rota pede</text><text x="170" y="120" class="bs">/docs gera o OpenAPI sozinho</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Publicar serviços HTTP em Python com validação e documentação automáticas, que é a forma padrão de servir modelos e agentes de IA.</p></div>
+          <div><h4>Por que é importante</h4><p>Aparece em boa parte das vagas de AI Engineer e é a porta de entrada do Projeto 1 da trilha de IA. Para quem vem do Spring, é o ponto em que você fica produtivo em Python mais rápido.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b><code>@RestController</code> + <code>@PostMapping</code> ↔ <code>@app.post</code>; DTO + <code>@Valid</code> ↔ modelo Pydantic; <code>@Autowired</code> ↔ <code>Depends()</code>; springdoc ↔ <code>/docs</code>; Tomcat ↔ uvicorn.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>from fastapi import FastAPI, Depends
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Pergunta(BaseModel):
+    texto: str
+
+def get_llm() -> "ProvedorLLM":     # ~ um @Bean
+    return ProvedorReal()
+
+@app.post("/chat")
+def chat(p: Pergunta, llm=Depends(get_llm)):
+    return {"resposta": llm.responder(p.texto)}</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">def ou async def?</span></summary>
+          <div class="alem-body"><p>Rotas com <code>def</code> rodam num pool de threads; com <code>async def</code>, rodam no loop de eventos e precisam usar bibliotecas assíncronas (por exemplo, o cliente HTTP assíncrono do provedor). Chamar uma função bloqueante dentro de <code>async def</code> trava o servidor inteiro. Na dúvida, comece com <code>def</code>.</p><small class="alem-src">Confira na documentação do FastAPI a seção sobre concorrência e async.</small></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Chamada bloqueante dentro de <code>async def</code></b> trava todos os pedidos ao mesmo tempo.</li>
+            <li><b>Criar o cliente do LLM a cada pedido</b> dentro da rota; crie uma vez e injete com <code>Depends</code>.</li>
+            <li><b>Devolver o modelo interno</b> com campos que não deviam sair; use <code>response_model</code> para controlar a resposta.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>Monte o esqueleto do Projeto 1: a rota <code>POST /chat</code> com o modelo <code>Pergunta</code>, o provedor injetado com <code>Depends</code>, e um teste com <code>pytest</code> que troca o provedor por um falso.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> <code>/docs</code> mostra a rota documentada, um corpo inválido devolve 422 e o teste passa sem acesso à internet.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: fastapi: rotas, validação e injeção de dependência</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Rota é função</b>
+                    <p>O decorator diz o método e o caminho; os tipos dizem de onde vem cada dado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Depends() é a injeção</b>
+                    <p>O framework chama a dependência a cada pedido; nos testes, você troca por uma falsa.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Documentação de graça</b>
+                    <p>/docs nasce dos tipos, sempre em dia com o código.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Usar async def com biblioteca bloqueante:</b><p>O servidor responde um pedido por vez e a latência sobe com a carga, sem erro nenhum no log.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Os tipos são a configuração.</strong> O que no Spring você diz com anotação, no FastAPI você diz com o tipo do parâmetro.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-fastapi">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você escreve os testes da rota <code>/chat</code> e não quer chamar o provedor de LLM de verdade.</strong></p>
+                <p class="te-instrucao">Qual é o jeito do FastAPI?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="É o equivalente a trocar o bean por um mock: a rota não muda e o teste controla a dependência.">
+                    <span class="te-letter">A</span> Sobrescrever a dependência com app.dependency_overrides[get_llm] apontando para um provedor falso.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mistura código de teste com produção; a injeção existe para não precisar disso.">
+                    <span class="te-letter">B</span> Colocar um if na rota que verifica uma variável de ambiente de teste e devolve uma resposta fixa.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O FastAPI permite: dependency_overrides foi feito para isso.">
+                    <span class="te-letter">C</span> Subir o servidor de verdade e chamar o provedor real, porque o FastAPI não permite trocar dependências.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Como o FastAPI sabe que um parâmetro vem do corpo e outro da URL?</div>
+              <div class="tf-resposta">Pelo tipo e pelo caminho da rota: o que aparece no caminho ({id}) é parâmetro de path, tipos simples viram query string e modelos Pydantic viram o corpo. É o que no Spring se faz com @PathVariable, @RequestParam e @RequestBody.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-fastapi">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Para quem já programa, Python se aprende portando código, não fazendo exercício de iniciante.</p></div></div>
+
+      <article class="topic" id="py-aprender">
+        <div class="th"><h3>O ciclo, as fontes e como praticar</h3><div class="badges"><span class="badge b-ess">método</span></div></div>
+        <p class="direto"><b>Direto:</b> Você já sabe programar; o que falta é o jeito Python de fazer as mesmas coisas. O ciclo que fixa é ler o tópico, ver um vídeo que dê o mapa, conferir na documentação oficial e portar um pedaço de código seu do Java. Vídeo dá o mapa, documentação dá a precisão, o porte fixa.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você termina um curso de Python para iniciantes, sabe fazer laços e funções, e trava ao abrir um projeto FastAPI real: ambiente virtual, Pydantic, Depends, async. O curso ensinou a linguagem para quem não programa. Quem vem do Java precisa do contrário: pular o básico e ir direto às diferenças.</p>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="10" y="34" width="62" height="28" rx="8" class="b2"/><text x="41" y="52" class="bs">ler</text><path d="M74,48 L92,48" class="l"/><path d="M92,48 L85,44 L85,52 Z" class="h"/><rect x="94" y="34" width="62" height="28" rx="8" class="b2"/><text x="125" y="52" class="bs">vídeo</text><path d="M158,48 L176,48" class="l"/><path d="M176,48 L169,44 L169,52 Z" class="h"/><rect x="178" y="34" width="68" height="28" rx="8" class="b2"/><text x="212" y="52" class="bs">doc</text><path d="M248,48 L266,48" class="l"/><path d="M266,48 L259,44 L259,52 Z" class="h"/><rect x="268" y="34" width="62" height="28" rx="8" class="b1"/><text x="299" y="52" class="bs">portar</text><path d="M299,64 L176,98" class="l dash"/><text x="170" y="114" class="bs">portar um endpoint seu é a volta que fixa</text>
+        </svg></figure>
+        <p><b>Canais e cursos em português.</b></p>
+        <ul>
+          <li><b>FastAPI do Zero</b>, de Eduardo Mendes (dunossauro): curso gratuito, em texto e vídeo, que monta uma API completa com FastAPI, SQLAlchemy, testes e deploy. É o mais próximo do Projeto 1.</li>
+          <li><b>Live de Python</b>, também do Eduardo Mendes: lives semanais no YouTube sobre um tema por vez (tipagem, dataclasses, Pydantic, async, pytest). Bom para os tópicos isolados.</li>
+          <li><b>Curso em Vídeo</b>, de Gustavo Guanabara: curso de Python do começo. Use só para consultar a sintaxe; para quem já programa, é lento.</li>
+          <li><b>Documentação oficial em português:</b> o tutorial do Python (docs.python.org/pt-br) e a documentação do FastAPI, que tem tradução para o português.</li>
+        </ul>
+        <p class="fine">Confira se o conteúdo está atualizado antes de seguir um curso inteiro; ferramentas como o <code>uv</code> são recentes e cursos antigos usam pip e venv.</p>
+        <p><b>Como pesquisar.</b> Pesquise pela ponte com o Java: "python equivalente a interface java", "pydantic vs dataclass", "fastapi depends vs spring autowired", "pytest fixture vs junit beforeeach". Confira sempre na documentação oficial do Python, do Pydantic e do FastAPI, porque respostas antigas mostram jeitos que já mudaram.</p>
+        <div class="cs"><b>Mini-projeto na sua stack.</b> Pegue um endpoint de um projeto Spring seu (um CRUD simples serve) e porte para FastAPI:<br>1. <b>Mesmo contrato:</b> mesmas rotas, mesmos campos e mesmos códigos de erro.<br>2. <b>Mesma validação:</b> o que era Bean Validation vira Pydantic.<br>3. <b>Mesmos testes:</b> o que era JUnit e MockMvc vira pytest e o TestClient do FastAPI.<br>4. <b>Compare</b> num README: linhas de código, tempo de subida e o que foi mais fácil ou mais difícil em cada lado.</div>
+        <div class="ver"><b>para onde isso leva</b>O FastAPI é a base do <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA</a>. A seção <a href="../trilhas/ia.html#vagas">O que as vagas pedem</a> mostra por que Python vem primeiro.</div>
+        <button class="done" type="button" data-k="py-aprender">marcar dominado</button>
+      </article>
+    </section>
+
+<footer class="foot">
+      <p>Python para quem vem de Java · outubro de 2026 · caderno de apoio do acervo, em tema Dracula. Piloto com três tópicos: ambiente, modelagem de dados e FastAPI. Os pares deste arquivo são <code class="i">Java</code>, <code class="i">Spring Boot 3</code> e a <code class="i">trilha de IA</code>.</p>
+    </footer>
+  </main>
+</div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script defer src="../assets/js/python-para-java.inline.js"></script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
+
+<div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
+  <div class="im-backdrop" id="imBackdrop"></div>
+  <div class="im-container">
+    <header class="im-header">
+      <div class="im-title-group">
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
+        <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
+      </div>
+      <div class="im-actions">
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
+      </div>
+    </header>
+    <div class="im-viewport" id="imViewport">
+      <div class="im-canvas" id="imCanvas">
+        <img id="imImg" src="" alt="Imagem ampliada" draggable="false" decoding="async">
+      </div>
+    </div>
+    <footer class="im-footer">
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
+    </footer>
+  </div>
+</div>
+
+<script defer src="../assets/js/img-modal.js"></script>
+<script src="../assets/js/responsive-drawer.js" defer></script>
+  <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
+<script defer src="../assets/js/pomodoro.js"></script>
+</body>
+</html>

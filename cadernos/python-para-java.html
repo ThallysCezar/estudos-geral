@@ -352,28 +352,28 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
     <header class="hero">
       <span class="eyebrow">Python para quem vem de Java · outubro 2026</span>
       <h1>O que você <em>já sabe</em>, do jeito <em>Python</em>.</h1>
-      <p class="lede">Não é um curso de Python do zero. Cada tópico parte do que você já faz no Java e no Spring, mostra o equivalente em Python, a diferença que pega e o erro comum de quem vem do Java. O caminho termina no FastAPI, que é a base do <b>Projeto 1 da trilha de IA</b>: Python aparece em quase todas as vagas de AI Engineer.</p>
+      <p class="lede">Não é um curso de Python do zero. Cada tópico parte do que você já faz no Java e no Spring, mostra o equivalente em Python, a diferença que pega e o erro comum de quem vem do Java. O caminho passa pelo FastAPI e termina no deploy com Docker: é a base do <b>Projeto 1 da trilha de IA</b>: Python aparece em quase todas as vagas de AI Engineer.</p>
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
-        <a href="#p1"><b>↓ O conteúdo</b>do ambiente à API</a>
+        <a href="#p1"><b>↓ O conteúdo</b>do ambiente ao deploy</a>
       </div>
       <div class="legenda">
         <div><b>Sempre com a ponte</b><span>Cada tópico diz qual é o equivalente no Java e no Spring.</span></div>
         <div><b>Diferença antes de sintaxe</b><span>O foco é o que muda de comportamento, não a lista de comandos.</span></div>
         <div><b>Projeto do conceito</b><span>Cada tópico constrói uma peça do Projeto 1 da trilha de IA.</span></div>
-        <div><b>Piloto</b><span>Três tópicos por enquanto; os outros entram depois.</span></div>
+        <div><b>Do ambiente ao deploy</b><span>Doze tópicos, do pyproject.toml à imagem Docker.</span></div>
       </div>
     </header>
 
     <section class="part trailwrap" id="trilha">
-      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do ambiente à API</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: do ambiente ao deploy</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
       <div class="legend" id="lg"></div>
       <div class="trail" id="track"></div>
     </section>
 
         <!-- ===================== PARTE 01 ===================== -->
     <section class="part" id="p1">
-      <div class="ph"><span class="num">01</span><div><h2>Ambiente e projeto</h2><p>Antes de escrever código: onde o Python mora, onde ficam as dependências e como o projeto se descreve.</p></div></div>
+      <div class="ph"><span class="num">01</span><div><h2>Ambiente e projeto</h2><p>Onde o Python mora, onde ficam as dependências e como o projeto se organiza.</p></div></div>
 
       <article class="topic" id="py-ambiente">
         <div class="th"><h3>Ambiente, dependências e pyproject.toml</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
@@ -415,7 +415,7 @@ uv run uvicorn main:app --reload</code></pre>
           </ul>
         </div>
         <div class="projeto">
-          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
           <p>Crie o projeto do Projeto 1 da trilha de IA com <code>uv init</code>, adicione FastAPI e uvicorn, e suba um endpoint <code>/health</code> que devolve <code>{"status": "ok"}</code>.</p>
           <p class="pj-ok"><b>Pronto quando:</b> outra pessoa clona o repositório, roda <code>uv sync</code> e <code>uv run uvicorn main:app</code>, e o endpoint responde sem nenhum outro passo.</p>
         </div>
@@ -494,11 +494,641 @@ uv run uvicorn main:app --reload</code></pre>
 
         <button class="done" type="button" data-k="py-ambiente">marcar dominado</button>
       </article>
+
+      <article class="topic" id="py-modulos">
+        <div class="th"><h3>Módulos, pacotes e imports</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Cada arquivo <code>.py</code> é um módulo e cada pasta com módulos é um pacote. O <code>import</code> carrega o módulo e executa o código dele uma vez. Não há <code>public</code> e <code>private</code>: por convenção, nomes começados com <code>_</code> são internos. O bloco <code>if __name__ == "__main__":</code> é o equivalente ao <code>public static void main</code>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você organiza o projeto como no Java, com uma classe por arquivo e pastas profundas. Logo aparecem imports como <code>from app.services.llm.provider.openai_provider import OpenAIProvider</code> e um erro de import circular entre dois serviços. Em Python, módulos agrupam várias classes e funções relacionadas, e a estrutura costuma ser mais rasa.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O módulo é uma gaveta com tudo de um assunto, não uma gaveta por objeto. No Java cada ferramenta tem sua caixinha; no Python a gaveta "chaves" guarda todas as chaves juntas.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python organiza código por arquivo desde o início. Os pacotes vieram para agrupar módulos em pastas, e a convenção do sublinhado substituiu os modificadores de acesso, porque a linguagem confia no programador.</p>
+            <div class="repl"><b>Veio substituir:</b> a ideia de uma classe pública por arquivo e de visibilidade controlada pelo compilador.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>No primeiro <code>import</code>, o Python procura o módulo nos caminhos de <code>sys.path</code> (o classpath), executa o arquivo de cima a baixo e guarda o resultado em <code>sys.modules</code>. Os imports seguintes reaproveitam esse objeto.</p><p>Quando o arquivo é executado direto (<code>python main.py</code>), a variável <code>__name__</code> vale <code>"__main__"</code>; quando é importado, vale o nome do módulo. Por isso o código de inicialização fica dentro daquele <code>if</code>.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">import executa uma vez</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">import llm</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">roda llm.py</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">sys.modules</text><text x="170" y="96" class="bs">o segundo import reaproveita o cache</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Organizar o projeto em partes com responsabilidade clara, evitar imports circulares e separar o que é público do que é interno.</p></div>
+          <div><h4>Por que é importante</h4><p>Projetos de IA crescem rápido (rotas, provedores, RAG, ferramentas). Uma estrutura de pacotes simples é o que mantém o projeto navegável e testável quando ele passa de três arquivos.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b><code>package</code> ↔ pasta; classe pública por arquivo ↔ módulo com várias definições; classpath ↔ <code>sys.path</code>; <code>private</code> ↔ prefixo <code>_</code> (convenção); <code>main</code> ↔ <code>if __name__ == "__main__"</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>meu_chat/
+├── pyproject.toml
+├── src/meu_chat/
+│   ├── __init__.py
+│   ├── api.py          # rotas FastAPI
+│   ├── llm.py          # provedores e _helpers internos
+│   └── rag.py
+└── tests/
+    └── test_api.py
+
+# api.py
+from meu_chat.llm import ProvedorLLM</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Por que o layout src/</span></summary>
+          <div class="alem-body"><p>Com o código dentro de <code>src/</code>, os testes só conseguem importar o pacote se ele estiver instalado no ambiente, e não pela pasta atual por acaso. Isso pega cedo erros de empacotamento que só apareceriam no Docker ou em produção. O <code>uv init --package</code> já cria esse layout.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Import circular.</b> Dois módulos que se importam no topo falham; mova o que é comum para um terceiro módulo.</li>
+            <li><b>Código pesado no topo do módulo.</b> Ele roda no import; conexões e leituras ficam em funções.</li>
+            <li><b>Dar ao arquivo o nome de uma biblioteca</b> (<code>json.py</code>, <code>fastapi.py</code>): o seu arquivo é importado no lugar dela.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>Reorganize o projeto do chat no layout <code>src/meu_chat/</code> com os módulos <code>api.py</code>, <code>llm.py</code> e <code>rag.py</code>, deixando os auxiliares com prefixo <code>_</code>.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> os testes rodam importando o pacote instalado, não há import circular e <code>api.py</code> só importa o que é público.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: módulos, pacotes e imports</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Arquivo é módulo, pasta é pacote</b>
+                    <p>Um módulo agrupa várias classes e funções do mesmo assunto.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Import executa uma vez</b>
+                    <p>O módulo roda no primeiro import e fica em cache em sys.modules.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>_ é interno</b>
+                    <p>Visibilidade por convenção, não pelo compilador.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Copiar a estrutura de pastas do Java:</b><p>Os imports ficam enormes, aparecem ciclos e cada arquivo tem uma classe de dez linhas.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Agrupe por assunto, não por tipo de classe.</strong> Um módulo <code>rag.py</code> com tudo de RAG é mais Python que pastas services, models e utils.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-modulos">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você criou um arquivo chamado <code>json.py</code> no projeto e agora <code>import json</code> em outro módulo não encontra <code>json.loads</code>.</strong></p>
+                <p class="te-instrucao">Por quê?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O ambiente virtual não bloqueia a biblioteca padrão; o problema é a ordem de busca.">
+                    <span class="te-letter">A</span> O Python proíbe importar módulos da biblioteca padrão quando o projeto tem um ambiente virtual ativo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O json faz parte da biblioteca padrão; não precisa instalar.">
+                    <span class="te-letter">B</span> Falta instalar o módulo json com uv add, porque ele não faz parte da biblioteca padrão do Python.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O sys.path começa pelo diretório do script, e o seu arquivo esconde o módulo de mesmo nome.">
+                    <span class="te-letter">C</span> O diretório do projeto vem antes na busca de módulos, então o seu json.py é importado no lugar do json da biblioteca padrão.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Para que serve if __name__ == "__main__": no fim de um módulo?</div>
+              <div class="tf-resposta">Para rodar aquele código só quando o arquivo é executado direto (python modulo.py), e não quando é importado. Ao executar direto, __name__ vale "__main__"; ao importar, vale o nome do módulo. É o lugar do public static void main.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-modulos">marcar dominado</button>
+      </article>
     </section>
 
     <!-- ===================== PARTE 02 ===================== -->
     <section class="part" id="p2">
-      <div class="ph"><span class="num">02</span><div><h2>Modelando dados</h2><p>Onde o Java usa POJO, record e DTO com Bean Validation, o Python tem classe comum, dataclass e Pydantic.</p></div></div>
+      <div class="ph"><span class="num">02</span><div><h2>A linguagem pelo olhar do Java</h2><p>O que muda de comportamento: tipos, coleções, funções e exceções.</p></div></div>
+
+      <article class="topic" id="py-tipagem">
+        <div class="th"><h3>Tipagem dinâmica, type hints e mypy</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Em Python o tipo pertence ao valor, não à variável: a mesma variável pode guardar um número e depois um texto. As anotações de tipo (<code>def total(itens: list[int]) -> int</code>) documentam a intenção, mas o interpretador não as confere. Quem confere é uma ferramenta estática, como o <code>mypy</code> ou o <code>pyright</code>, que faz o papel do compilador do Java.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Uma função recebe <code>preco</code> e, num caminho raro, alguém passa o preço como texto vindo de um formulário. No Java o compilador recusaria; no Python o código roda e o erro aparece só quando <code>preco * 1.1</code> repete o texto em vez de multiplicar. Rodar o <code>mypy</code> no CI teria pego isso antes do deploy.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> A anotação de tipo é a placa "cuidado, piso molhado": avisa quem lê, mas não impede ninguém de passar. O mypy é o segurança que lê as placas e barra quem vai escorregar, antes de abrir a loja.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python nasceu sem tipos declarados, para ser rápido de escrever. Com bases de código grandes, faltava o que o compilador do Java dá de graça: saber o que cada função recebe e devolve. As anotações entraram na linguagem e as ferramentas de checagem vieram em seguida.</p>
+            <div class="repl"><b>Veio substituir:</b> a documentação de tipos em comentários e docstrings, que ninguém conferia e ficava desatualizada.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>As anotações ficam guardadas no atributo <code>__annotations__</code> da função ou da classe e não mudam a execução. O mypy lê o código sem executar e acusa as incompatibilidades, como um <code>javac</code> que só avisa.</p><p>Os tipos usam a sintaxe moderna: <code>list[str]</code>, <code>dict[str, int]</code>, <code>str | None</code> (o <code>Optional</code>). Bibliotecas como o Pydantic e o FastAPI leem essas anotações em tempo de execução e as usam para validar.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">quem confere o tipo</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">anotação</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">mypy no CI</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">erro antes</text><text x="170" y="96" class="bs">o interpretador ignora a anotação</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Ter a segurança e o autocompletar de uma linguagem tipada sem perder a flexibilidade do Python, e dar ao Pydantic e ao FastAPI a informação de que eles precisam.</p></div>
+          <div><h4>Por que é importante</h4><p>Todo código Python profissional moderno é anotado, e as bibliotecas de IA dependem das anotações para validar e gerar schemas. Para quem vem do Java, é o que torna o Python legível.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>tipo declarado na variável ↔ anotação opcional; <code>javac</code> ↔ <code>mypy</code>; <code>Optional&lt;T&gt;</code> ↔ <code>T | None</code>; generics <code>List&lt;String&gt;</code> ↔ <code>list[str]</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>def total(precos: list[float], desconto: float | None = None) -> float:
+    soma = sum(precos)
+    return soma * (1 - desconto) if desconto else soma
+
+total(["10", "20"])   # roda até quebrar; o mypy acusa antes:
+# error: List item 0 has incompatible type "str"; expected "float"</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Strict, Any e o custo de anotar tudo</span></summary>
+          <div class="alem-body"><p>O mypy em modo <code>--strict</code> exige anotação em tudo e recusa o <code>Any</code> implícito. Comece sem o strict num projeto existente e aperte aos poucos. O <code>Any</code> desliga a checagem daquele valor: é a saída de emergência, não o padrão.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Achar que a anotação é verificada ao rodar.</b> Sem mypy no CI, ela é só documentação.</li>
+            <li><b>Usar <code>None</code> sem declarar.</b> <code>nome: str = None</code> está errado; o certo é <code>nome: str | None = None</code>.</li>
+            <li><b>Anotar com <code>Any</code> para calar o erro.</b> Isso desliga a checagem, não resolve o problema.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>Anote todas as funções do projeto do chat e configure o mypy no <code>pyproject.toml</code> e no CI.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> o mypy roda sem erros, e um teste proposital (passar texto onde se espera número) faz o CI reprovar.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: tipagem dinâmica, type hints e mypy</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O tipo é do valor</b>
+                    <p>A variável aceita qualquer coisa; a anotação diz o que deveria ser.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>mypy é o compilador</b>
+                    <p>Lê o código sem rodar e acusa os tipos incompatíveis.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Bibliotecas leem as anotações</b>
+                    <p>Pydantic e FastAPI usam os tipos para validar em tempo de execução.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Confiar nas anotações sem rodar o mypy:</b><p>O código fica com cara de tipado e os erros de tipo continuam aparecendo só em produção.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Anotação é contrato; mypy é quem cobra.</strong> Sem a ferramenta, o contrato fica só no papel.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-tipagem">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>O time anotou todas as funções do projeto, mas ainda aparecem erros de tipo em produção.</strong></p>
+                <p class="te-instrucao">O que falta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Asserts conferem em tempo de execução e poluem o código; a checagem estática pega antes de rodar.">
+                    <span class="te-letter">A</span> Trocar as anotações por asserts em cada função, porque o Python só confere tipos com assert explícito.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O interpretador ignora as anotações; quem as confere é a ferramenta estática, e ela precisa estar no CI.">
+                    <span class="te-letter">B</span> Rodar o mypy (ou pyright) no CI, para que uma incompatibilidade de tipo reprove o build antes do deploy.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O interpretador não verifica as anotações; elas só são conferidas por ferramentas como o mypy.">
+                    <span class="te-letter">C</span> Nada: anotações em Python são verificadas pelo interpretador, então o erro está em outro lugar.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">O Python verifica as anotações de tipo quando o código roda?</div>
+              <div class="tf-resposta">Não. As anotações ficam guardadas e não mudam a execução. Quem verifica é uma ferramenta estática (mypy, pyright), que faz o papel do compilador do Java, ou uma biblioteca como o Pydantic, que valida em tempo de execução onde você pedir.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-tipagem">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="py-colecoes">
+        <div class="th"><h3>Coleções e compreensões</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> As coleções vêm na linguagem: <code>list</code> (≈ <code>ArrayList</code>), <code>dict</code> (≈ <code>HashMap</code>, mas mantém a ordem de inserção), <code>set</code> e <code>tuple</code> (lista imutável). As compreensões, como <code>[p.total for p in pedidos if p.pago]</code>, fazem numa linha o que no Java é um <code>stream().filter().map().toList()</code>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você porta um método que filtra pedidos pagos e soma o total. A versão Java tem um stream com quatro operações; a primeira versão em Python tem um <code>for</code> com <code>append</code>, igual ao Java antigo. Um colega reescreve como <code>sum(p.total for p in pedidos if p.pago)</code>: uma linha, mais rápida e mais fácil de ler.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> A compreensão é o pedido feito ao garçom de uma vez ("todos os sucos, sem gelo") em vez de pedir item por item. O resultado é o mesmo; a frase diz o que você quer, não os passos.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python sempre teve listas e dicionários como tipos centrais. As compreensões vieram da programação funcional para substituir o laço com <code>append</code>, que era o jeito mais comum e mais verboso de montar uma coleção.</p>
+            <div class="repl"><b>Veio substituir:</b> o laço <code>for</code> com uma lista vazia e <code>append</code> a cada item, e o uso de <code>map</code> e <code>filter</code> com lambdas.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>A <code>list</code> é um array dinâmico de referências; o <code>dict</code> é uma tabela hash que guarda a ordem de inserção. A tupla é imutável e pode ser chave de dicionário.</p><p>Uma compreensão entre colchetes monta a lista inteira na memória; entre parênteses vira um gerador, que produz um item por vez, como um <code>Stream</code> preguiçoso. Para somar ou percorrer uma vez, o gerador gasta menos memória.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">stream em uma linha</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">pedidos</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">if p.pago</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">p.total</text><text x="170" y="96" class="bs">[p.total for p in pedidos if p.pago]</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Transformar e filtrar dados com pouco código, que é a maior parte do trabalho com respostas de APIs, documentos e resultados de busca num projeto de IA.</p></div>
+          <div><h4>Por que é importante</h4><p>É o código que você mais vai escrever em Python. Ler e escrever compreensões com fluência é o que faz seu código parecer de quem sabe Python, e não de quem traduziu do Java.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b><code>ArrayList</code> ↔ <code>list</code>; <code>HashMap</code>/<code>LinkedHashMap</code> ↔ <code>dict</code>; <code>Set.of</code> ↔ <code>set</code>; <code>List.of</code> imutável ↔ <code>tuple</code>; <code>stream().filter().map()</code> ↔ compreensão.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>pagos = [p for p in pedidos if p.pago]              # filter
+totais = [p.total for p in pagos]                   # map
+por_id = {p.id: p for p in pedidos}                 # toMap
+soma = sum(p.total for p in pedidos if p.pago)      # gerador, sem lista
+primeiro, *resto = totais                           # desempacotar</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Quando não usar compreensão</span></summary>
+          <div class="alem-body"><p>Se a compreensão precisa de dois <code>for</code> e dois <code>if</code>, ou de efeitos colaterais (gravar, imprimir), volte para o laço comum. Compreensão é para montar uma coleção a partir de outra; se ela não cabe numa leitura, ficou grande demais.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Montar lista só para somar ou percorrer.</b> Use o gerador (parênteses) e economize memória.</li>
+            <li><b>Mudar a lista enquanto percorre.</b> Remover itens dentro do <code>for</code> pula elementos; monte uma lista nova.</li>
+            <li><b>Usar lista como chave de dicionário.</b> Lista é mutável e não pode; use tupla.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, guarde o histórico como lista de mensagens e escreva, com compreensões, as funções que filtram as mensagens do usuário e contam os tokens da conversa.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> as funções têm uma linha cada, e um teste confere a contagem num histórico de exemplo.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: coleções e compreensões</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Coleções na linguagem</b>
+                    <p>list, dict, set e tuple, sem import; o dict mantém a ordem.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Compreensão é o stream</b>
+                    <p>Filtrar e transformar numa expressão, em vez de laço com append.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Lista ou gerador</b>
+                    <p>Colchetes montam tudo na memória; parênteses produzem um por vez.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Traduzir o laço Java linha por linha:</b><p>O código funciona, mas fica longo, mais lento e com cara de Java escrito em Python.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Diga o que você quer, não os passos.</strong> Se dá para descrever a coleção numa frase, dá para escrever numa compreensão.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-colecoes">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você precisa da soma dos tokens de 1 milhão de trechos de documento, e não vai usar a lista de novo.</strong></p>
+                <p class="te-instrucao">Qual é a melhor forma?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas monta a lista inteira na memória sem necessidade.">
+                    <span class="te-letter">A</span> sum([t.tokens for t in trechos]), que monta a lista com 1 milhão de números e depois soma.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="É a tradução do Java antigo: mais código e a mesma lista desnecessária.">
+                    <span class="te-letter">B</span> Um laço for com uma variável acumuladora e append dos valores numa lista auxiliar antes de somar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O gerador entrega os valores um a um para a soma, sem guardar a lista na memória.">
+                    <span class="te-letter">C</span> sum(t.tokens for t in trechos), com um gerador que produz um valor por vez sem montar a lista.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Qual a diferença entre [x for x in itens] e (x for x in itens)?</div>
+              <div class="tf-resposta">Colchetes criam uma lista com todos os itens na memória, que pode ser percorrida várias vezes. Parênteses criam um gerador, que produz um item por vez e só pode ser percorrido uma vez, gastando pouca memória, como um Stream preguiçoso do Java.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-colecoes">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="py-funcoes">
+        <div class="th"><h3>Funções, argumentos e decorators</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Funções são objetos: podem ser passadas, guardadas e devolvidas. Argumentos podem ter valor padrão e ser passados pelo nome, o que substitui a sobrecarga de métodos do Java. <code>*args</code> e <code>**kwargs</code> recebem argumentos extras. Um decorator (<code>@algo</code>) é uma função que envolve outra e acrescenta comportamento, como o AOP do Spring.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>No Java você teria três sobrecargas de <code>buscar(texto)</code>, <code>buscar(texto, limite)</code> e <code>buscar(texto, limite, filtro)</code>. Em Python é uma função só, com valores padrão, chamada como <code>buscar("pgvector", limite=5)</code>. E para medir o tempo de cada chamada ao LLM, em vez de repetir o cronômetro em cada função, você escreve um decorator <code>@medir_tempo</code>.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O decorator é a capa de chuva: a pessoa (a função) continua a mesma, mas sai de casa com uma camada a mais por cima. Tirar a capa não muda a pessoa.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Como o Python não tem sobrecarga de métodos, os argumentos com nome e valor padrão cumprem esse papel. Os decorators vieram para trocar o padrão de envolver funções à mão por uma sintaxe curta.</p>
+            <div class="repl"><b>Veio substituir:</b> a sobrecarga de métodos e o código de log, cache ou medição copiado em cada função.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p><code>@medir_tempo</code> em cima de <code>def chamar()</code> é só um atalho para <code>chamar = medir_tempo(chamar)</code>: o decorator recebe a função e devolve outra que a envolve. É o que um proxy do Spring faz, só que explícito e sem container.</p><p>Na chamada, os argumentos posicionais vêm primeiro, depois os nomeados. Tudo que sobra cai em <code>*args</code> (tupla) e <code>**kwargs</code> (dicionário).</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">decorator envolve a função</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">antes</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">buscar()</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">depois</text><text x="170" y="96" class="bs">@d sobre f é f = d(f)</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Escrever funções flexíveis sem sobrecarga e acrescentar comportamento transversal (log, cache, retry, medição) sem repetir código.</p></div>
+          <div><h4>Por que é importante</h4><p>O FastAPI, o pytest e as bibliotecas de IA são construídos com decorators (<code>@app.get</code>, <code>@pytest.fixture</code>, <code>@tool</code>). Entender o mecanismo é entender como essas bibliotecas funcionam.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>sobrecarga ↔ valores padrão e argumentos com nome; varargs ↔ <code>*args</code>; lambda ↔ <code>lambda</code> (só uma expressão); AOP e anotações com proxy ↔ decorator.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>import functools, time
+
+def medir_tempo(func):
+    @functools.wraps(func)
+    def envolta(*args, **kwargs):
+        ini = time.perf_counter()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            print(f"{func.__name__}: {time.perf_counter() - ini:.2f}s")
+    return envolta
+
+@medir_tempo
+def buscar(texto: str, limite: int = 3, filtro: str | None = None): ...
+
+buscar("pgvector", limite=5)</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Decorators com parâmetro</span></summary>
+          <div class="alem-body"><p><code>@retry(tentativas=3)</code> é um decorator que recebe parâmetros: é uma função que devolve o decorator. Isso dá três funções aninhadas. Na prática, bibliotecas como a <code>tenacity</code> já fazem retry assim; escreva o seu só para entender o mecanismo.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Lista ou dicionário como valor padrão.</b> <code>def f(itens=[])</code> compartilha a mesma lista entre chamadas; use <code>None</code> e crie dentro.</li>
+            <li><b>Esquecer o <code>functools.wraps</code>.</b> Sem ele, a função decorada perde o nome e a documentação, e o FastAPI e o pytest se confundem.</li>
+            <li><b>Lambda grande.</b> Lambda tem uma expressão só; se precisa de mais, escreva uma função com nome.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, escreva os decorators <code>@medir_tempo</code> e <code>@com_retry(tentativas=3)</code> e aplique na função que chama o LLM.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> o log mostra o tempo de cada chamada, e um teste com um provedor que falha duas vezes passa na terceira tentativa.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: funções, argumentos e decorators</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Valor padrão substitui sobrecarga</b>
+                    <p>Uma função, argumentos com nome e padrão.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Decorator envolve</b>
+                    <p>@d em cima de f é f = d(f); acrescenta comportamento sem mudar f.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>*args e **kwargs</b>
+                    <p>Recebem o que sobra: uma tupla e um dicionário.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Usar lista vazia como valor padrão:</b><p>Os itens de uma chamada aparecem na seguinte, porque o padrão é criado uma vez só, quando a função é definida.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Decorator é proxy sem container.</strong> O que o Spring faz por baixo com proxies, o Python faz à vista com uma função que envolve a outra.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-funcoes">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você escreveu <code>def adicionar(msg, historico=[])</code> e, entre conversas diferentes, mensagens antigas aparecem no histórico novo.</strong></p>
+                <p class="te-instrucao">Qual é a causa?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Valores padrão são avaliados na definição; com objeto mutável, a mesma lista é reaproveitada a cada chamada.">
+                    <span class="te-letter">A</span> O valor padrão é criado uma vez, quando a função é definida, então todas as chamadas compartilham a mesma lista.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="As variáveis locais são novas a cada chamada; o que persiste é o objeto do valor padrão.">
+                    <span class="te-letter">B</span> O Python guarda as variáveis locais entre chamadas, como os campos estáticos de uma classe Java.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Global pioraria o problema; a solução é usar None como padrão e criar a lista dentro da função.">
+                    <span class="te-letter">C</span> Falta declarar historico como global, porque listas só existem dentro da primeira chamada da função.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">O que @decorador em cima de uma função faz por baixo?</div>
+              <div class="tf-resposta">É um atalho para funcao = decorador(funcao): o decorador recebe a função e devolve outra que a envolve, acrescentando comportamento antes ou depois. É o papel de um proxy do Spring (como o de @Transactional), feito de forma explícita.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-funcoes">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="py-excecoes">
+        <div class="th"><h3>Exceções e context managers</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Exceções funcionam como no Java, com <code>try/except/finally</code>, mas não há checked exceptions: nada obriga a declarar ou tratar. O <code>with</code> é o try-with-resources: garante que o recurso (arquivo, conexão, cliente HTTP) seja fechado, mesmo com erro. Qualquer objeto com <code>__enter__</code> e <code>__exit__</code> funciona no <code>with</code>.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Seu serviço lê documentos para indexar no RAG e, sob carga, para de abrir arquivos com "too many open files". O código usava <code>open()</code> sem fechar quando a leitura falhava no meio. Trocar por <code>with open(caminho) as f:</code> fecha o arquivo em qualquer caso, como o try-with-resources do Java fecharia.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O <code>with</code> é a porta com mola: você entra, faz o que precisa e, saia como sair (calmo ou correndo), ela fecha sozinha atrás de você.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O <code>try/finally</code> para fechar recursos era repetido em todo lugar e esquecido com frequência. O <code>with</code> entrou para empacotar esse padrão num protocolo que qualquer classe pode implementar.</p>
+            <div class="repl"><b>Veio substituir:</b> o <code>try/finally</code> manual com <code>close()</code> no <code>finally</code>, igual ao Java antes do try-with-resources.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Ao entrar no <code>with</code>, o Python chama <code>__enter__</code> e entrega o resultado à variável depois do <code>as</code>. Ao sair, normalmente ou por exceção, chama <code>__exit__</code>, que fecha o recurso. É o <code>AutoCloseable</code> do Java.</p><p>Para criar o seu, o decorator <code>@contextmanager</code> transforma uma função com <code>yield</code> num context manager: o que vem antes do <code>yield</code> é a abertura, o que vem depois é o fechamento.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">with fecha sempre</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">__enter__</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">seu código</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">__exit__</text><text x="170" y="96" class="bs">com erro ou sem erro, __exit__ roda</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Garantir que conexões, arquivos e clientes sejam liberados, e tratar falhas de APIs externas (como o provedor do LLM) de forma explícita.</p></div>
+          <div><h4>Por que é importante</h4><p>Serviços de IA vivem de chamadas externas que falham: timeout, limite de uso, resposta inválida. Tratar exceção com precisão e liberar recursos é o que separa um protótipo de um serviço que aguenta produção.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b><code>try/catch/finally</code> ↔ <code>try/except/finally</code>; checked exceptions ↔ não existem; try-with-resources ↔ <code>with</code>; <code>AutoCloseable</code> ↔ <code>__enter__</code>/<code>__exit__</code>; <code>throw</code> ↔ <code>raise</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>class LLMIndisponivel(Exception):
+    pass
+
+def responder(pergunta: str) -> str:
+    try:
+        with httpx.Client(timeout=10) as cliente:      # fecha sempre
+            r = cliente.post(URL, json={"q": pergunta})
+            r.raise_for_status()
+            return r.json()["resposta"]
+    except httpx.TimeoutException as e:
+        raise LLMIndisponivel("o provedor não respondeu") from e</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">raise ... from e e a cadeia de causas</span></summary>
+          <div class="alem-body"><p><code>raise NovaExcecao(...) from e</code> guarda a exceção original como causa, como o <code>new RuntimeException(msg, e)</code> do Java. O traceback mostra as duas. Sem o <code>from</code>, a causa ainda aparece, mas como "durante o tratamento, outra exceção ocorreu", o que confunde quem lê o log.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b><code>except:</code> sem tipo</b> ou <code>except Exception: pass</code>: engole tudo, até o Ctrl+C e os bugs. Capture o tipo específico.</li>
+            <li><b>Abrir recurso sem <code>with</code>.</b> Se der erro no meio, o recurso fica aberto.</li>
+            <li><b>Perder a causa.</b> Ao trocar a exceção, use <code>raise ... from e</code>.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, crie as exceções <code>LLMIndisponivel</code> e <code>RespostaInvalida</code>, use <code>with</code> no cliente HTTP e transforme cada uma num código HTTP adequado com um exception handler do FastAPI.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> um timeout simulado devolve 503 com uma mensagem clara, e o log mostra a causa original.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: exceções e context managers</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Sem checked exceptions</b>
+                    <p>Nada obriga a tratar; a disciplina é sua.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>with é try-with-resources</b>
+                    <p>__enter__ abre, __exit__ fecha, mesmo com erro.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Capture o específico</b>
+                    <p>Except genérico esconde bugs; troque a exceção mantendo a causa.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Usar except Exception: pass para o serviço não cair:</b><p>O serviço não cai, mas devolve respostas erradas sem nenhum rastro no log de por quê.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Recurso aberto pede with; falha externa pede exceção própria.</strong> Quem chama sua função deve saber o que deu errado sem conhecer o provedor por dentro.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-excecoes">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>A chamada ao provedor de LLM às vezes estoura o tempo. Hoje o código tem <code>except Exception: return ""</code>.</strong></p>
+                <p class="te-instrucao">Qual é a melhor correção?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Esconde o problema: a resposta vazia continua sem explicação e outros bugs continuam engolidos.">
+                    <span class="te-letter">A</span> Manter o except genérico e só aumentar o timeout, porque assim a resposta vazia aparece menos vezes.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Trata só a falha esperada, preserva a causa e deixa quem chama decidir o que fazer.">
+                    <span class="te-letter">B</span> Capturar a exceção de timeout, registrar no log e lançar uma exceção própria com a original como causa (raise ... from e).
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Exceção não tratada derruba o pedido com erro 500; não é ignorada.">
+                    <span class="te-letter">C</span> Remover o try inteiro, porque em Python exceções não tratadas são registradas e ignoradas automaticamente.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Qual é o equivalente do try-with-resources do Java em Python?</div>
+              <div class="tf-resposta">O with: with open(caminho) as f. Ao entrar, o Python chama __enter__; ao sair, normalmente ou por exceção, chama __exit__, que fecha o recurso. Qualquer classe com esses dois métodos funciona no with, como uma classe AutoCloseable.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-excecoes">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Modelando dados</h2><p>Onde o Java usa POJO, record e DTO com Bean Validation, o Python tem dataclass e Pydantic.</p></div></div>
 
       <article class="topic" id="py-classes">
         <div class="th"><h3>Classes, dataclass e duck typing</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
@@ -548,7 +1178,7 @@ def avisar(n: Notificador, p: Pedido) -> None:
           </ul>
         </div>
         <div class="projeto">
-          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
           <p>No projeto do chat, crie os modelos <code>Mensagem</code> (dataclass, interna) e <code>PedidoChat</code> (Pydantic, corpo do endpoint), e um <code>Protocol</code> <code>ProvedorLLM</code> com um método <code>responder</code>, com uma implementação falsa para testes.</p>
           <p class="pj-ok"><b>Pronto quando:</b> o endpoint recusa um corpo inválido com erro 422, e você troca o provedor falso pelo real sem mudar a rota.</p>
         </div>
@@ -627,11 +1257,143 @@ def avisar(n: Notificador, p: Pedido) -> None:
 
         <button class="done" type="button" data-k="py-classes">marcar dominado</button>
       </article>
+
+      <article class="topic" id="py-pydantic">
+        <div class="th"><h3>Pydantic: validação, settings e schemas</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> O Pydantic transforma anotações de tipo em validação de verdade: um <code>BaseModel</code> confere e converte os dados na criação e gera um erro claro quando algo está errado. Ele também lê configurações de variáveis de ambiente (<code>BaseSettings</code>) e gera o JSON Schema do modelo, que é o formato que os provedores de LLM usam para saída estruturada e tool calling.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>O LLM devolve um JSON que deveria ter <code>nome</code>, <code>valor</code> e <code>urgente</code>. Às vezes vem <code>valor: "R$ 10"</code>, às vezes falta <code>urgente</code>. Com <code>dict</code> e <code>if</code>, cada campo vira três linhas de verificação. Com um modelo Pydantic, <code>Pedido.model_validate_json(texto)</code> valida tudo de uma vez e diz exatamente qual campo falhou, e a mensagem de erro volta para o LLM tentar de novo.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O Pydantic é a conferência na entrada do armazém: cada caixa é aberta, contada e etiquetada antes de entrar. O que passou da porta está certo; o que não está certo nem entra.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Com as anotações de tipo na linguagem, faltava usá-las para validar dados de fora em tempo de execução. O Pydantic ocupou esse espaço e virou a base do FastAPI e de boa parte das bibliotecas de IA.</p>
+            <div class="repl"><b>Veio substituir:</b> a validação manual de dicionários com <code>if</code> e as configurações lidas com <code>os.environ.get</code> espalhado pelo código.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Ao definir a classe, o Pydantic lê as anotações e monta um validador (o núcleo é escrito em Rust, por isso é rápido). Na criação, ele converte o que dá (<code>"10"</code> vira <code>10</code>, no modo padrão) e junta todos os erros numa <code>ValidationError</code>.</p><p><code>Field(...)</code> acrescenta regras (mínimo, máximo, padrão, descrição). <code>model_json_schema()</code> gera o schema que o FastAPI publica em <code>/docs</code> e que você pode mandar ao LLM. <code>BaseSettings</code>, do pacote <code>pydantic-settings</code>, preenche o modelo com as variáveis de ambiente.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">tudo que vem de fora</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">JSON do LLM</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">BaseModel</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">objeto válido</text><text x="170" y="96" class="bs">ou ValidationError dizendo o campo</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Validar tudo o que entra (corpo de pedido, resposta do LLM, configuração) num lugar só, e gerar schemas sem escrever JSON à mão.</p></div>
+          <div><h4>Por que é importante</h4><p>Saída estruturada e tool calling, dois temas centrais das vagas de AI Engineer, são feitos com modelos Pydantic em quase todas as bibliotecas Python. É a ponte direta entre o seu código e o LLM.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>Bean Validation (<code>@NotNull</code>, <code>@Min</code>) ↔ <code>Field(...)</code> e tipos; DTO ↔ <code>BaseModel</code>; <code>@ConfigurationProperties</code> ↔ <code>BaseSettings</code>; Jackson ↔ <code>model_validate_json</code>/<code>model_dump_json</code>; <code>.entity(Classe.class)</code> do Spring AI ↔ modelo Pydantic na saída estruturada.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>from pydantic import BaseModel, Field, ValidationError
+from pydantic_settings import BaseSettings
+
+class Troca(BaseModel):
+    cliente: str
+    produto: str
+    urgente: bool = False
+    valor: float = Field(ge=0, description="valor em reais")
+
+class Config(BaseSettings):        # lê LLM_API_KEY do ambiente
+    llm_api_key: str
+    modelo: str = "modelo-padrao"
+
+try:
+    t = Troca.model_validate_json(resposta_do_llm)
+except ValidationError as e:
+    print(e.errors())               # devolva isto ao LLM e tente de novo</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Modo estrito e validadores próprios</span></summary>
+          <div class="alem-body"><p>Por padrão o Pydantic converte tipos compatíveis; com <code>strict=True</code> ele recusa <code>"10"</code> onde espera <code>int</code>. Para regras que dependem de mais de um campo, use <code>@model_validator</code>; para um campo só, <code>@field_validator</code>. A versão 2 mudou nomes de métodos em relação à 1 (<code>dict()</code> virou <code>model_dump()</code>): cuidado com exemplos antigos.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Seguir exemplo da versão 1.</b> <code>.dict()</code>, <code>.parse_raw()</code> e <code>class Config</code> mudaram na versão 2.</li>
+            <li><b>Ler a chave da API com <code>os.environ</code> espalhado.</b> Centralize num <code>BaseSettings</code> e falhe ao subir se faltar.</li>
+            <li><b>Engolir a <code>ValidationError</code>.</b> Os erros dizem exatamente o que corrigir; registre e, com LLM, devolva como dica.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, crie um <code>Config(BaseSettings)</code> para a chave e o modelo, e um endpoint <code>/extrair</code> que pede ao LLM um JSON no schema de um modelo Pydantic, com até duas novas tentativas em caso de erro de validação.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> o serviço não sobe sem a chave, e em 20 textos de teste todas as respostas saem válidas no schema.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: pydantic: validação, settings e schemas</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Valida na fronteira</b>
+                    <p>BaseModel confere e converte os dados ao criar; o erro diz qual campo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Settings do ambiente</b>
+                    <p>BaseSettings lê e valida as variáveis de ambiente ao subir.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Schema para o LLM</b>
+                    <p>model_json_schema() gera o formato da saída estruturada e das ferramentas.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Confiar no JSON do LLM sem validar:</b><p>O campo que faltou ou veio com o tipo errado quebra o código três funções depois, longe da causa.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Tudo que vem de fora passa pelo Pydantic.</strong> Pedido HTTP, resposta do LLM e variável de ambiente são todos "de fora".</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-pydantic">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>O LLM devolve JSON para uma extração e, em 1 a cada 20 respostas, falta um campo obrigatório.</strong></p>
+                <p class="te-instrucao">Qual é o tratamento mais robusto?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Inventar valor esconde o erro e grava dado falso.">
+                    <span class="te-letter">A</span> Preencher o campo que faltou com um valor padrão inventado, para o fluxo nunca parar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A mensagem de erro do Pydantic diz exatamente o que faltou, e o LLM costuma corrigir na segunda tentativa.">
+                    <span class="te-letter">B</span> Validar com model_validate_json e, se der ValidationError, reenviar ao LLM a mensagem de erro pedindo a correção, com um limite de tentativas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sem o modelo, o campo ausente vira um KeyError mais à frente, sem a mensagem clara.">
+                    <span class="te-letter">C</span> Trocar o modelo Pydantic por um dicionário, para que campos ausentes não gerem exceção.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Como o Pydantic ajuda na saída estruturada de um LLM?</div>
+              <div class="tf-resposta">Ele gera o JSON Schema do modelo (model_json_schema), que é enviado ao provedor como formato da resposta, e valida a resposta que volta (model_validate_json). Se algo falha, a ValidationError diz qual campo e por quê, e essa mensagem pode ser devolvida ao LLM para ele corrigir.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-pydantic">marcar dominado</button>
+      </article>
     </section>
 
-    <!-- ===================== PARTE 03 ===================== -->
-    <section class="part" id="p3">
-      <div class="ph"><span class="num">03</span><div><h2>API com FastAPI</h2><p>O Spring MVC do Python: rotas, validação, injeção de dependência e documentação, com bem menos configuração.</p></div></div>
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>API com FastAPI</h2><p>O Spring MVC e o WebFlux do Python: rotas, validação, injeção e async.</p></div></div>
 
       <article class="topic" id="py-fastapi">
         <div class="th"><h3>FastAPI: rotas, validação e injeção de dependência</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
@@ -682,7 +1444,7 @@ def chat(p: Pergunta, llm=Depends(get_llm)):
           </ul>
         </div>
         <div class="projeto">
-          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
           <p>Monte o esqueleto do Projeto 1: a rota <code>POST /chat</code> com o modelo <code>Pergunta</code>, o provedor injetado com <code>Depends</code>, e um teste com <code>pytest</code> que troca o provedor por um falso.</p>
           <p class="pj-ok"><b>Pronto quando:</b> <code>/docs</code> mostra a rota documentada, um corpo inválido devolve 422 e o teste passa sem acesso à internet.</p>
         </div>
@@ -761,11 +1523,407 @@ def chat(p: Pergunta, llm=Depends(get_llm)):
 
         <button class="done" type="button" data-k="py-fastapi">marcar dominado</button>
       </article>
+
+      <article class="topic" id="py-async">
+        <div class="th"><h3>Async, asyncio e o GIL</h3><div class="badges"><span class="badge b-ess">aprofundamento</span></div></div>
+        <p class="direto"><b>Direto:</b> <code>async def</code> declara uma corrotina e <code>await</code> pausa a corrotina até a operação de I/O terminar, liberando o loop de eventos para atender outras. É o modelo do WebFlux, não o das threads. O GIL (trava global do interpretador) faz que só uma thread execute código Python por vez; por isso, para esperar I/O se usa async ou threads, e para conta pesada se usa processos.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Seu endpoint chama o LLM e o banco vetorial, e cada chamada leva 2 segundos. Com 50 usuários ao mesmo tempo, o servidor fica lento. Você muda para <code>async def</code> mas continua usando um cliente HTTP síncrono: agora fica pior, porque cada chamada trava o loop inteiro. Trocar para o cliente assíncrono e fazer <code>await</code> resolve: enquanto um pedido espera o LLM, os outros andam.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> O loop de eventos é um garçom só, atendendo muitas mesas: anota o pedido, entrega na cozinha e vai para a próxima mesa enquanto o prato fica pronto. Uma chamada bloqueante é o garçom parado na porta da cozinha esperando: todas as mesas ficam sem atendimento.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Servidores Python usavam uma thread ou um processo por pedido, e o GIL limitava o ganho das threads. O <code>asyncio</code> trouxe a concorrência cooperativa, em que milhares de esperas de I/O cabem numa thread só.</p>
+            <div class="repl"><b>Veio substituir:</b> as threads e processos por pedido e as bibliotecas de callbacks, que tornavam o código difícil de ler.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Chamar uma <code>async def</code> não executa nada: devolve uma corrotina. O loop de eventos executa as corrotinas e, a cada <code>await</code> numa operação de I/O, troca para outra que esteja pronta. É concorrência numa thread, sem troca de contexto do sistema.</p><p><code>asyncio.gather(a(), b())</code> roda várias chamadas ao mesmo tempo e espera todas, como um <code>CompletableFuture.allOf</code>. O GIL não atrapalha o async, porque a espera de I/O acontece fora do código Python; ele atrapalha a conta pesada em várias threads, e para isso se usa <code>multiprocessing</code>.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">um loop, muitas esperas</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">A: await</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">B: roda</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">C: await</text><text x="170" y="96" class="bs">código bloqueante para todos</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Atender muitos usuários que esperam APIs lentas (LLM, banco vetorial, ferramentas) com poucos recursos, e fazer chamadas em paralelo dentro de um pedido.</p></div>
+          <div><h4>Por que é importante</h4><p>Serviços de IA passam a maior parte do tempo esperando o LLM. Saber quando usar async, e não misturar com código bloqueante, define a capacidade e a latência do serviço.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>threads da plataforma ↔ threads com GIL; virtual threads ↔ corrotinas (com <code>await</code> explícito); WebFlux e <code>Mono</code> ↔ <code>async/await</code>; <code>CompletableFuture.allOf</code> ↔ <code>asyncio.gather</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>import asyncio, httpx
+
+async def buscar_contexto(q: str) -> list[str]: ...
+async def chamar_llm(q: str, ctx: list[str]) -> str: ...
+
+@app.post("/chat")
+async def chat(p: Pergunta):
+    async with httpx.AsyncClient() as c:          # cliente assíncrono
+        docs, perfil = await asyncio.gather(      # em paralelo
+            buscar_contexto(p.texto),
+            carregar_perfil(p.usuario),
+        )
+    return {"resposta": await chamar_llm(p.texto, docs)}</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Python sem GIL</span></summary>
+          <div class="alem-body"><p>Versões recentes do Python oferecem uma compilação experimental sem o GIL (free-threaded), em que threads executam código Python em paralelo. Ainda depende do suporte das bibliotecas. Para serviços de IA, que esperam I/O, o async continua sendo o caminho padrão.</p><small class="alem-src">Confira na documentação do Python o estado atual do modo sem GIL.</small></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Função bloqueante dentro de <code>async def</code></b> (<code>requests</code>, <code>time.sleep</code>, driver síncrono): trava o loop e todos os pedidos.</li>
+            <li><b>Esquecer o <code>await</code>.</b> A chamada devolve uma corrotina que nunca roda, e o Python só avisa com um warning.</li>
+            <li><b>Usar async para conta pesada.</b> Async ajuda a esperar, não a calcular; para CPU, use processos.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, passe a rota para <code>async def</code> com o cliente assíncrono do provedor, busque contexto e histórico em paralelo com <code>asyncio.gather</code> e meça com um teste de carga simples.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> com 20 pedidos simultâneos, o tempo total fica perto do de um pedido, e nenhuma chamada bloqueante sobra dentro das rotas async.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: async, asyncio e o gil</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>await libera o loop</b>
+                    <p>Enquanto uma corrotina espera I/O, as outras andam.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>gather é o allOf</b>
+                    <p>Várias chamadas em paralelo dentro do mesmo pedido.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>GIL limita CPU, não I/O</b>
+                    <p>Para esperar, async; para calcular, processos.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Usar async def com biblioteca bloqueante:</b><p>O código parece assíncrono, mas atende um pedido por vez e a latência explode com a carga.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Async é para esperar bem.</strong> Se a função passa o tempo esperando rede, async; se passa calculando, processo.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-async">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Num endpoint <code>async def</code>, você precisa buscar no banco vetorial e no cadastro do usuário, duas chamadas independentes de 1 segundo cada.</strong></p>
+                <p class="te-instrucao">Como fazer?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas leva 2 segundos; o asyncio permite rodar as duas ao mesmo tempo.">
+                    <span class="te-letter">A</span> Chamar as duas em sequência com await, porque o asyncio não permite duas operações ao mesmo tempo no mesmo pedido.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Threads funcionariam, mas o async já faz isso de forma mais simples com gather.">
+                    <span class="te-letter">B</span> Criar duas threads com threading.Thread, porque o async não consegue fazer chamadas em paralelo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Chamadas independentes de I/O podem esperar juntas; o tempo total é o da mais lenta.">
+                    <span class="te-letter">C</span> Usar asyncio.gather com as duas corrotinas, que roda as chamadas ao mesmo tempo e leva cerca de 1 segundo.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que o GIL não impede um servidor async de atender muitos pedidos?</div>
+              <div class="tf-resposta">Porque o GIL só impede duas threads de executarem código Python ao mesmo tempo. Num servidor async, a maior parte do tempo é espera de rede, que acontece fora do código Python; enquanto um pedido espera, o loop atende outro. O GIL pesa em conta pesada com várias threads.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-async">marcar dominado</button>
+      </article>
     </section>
 
-    <!-- ===================== PARTE 04 ===================== -->
-    <section class="part" id="p4">
-      <div class="ph"><span class="num">04</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Para quem já programa, Python se aprende portando código, não fazendo exercício de iniciante.</p></div></div>
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Testar e entregar</h2><p>Do pytest à imagem Docker: o caminho até o link no ar.</p></div></div>
+
+      <article class="topic" id="py-pytest">
+        <div class="th"><h3>Testes com pytest</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> No pytest, um teste é uma função que começa com <code>test_</code> e usa o <code>assert</code> comum do Python; a mensagem de falha mostra os valores. Fixtures (<code>@pytest.fixture</code>) preparam o que o teste precisa e são injetadas pelo nome do parâmetro. <code>@pytest.mark.parametrize</code> roda o mesmo teste com vários dados, e o <code>TestClient</code> do FastAPI faz o papel do MockMvc.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você escreve os testes do chat como no JUnit: uma classe, um <code>setUp</code>, <code>assertEquals</code> em cada linha. Funciona, mas um colega reescreve com funções soltas, uma fixture para o cliente com o LLM falso e um <code>parametrize</code> com 20 perguntas. Os testes ficam com metade do tamanho, e cada caso que falha aparece com o nome e os valores no relatório.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> A fixture é a bancada já montada antes da aula de laboratório: o aluno (o teste) chega, pede o que precisa pelo nome e encontra pronto; quando sai, alguém desmonta.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>O Python tem o <code>unittest</code> na biblioteca padrão, copiado do JUnit, com classes e métodos <code>assertEqual</code>. O pytest surgiu para reduzir essa cerimônia e virou o padrão da comunidade.</p>
+            <div class="repl"><b>Veio substituir:</b> o <code>unittest</code> com classes de teste, <code>setUp</code>/<code>tearDown</code> e um método de asserção para cada tipo de comparação.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>O pytest descobre os arquivos <code>test_*.py</code> e as funções <code>test_*</code>, e reescreve os <code>assert</code> para mostrar os valores quando falham. Quando um teste pede um parâmetro <code>cliente</code>, ele procura uma fixture com esse nome (no mesmo arquivo ou em <code>conftest.py</code>), executa e injeta o resultado, como uma injeção de dependência só para testes.</p><p>Uma fixture com <code>yield</code> faz a preparação antes do <code>yield</code> e a limpeza depois, como <code>@BeforeEach</code> e <code>@AfterEach</code> juntos.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">fixture por nome</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">@fixture</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">test_chat()</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">limpeza</text><text x="170" y="96" class="bs">yield separa preparar e limpar</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Testar o código com pouca cerimônia e montar conjuntos de casos (inclusive as avaliações de um sistema de IA) que rodam no CI.</p></div>
+          <div><h4>Por que é importante</h4><p>As avaliações de um projeto de IA (os 20 casos de "pronto quando") viram testes parametrizados. É o que transforma "parece funcionar" em número que o CI confere a cada mudança.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>JUnit 5 ↔ pytest; <code>@BeforeEach</code>/<code>@AfterEach</code> ↔ fixture com <code>yield</code>; <code>@ParameterizedTest</code> ↔ <code>@pytest.mark.parametrize</code>; Mockito ↔ <code>unittest.mock</code> ou fixture com objeto falso; MockMvc ↔ <code>TestClient</code>.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>import pytest
+from fastapi.testclient import TestClient
+from meu_chat.api import app, get_llm
+
+class LLMFalso:
+    def responder(self, texto: str) -> str:
+        return f"eco: {texto}"
+
+@pytest.fixture
+def cliente():
+    app.dependency_overrides[get_llm] = LLMFalso
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+@pytest.mark.parametrize("texto", ["oi", "qual o status do pedido 42?"])
+def test_chat_responde(cliente, texto):
+    r = cliente.post("/chat", json={"texto": texto})
+    assert r.status_code == 200
+    assert r.json()["resposta"] == f"eco: {texto}"</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">conftest.py e escopo de fixture</span></summary>
+          <div class="alem-body"><p>Fixtures em <code>conftest.py</code> ficam disponíveis para todos os testes da pasta, sem import. Com <code>scope="session"</code>, a fixture é criada uma vez para a execução inteira, útil para subir um banco com Testcontainers (que também existe para Python). O padrão é uma por teste.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Chamar o LLM real nos testes.</b> Fica lento, caro e instável; troque pela dependência falsa.</li>
+            <li><b>Fixture que não limpa.</b> Sem a parte depois do <code>yield</code>, um teste afeta o seguinte.</li>
+            <li><b>Um teste com 20 asserts.</b> Use <code>parametrize</code>: cada caso vira um teste com nome próprio no relatório.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>No projeto do chat, crie o <code>conftest.py</code> com as fixtures do cliente e do LLM falso, e transforme os 20 casos de "pronto quando" num teste parametrizado que roda no CI.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> <code>uv run pytest</code> passa sem internet em menos de 5 segundos, e cada um dos 20 casos aparece com nome no relatório.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: testes com pytest</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>assert comum</b>
+                    <p>O pytest mostra os valores quando o assert falha.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Fixture por nome</b>
+                    <p>O parâmetro do teste pede a fixture; yield separa preparar e limpar.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>parametrize</b>
+                    <p>O mesmo teste com vários casos, cada um no relatório.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Testar o serviço chamando o LLM de verdade:</b><p>Os testes falham aleatoriamente, custam dinheiro a cada execução e ninguém mais roda antes do commit.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Fixture é injeção de dependência para teste.</strong> O teste declara o que precisa; o pytest monta e desmonta.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-pytest">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Você tem 20 perguntas com a resposta esperada e quer que cada uma apareça separada no relatório quando falhar.</strong></p>
+                <p class="te-instrucao">Como escrever?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Cada par vira um caso com nome próprio; o relatório mostra exatamente qual falhou.">
+                    <span class="te-letter">A</span> Um teste com @pytest.mark.parametrize recebendo os 20 pares pergunta/resposta esperada.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O primeiro assert que falha interrompe o laço e esconde os outros casos.">
+                    <span class="te-letter">B</span> Um único teste com um laço for sobre os 20 pares e um assert dentro do laço.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas repete código 20 vezes; o parametrize faz o mesmo numa função.">
+                    <span class="te-letter">C</span> Uma classe herdando de unittest.TestCase com um método de teste para cada uma das 20 perguntas.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">O que é uma fixture do pytest e como o teste a recebe?</div>
+              <div class="tf-resposta">É uma função marcada com @pytest.fixture que prepara algo para o teste (um cliente, um banco, um objeto falso). O teste a recebe declarando um parâmetro com o mesmo nome. Com yield, o que vem depois é a limpeza, como @BeforeEach e @AfterEach juntos.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-pytest">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="py-docker">
+        <div class="th"><h3>Empacotar e rodar: Docker, uvicorn e configuração</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Um serviço Python não vira um jar: ele roda como o código-fonte mais um ambiente com as dependências, servido pelo <code>uvicorn</code>. Em produção, isso vai numa imagem Docker que instala as dependências do lock, copia o código, roda com um usuário sem privilégios e lê a configuração de variáveis de ambiente.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>A primeira imagem do seu serviço tem 2 GB e leva dez minutos para ser construída a cada mudança de uma linha. O Dockerfile copiava o projeto inteiro antes de instalar as dependências, então qualquer alteração invalidava o cache. Copiar primeiro o <code>pyproject.toml</code> e o lock, instalar, e só depois copiar o código faz o build seguinte levar segundos, e a imagem slim cai para algumas centenas de MB.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> É a mudança de casa em que os móveis (as dependências) vão num caminhão que não muda, e só as caixas do dia a dia (o código) vão num carro a cada viagem. Refazer o caminhão a cada caixa é o build sem cache.</p></div>
+        <div class="duo o">
+          <div><h4>Como surgiu</h4><p>Em Python não há um artefato único como o jar, e instalar dependências na máquina de produção dava ambientes diferentes. O container passou a carregar o interpretador e as bibliotecas junto com o código.</p>
+            <div class="repl"><b>Veio substituir:</b> o deploy por <code>git pull</code> e <code>pip install</code> direto no servidor, com o ambiente de produção diferente do de desenvolvimento.</div>
+          </div>
+          <div><h4>O mecanismo</h4><p>Cada instrução do Dockerfile gera uma camada em cache; quando um arquivo copiado muda, as camadas seguintes são refeitas. Por isso as dependências (que mudam pouco) vêm antes do código (que muda sempre). Um build em dois estágios instala tudo num estágio e copia só o ambiente pronto para uma imagem final menor.</p><p>O <code>uvicorn</code> é o servidor ASGI; em produção ele roda com mais de um worker (<code>--workers</code>) ou atrás de um orquestrador que escala containers. A configuração vem do ambiente e é lida pelo <code>BaseSettings</code>.</p></div>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">o que muda pouco vem primeiro</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">imagem base</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">dependências</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">código</text><text x="170" y="96" class="bs">mudar o código reaproveita o cache</text>
+        </svg></figure>
+        <div class="duo">
+          <div><h4>Para que serve</h4><p>Entregar o serviço do mesmo jeito em qualquer lugar (sua máquina, o CI, a nuvem), com builds rápidos e imagens pequenas.</p></div>
+          <div><h4>Por que é importante</h4><p>O "pronto quando" de todo projeto da trilha termina num link no ar. Docker e CI/CD aparecem em boa parte das vagas, e uma imagem de 2 GB é uma das primeiras coisas que um revisor nota.</p></div>
+        </div>
+        <div class="ver"><b>a ponte com o Java</b>fat jar ↔ imagem com o código e o <code>.venv</code>; Tomcat embutido ↔ <code>uvicorn</code>; <code>application.yml</code> por ambiente ↔ variáveis de ambiente com <code>BaseSettings</code>; Jib/buildpacks ↔ Dockerfile em estágios.</div>
+        <p><b>Como usar.</b></p>
+        <pre><code>FROM python:3-slim AS build
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project   # camada de dependências
+COPY src ./src
+RUN uv sync --frozen --no-dev
+
+FROM python:3-slim
+WORKDIR /app
+COPY --from=build /app /app
+USER nobody
+ENV PATH="/app/.venv/bin:$PATH"
+CMD ["uvicorn", "meu_chat.api:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Fixar versões da imagem</span></summary>
+          <div class="alem-body"><p>No exemplo, <code>python:3-slim</code> e <code>uv:latest</code> deixam o build mudar sozinho com o tempo. Em produção, fixe a versão do Python e da imagem do uv (por tag de versão ou digest) e atualize de propósito, com o CI rodando os testes. Confira na documentação do uv o exemplo de Dockerfile recomendado.</p></div>
+        </details>
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>Copiar tudo antes de instalar.</b> Qualquer mudança no código refaz a instalação inteira.</li>
+            <li><b>Chave da API dentro da imagem</b> ou no <code>.env</code> copiado. Ela vem do ambiente na hora de rodar; use <code>.dockerignore</code>.</li>
+            <li><b>Rodar como root</b> e com <code>--reload</code> em produção. O reload é só para desenvolvimento.</li>
+          </ul>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA · chat com ferramentas</a></span></div>
+          <p>Escreva o Dockerfile do projeto do chat em dois estágios, um <code>.dockerignore</code> e um <code>docker compose</code> com o serviço e o Redis, lendo a chave do ambiente.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> a imagem fica abaixo de 300 MB, um build depois de mudar uma linha de código leva menos de 30 segundos, e <code>docker compose up</code> sobe o chat funcionando.</p>
+        </div>
+
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: empacotar e rodar: docker, uvicorn e configuração</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Código mais ambiente</b>
+                    <p>Não há jar: a imagem leva o código e o .venv.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Dependências antes do código</b>
+                    <p>A ordem das camadas define o tempo do build.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Configuração do ambiente</b>
+                    <p>Chaves e opções entram por variável, nunca na imagem.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon alert-icon">!</span>
+                  <div><b>Pôr a chave da API no Dockerfile ou no .env copiado:</b><p>A chave fica gravada numa camada da imagem e vaza para quem tiver acesso ao registry.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon tip-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>O que muda pouco vem primeiro.</strong> Imagem base, dependências e, por último, o código.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-py-py-docker">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cada mudança de uma linha no código faz o build da imagem reinstalar todas as dependências, levando 8 minutos.</strong></p>
+                <p class="te-instrucao">Qual é a correção?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Desligar o cache deixa todo build lento; o problema é a ordem das instruções.">
+                    <span class="te-letter">A</span> Desligar o cache do Docker com --no-cache, para garantir que as dependências estejam sempre atualizadas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Volta ao problema que o container resolve: produção diferente do desenvolvimento.">
+                    <span class="te-letter">B</span> Instalar as dependências no servidor de produção, fora da imagem, e copiar só o código no build.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A camada das dependências só é refeita quando o lock muda; mudar o código reaproveita o cache.">
+                    <span class="te-letter">C</span> Copiar primeiro o pyproject.toml e o lock, instalar as dependências, e só depois copiar o código.
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-tag ok">FLASHCARD</div>
+              <div class="tf-pergunta">Por que, no Dockerfile, as dependências são instaladas antes de copiar o código?</div>
+              <div class="tf-resposta">Porque cada instrução gera uma camada em cache, e quando um arquivo copiado muda, as camadas seguintes são refeitas. As dependências mudam pouco e o código muda sempre; instalando primeiro, uma mudança no código reaproveita a camada das dependências e o build leva segundos.<span class="tf-hint">← Toque para voltar à pergunta</span></div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="py-docker">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p6">
+      <div class="ph"><span class="num">06</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Para quem já programa, Python se aprende portando código, não fazendo exercício de iniciante.</p></div></div>
 
       <article class="topic" id="py-aprender">
         <div class="th"><h3>O ciclo, as fontes e como praticar</h3><div class="badges"><span class="badge b-ess">método</span></div></div>
@@ -787,13 +1945,13 @@ def chat(p: Pergunta, llm=Depends(get_llm)):
         <p class="fine">Confira se o conteúdo está atualizado antes de seguir um curso inteiro; ferramentas como o <code>uv</code> são recentes e cursos antigos usam pip e venv.</p>
         <p><b>Como pesquisar.</b> Pesquise pela ponte com o Java: "python equivalente a interface java", "pydantic vs dataclass", "fastapi depends vs spring autowired", "pytest fixture vs junit beforeeach". Confira sempre na documentação oficial do Python, do Pydantic e do FastAPI, porque respostas antigas mostram jeitos que já mudaram.</p>
         <div class="cs"><b>Mini-projeto na sua stack.</b> Pegue um endpoint de um projeto Spring seu (um CRUD simples serve) e porte para FastAPI:<br>1. <b>Mesmo contrato:</b> mesmas rotas, mesmos campos e mesmos códigos de erro.<br>2. <b>Mesma validação:</b> o que era Bean Validation vira Pydantic.<br>3. <b>Mesmos testes:</b> o que era JUnit e MockMvc vira pytest e o TestClient do FastAPI.<br>4. <b>Compare</b> num README: linhas de código, tempo de subida e o que foi mais fácil ou mais difícil em cada lado.</div>
-        <div class="ver"><b>para onde isso leva</b>O FastAPI é a base do <a href="../trilhas/ia.html#t8-escada">Projeto 1 da trilha de IA</a>. A seção <a href="../trilhas/ia.html#vagas">O que as vagas pedem</a> mostra por que Python vem primeiro.</div>
+        <div class="ver"><b>para onde isso leva</b>O FastAPI é a base do <a href="../trilhas/ia.html#t7-escada">Projeto 1 da trilha de IA</a>. A seção <a href="../trilhas/ia.html#vagas">O que as vagas pedem</a> mostra por que Python vem primeiro.</div>
         <button class="done" type="button" data-k="py-aprender">marcar dominado</button>
       </article>
     </section>
 
 <footer class="foot">
-      <p>Python para quem vem de Java · outubro de 2026 · caderno de apoio do acervo, em tema Dracula. Piloto com três tópicos: ambiente, modelagem de dados e FastAPI. Os pares deste arquivo são <code class="i">Java</code>, <code class="i">Spring Boot 3</code> e a <code class="i">trilha de IA</code>.</p>
+      <p>Python para quem vem de Java · outubro de 2026 · caderno de apoio do acervo, em tema Dracula. Doze tópicos, do ambiente ao deploy. Os pares deste arquivo são <code class="i">Java</code>, <code class="i">Spring Boot 3</code> e a <code class="i">trilha de IA</code>.</p>
     </footer>
   </main>
 </div>

@@ -41,6 +41,13 @@ Consequências práticas:
 ---
 
 ## 2. Onde paramos
+- **2026-10-21 — nova rotação semanal dinâmica, correção de cards e seção 'Outros':**
+  - **Rotação Semanal:** Implementada a alternância dinâmica nos 7 dias da semana: Segunda (Java ⟷ Lab de Projetos), Terça (Spring Boot ⟷ Mensageria & RabbitMQ), Quarta (Nuvem ⟷ Linux e Terminal), Quinta (Docker & K8s ⟷ Git), Sexta (Arquitetura ⟷ System Design), Sábado (Inglês ⟷ Oratória ⟷ Caderno de Dúvidas) e Domingo (AI Engineering ⟷ Projetos de IA & Agentes).
+  - **Correção do Modal de Escolha:** Corrigido o bug na terça-feira e generalizado para todos os dias rotativos: adição da classe `.duplo`, suporte dinâmico a 2 ou 3 opções no modal (`.opts.opts-3`), histórico em `localStorage` (`site.index.alternancia.v1`) e tags semânticas limpas sem erros de `undefined`.
+  - **Correção Visual de Finanças:** Adicionada a variável `--teal: #50fa7b;` no `:root` de `index.html`, restaurando a borda, gradiente e cores corretas do card de Finanças e Investimentos.
+  - **Redesenho de 'Outros' (Cadernos Complementares):** Removidas as duplicações de cadernos que agora vivem na semana (IA, Git, Linux, System Design, Dúvidas, Lab). A seção foi rebatizada para "Cadernos complementares" com um grid compacto e responsivo de 3 colunas abrigando Finanças, Governança e Biblioteca.
+  - **Validações:** Contratos de regressão 11/11 verdes, `check-links` com 347 alvos locais íntegros (0 links ou âncoras quebradas), `check-tags` com 100% de tags balanceadas e snapshot sincronizado com 0 diff contra o baseline. NENHUM git commit ou push realizado conforme diretrizes.
+
 
 - **2026-10-18 — caderno educacional de finanças e investimentos padronizado com 100% de cobertura do chassi:** `cadernos/financas-investimentos.html` foi completamente alinhado ao padrão estrito Dracula e chassi pedagógico integral do projeto (15/15 tópicos com caso prático, analogia com `<i class="ic">≈</i>`, diagrama Dracula SVG em `<figure class="dg">`, gotcha/armadilha técnica, fechamento estruturado com revisão/exercício balanceado +50 XP/flashcard interativo, aprofundamento `details.alem`, fontes oficiais `div.ver` e contas matemáticas realistas `details.conta` em 15/15 tópicos). Quizzes rigorosamente balanceados (distribuição equilibrada A/B/C e sem disparidade de comprimento). 0 emojis na marcação HTML. Barra lateral com anel SVG, busca em tempo real, drawer responsivo off-canvas e atalhos de estudo. Contratos de regressão 11/11 verdes, integridade de links (335 alvos locais) 100% sem quebras, tags balanceadas em todos os tópicos e snapshot sincronizado com 0 diff. NENHUM git commit ou push realizado conforme diretrizes.
 

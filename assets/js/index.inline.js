@@ -6,42 +6,69 @@
 /* ---------- bloco 1 de 1 ---------- */
 
 var SEM=[
- {sig:"seg",tema:"Java",cor:"var(--cyan)",doc:"trilhas/java.html",label:"Java (7 Pilares)",ini:"19:30",fim:"22:30",
+ {sig:"seg",tema:"Java e Prática",cor:"var(--cyan)",doc:"trilhas/java.html",label:"Java (7 Pilares)",ini:"19:30",fim:"22:30",
   slot:"seg",passado:"na segunda passada",
+  opcoes:[
+    {f:"trilhas/java.html",nome:"Java (7 Pilares)",tag:"Teoria & Runtime",nota:"Java 21 Moderno: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência."},
+    {f:"lab/projetos.html",nome:"Laboratório de Projetos",tag:"Prática & Bancada",nota:"Prática com a mão na massa: 19 projetos em seis oficinas e 18 aquecimentos locais de código (R$ 0 obrigatório)."}
+  ],
   n1:"Plataforma e runtime: valores, referências, generics, coleções, falhas, JDBC sem ORM, concorrência e JVM.",
-  n2:"Java 21 Moderno em 7 Pilares: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência.",
-  nota:"Da plataforma ao runtime em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Lab Interativo)."},
- {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"trilhas/spring.html",label:"Spring Boot 3 (7 Pilares)",ini:"19:30",fim:"22:30",
+  n2:"Bancada prática de projetos: 19 projetos em seis oficinas e 18 aquecimentos de código.",
+  nota:"Comece a semana com Java: escolha entre os 7 Pilares de teoria e runtime ou a bancada prática de projetos."},
+ {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"trilhas/spring.html",label:"Spring Boot 3",ini:"19:30",fim:"22:30",
   slot:"ter",passado:"na terça passada",
-  opcoes:[{f:"trilhas/spring.html",nome:"Spring Boot 3 (7 Pilares)",nota:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade."},{f:"trilhas/mensageria.html",nome:"Mensageria & RabbitMQ (7 Pilares)",nota:"Mensageria & RabbitMQ em 7 Pilares: topologia AMQP, Dead Letter Queue, Outbox Pattern e Kafka."}],
+  opcoes:[
+    {f:"trilhas/spring.html",nome:"Spring Boot 3 (7 Pilares)",tag:"Framework & IoC",nota:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade."},
+    {f:"trilhas/mensageria.html",nome:"Mensageria & RabbitMQ",tag:"Assíncrono & Filas",nota:"Mensageria & RabbitMQ em 7 Pilares: topologia AMQP, Dead Letter Queue, Outbox Pattern e Kafka."}
+  ],
   n1:"O container de IoC até a produção: ciclo de vida do bean, AOP e proxies, transação, Boot e configuração.",
   n2:"Spring Boot 3 em 7 Pilares: arquitetura interna, CGLIB internals, Testcontainers e observabilidade.",
-  nota:"Do container de IoC à mensageria resiliente: escolha entre as versões V1 e V2 de Spring e Mensageria."},
- {sig:"qua",tema:"Nuvem",cor:"var(--orange)",doc:"trilhas/nuvem.html",label:"Nuvem (7 Pilares)",ini:"19:30",fim:"22:30",
+  nota:"Do container de IoC à mensageria resiliente: escolha entre Spring Boot 3 e Mensageria & RabbitMQ."},
+ {sig:"qua",tema:"Nuvem e Linux",cor:"var(--orange)",doc:"trilhas/nuvem.html",label:"Nuvem",ini:"19:30",fim:"22:30",
   slot:"qua",passado:"na quarta passada",
+  opcoes:[
+    {f:"trilhas/nuvem.html",nome:"Nuvem Multicloud (7 Pilares)",tag:"Infra & Cloud",nota:"Arquitetura agnóstica AWS/GCP/Azure, simulador interativo de VPC/CIDR, IAM Least Privilege e FinOps."},
+    {f:"cadernos/linux.html",nome:"Linux e Terminal",tag:"Térreo & SO",nota:"O que roda embaixo de tudo: PID 1, SIGTERM vs SIGKILL, cgroups, grep/sed/awk e diagnóstico em produção."}
+  ],
   n1:"Conceitual e sem vendor: mapa de tradução entre AWS, Azure, Google, Oracle e VMware. Compute, rede, storage e IaC.",
-  n2:"Nuvem Multicloud em 7 Pilares: simulador interativo de VPC/CIDR, matriz comparativa AWS/Azure/GCP, IAM Least Privilege, S3 storage tiers e FinOps.",
-  nota:"Arquitetura de nuvem agnóstica: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares Didáticos & Simulador VPC)."},
- {sig:"qui",tema:"Docker e Kubernetes",cor:"var(--lime)",doc:"trilhas/docker-kubernetes.html",label:"Docker & K8s (7 Pilares)",ini:"19:30",fim:"22:30",
+  n2:"O térreo: processos, sinais POSIX, PID 1, cgroups e comandos fundamentais de terminal.",
+  nota:"Infraestrutura moderna e fundamentos de SO: escolha entre Nuvem Multicloud e Linux & Terminal."},
+ {sig:"qui",tema:"Docker e Git",cor:"var(--lime)",doc:"trilhas/docker-kubernetes.html",label:"Docker & K8s",ini:"19:30",fim:"22:30",
   slot:"qui",passado:"na quinta passada",
-  n1:"Do processo isolado ao cluster: namespaces e cgroups, camadas e cache do Dockerfile, ENTRYPOINT e PID 1, Pod, Service, Ingress e HPA.",
-  n2:"Containers e Kubernetes em 7 Pilares: simulador interativo de Probes (Liveness/Readiness/Startup), multi-stage builds, isolamento cgroups e autoescalonamento.",
-  nota:"Do processo isolado ao cluster em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador de Probes)."},
- {sig:"sex",tema:"Arquitetura",cor:"var(--gold)",doc:"trilhas/arquitetura.html",label:"Arquitetura (7 Pilares)",ini:"19:30",fim:"21:00",
+  opcoes:[
+    {f:"trilhas/docker-kubernetes.html",nome:"Docker & Kubernetes (7 Pilares)",tag:"Containers & K8s",nota:"Do processo isolado ao cluster: simulador de Probes (Liveness/Readiness), namespaces, cgroups e HPA."},
+    {f:"cadernos/git.html",nome:"Git (Snapshots & Grafo)",tag:"Controle & Grafo",nota:"Grafo de snapshots imutáveis: reflog, bisect, cherry-pick, rebase interativo e recuperação sem medo."}
+  ],
+  n1:"Do processo isolado ao cluster: namespaces e cgroups, camadas do Dockerfile, Probes e HPA.",
+  n2:"O histórico em grafo: snapshots imutáveis, reflog, bisect e rebase interativo.",
+  nota:"Containers e controle de versão: escolha entre Docker & Kubernetes e o grafo do Git."},
+ {sig:"sex",tema:"Arquitetura e System Design",cor:"var(--gold)",doc:"trilhas/arquitetura.html",label:"Arquitetura",ini:"19:30",fim:"21:00",
   slot:"sex",passado:"na sexta passada",
-  n1:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência, escala e resiliência, e como decidir, documentar e influenciar.",
-  n2:"Arquitetura de Software em 7 Pilares: simulador interativo de Circuit Breaker com estados CLOSED/OPEN/HALF-OPEN, Saga, Outbox, C4 Model e consistência eventual.",
-  nota:"Arquitetura de sistemas em produção: escolha entre a versão V1 (Vault) ou a versão V2 (7 Pilares & Simulador Circuit Breaker)."},
- {sig:"sáb",tema:"Inglês e oratória",cor:"var(--pink)",doc:"cadernos/ingles.html",doc2:"cadernos/oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
+  opcoes:[
+    {f:"trilhas/arquitetura.html",nome:"Arquitetura de Software (7 Pilares)",tag:"Padrões & Decisão",nota:"Circuit Breaker interativo, Saga, Outbox, C4 Model, SOLID, Conway e consistência eventual."},
+    {f:"trilhas/system-design.html",nome:"System Design",tag:"Escala & Restrições",nota:"Escolha sob restrição e escala: Lei de Little, escada de leitura, paginação keyset e trade-offs reais."}
+  ],
+  n1:"O que arquitetura é de verdade: SOLID e a lei de Conway, estilos, DDD, comunicação, dados e consistência.",
+  n2:"System Design sob restrição: Lei de Little, partition key, Bloom filter e números reais.",
+  nota:"Decisão e escala de software: escolha entre Arquitetura de Sistemas e System Design."},
+ {sig:"sáb",tema:"Comunicação e Dúvidas",cor:"var(--pink)",doc:"cadernos/ingles.html",doc2:"cadernos/oratoria.html",label:"Inglês",label2:"Oratória",livre:"60 a 90 min, quando der",
   slot:"sab",passado:"no sábado passado",
+  opcoes:[
+    {f:"cadernos/ingles.html",nome:"Inglês para Devs",tag:"Comunicação Global",nota:"Entrada antes de saída: escuta, leitura, shadowing e preparação para reuniões ao vivo em inglês."},
+    {f:"cadernos/oratoria.html",nome:"Oratória & Expressão",tag:"Postura & Defesa",nota:"Reavaliação da ansiedade, modelo SBI, defesa de ADRs e postura técnica em entrevistas."},
+    {f:"cadernos/conceitos-backend.html",nome:"Caderno de Dúvidas",tag:"Fundamentos & Dúvidas",nota:"Conceitos de Backend: race conditions, idempotência, rate limit, locks, JWT vs sessão e observabilidade."}
+  ],
   n1:"Entrada antes de saída: escuta, leitura, shadowing e a reunião ao vivo em inglês.",
   n2:"Gravar a própria voz, estruturar antes do slide e defender uma decisão técnica.",
-  nota:"Sábado sai da sequência técnica: inglês e oratória. O inglês pede 20 min por dia; o sábado é para a parte que precisa de bloco — shadowing, gravação da própria voz e as falas do laboratório."},
- {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"trilhas/ia.html",label:"AI Engineering (Didática & Visual)",livre:"projeto próprio e IA",
+  nota:"Sábado de consolidação: escolha entre Inglês, Oratória ou o Caderno de Dúvidas de Backend."},
+ {sig:"dom",tema:"Inteligência Artificial",cor:"var(--purple)",doc:"trilhas/ia.html",label:"AI Engineering",livre:"projeto próprio e IA",
   slot:"dom",passado:"no domingo passado",
-  n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector, MCP e guardrails.",
-  n2:"AI Engineering V4 em 6 Níveis com Mapas Conceituais e Didática Visual: Fundamentos, Tokens, SDD, Spring AI, Agentes e Test Harness.",
-  nota:"Domingo é para IA e projeto próprio: escolha entre a versão V1 (Fundações & Vault) ou a versão V4 (Didática, Visual & 6 Níveis de Engenharia)."}
+  opcoes:[
+    {f:"trilhas/ia.html",nome:"AI Engineering (6 Níveis)",tag:"Engenharia de IA",nota:"Didática visual em 6 Níveis: Fundamentos, Tokens, SDD, Spring AI, pgvector, Agentes e Test Harness."},
+  ],
+  n1:"Toda a base e vault: do token ao agente, RAG, prompt engineering, embeddings, pgvector e guardrails.",
+  n2:"AI Engineering V4 em 6 Níveis com Mapas Conceituais e Didática Visual.",
+  nota:"Domingo de IA e projetos: escolha entre a trilha completa de AI Engineering ou foco direto em Agentes."}
 ];
 
 function q(id){return document.getElementById(id)}
@@ -69,9 +96,13 @@ q("mtxt").innerHTML=(nx.descanso?"Amanhã é <b>descanso</b>.":"Amanhã é <b>"+
 /* ações — dia de documentos alternativos abre a escolha */
 function pintarActs(dia){
   var acts=[];
-  if(dia.opcoes)acts.push('<button class="act" type="button" id="btEscolher">escolher: spring ou mensageria (v1 / v2) →</button>');
-  else if(dia.doc2)acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.label.toLowerCase()+' ou '+dia.label2.toLowerCase()+' →</button>');
-  else if(dia.doc)acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
+  if(dia.opcoes && dia.opcoes.length > 1){
+    acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.tema.toLowerCase()+' →</button>');
+  } else if(dia.doc2){
+    acts.push('<button class="act" type="button" id="btEscolher">escolher: '+dia.label.toLowerCase()+' ou '+dia.label2.toLowerCase()+' →</button>');
+  } else if(dia.doc){
+    acts.push('<a class="act" href="'+dia.doc+'">abrir '+dia.label.toLowerCase()+' →</a>');
+  }
   acts.push('<a class="act ghost" href="acervo.html">ver o acervo</a>');
   acts.push('<a class="act ghost" href="cadernos/conceitos-backend.html">caderno de dúvidas</a>');
   q("acts").innerHTML=acts.join("");
@@ -97,6 +128,7 @@ if(!window.matchMedia("(prefers-reduced-motion:reduce)").matches){
 
 /* a semana */
 q("wk").innerHTML=SEM.map(function(x,i){
+  var temOpcoes = !!(x.opcoes && x.opcoes.length > 1) || !!x.doc2;
   var cls="day"+(i===dow?" now":"")+((x.descanso||x.livre)?" rest":"");
   var estilo='style="--c:'+x.cor+';--d:'+(.35+i*.07).toFixed(2)+'s"';
   var htxt=x.descanso?"sem pauta":(x.livre?x.livre:(x.ini+" — "+x.fim));
@@ -108,12 +140,12 @@ q("wk").innerHTML=SEM.map(function(x,i){
   if(!x.doc) return '<div class="'+cls+' sem" '+estilo+'>'+miolo
     +'<span class="rt"><span class="sel">'+(x.descanso?"sem pauta":x.livre)+'</span></span></div>';
 
-  /* dia com versões v1/v2: o href existe para o ctrl+clique, mas o clique normal abre o modal */
-  var tagTexto = x.sig==="sáb" ? "dois · escolher" : "v1 / v2 · escolher";
+  /* dia com múltiplas opções: clique normal abre o modal */
+  var tagTexto = (x.opcoes && x.opcoes.length === 3) ? "3 opções · escolher" : "2 opções · escolher";
   var rt='<span class="rt">'
-    +(x.doc2?'<span class="sel dois">'+tagTexto+'</span>':'')
+    +(temOpcoes?'<span class="sel dois">'+tagTexto+'</span>':'')
     +'<span class="ar">↗</span></span>';
-  return '<a class="'+cls+(x.doc2?" duplo":"")+'" href="'+x.doc+'" data-dia="'+i+'" '+estilo+'>'+miolo+rt+'</a>';
+  return '<a class="'+cls+(temOpcoes?" duplo":"")+'" href="'+x.doc+'" data-dia="'+i+'" '+estilo+'>'+miolo+rt+'</a>';
 }).join("");
 
 /* ---------- a escolha dos dias com múltiplos documentos ---------- */

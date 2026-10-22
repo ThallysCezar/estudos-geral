@@ -17,7 +17,7 @@
   color-scheme:dark;
   --bg:#282a36;--panel:#21222c;--ink:#f8f8f2;--ink2:#dcdce0;--muted:#9aa1c0;--soft:#6272a4;
   --line:#44475a66;--line2:#44475a;
-  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
+  --cyan:#8be9fd;--purple:#bd93f9;--orange:#ffb86c;--lime:#50fa7b;--teal:#50fa7b;--pink:#ff79c6;--gold:#f1fa8c;--red:#ff5555;
   --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
@@ -170,6 +170,10 @@ button.act{font-family:inherit;font-size:.85rem;cursor:pointer}
 .mdl .x:hover{color:var(--ink)}
 
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opts.opts-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+@media(max-width:768px){
+  .opts.opts-3{grid-template-columns:1fr}
+}
 .opts.opts-4{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
 @media(max-width:680px){
   .opts.opts-4{grid-template-columns:1fr}
@@ -205,6 +209,21 @@ button.act{font-family:inherit;font-size:.85rem;cursor:pointer}
 
 /* ---------- outros ---------- */
 .outros{margin:clamp(50px,8vh,84px) 0 0}
+.outros-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:20px}
+.outros-grid .duv{margin-top:0;display:flex;flex-direction:column;align-items:flex-start;padding:24px 22px;border-radius:22px;gap:14px;height:100%}
+.outros-grid .duv .mk{width:62px;height:62px;border-radius:20px;font-size:1.85rem}
+.outros-grid .duv .bd{display:flex;flex-direction:column;flex:1;width:100%}
+.outros-grid .duv h3{font-size:1.32rem;margin:6px 0 8px}
+.outros-grid .duv p{font-size:.83rem;line-height:1.55;flex:1}
+.outros-grid .duv .chips{margin-top:14px}
+.outros-grid .duv .go{align-self:flex-end;margin-top:auto;font-size:1.3rem;padding-top:10px}
+@media(max-width:960px){
+  .outros-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+  .outros-grid{grid-template-columns:1fr}
+}
+
 .outros .hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:16px;
   border-bottom:1px solid var(--line)}
 .outros .hd h2{margin:0;font:500 1.3rem Georgia,serif;letter-spacing:-.03em}
@@ -362,106 +381,45 @@ footer a{color:var(--accent)}
   </section>
 
   <section class="outros">
-    <div class="hd"><h2>Outros</h2></div>
+    <div class="hd">
+      <h2>Cadernos complementares</h2>
+      <span class="kick" style="color:var(--muted)">fora da rotina semanal</span>
+    </div>
 
-    <a class="duv" href="cadernos/conceitos-backend.html">
-      <span class="mk">?</span>
-      <span class="bd">
-        <span class="kk">fora da sequência</span>
-        <h3>Caderno de dúvidas</h3>
-        <p>Conceitos de Backend completo: o documento que não tem dia marcado. Abra sempre que bater uma dúvida — e anote a resposta ali, na parte certa, em vez de criar um arquivo novo solto.</p>
-        <span class="chips"><i>gargalos e escala</i><i>race condition</i><i>locks</i><i>idempotência</i><i>rate limit</i><i>índices e JOINs</i><i>sessão vs JWT</i><i>OAuth2 e PKCE</i><i>observabilidade</i><i>deploy e rollback</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
+    <div class="outros-grid">
+      <a class="duv" href="cadernos/financas-investimentos.html" style="--dv:var(--teal)">
+        <span class="mk">R$</span>
+        <span class="bd">
+          <span class="kk">objetivos, risco e escolhas</span>
+          <h3>Finanças e investimentos</h3>
+          <p>Um caderno para entender como começar: organizar orçamento, definir objetivo e prazo, formar reserva, comparar renda fixa, conhecer ações e FIIs, avaliar um plano educacional em três fases e entender aportes, custos e riscos. Sem carteira recomendada ou dados financeiros pessoais.</p>
+          <span class="chips"><i>reserva</i><i>renda fixa</i><i>ações e FIIs</i><i>plano por fases</i><i>aportes</i><i>fontes oficiais</i></span>
+        </span>
+        <span class="go">↗</span>
+      </a>
 
-    <a class="duv" href="cadernos/financas-investimentos.html" style="--dv:var(--teal)">
-      <span class="mk">R$</span>
-      <span class="bd">
-        <span class="kk">objetivos, risco e escolhas</span>
-        <h3>Finanças e investimentos</h3>
-        <p>Um caderno para entender como começar: organizar orçamento, definir objetivo e prazo, formar reserva, comparar renda fixa, conhecer ações e FIIs, avaliar um plano educacional em três fases e entender aportes, custos e riscos. Sem carteira recomendada ou dados financeiros pessoais.</p>
-        <span class="chips"><i>reserva</i><i>renda fixa</i><i>ações e FIIs</i><i>plano por fases</i><i>aportes</i><i>fontes oficiais</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
+      <a class="duv" href="cadernos/governanca-seguranca.html" style="--dv:var(--cyan)">
+        <span class="mk">G</span>
+        <span class="bd">
+          <span class="kk">decisão, risco e proteção</span>
+          <h3>Governança e segurança de TI</h3>
+          <p>Um caderno para entender como decisões, responsabilidades e controles se conectam: gestão de riscos, IAM, privacidade e conformidade com LGPD, desenvolvimento seguro, incidentes, continuidade e fornecedores.</p>
+          <span class="chips"><i>governança</i><i>risco</i><i>segurança</i><i>privacidade</i><i>continuidade</i></span>
+        </span>
+        <span class="go">↗</span>
+      </a>
 
-    <a class="duv" href="cadernos/biblioteca.html" style="--dv:var(--purple)">
-      <span class="mk">▤</span>
-      <span class="bd">
-        <span class="kk">a estante</span>
-        <h3>Biblioteca</h3>
-        <p>Os cinco livros que formaram o critério, num documento só — com a síntese de cada um e, principalmente, <b>onde os autores discordam</b>: é ali que mora o trade-off, e era invisível quando cada livro vivia no seu arquivo.</p>
-        <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i><i>ordem de leitura</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="cadernos/git.html" style="--dv:var(--pink)">
-      <span class="mk">⑂</span>
-      <span class="bd">
-        <span class="kk">o histórico</span>
-        <h3>Git</h3>
-        <p>Um <b>grafo de snapshots imutáveis</b>, não uma pilha de versões — e é dessa confusão que quase todo problema nasce. Unifica os quatro roadmaps que estavam concorrendo no vault. Comece pelo marco 04: saber recuperar é o que dá coragem para usar o resto da ferramenta.</p>
-        <span class="chips"><i>cherry-pick -x</i><i>bisect</i><i>reflog</i><i>rebase -i --autosquash</i><i>--force-with-lease</i><i>worktree</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="cadernos/linux.html" style="--dv:var(--orange)">
-      <span class="mk">$_</span>
-      <span class="bd">
-        <span class="kk">o térreo</span>
-        <h3>Linux e terminal</h3>
-        <p>O que estava faltando <b>embaixo</b> de todos os outros. Todo laboratório roda em container, o Docker fala em PID 1 e SIGTERM, a Nuvem exige teardown por comando — e nenhum documento explicava o terminal. Cada conceito aqui vem com o sintoma real: o container que ignora o Ctrl+C, o disco que encheu sem arquivo grande, o 137 sem exceção no log.</p>
-        <span class="chips"><i>SIGTERM × SIGKILL</i><i>PID 1</i><i>2&gt;&amp;1</i><i>grep sed awk</i><i>df × du</i><i>cgroup</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="cadernos/governanca-seguranca.html" style="--dv:var(--cyan)">
-      <span class="mk">G</span>
-      <span class="bd">
-        <span class="kk">decisão, risco e proteção</span>
-        <h3>Governança e segurança de TI</h3>
-        <p>Um caderno para entender como decisões, responsabilidades e controles se conectam: risco, IAM, privacidade e LGPD, desenvolvimento seguro, incidentes, continuidade e fornecedores.</p>
-        <span class="chips"><i>governança</i><i>risco</i><i>segurança</i><i>privacidade</i><i>continuidade</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="trilhas/system-design.html" style="--dv:var(--cyan)">
-      <span class="mk">⧉</span>
-      <span class="bd">
-        <span class="kk">o projeto inteiro</span>
-        <h3>System Design</h3>
-        <p>O nono não explica mecanismo — ensina a <b>escolher entre eles sob restrição</b>. Nenhum conceito aparece sozinho: cada um chega com o caso que o obriga a existir, e com a conta que decide. 10 mil requisições por segundo, 1 milhão de eventos, dois bilhões de usernames, um milhão de pedidos para paginar.</p>
-        <span class="chips"><i>L = λ × W</i><i>a escada de leitura</i><i>partition key</i><i>Bloom filter</i><i>keyset</i><i>falha parcial</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="trilhas/ia.html" style="--dv:var(--purple)" id="cardIA">
-      <span class="mk">◈</span>
-      <span class="bd">
-        <span class="kk">o que prevê · dois caminhos</span>
-        <h3>Inteligência Artificial</h3>
-        <p>Toda a área de IA do vault e a engenharia moderna: escolha entre a <b>Versão V1</b> (fundações, notas atômicas do vault, prompt, embedding e ofício) ou a <b>Versão V2/V3</b> (6 grandes níveis: fundamentos, tokens, SDD, Spring AI, pgvector, subagentes e Test Harness). Clique para escolher qual versão abrir no modal.</p>
-        <span class="chips"><i>dois · escolher</i><i>V1 (Vault &amp; Fundações)</i><i>V2/V3 (6 Grandes Níveis)</i><i>tokens</i><i>RAG</i><i>pgvector</i><i>agentes</i><i>Test Harness</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
-
-    <a class="duv" href="lab/projetos.html" style="--dv:var(--lime)">
-      <span class="mk">⌘</span>
-      <span class="bd">
-        <span class="kk">a bancada</span>
-        <h3>Laboratório de projetos</h3>
-        <p>Os documentos explicam; aqui você constrói. <b>19 projetos</b> em seis oficinas — cada um com problema, falhas para injetar de propósito e o link de volta para o documento que sustenta a teoria. E <b>18 aquecimentos</b> de 20 a 40 minutos, para as noites que não comportam um projeto inteiro.</p>
-        <span class="chips"><i>19 projetos</i><i>18 aquecimentos</i><i>tudo local primeiro</i><i>R$ 0 obrigatório</i><i>OrderFlow como capstone</i></span>
-      </span>
-      <span class="go">↗</span>
-    </a>
+      <a class="duv" href="cadernos/biblioteca.html" style="--dv:var(--purple)">
+        <span class="mk">▤</span>
+        <span class="bd">
+          <span class="kk">a estante</span>
+          <h3>Biblioteca</h3>
+          <p>Os cinco livros que formaram o critério, num documento só — com a síntese de cada um e, principalmente, <b>onde os autores discordam</b>: é ali que mora o trade-off, e era invisível quando cada livro vivia no seu arquivo.</p>
+          <span class="chips"><i>Fundamentals of Software Architecture</i><i>The Hard Parts</i><i>Learning DDD</i><i>System Design Interview</i><i>Entendendo Algoritmos</i></span>
+        </span>
+        <span class="go">↗</span>
+      </a>
+    </div>
   </section>
 
   <footer>

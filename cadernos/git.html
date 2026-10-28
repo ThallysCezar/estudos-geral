@@ -2110,6 +2110,185 @@ refactor(checkout): extrai calculo de frete
         <button class="done" type="button" data-k="g1">marcar dominado</button>
       </article>
 
+      <article class="topic" id="g3">
+        <div class="th"><h3>Higiene de Histórico e Commits Atômicos: a disciplina do fluxo diário</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-imp">boas práticas</span></div></div>
+        <p class="direto"><b>Direto:</b> O commit não é um botão de salvar rascunho; é uma unidade lógica indivisível de evolução do código. Histórico limpo e atômico não é vaidade estética: é o que permite fazer bisect sem falhas, reverter incidentes cirurgicamente em segundos e revisar PRs sem exaustão mental.</p>
+
+        <div class="analogia"><i class="ic">≈</i><p><b>Analogia.</b> Um bom histórico de Git funciona como a linha do tempo de um processo de auditoria financeira ou os capítulos de um livro didático. Cada registro documenta uma única transação concluída com clareza. Commitar "wip", "arrumando bug" e "teste 2" a cada 10 minutos equivale a registrar o extrato bancário com anotações em guardanapos amassados: quando o caixa não fechar, ninguém descobrirá em qual linha o rombo começou.</p></div>
+
+        <div class="caso"><b>o caso</b>
+          <p>Durante um incidente em produção às 23h, a equipe precisou reverter imediatamente uma regressão no processamento de pagamentos. Ao inspecionar o histórico recente, encontraram um único commit de 1.800 linhas intitulado <code class="i">ajustes gerais e correcoes</code> misturando atualização de bibliotecas, refatoração de layout e a alteração da API de pagamento.</p>
+          <p>Reverter o commit desfez correções de segurança críticas feitas no mesmo dia. Se a alteração de pagamento estivesse isolada em um <b>commit atômico semântico</b> (<code class="i">feat(pagamento): ...</code>), a reversão levaria cinco segundos via <code class="i">git revert</code>, sem impacto colateral.</p>
+        </div>
+
+        <h4>A. O Princípio do Commit Atômico (Single Responsibility no Histórico)</h4>
+        <p>Um commit atômico introduz <b>exatamente uma alteração lógica completa</b>. Ele deve compilar, passar em todos os testes automatizados da esteira e jamais deixar o repositório em estado quebrado intermediário. Se você precisar reverter esse commit no futuro, o restante do sistema continuará funcionando perfeitamente.</p>
+        <p>A técnica para atingir atomicidade sem interromper seu raciocínio é o <b>staging cirúrgico</b>. Em vez de rodar <code class="i">git add .</code> às cegas, selecione intencionalmente os pedaços (<i>hunks</i>) que pertencem àquela unidade lógica:</p>
+
+        <pre><code>git add -p caminho/do/arquivo  # Analisa hunk a hunk (y=sim, n=nao, s=dividir, e=editar)
+git commit -v                 # Abre o editor exibindo o diff completo abaixo da mensagem</code></pre>
+
+        <p><b>Regra de ouro:</b> Se a mensagem do seu commit precisa da conjunção <b>"E"</b> (exemplo: <i>"Adiciona validação de CPF E atualiza versão do driver do PostgreSQL"</i>), ela está violando o princípio da responsabilidade única. Quebre imediatamente em dois commits independentes.</p>
+
+        <h4>B. Conventional Commits 1.0.0 em Detalhes</h4>
+        <p>Adotar a especificação <b>Conventional Commits 1.0.0</b> transforma o histórico em uma interface legível tanto por humanos quanto por ferramentas automatizadas de CI/CD para geração de <code class="i">CHANGELOG.md</code> e cálculo de bumps de SemVer:</p>
+
+        <pre><code>&lt;tipo&gt;[escopo opcional]: &lt;descrição curta no imperativo&gt;
+
+[corpo opcional explicando o PORQUÊ e decisões alternativas]
+
+[rodapé(s) opcionais: BREAKING CHANGE: &lt;descrição&gt; / Closes #&lt;issue&gt;]</code></pre>
+
+        <div class="duo">
+          <div>
+            <h4>Tipos Principais (SemVer & Release)</h4>
+            <p><code class="i">feat:</code> Nova funcionalidade voltada ao usuário (dispara bump <b>MINOR</b> no SemVer).</p>
+            <p style="margin-top:7px"><code class="i">fix:</code> Correção de bug em produção (dispara bump <b>PATCH</b> no SemVer).</p>
+            <p style="margin-top:7px"><code class="i">refactor:</code> Mudança de código que não corrige bug nem altera comportamento externo.</p>
+            <p style="margin-top:7px"><code class="i">perf:</code> Melhoria focada estritamente em desempenho e vazão de recursos.</p>
+          </div>
+          <div>
+            <h4>Tipos de Apoio & Manutenção</h4>
+            <p><code class="i">test:</code> Adição ou ajuste de testes automatizados sem tocar em código de produção.</p>
+            <p style="margin-top:7px"><code class="i">docs:</code> Alterações puramente em documentação, guias ou anotações.</p>
+            <p style="margin-top:7px"><code class="i">chore:</code> Atualizações de build, dependências ou rotinas de CI.</p>
+            <p style="margin-top:7px"><b>Regra de escrita:</b> Verbo no imperativo presente ("adiciona", "corrige", nunca "adicionado" ou "adicionando"). Máximo de 72 caracteres na linha inicial.</p>
+          </div>
+        </div>
+
+        <h4>C. Higiene Pré-Push: A Dupla git commit --fixup + --autosquash</h4>
+        <p>A disciplina profissional de Git separa o momento da exploração local do momento da publicação: <b>você pode cometer desordem localmente enquanto pensa, mas nunca publica histórico rascunho</b> para os colegas de equipe.</p>
+        <p>Para evitar commits de ruído como <i>"arrumando typo"</i> ou <i>"corrigindo teste"</i> poluindo a branch principal, utilize o mecanismo de fixup automático do Git:</p>
+
+        <pre><code># 1. Identifique o hash do commit original que introduziu a logica (ex: a1b2c3d)
+git commit --fixup=a1b2c3d
+# O Git cria automaticamente: "fixup! feat(checkout): calcula desconto por cupom"
+
+# 2. Antes de fazer push ou abrir o Pull Request:
+git rebase -i --autosquash origin/main
+# O Git reorganiza a fila, move o fixup para junto do commit original e faz o squash silencioso</code></pre>
+
+        <h4>D. Higiene e Nomenclatura de Branches</h4>
+        <p>Branches de funcionalidade devem ter propósito único e <b>vida útil efêmera</b>. Uma branch aberta há semanas acumula divergência massiva contra a <code class="i">main</code> e resulta no temido <i>Merge Hell</i>.</p>
+        <p><b>Padrão de nomenclatura recomendado:</b> <code class="i">&lt;categoria&gt;/&lt;ticket-ou-contexto&gt;-&lt;slug-curto&gt;</code></p>
+        <p>Exemplos práticos de times de engenharia: <code class="i">feat/PAY-104-pix-estorno</code>, <code class="i">fix/AUTH-82-expiracao-jwt</code> e <code class="i">refactor/USER-12-clean-architecture</code>. Branches de feature devem ser integradas em no máximo 2 a 3 dias úteis.</p>
+
+        <div class="ver"><b>onde a teoria mora</b>Governança técnica, ciclo de vida e ADRs estão em <a href="../trilhas/arquitetura.html">Arquitetura completo</a>. Estratégias de rollback, esteira de CI/CD e release zero-downtime, em <a href="conceitos-backend.html">Conceitos de Backend completo</a>.</div>
+
+        <div class="gotcha"><b>armadilhas</b>
+          <ul>
+            <li><b>O Commit "WIP" que chega na branch principal.</b> Commits de rascunho com código incompleto quebram a bisseção (<code class="i">git bisect</code>) e tornam a identificação automatizada de bugs impossível.</li>
+            <li><b>Formatação Automática Misturada com Regra de Negócio.</b> Rodar o Prettier ou Spotless no repositório inteiro no mesmo commit em que altera um cálculo fiscal destrói o rastro do <code class="i">git blame</code>.</li>
+            <li><b>Uso Crônico de <code class="i">git add .</code>.</b> Adiciona inadvertidamente chaves de API locais, variáveis de ambiente, arquivos <code class="i">.DS_Store</code> ou dumps temporários de logs.</li>
+          </ul>
+        </div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="topico-fechamento">
+
+          <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Higiene de Histórico e Disciplina de Commits</h4>
+            </div>
+
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Atomicidade como Salvaguarda de CI/CD</b>
+                  <p>Cada commit deve compilar e passar nos testes isoladamente. Commits atômicos tornam a investigação via bisect instantânea e viabilizam rollbacks cirúrgicos sem quebrar a esteira.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Semântica para Máquinas e Pessoas</b>
+                  <p>Conventional Commits 1.0.0 não é burocracia: alimenta ferramentas automáticas de release notes, versionamento SemVer e changelogs auditáveis.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Higiene Prévia à Revisão</b>
+                  <p>Trabalhe rascunhando à vontade localmente, mas consolide com <code class="i">git commit --fixup</code> e autosquash antes de abrir PR. Respeito direto ao tempo do revisor.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon alert-icon">!</span>
+                <div>
+                  <b>Jamais use git add . sem auditar o stage:</b>
+                  <p>Audite sempre com <code class="i">git status</code> ou <code class="i">git diff --staged</code> para nunca vazar arquivos locais de IDE, segredos ou código inacabado.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon tip-icon">i</span>
+                <div>
+                  <b>Autosquash Automático Global:</b>
+                  <p>Configure <code class="i">git config --global rebase.autoSquash true</code> para que o Git aplique os fixups automaticamente em qualquer rebase interativo sem exigir a flag manual.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- B. EXERCÍCIO INTERATIVO DE FIXAÇÃO COM GAMIFICAÇÃO -->
+          <div class="topico-exercicio" data-exercise-id="ex-git-g3">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon"></span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #g3</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">+50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Ao implementar uma nova regra de cálculo de frete em um microsserviço legado, você percebeu que o arquivo da classe de serviço tinha 600 linhas com formatação inconsistente e métodos duplicados. Você precisa refatorar o código existente e adicionar a nova regra de negócio. Como organizar o trabalho para garantir máxima higiene de histórico e facilidade de revisão?</p>
+
+              <p class="te-instrucao">Qual é a abordagem operacional mais aderente às boas práticas de engenharia de software?</p>
+
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Separar refatoração prévia em um commit/PR dedicado preserva a integridade do git blame e permite que o revisor analise a nova regra de negócio em um diff limpo e focado, sem ruído cosmético.">
+                  <span class="te-letter">A</span> Criar um primeiro commit ou PR isolado com a refatoração pura (ex: refactor(frete): extrai metodos duplicados sem alterar comportamento) e, em seguida, um segundo commit atômico com a nova funcionalidade e seus testes (ex: feat(frete): adiciona calculo por cubagem).
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Misturar centenas de linhas de reordenação/formatação com alteração de comportamento destrói o histórico e torna impossível para o revisor identificar se um bug foi inserido pela refatoração ou pela lógica nova.">
+                  <span class="te-letter">B</span> Reformatar e refatorar tudo simultaneamente e comitar tudo junto com 'feat(frete): refatora servico e adiciona calculo de frete', aproveitando o mesmo ciclo de CI.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. git commit --amend reescreve o commit anterior em vez de manter duas etapas lógicas separadas, destruindo a separação entre preparo e funcionalidade.">
+                  <span class="te-letter">C</span> Implementar a nova regra, comitar como feat, depois rodar o linter/formatter e aplicar git commit --amend --no-edit para unificar tudo em um único commit.
+                </button>
+              </div>
+
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <!-- C. FLASHCARD INTERATIVO (ACTIVE RECALL) -->
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Qual o impacto direto de cometer violações de atomicidade no histórico ao utilizar <code class="i">git bisect</code>?</p>
+                <span class="tf-hint">Dica: Pense em testes quebrados no meio do caminho e busca binária →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">Se um commit intermediário do intervalo contiver código quebrado ou incompleto (ex: erro de compilação ou teste falhando por trabalho inacabado), o <code>git bisect</code> não consegue determinar se a regressão investigada foi introduzida naquele instante, invalidando a busca binária automatizada.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <button class="done" type="button" data-k="g3">marcar dominado</button>
+      </article>
+
       <article class="topic" id="g2">
         <div class="th"><h3>SemVer e o fluxo: escolha pela frequência de entrega</h3><div class="badges"><span class="badge b-imp">trade-off</span></div></div>
         <p class="direto"><b>Direto:</b> <b>MAIOR.MENOR.CORREÇÃO</b> é um contrato com quem consome. E o fluxo de branches se escolhe pelo ritmo de entrega, não por hábito.</p>

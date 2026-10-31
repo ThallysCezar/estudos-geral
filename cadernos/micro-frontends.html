@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Micro Frontends &amp; Native Federation — trilha visual e conteúdo</title>
-<meta name="description" content="Micro frontends: quando dividir o frontend, Native Federation com ESM e import maps, o federation.config.js e a comunicação entre micro frontends.">
+<meta name="description" content="Micro frontends: quando dividir o frontend, estratégias de composição, Native Federation com ESM e import maps, shell resiliente, autenticação, comunicação, design system, performance, testes e deploy independente.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -352,10 +352,10 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
     <header class="hero">
       <span class="eyebrow">Micro Frontends · outubro 2026</span>
       <h1>Do <em>monólito na UI</em> à <em>Native Federation</em>.</h1>
-      <p class="lede">Micro frontends dividem a interface em partes verticais, cada uma de um time, integradas no navegador. Aqui está quando isso vale a pena (e quando não vale), como a <b>Native Federation</b> carrega módulos com <b>ESM</b> e <b>import maps</b>, o contrato do <b>federation.config.js</b> e como os micro frontends conversam sem se acoplar.</p>
+      <p class="lede">Micro frontends dividem a interface em partes verticais, cada uma de um time, integradas no navegador. Aqui está quando isso vale a pena (e quando não vale), as cinco formas de compor uma página, como a <b>Native Federation</b> carrega módulos com <b>ESM</b> e <b>import maps</b>, o shell que aguenta um remote fora do ar, o login feito uma vez só, a comunicação por eventos e o que é preciso para levar isso a produção: <b>design system</b>, <b>performance</b>, <b>testes</b> e <b>deploy reversível</b>.</p>
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
-        <a href="#p1"><b>↓ O conteúdo</b>da decisão à comunicação</a>
+        <a href="#p1"><b>↓ O conteúdo</b>da decisão ao deploy</a>
       </div>
       <div class="legenda">
         <div><b>Problema de organização</b><span>MFE resolve o gargalo entre times, não o desempenho da página.</span></div>
@@ -366,7 +366,7 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
     </header>
 
     <section class="part trailwrap" id="trilha">
-      <div class="ph"><span class="num">↗</span><div><h2>A trilha: da decisão à comunicação</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: da decisão ao deploy</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
       <div class="legend" id="lg"></div>
       <div class="trail" id="track"></div>
     </section>
@@ -439,6 +439,28 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
             <h4>Por que é importante</h4>
             <p>A Lei de Conway dita que os sistemas refletem as estruturas de comunicação da empresa. Tentar operar equipes autônomas com um monólito de frontend gera atrito cultural, burocracia de releases e fragilidade operacional na produção.</p>
           </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>No shell, cada rota de domínio aponta para um remote, carregado só quando o usuário entra nela. O shell não importa código dos remotes no build: ele pede o módulo pelo nome.</p>
+          <pre style="margin-top:10px"><code>// shell: app.routes.ts (Angular + Native Federation)
+import { Routes } from '@angular/router';
+import { loadRemoteModule } from '@angular-architects/native-federation';
+
+export const routes: Routes = [
+  { path: '', component: HomeComponent },
+  {
+    path: 'catalogo',
+    loadComponent: () =&gt;
+      loadRemoteModule('catalogo', './Component').then(m =&gt; m.CatalogoComponent),
+  },
+  {
+    path: 'checkout',
+    loadChildren: () =&gt;
+      loadRemoteModule('checkout', './routes').then(m =&gt; m.CHECKOUT_ROUTES),
+  },
+];</code></pre>
         </div>
 
         <details class="alem">
@@ -529,10 +551,10 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
                   <span class="te-letter">A</span> Adotar, porque micro frontends sempre deixam a aplicação mais rápida para o usuário.
                 </button>
                 <button class="te-opt" type="button" data-correct="false" data-rationale="Vários frameworks na mesma página aumentam o peso e a complexidade; liberdade de framework não é o objetivo de MFE.">
-                  <span class="te-letter">B</span> Adotar, desde que cada dev possa usar um framework diferente para ganhar autonomia.
+                  <span class="te-letter">B</span> Adotar, desde que cada dev possa escolher o próprio framework (React, Angular ou Vue) para o seu pedaço da tela, o que aumenta a autonomia individual e acelera a entrega.
                 </button>
                 <button class="te-opt" type="button" data-correct="true" data-rationale="MFE resolve o gargalo entre vários times que disputam o mesmo repositório e o mesmo deploy; com um time só, esse gargalo não existe.">
-                  <span class="te-letter">C</span> Não adotar agora: com um time só, o custo de tooling, versionamento e deploy coordenado supera o ganho; um monólito modular resolve.
+                  <span class="te-letter">C</span> Não adotar agora: com um time só, o custo supera o ganho; um monólito modular resolve.
                 </button>
               </div>
               <div class="te-feedback" hidden></div>
@@ -557,6 +579,207 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
 
         <button class="done" type="button" data-k="mfe-01">marcar dominado</button>
       </article>
+
+      <article class="topic" id="mfe-05">
+        <div class="th">
+          <h3>Estratégias de composição: build, servidor, borda, iframe e runtime no navegador</h3>
+          <div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">decisão de integração</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma loja juntou as telas de três times publicando cada parte como pacote npm, importado pelo app principal. Na prática, toda mudança do time de Recomendações exigia um novo release do app inteiro, e o time de Produto vivia esperando versões dos outros. O nome era micro frontend, mas o deploy continuava único. A página de produto, que precisava de bom SEO, passou a ser composta no servidor; a área logada passou a carregar os remotes em runtime. Cada time voltou a publicar sozinho.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Compor é decidir <b>quando</b> e <b>onde</b> as partes dos times viram uma página. Há cinco caminhos: no <b>build</b> (cada parte é um pacote que o app compila junto), no <b>servidor</b> (o servidor monta o HTML com fragmentos de cada time), na <b>borda</b> (a CDN faz essa montagem), por <b>iframe</b> (cada parte é uma página isolada dentro da outra) e em <b>runtime no navegador</b> (o shell baixa o JavaScript dos remotes e monta tudo no mesmo DOM). Só os quatro últimos permitem deploy independente de verdade.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Montar um jornal.</b> Composição no build é imprimir todos os cadernos juntos: se o caderno de esportes atrasa, o jornal inteiro atrasa. Composição no servidor é a gráfica que encaixa os cadernos prontos na hora de rodar. Iframe é entregar cada caderno num envelope separado dentro do jornal. Runtime é o leitor recebendo a capa e buscando cada caderno quando abre aquela seção.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>Antes das SPAs, portais já montavam páginas no servidor com Server Side Includes (SSI) e, nas CDNs, com Edge Side Includes (ESI). Portais corporativos usavam iframes. Com as SPAs, a integração foi para o navegador: o single-spa organizou isso em 2018 e o Module Federation do Webpack 5, em 2020, tornou o carregamento em runtime o caminho mais citado.</p>
+            <div class="repl"><b>Veio substituir:</b> o pacote npm compartilhado como forma de integrar times, que obrigava todos a republicar juntos, e os portais feitos só de iframes.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>No build, o host declara as partes como dependências e o empacotador gera um bundle só, com um deploy só. No servidor ou na borda, o HTML é montado antes de chegar ao navegador: cada fragmento vem de um serviço do time, com timeout próprio. No iframe, cada parte tem documento, JavaScript e CSS isolados, e a conversa entre elas passa por <code>postMessage</code>. Em runtime, o shell resolve a URL do remote, baixa o módulo e o renderiza no mesmo DOM, compartilhando o framework.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="quando a página é montada">
+          <text x="360" y="30" class="bt">quando a página é montada</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b4"/><text x="95" y="96" class="bt">build</text><text x="95" y="122" class="bs">um deploy só</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">servidor</text><text x="271.66666666666663" y="122" class="bs">HTML pronto</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">borda (CDN)</text><text x="448.3333333333333" y="122" class="bs">ESI na CDN</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b1"/><text x="625" y="96" class="bt">navegador</text><text x="625" y="122" class="bs">iframe ou runtime</text>
+          <text x="360" y="190" class="bs">build não dá deploy independente; servidor e borda ajudam SEO; runtime dá interação rica</text>
+        </svg><figcaption>Quanto mais para a direita, mais tarde a integração acontece e mais independente é o deploy de cada time</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Escolher a forma de integração pelo que a tela precisa: SEO e primeira pintura rápida pedem servidor ou borda; isolamento forte de um sistema legado pede iframe; uma área logada muito interativa pede runtime no navegador.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>A estratégia define o que o time ganha. Escolher composição no build e chamar de micro frontend dá o custo da divisão sem o benefício do deploy independente. Uma mesma aplicação pode, e costuma, combinar estratégias diferentes por área.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>Composição no servidor com Spring: o controller busca o HTML de cada time e monta a página. O fragmento opcional tem tratamento de falha, para não derrubar a página inteira.</p>
+          <pre style="margin-top:10px"><code>@Controller
+class PaginaProdutoController {
+
+  private final RestClient rest = RestClient.create();
+
+  @GetMapping("/produto/{id}")
+  String pagina(@PathVariable String id, Model model) {
+    // fragmento obrigatório: sem ele a página não faz sentido
+    model.addAttribute("detalhe", rest.get()
+        .uri("http://catalogo/fragmentos/produto/{id}", id)
+        .retrieve().body(String.class));
+    // fragmento opcional: se falhar, a página sai sem ele
+    model.addAttribute("recomendacoes",
+        fragmentoOuVazio("http://recomendacao/fragmentos/produto/" + id));
+    return "produto";   // no template: &lt;div th:utext="${detalhe}"&gt;&lt;/div&gt;
+  }
+
+  private String fragmentoOuVazio(String url) {
+    try {
+      return rest.get().uri(url).retrieve().body(String.class);
+    } catch (RestClientException e) {
+      return "";
+    }
+  }
+}</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Composição na borda com ESI</span></summary>
+          <div class="alem-body">
+            <p>Com Edge Side Includes, a página cacheada na CDN carrega marcações como <code>&lt;esi:include src="/fragmentos/carrinho"/&gt;</code>, e a CDN substitui cada uma pelo fragmento do time antes de entregar a resposta. Isso permite cachear a parte estável da página por muito tempo e a parte pessoal por pouco. Varnish e Akamai implementam ESI, cada um com o seu subconjunto da especificação; confira o que o seu provedor suporta antes de desenhar a página em cima disso.</p>
+            <small class="alem-src">Especificação ESI 1.0 (W3C Note) e documentação do Varnish</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> o custo de dividir e quando vale a pena está em <a href="../trilhas/arquitetura.html#a2">Arquitetura de Software</a>; o BFF, que costuma fazer a composição no servidor, está em <a href="../trilhas/arquitetura.html#f5">BFF Pattern</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Chamar pacote npm de micro frontend:</b> se integrar exige rebuild e release do app principal, o deploy não é independente. É modularização, que tem valor, mas não é o que o nome promete.</li>
+            <li><b>Iframe como solução geral:</b> resolve isolamento, mas complica rotas e links diretos, altura da página, acessibilidade, foco do teclado e SEO.</li>
+            <li><b>Fragmento no servidor sem timeout:</b> um time lento atrasa a página de todos. Cada fragmento precisa de timeout curto e de uma resposta vazia como plano B.</li>
+            <li><b>Inserir HTML de origem não confiável:</b> <code>th:utext</code> não escapa o conteúdo. Use só com fragmentos de serviços internos que você controla.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Estratégias de Composição</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Quando integrar</b>
+                  <p>Build, servidor, borda ou navegador: quanto mais tarde a integração, mais independente é o deploy.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Pelo que a tela precisa</b>
+                  <p>SEO e primeira pintura pedem servidor ou borda; isolamento pede iframe; interação rica pede runtime.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Combinar é normal</b>
+                  <p>Uma loja pode compor a página de produto no servidor e a área logada em runtime.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Micro frontend obriga a carregar tudo no navegador com Module Federation? Não. Composição no servidor e na borda também são micro frontends, desde que cada time publique o seu fragmento sozinho.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Pergunte primeiro o que a tela precisa (SEO, isolamento, interação) e só depois escolha a ferramenta de integração.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-05">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-05</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> A página de detalhe de produto de um e-commerce é montada por três times (detalhe, preço e recomendações). Ela precisa aparecer bem no Google e pintar rápido em celulares fracos. Cada time quer publicar sozinho.</p>
+              <p class="te-instrucao">Qual estratégia de composição atende melhor esses requisitos?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="true" data-rationale="O HTML chega pronto, o que ajuda SEO e primeira pintura, e cada time continua publicando o seu fragmento.">
+                  <span class="te-letter">A</span> Composição no servidor ou na borda, com timeout e plano B para o fragmento de recomendações.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Integrar no build obriga um release conjunto, e o requisito de publicar sozinho deixa de ser atendido.">
+                  <span class="te-letter">B</span> Cada time publica a sua parte como pacote npm versionado, e o app principal importa e compila tudo junto, gerando um bundle único otimizado.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Iframes isolam bem, mas atrapalham SEO, altura da página e desempenho em celulares fracos.">
+                  <span class="te-letter">C</span> Cada parte num iframe separado, carregado no navegador.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Qual estratégia de composição não permite deploy independente?</p>
+                <span class="tf-hint">Pense em quem precisa ser recompilado →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">A composição no build (cada parte como pacote npm importado pelo app principal). Qualquer mudança exige rebuild e release do app inteiro, então o deploy continua único.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-05">marcar dominado</button>
+      </article>
+
     </section>
 
     <!-- ===================== PARTE 02 ===================== -->
@@ -621,6 +844,24 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
             <h4>Por que é importante</h4>
             <p>Adotar padrões oficiais do W3C garante longevidade arquitetural. As primitivas de ESM e Import Maps são suportadas nativamente por todos os navegadores modernos, reduzindo o volume de código de runtime enviado aos usuários.</p>
           </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>O shell inicializa a federação antes de subir a aplicação. O manifesto diz onde está o <code>remoteEntry.json</code> de cada remote; a partir dele a biblioteca monta o import map.</p>
+          <pre style="margin-top:10px"><code>// shell: main.ts
+import { initFederation } from '@angular-architects/native-federation';
+
+initFederation('federation.manifest.json')
+  .catch(err =&gt; console.error(err))
+  .then(() =&gt; import('./bootstrap'))   // a aplicação de verdade sobe depois
+  .catch(err =&gt; console.error(err));
+
+// shell: public/federation.manifest.json
+{
+  "catalogo": "http://localhost:4201/remoteEntry.json",
+  "checkout": "http://localhost:4202/remoteEntry.json"
+}</code></pre>
         </div>
 
         <details class="alem">
@@ -801,6 +1042,25 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
           </div>
         </div>
 
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>Em vez de compartilhar tudo, declare só o que precisa ser instância única e deixe de fora o que o remote não usa. Depois confira no DevTools (aba Network) se o framework baixou uma vez só.</p>
+          <pre style="margin-top:10px"><code>// remote checkout: federation.config.js
+const { withNativeFederation, share } = require('@angular-architects/native-federation/config');
+
+module.exports = withNativeFederation({
+  name: 'checkout',
+  exposes: { './routes': './src/app/checkout.routes.ts' },
+  shared: share({
+    '@angular/core':   { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+    '@angular/common': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+    '@angular/router': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+    '@loja/auth':      { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+  }),
+  skip: ['rxjs/ajax', 'rxjs/fetch', 'rxjs/testing', 'rxjs/webSocket'],
+});</code></pre>
+        </div>
+
         <details class="alem">
           <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Sintaxe Completa e Estrutura de federation.config.js</span></summary>
           <div class="alem-body">
@@ -933,6 +1193,211 @@ module.exports = withNativeFederation({
 
         <button class="done" type="button" data-k="mfe-03">marcar dominado</button>
       </article>
+
+      <article class="topic" id="mfe-06">
+        <div class="th">
+          <h3>O shell resiliente: manifesto em runtime, carregamento sob demanda e plano B quando um remote cai</h3>
+          <div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">resiliência</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>O CDN que servia o remote de Recomendações ficou fora do ar por 20 minutos. Como o shell carregava todos os remotes na inicialização, sem tratar erro, a loja inteira abriu em branco, inclusive o checkout, que não tinha nada a ver com recomendações. Depois da correção, o shell passou a carregar cada remote só na rota dele e a mostrar um aviso no lugar do remote que falha. No incidente seguinte, só a caixa de recomendações sumiu.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> O shell é a única parte que todo usuário carrega, então ele precisa ser pequeno e aguentar falhas dos outros. Três práticas fazem isso: ler a lista de remotes de um <b>manifesto</b> buscado em runtime (para trocar versão ou ambiente sem rebuild), carregar cada remote <b>só quando a rota pede</b> e ter um <b>plano B</b> para quando o remote não carrega ou quebra ao renderizar.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O quadro de embarque do aeroporto.</b> O aeroporto não decora de quais portões saem os voos: ele lê o quadro, que a companhia atualiza quando muda o portão. Quando um voo atrasa, o quadro mostra "atrasado" naquela linha, e o resto do aeroporto continua funcionando.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>Nas primeiras configurações de federação, as URLs dos remotes ficavam fixas no build do shell. Trocar o ambiente ou apontar para uma versão nova exigia recompilar e publicar o shell, o que contrariava a ideia de deploy independente. Os manifestos carregados em runtime resolveram isso.</p>
+            <div class="repl"><b>Veio substituir:</b> URLs de remotes fixadas no código do shell e o carregamento de todos os remotes na abertura da página.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>Na inicialização, o shell busca o manifesto (nome do remote → URL do <code>remoteEntry.json</code>) e o entrega ao <code>initFederation</code>, que registra os remotes no import map. Nada dos remotes é baixado ainda. Quando o usuário entra numa rota, <code>loadRemoteModule</code> baixa o módulo. Se a promessa falhar (404, CORS, timeout), o <code>catch</code> devolve um componente de fallback. Erros durante a renderização ficam com o tratamento de erro do framework (o <code>ErrorHandler</code> no Angular, o error boundary no React).</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="o shell não sabe de antemão onde os remotes estão">
+          <text x="360" y="30" class="bt">o shell não sabe de antemão onde os remotes estão</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b2"/><text x="95" y="96" class="bt">manifesto</text><text x="95" y="122" class="bs">nome → URL</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">initFederation</text><text x="271.66666666666663" y="122" class="bs">registra no import map</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">rota pedida</text><text x="448.3333333333333" y="122" class="bs">loadRemoteModule</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b4"/><text x="625" y="96" class="bt">falhou?</text><text x="625" y="122" class="bs">fallback na tela</text>
+          <text x="360" y="190" class="bs">trocar a versão de um remote = trocar uma linha do manifesto</text>
+        </svg><figcaption>O manifesto é lido em runtime; cada remote só é baixado quando a rota é acessada; uma falha vira um aviso local, não uma página em branco</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Trocar a versão de um remote, ou apontar para outro ambiente, sem publicar o shell de novo; deixar a primeira carga leve; e impedir que um remote fora do ar derrube a aplicação inteira.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Com vários times publicando várias vezes por dia, alguma coisa vai falhar. Sem isolamento de falhas, a disponibilidade da aplicação fica igual à do remote menos confiável.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>O manifesto pode vir de um endpoint Spring com uma configuração por ambiente. O arquivo é pequeno e muda a cada deploy, então vai sem cache. Na rota do shell, o <code>catch</code> troca o remote que não carregou por um aviso.</p>
+          <pre style="margin-top:10px"><code>// application-prod.yml
+mfe:
+  remotes:
+    catalogo: https://cdn.loja.com/catalogo/v42/remoteEntry.json
+    checkout: https://cdn.loja.com/checkout/v17/remoteEntry.json
+
+// Spring Boot (com @ConfigurationPropertiesScan na aplicação)
+@ConfigurationProperties("mfe")
+record MfeProps(Map&lt;String, String&gt; remotes) {}
+
+@RestController
+class ManifestoController {
+  private final MfeProps props;
+  ManifestoController(MfeProps props) { this.props = props; }
+
+  @GetMapping(value = "/federation.manifest.json", produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity&lt;Map&lt;String, String&gt;&gt; manifesto() {
+    return ResponseEntity.ok().cacheControl(CacheControl.noCache()).body(props.remotes());
+  }
+}
+
+// shell: rota com plano B
+{
+  path: 'catalogo',
+  loadComponent: () =&gt;
+    loadRemoteModule('catalogo', './Component')
+      .then(m =&gt; m.CatalogoComponent)
+      .catch(() =&gt; IndisponivelComponent),   // aviso local, o resto da página segue
+}</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Shell magro: o que fica e o que sai</span></summary>
+          <div class="alem-body">
+            <p>O shell carrega layout, autenticação, roteamento de primeiro nível e o tratamento de falhas. Regra de negócio fica nos remotes. Quando o shell começa a ganhar telas de domínio, ele vira o novo monólito: todo time passa a depender do deploy dele. Um bom sinal de alerta é o shell ter mais commits por semana que os remotes.</p>
+            <small class="alem-src">Documentação do Native Federation (Angular Architects) e "Micro Frontends", de Cam Jackson, em martinfowler.com</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> o padrão de isolar falhas para uma parte não derrubar o todo é o mesmo do circuit breaker e do bulkhead, em <a href="../trilhas/arquitetura.html">Arquitetura de Software</a>; o deploy por ambiente está em <a href="conceitos-backend.html#h2">A Imagem Docker e Deploy</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Manifesto com cache longo:</b> se o navegador ou a CDN guardam o manifesto por horas, o usuário continua na versão antiga depois do deploy. Sirva com <code>no-cache</code>.</li>
+            <li><b>Carregar todos os remotes na abertura:</b> a primeira carga fica pesada e qualquer remote fora do ar derruba tudo.</li>
+            <li><b>Promessa sem <code>catch</code>:</b> um remote que não carrega vira página em branco, sem mensagem nenhuma para o usuário.</li>
+            <li><b>Shell gordo:</b> regra de negócio no shell faz todo time depender do deploy dele, que é exatamente o gargalo que se queria eliminar.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: O Shell Resiliente</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Manifesto em runtime</b>
+                  <p>A lista de remotes vem de um JSON buscado na abertura; trocar versão não exige rebuild do shell.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Sob demanda</b>
+                  <p>Cada remote só é baixado quando a rota dele é acessada.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Plano B</b>
+                  <p>Falha de carga vira fallback local; erro de renderização fica com o tratamento de erro do framework.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Se cada remote tem deploy independente, uma falha num remote não afeta os outros, certo? Não necessariamente. Se o shell carrega tudo na abertura e não trata erro, um remote fora do ar derruba a página inteira. O isolamento de falhas precisa ser construído no shell.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Desenhe o shell assumindo que algum remote vai estar fora do ar agora.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-06">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-06</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> O shell de uma aplicação carrega quatro remotes na inicialização, com as URLs escritas no código. Para publicar uma versão nova de um remote, o time precisa pedir um novo deploy do shell. Na semana passada, um remote fora do ar deixou a aplicação inteira em branco.</p>
+              <p class="te-instrucao">Qual mudança resolve os dois problemas?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Isso elimina o deploy independente, que era o objetivo da divisão; o problema volta a ser o monólito.">
+                  <span class="te-letter">A</span> Juntar os quatro remotes dentro do shell, para ter um único deploy, um único pipeline e um único ponto de falha, que fica mais fácil de monitorar e controlar.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="O manifesto tira o shell do caminho do deploy dos remotes, e o carregamento por rota com fallback isola a falha.">
+                  <span class="te-letter">B</span> Manifesto em runtime, carga por rota e fallback para o remote que falha.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Timeout maior só faz a tela demorar mais para quebrar; e o rebuild do shell continua obrigatório.">
+                  <span class="te-letter">C</span> Aumentar o timeout de carga dos remotes e manter as URLs no código.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Por que o manifesto de remotes deve ser servido sem cache longo?</p>
+                <span class="tf-hint">Pense no que muda a cada deploy →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">Porque ele aponta para a versão atual de cada remote e muda a cada deploy. Com cache longo, o usuário continua carregando a versão antiga mesmo depois da publicação.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-06">marcar dominado</button>
+      </article>
+
     </section>
 
     <!-- ===================== PARTE 03 ===================== -->
@@ -1007,6 +1472,30 @@ module.exports = withNativeFederation({
             <h4>Por que é importante</h4>
             <p>O acoplamento rígido de código em tempo de execução anula toda a justificativa de adotar micro frontends. A comunicação assíncrona por eventos é a salvaguarda que preserva a independência operacional das equipes.</p>
           </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>O contrato do evento mora num pacote só de tipos, versionado. Quem emite não sabe quem escuta; quem escuta confere a versão antes de usar o payload.</p>
+          <pre style="margin-top:10px"><code>// pacote @loja/eventos (só tipos, sem código de nenhum time)
+export type CartUpdatedV1 = { versao: 1; quantidade: number };
+
+// remote carrinho: emite
+window.dispatchEvent(new CustomEvent&lt;CartUpdatedV1&gt;('cart:updated', {
+  detail: { versao: 1, quantidade: 3 },
+}));
+
+// remote header: escuta
+window.addEventListener('cart:updated', (e) =&gt; {
+  const d = (e as CustomEvent&lt;CartUpdatedV1&gt;).detail;
+  if (d.versao !== 1) return;          // versão desconhecida: ignora em vez de quebrar
+  badge.textContent = String(d.quantidade);
+});
+
+// logout em todas as abas da mesma origem
+const canal = new BroadcastChannel('sessao');
+canal.postMessage({ tipo: 'logout' });
+canal.onmessage = (m) =&gt; { if (m.data.tipo === 'logout') location.assign('/login'); };</code></pre>
         </div>
 
         <details class="alem">
@@ -1125,11 +1614,788 @@ module.exports = withNativeFederation({
 
         <button class="done" type="button" data-k="mfe-04">marcar dominado</button>
       </article>
+
+      <article class="topic" id="mfe-07">
+        <div class="th">
+          <h3>Autenticação e estado compartilhado: o login acontece uma vez, no shell</h3>
+          <div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">segurança</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Num portal com cinco micro frontends, cada time integrou o login do Keycloak por conta própria. O usuário via o redirecionamento de login mais de uma vez ao navegar, cada remote guardava o token no <code>localStorage</code> com uma chave diferente, e o logout de um não derrubava a sessão dos outros. A correção concentrou o login no shell e passou aos remotes só uma biblioteca compartilhada com dois métodos: obter o token atual e obter os dados básicos do usuário.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Num sistema de micro frontends, a sessão tem um dono: o <b>shell</b>. Ele faz o login OIDC uma vez, guarda o token e renova quando precisa. Os remotes recebem um <b>contrato pequeno</b>, normalmente uma biblioteca compartilhada como singleton, para pedir o token atual e saber quem é o usuário. O mesmo vale para outros estados transversais (idioma, tema). O estado de negócio, como o conteúdo do carrinho, fica dentro do remote dono dele.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>A pulseira do evento.</b> Você mostra o documento uma vez, na entrada (o shell), e recebe uma pulseira. Cada palco (remote) só confere a pulseira; nenhum deles pede o documento de novo, e nenhum guarda a sua carteira.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>As primeiras arquiteturas de micro frontends repetiram o que cada SPA fazia sozinha: cada remote com o seu login. Outras tentaram resolver o compartilhamento com uma store global (Redux em <code>window</code>), o que acoplou todos os times ao formato daquele estado.</p>
+            <div class="repl"><b>Veio substituir:</b> o login feito por cada micro frontend e a store global com o estado de todo mundo.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>O shell faz o fluxo Authorization Code com PKCE no Keycloak e guarda o token de acesso em memória. Uma biblioteca, por exemplo <code>@loja/auth</code>, é declarada como <code>singleton</code> no <code>shared</code> de todos: assim shell e remotes usam a mesma instância. O shell grava o token nela; os remotes só leem. Cada API Spring valida o JWT de forma independente. Uma variante mais segura é o BFF: o token fica no servidor, e o navegador só tem um cookie <code>HttpOnly</code>.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="quem guarda o quê">
+          <text x="360" y="30" class="bt">quem guarda o quê</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b2"/><text x="95" y="96" class="bt">shell</text><text x="95" y="122" class="bs">login OIDC + PKCE</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">@loja/auth</text><text x="271.66666666666663" y="122" class="bs">singleton em memória</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">remotes</text><text x="448.3333333333333" y="122" class="bs">só pedem o token</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b3"/><text x="625" y="96" class="bt">APIs Spring</text><text x="625" y="122" class="bs">validam o JWT</text>
+          <text x="360" y="190" class="bs">estado de negócio (carrinho, filtros) fica dentro do remote dono</text>
+        </svg><figcaption>O shell é o único que faz login e renova o token; os remotes leem por um contrato pequeno; cada API confere o token sozinha</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Dar ao usuário um login só, um logout que vale para tudo e um único lugar para renovar o token; e evitar que cada time reimplemente autenticação do seu jeito.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Todos os remotes rodam na mesma origem. Um XSS no código de qualquer time consegue ler o que estiver no <code>localStorage</code> de todos. Quanto menos lugares guardam o token, e quanto menos ele fica exposto ao JavaScript, menor o estrago de uma falha.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>A biblioteca compartilhada é o contrato inteiro. O shell grava, os remotes leem. No backend, cada API Spring valida o token como resource server, como no tópico de Keycloak.</p>
+          <pre style="margin-top:10px"><code>// libs/auth/src/index.ts  (declarada como singleton no shared de todos)
+let tokenAtual: string | null = null;
+let usuarioAtual: { id: string; nome: string; papeis: string[] } | null = null;
+
+export const auth = {
+  // só o shell chama, depois do login e a cada renovação
+  definirSessao(token: string, usuario: typeof usuarioAtual) {
+    tokenAtual = token; usuarioAtual = usuario;
+  },
+  token(): string {
+    if (!tokenAtual) throw new Error('sem sessão');
+    return tokenAtual;
+  },
+  usuario() { return usuarioAtual; },
+};
+
+// remote pedidos
+import { auth } from '@loja/auth';
+const resp = await fetch('/api/pedidos', {
+  headers: { Authorization: `Bearer ${auth.token()}` },
+});
+
+# API de pedidos (Spring Boot): application.yml
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://localhost:8080/realms/loja</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">BFF: tirar o token do navegador</span></summary>
+          <div class="alem-body">
+            <p>No padrão Backend for Frontend, quem faz o login OIDC é um servidor (por exemplo, Spring Cloud Gateway com <code>oauth2Login</code>). O navegador recebe só um cookie de sessão <code>HttpOnly</code>, que o JavaScript não lê, e o BFF repassa o token às APIs. Isso reduz o estrago de um XSS em qualquer remote. O custo é mais um servidor no caminho de cada chamada. Os nomes das propriedades do Gateway mudaram entre versões recentes; confira a documentação da versão que você usa.</p>
+            <small class="alem-src">OAuth 2.0 for Browser-Based Apps (IETF, draft) e documentação do Spring Cloud Gateway</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> o Keycloak, os papéis no JWT e a configuração do resource server estão em <a href="conceitos-backend.html#g4">Keycloak</a>; identidade e acesso como governança estão em <a href="governanca-seguranca.html#c1">Identidade e Acesso</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Token no <code>localStorage</code>:</b> qualquer script da origem lê, inclusive o de um remote com XSS. Prefira memória, ou um BFF com cookie <code>HttpOnly</code>.</li>
+            <li><b>Login por remote:</b> gera vários redirecionamentos, sessões que não morrem juntas e lógica de renovação duplicada.</li>
+            <li><b>Store global com o estado de todos:</b> mudar o formato do estado de um time quebra os outros. Compartilhe só o transversal.</li>
+            <li><b>Confiar só no front:</b> esconder um botão por papel não é autorização. Cada API valida o token e o papel.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Autenticação e Estado Compartilhado</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Um dono da sessão</b>
+                  <p>O shell faz o login OIDC, guarda o token em memória e renova.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Contrato pequeno</b>
+                  <p>Os remotes recebem uma biblioteca singleton com o token e os dados do usuário, nada além disso.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Estado no dono</b>
+                  <p>Só o estado transversal é compartilhado; carrinho e filtros ficam no remote dono.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Se o shell já fez o login, as APIs podem confiar em qualquer chamada vinda da página? Não. A validação acontece em cada API, que confere a assinatura, o emissor, a audiência e os papéis do token. O front só decide o que mostrar.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Compartilhe identidade, nunca estado de negócio; e guarde o token no menor número possível de lugares.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-07">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-07</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Num portal com quatro micro frontends, cada um faz o próprio login no Keycloak e guarda o token no <code>localStorage</code>. Usuários reclamam de pedidos de login repetidos, e a segurança apontou o risco de XSS.</p>
+              <p class="te-instrucao">Qual desenho corrige os dois problemas?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Uma chave só reduz a repetição, mas o token continua legível por qualquer script da origem.">
+                  <span class="te-letter">A</span> Manter um login por remote, mas padronizar a mesma chave no localStorage para todos, assim o segundo remote encontra o token do primeiro e não pede login de novo.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Isso acopla os times ao formato da store e deixa o token exposto do mesmo jeito.">
+                  <span class="te-letter">B</span> Criar uma store global em window com o token e todo o estado dos remotes.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Um login só resolve a repetição; token fora do localStorage e validação na API reduzem o risco de XSS.">
+                  <span class="te-letter">C</span> Login só no shell, token em memória numa biblioteca singleton, e cada API validando o JWT.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Num sistema de micro frontends, quem deve fazer o login OIDC e por quê?</p>
+                <span class="tf-hint">Pense em quantos lugares guardam o token →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">O shell, uma vez só. Assim há um único lugar que guarda e renova o token, o logout vale para tudo, e os remotes só leem o token por um contrato pequeno.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-07">marcar dominado</button>
+      </article>
+
     </section>
 
     <!-- ===================== PARTE 04 ===================== -->
+    <!-- ===================== PARTE 04 ===================== -->
     <section class="part" id="p4">
-      <div class="ph"><span class="num">04</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Micro frontends só fazem sentido quando você sente o problema: monte dois remotes e um shell.</p></div></div>
+      <div class="ph"><span class="num">04</span><div><h2>Qualidade e operação</h2><p>Visual consistente, página rápida e deploy que dá para desfazer: o que separa uma demo de um sistema em produção.</p></div></div>
+
+      <article class="topic" id="mfe-08">
+        <div class="th">
+          <h3>Design system e isolamento de CSS: visual igual, estilos separados</h3>
+          <div class="badges"><span class="badge b-imp">importante</span><span class="badge b-ver">interface</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Dois times publicaram, na mesma semana, versões diferentes do Bootstrap dentro dos seus remotes. Ao entrar no checkout, os botões do catálogo mudavam de tamanho, porque o CSS global carregado por último vencia. A correção tirou o CSS global dos remotes: o shell passou a definir os tokens de cor e espaçamento, o design system virou um pacote versionado e cada remote escopou os próprios estilos.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Duas coisas diferentes precisam ser resolvidas juntas. A <b>consistência</b> vem de um design system publicado como pacote versionado: tokens (cores, espaçamentos, tipografia) e componentes. O <b>isolamento</b> vem de escopar o CSS de cada time, para que nada de um vaze para o outro. O único CSS global de propósito são os tokens, definidos pelo shell.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O manual de identidade visual de uma rede de franquias.</b> Toda loja usa as mesmas cores, a mesma fonte e o mesmo logo (os tokens). Mas cada franqueado arruma a sua loja por dentro, e a reforma de uma não muda a parede da loja vizinha (o CSS escopado).</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>Nas primeiras integrações, cada remote trazia a própria cópia do CSS do framework e do reset. Como o CSS é global por natureza, a ordem de carregamento decidia qual regra vencia, e ela mudava conforme a navegação do usuário.</p>
+            <div class="repl"><b>Veio substituir:</b> cada remote carregando a sua cópia do CSS global e sobrescrevendo, sem querer, o dos outros.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>O shell define os tokens como custom properties em <code>:root</code>. Custom properties são herdadas, inclusive para dentro do Shadow DOM, então todos os remotes usam os mesmos valores. Os componentes do design system vêm de um pacote compartilhado (singleton) ou como Web Components. Cada remote escopa o seu CSS: o encapsulamento emulado do Angular faz isso por padrão nos componentes; CSS Modules geram nomes únicos; um prefixo por time resolve o que sobra. <code>@layer</code> define a ordem das camadas, para que o resultado não dependa de quem carregou primeiro.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="o que é global e o que é de cada time">
+          <text x="360" y="30" class="bt">o que é global e o que é de cada time</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b2"/><text x="95" y="96" class="bt">shell</text><text x="95" y="122" class="bs">tokens em :root</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">design system</text><text x="271.66666666666663" y="122" class="bs">pacote versionado</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">remote A</text><text x="448.3333333333333" y="122" class="bs">CSS escopado</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b1"/><text x="625" y="96" class="bt">remote B</text><text x="625" y="122" class="bs">CSS escopado</text>
+          <text x="360" y="190" class="bs">@layer fixa a ordem: reset, design system, remotes</text>
+        </svg><figcaption>Só os tokens são globais; componentes vêm do design system; cada remote escopa os próprios estilos</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Deixar a aplicação com cara de um produto só, mesmo feita por vários times, sem que a mudança de estilo de um time quebre a tela de outro.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>O usuário não sabe que existem times. Para ele, botões diferentes em telas vizinhas são defeito. E vazamento de CSS é um dos bugs mais comuns e mais difíceis de rastrear em micro frontends, porque depende da ordem de navegação.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>O shell define os tokens e a ordem das camadas; o remote usa os tokens dentro da sua camada e com o seu prefixo.</p>
+          <pre style="margin-top:10px"><code>/* shell: a única coisa global de propósito */
+@layer reset, design-system, remotes;
+
+:root {
+  --cor-primaria: #bd93f9;
+  --cor-texto: #f8f8f2;
+  --espaco-2: 8px;
+  --raio: 6px;
+}
+
+/* remote checkout: tudo na camada dele e com o prefixo do time */
+@layer remotes {
+  .chk-botao {
+    background: var(--cor-primaria);
+    color: var(--cor-texto);
+    padding: var(--espaco-2);
+    border-radius: var(--raio);
+  }
+}</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Shadow DOM: isolamento total, com custo</span></summary>
+          <div class="alem-body">
+            <p>Um Web Component com Shadow DOM isola o CSS nos dois sentidos: nada entra, nada sai. Custom properties atravessam a fronteira, então os tokens continuam funcionando. O custo aparece em estilos globais que você quer que entrem (fontes, reset), em foco e formulários, e na integração com alguns frameworks. Use quando o remote é de fato uma ilha, como um widget de terceiro.</p>
+            <small class="alem-src">MDN Web Docs: Using shadow DOM e CSS Cascading and Inheritance Level 5 (@layer)</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> o desenho de contratos entre times, que vale também para o design system, está em <a href="../trilhas/arquitetura.html#a2">Arquitetura de Software</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>CSS global dentro do remote:</b> seletores como <code>button</code> ou <code>.card</code> afetam a página toda.</li>
+            <li><b>Design system copiado e colado:</b> cada time diverge em semanas. Publique como pacote versionado.</li>
+            <li><b>Major do design system sem coordenação:</b> remotes em versões diferentes mostram componentes diferentes na mesma tela. Planeje a migração.</li>
+            <li><b>Reset CSS em cada remote:</b> o reset carregado por último desfaz os estilos dos outros. O reset é do shell.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Design System e Isolamento de CSS</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Tokens globais</b>
+                  <p>Cores e espaçamentos como custom properties em :root, definidas pelo shell.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Componentes versionados</b>
+                  <p>O design system é um pacote; ninguém copia e cola.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Estilos escopados</b>
+                  <p>Encapsulamento do framework, CSS Modules ou prefixo, e @layer para fixar a ordem.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Para evitar vazamento de CSS, todo micro frontend deve usar Shadow DOM? Não. Shadow DOM isola bem, mas complica fontes, foco e integração com frameworks. Na maioria dos casos, encapsulamento do framework, CSS Modules ou prefixo por time já resolvem.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Global é só o que tem que ser igual em tudo (tokens). O resto pertence a algum time e fica escopado.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-08">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-08</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Ao navegar do catálogo para o checkout, os botões do catálogo mudam de tamanho. A investigação mostra que os dois remotes carregam versões diferentes do mesmo framework CSS, com seletores globais.</p>
+              <p class="te-instrucao">Qual é a correção de fundo?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Separa o que deve ser igual (tokens e componentes) do que é de cada time (estilos escopados), e acaba com a disputa por ordem.">
+                  <span class="te-letter">A</span> Tokens no shell, design system versionado e CSS escopado por remote.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Vence a disputa por um tempo, mas a briga por especificidade continua e piora a cada mudança.">
+                  <span class="te-letter">B</span> Aumentar a especificidade dos seletores do catálogo e marcar as regras críticas com !important, para que elas vençam qualquer CSS carregado depois pelo checkout.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="A ordem de carregamento depende da navegação; trocar a ordem só muda qual tela quebra.">
+                  <span class="te-letter">C</span> Carregar o CSS do catálogo sempre por último.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Num sistema de micro frontends, qual CSS deve ser global?</p>
+                <span class="tf-hint">Pense no que tem que ser igual em todas as telas →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">Só os tokens (cores, espaçamentos, tipografia), definidos pelo shell como custom properties. Componentes vêm do design system versionado, e o resto do CSS fica escopado em cada remote.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-08">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="mfe-09">
+        <div class="th">
+          <h3>Performance: o custo de dividir e como medir e cortar</h3>
+          <div class="badges"><span class="badge b-imp">importante</span><span class="badge b-ver">web vitals</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Depois da migração para micro frontends, o LCP da home piorou em celulares. O trace do DevTools mostrou uma cascata: o shell baixava o manifesto, depois o <code>remoteEntry.json</code> de cada remote, depois o módulo, e só então as dependências. Dois remotes ainda traziam cada um a sua cópia de uma biblioteca de datas. Com pré-carregamento do remote da home, compartilhamento da biblioteca e orçamento de tamanho no CI, a home voltou ao tempo de antes da migração.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Micro frontends quase sempre custam desempenho: há mais requisições, existe o risco de baixar a mesma dependência duas vezes, e um arquivo só é descoberto depois de outro, em cascata. O trabalho é <b>medir</b> com os Core Web Vitals (LCP, INP e CLS) e <b>cortar</b>: compartilhar o que é grande, pré-carregar o que a primeira tela precisa, adiar o resto e pôr um orçamento de tamanho por remote no CI.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Pedir comida de vários restaurantes.</b> Se cada restaurante só começa a preparar depois que o anterior entregou, o jantar demora a soma de todos. O app que avisa todos ao mesmo tempo (pré-carregamento) e junta as bebidas num pedido só (dependência compartilhada) faz tudo chegar quase junto.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>A promessa inicial dos micro frontends era organizacional, e o desempenho ficou em segundo plano. Com o Google usando Core Web Vitals como sinal de ranqueamento desde 2021, e com o INP substituindo o FID em março de 2024, o custo de dividir passou a aparecer em métricas que o negócio acompanha.</p>
+            <div class="repl"><b>Veio substituir:</b> a medição só na máquina do desenvolvedor e a ideia de que dividir o frontend é neutro para o usuário.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>A cascata típica é: shell → manifesto → <code>remoteEntry.json</code> → módulo do remote → dependências. Cada etapa só é descoberta quando a anterior termina. <code>&lt;link rel="modulepreload"&gt;</code> manda o navegador baixar um módulo antes de ele ser pedido; HTTP/2 permite muitas requisições na mesma conexão; arquivos com hash no nome podem ter cache longo e imutável; dependências grandes declaradas como <code>shared</code> são baixadas uma vez. O orçamento de tamanho falha o build quando um remote passa do limite.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="a cascata que atrasa a primeira tela">
+          <text x="360" y="30" class="bt">a cascata que atrasa a primeira tela</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b2"/><text x="95" y="96" class="bt">shell</text><text x="95" y="122" class="bs">HTML + JS</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">manifesto</text><text x="271.66666666666663" y="122" class="bs">URLs</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">remoteEntry</text><text x="448.3333333333333" y="122" class="bs">metadados</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b4"/><text x="625" y="96" class="bt">módulo</text><text x="625" y="122" class="bs">e dependências</text>
+          <text x="360" y="190" class="bs">meça LCP, INP e CLS em dados reais, não só no notebook do time</text>
+        </svg><figcaption>Cada arquivo só é descoberto depois do anterior; pré-carregar o que a primeira tela usa corta etapas da cascata</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Manter os ganhos organizacionais sem que o usuário pague com uma página mais lenta; e dar a cada time um limite claro de quanto peso ele pode adicionar.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Desempenho é recurso compartilhado: cada remote que cresce piora a página de todos, e nenhum time sozinho vê o total. Sem orçamento e medição, a página degrada aos poucos, um deploy de cada vez.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>No Angular, o orçamento fica no <code>angular.json</code> de cada remote e quebra o build quando passa do limite. Os arquivos com hash vão com cache longo; o que não tem hash (manifesto, <code>remoteEntry.json</code> num caminho fixo) vai sem cache.</p>
+          <pre style="margin-top:10px"><code>// angular.json, em projects.&lt;remote&gt;.architect.build.configurations.production
+"budgets": [
+  { "type": "initial", "maximumWarning": "300kB", "maximumError": "500kB" },
+  { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
+]
+
+&lt;!-- shell: index.html, pré-carregando o que a home usa --&gt;
+&lt;link rel="modulepreload" href="https://cdn.loja.com/catalogo/v42/vitrine.js"&gt;
+
+# cabeçalhos por tipo de arquivo
+/catalogo/v42/vitrine-3f9a1c.js   Cache-Control: public, max-age=31536000, immutable
+/federation.manifest.json         Cache-Control: no-cache</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Dados de campo contra dados de laboratório</span></summary>
+          <div class="alem-body">
+            <p>O Lighthouse mede numa máquina e numa rede simuladas (dados de laboratório). Os usuários reais, com celulares variados, aparecem nos dados de campo: o relatório CrUX do Chrome ou a biblioteca <code>web-vitals</code> enviando as métricas para a sua observabilidade. Em micro frontends, os dados de campo por rota mostram qual remote está pesando, coisa que o laboratório, rodando só a home, não mostra.</p>
+            <small class="alem-src">web.dev: Core Web Vitals, INP e a biblioteca web-vitals</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> cache e CDN como peça de arquitetura estão em <a href="../trilhas/system-design.html">System Design</a>; o compartilhamento de dependências está no tópico do <a href="#mfe-03">federation.config.js</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b><code>remoteEntry.json</code> num caminho fixo com cache longo:</b> o usuário fica preso na versão antiga. Ou o arquivo vai sem cache, ou fica numa pasta versionada.</li>
+            <li><b>Framework duplicado:</b> sem <code>singleton</code>, duas cópias de React ou Angular dobram o peso e ainda quebram em runtime.</li>
+            <li><b>Carregar todos os remotes na abertura:</b> a home paga por telas que o usuário talvez nunca abra.</li>
+            <li><b>Medir só na máquina do time:</b> notebook rápido e rede boa escondem o problema que aparece no celular do usuário.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Performance em Micro Frontends</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>O custo existe</b>
+                  <p>Mais requisições, cascata de descoberta e risco de dependência duplicada.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Medir</b>
+                  <p>LCP, INP e CLS, com dados de campo por rota, não só o Lighthouse local.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Cortar</b>
+                  <p>Compartilhar o que é grande, pré-carregar a primeira tela, adiar o resto e pôr orçamento no CI.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Micro frontends deixam a aplicação mais rápida porque cada parte é menor? Não. Cada parte é menor, mas a página junta todas, com mais requisições e o risco de duplicação. O ganho é organizacional; o desempenho precisa ser defendido de propósito.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Trate o peso da página como um orçamento compartilhado, com limite por time e medição no mundo real.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-09">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-09</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Depois da divisão em micro frontends, o LCP da home piorou. O trace mostra a sequência shell, manifesto, remoteEntry.json, módulo, e dois remotes baixando cada um a sua cópia da mesma biblioteca de gráficos.</p>
+              <p class="te-instrucao">Qual conjunto de medidas ataca a causa?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Elimina a cascata, mas também o deploy independente, que era o motivo da divisão.">
+                  <span class="te-letter">A</span> Juntar todos os remotes num bundle só para eliminar as requisições.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="O pré-carregamento corta a cascata, o compartilhamento elimina a cópia duplicada e o orçamento impede a volta do problema.">
+                  <span class="te-letter">B</span> Pré-carregar o remote da home, compartilhar a biblioteca e pôr orçamento de tamanho no CI.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Arquivos sem hash com cache longo prendem o usuário em versões antigas, e a duplicação continua.">
+                  <span class="te-letter">C</span> Aumentar o cache de todos os arquivos, inclusive o manifesto e o remoteEntry.json, para um ano, para que a segunda visita não baixe nada e a cascata desapareça.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Quais são as três Core Web Vitals atuais?</p>
+                <span class="tf-hint">Carregamento, resposta e estabilidade →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">LCP (Largest Contentful Paint, carregamento), INP (Interaction to Next Paint, resposta à interação, que substituiu o FID em março de 2024) e CLS (Cumulative Layout Shift, estabilidade visual).</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-09">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="mfe-10">
+        <div class="th">
+          <h3>Testes, versionamento e deploy independente: publicar sozinho sem quebrar o vizinho</h3>
+          <div class="badges"><span class="badge b-imp">importante</span><span class="badge b-ver">entrega contínua</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>O time de Checkout renomeou o módulo exposto de <code>./Component</code> para <code>./routes</code>. Os testes do próprio remote passaram, o deploy saiu numa terça à tarde, e o shell passou a mostrar o fallback de indisponível no checkout. Ninguém tinha testado o contrato entre os dois. A correção trouxe três mudanças: um teste de contrato no CI do Checkout, deploy em pasta versionada e promoção só pelo manifesto. Voltar à versão anterior passou a ser trocar uma linha.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Deploy independente só é seguro com duas garantias. A primeira é testar, no CI de cada time, o <b>contrato</b> com o resto: o que o remote expõe, os eventos que emite e as dependências compartilhadas. A segunda é publicar cada versão numa <b>pasta imutável</b> e promover trocando o manifesto. Voltar atrás é apontar o manifesto para a versão anterior, sem rebuild.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>A troca de uma peça num carro de corrida.</b> Antes de montar, a equipe confere se a peça nova encaixa no mesmo suporte (teste de contrato). A peça antiga fica no box (pasta versionada). Se a nova der problema na volta de teste, a troca de volta leva segundos (rollback pelo manifesto).</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>Com o deploy independente, os testes E2E feitos só no app integrado viraram gargalo: são lentos, instáveis e rodam tarde demais. A prática dos testes de contrato, já usada entre microsserviços, foi trazida para o frontend. A publicação em pastas imutáveis veio da mesma ideia das imagens de contêiner com tag: o artefato não muda depois de publicado.</p>
+            <div class="repl"><b>Veio substituir:</b> a bateria de E2E integrada como única garantia e o deploy que sobrescreve os arquivos da versão anterior.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>A pirâmide fica assim: testes unitários e de componente dentro do remote; um teste de contrato no CI do produtor, que confere que os módulos expostos e os tipos dos eventos continuam compatíveis; poucos E2E de fumaça no shell integrado, em homologação. O pipeline publica em <code>/checkout/v43/</code>, roda a fumaça contra essa versão e só então troca a linha do checkout no manifesto. Um canário é possível servindo manifestos diferentes para uma parte dos usuários.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="do build à promoção">
+          <text x="360" y="30" class="bt">do build à promoção</text>
+          <rect x="20" y="60" width="150" height="90" rx="10" class="b2"/><text x="95" y="96" class="bt">build</text><text x="95" y="122" class="bs">testes do remote</text>
+          <path d="M172,105 L192.66666666666666,105" class="lt"/><path d="M192.66666666666666,105 L184.66666666666666,101 L184.66666666666666,109 Z" class="ht"/>
+          <rect x="196.66666666666666" y="60" width="150" height="90" rx="10" class="b1"/><text x="271.66666666666663" y="96" class="bt">publica v43</text><text x="271.66666666666663" y="122" class="bs">pasta imutável</text>
+          <path d="M348.66666666666663,105 L369.3333333333333,105" class="lt"/><path d="M369.3333333333333,105 L361.3333333333333,101 L361.3333333333333,109 Z" class="ht"/>
+          <rect x="373.3333333333333" y="60" width="150" height="90" rx="10" class="b2"/><text x="448.3333333333333" y="96" class="bt">fumaça</text><text x="448.3333333333333" y="122" class="bs">shell + v43</text>
+          <path d="M525.3333333333333,105 L545.9999999999999,105" class="lt"/><path d="M545.9999999999999,105 L537.9999999999999,101 L537.9999999999999,109 Z" class="ht"/>
+          <rect x="550" y="60" width="150" height="90" rx="10" class="b3"/><text x="625" y="96" class="bt">manifesto</text><text x="625" y="122" class="bs">aponta para v43</text>
+          <text x="360" y="190" class="bs">rollback = manifesto aponta de novo para v42</text>
+        </svg><figcaption>Cada versão fica numa pasta que nunca muda; promover e voltar atrás é só trocar a URL no manifesto</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Permitir que cada time publique várias vezes por dia sem coordenação, com a segurança de que não quebrou o shell nem os vizinhos e de que pode voltar atrás em segundos.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Sem contrato testado, a independência vira sorte: a quebra aparece em produção, na tela de outro time. E sem rollback rápido, cada incidente dura o tempo de um novo build.</p>
+          </div>
+        </div>
+
+        <div class="blk" style="margin-top:18px">
+          <h4>Como usar</h4>
+          <p>No CI do time, a versão vai para uma pasta própria com cache imutável, passa pela fumaça e só depois o manifesto muda. O teste de contrato roda antes de tudo isso.</p>
+          <pre style="margin-top:10px"><code># CI do time Checkout
+npm ci &amp;&amp; npm test                       # unitários + contrato dos exposes e eventos
+npm run build
+
+aws s3 sync dist/checkout "s3://loja-mfe/checkout/v$BUILD/" \
+  --cache-control "public,max-age=31536000,immutable"
+
+npx playwright test --grep @fumaca-checkout   # shell de homologação apontando para v$BUILD
+
+# promoção: só o manifesto muda
+jq --arg u "https://cdn.loja.com/checkout/v$BUILD/remoteEntry.json" \
+   '.checkout = $u' manifesto.json &gt; novo.json
+aws s3 cp novo.json s3://loja-mfe/federation.manifest.json --cache-control "no-cache"
+
+# rollback: o mesmo comando com a versão anterior</code></pre>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Mudança que quebra o contrato: expanda, migre, contraia</span></summary>
+          <div class="alem-body">
+            <p>Para renomear um módulo exposto ou mudar o formato de um evento sem quebrar ninguém, siga três passos. Primeiro, exponha os dois (o antigo e o novo) ou emita as duas versões do evento. Depois, espere os consumidores migrarem. Só então remova o antigo. É a mesma técnica usada para mudar colunas de banco sem parada.</p>
+            <small class="alem-src">Martin Fowler: ParallelChange (expand and contract)</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> testes de contrato entre serviços e entrega contínua estão em <a href="../trilhas/arquitetura.html">Arquitetura de Software</a>; a ideia de artefato imutável está em <a href="conceitos-backend.html#h2">A Imagem Docker e Deploy</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Só E2E integrado:</b> lento, instável e tarde demais. A quebra de contrato precisa aparecer no CI de quem mudou.</li>
+            <li><b>Deploy que sobrescreve a pasta:</b> some a versão anterior, e o rollback vira um novo build.</li>
+            <li><b>Mudar o que é exposto sem transição:</b> renomear um módulo ou um campo de evento quebra o shell na hora. Expanda, migre, contraia.</li>
+            <li><b>Major de dependência compartilhada sem coordenação:</b> com <code>strictVersion</code>, um remote com uma major nova recusa carregar; sem ele, quebra em runtime. Planeje esse salto entre os times.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Testes, Versionamento e Deploy</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Contrato no CI do produtor</b>
+                  <p>Exposes, eventos e dependências compartilhadas conferidos antes do deploy.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Pasta imutável</b>
+                  <p>Cada versão publicada fica num caminho que nunca muda.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Promover e voltar pelo manifesto</b>
+                  <p>Promoção e rollback são a troca de uma URL, sem rebuild.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Se todos os testes do remote passaram, o deploy é seguro? Não. Os testes do remote não sabem o que o shell e os vizinhos esperam dele. Sem teste de contrato, renomear um módulo exposto passa no CI e quebra em produção.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Publicar não é o mesmo que promover: publique sempre numa pasta nova e promova só depois de conferir.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-mfe-10">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #mfe-10</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> O time de Checkout publica sobrescrevendo a pasta do remote na CDN. Num deploy, renomeou um módulo exposto; os testes do remote passaram, mas o shell quebrou, e voltar exigiu um novo build de 15 minutos.</p>
+              <p class="te-instrucao">Qual mudança no processo evita a quebra e acelera a volta?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Isso troca o deploy independente por coordenação manual, que era o gargalo que se queria evitar.">
+                  <span class="te-letter">A</span> Exigir que todos os times revisem e aprovem cada deploy do Checkout numa reunião semanal de release, para que ninguém seja pego de surpresa por uma mudança.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Pega o problema, mas é lenta e instável, e não resolve a demora do rollback.">
+                  <span class="te-letter">B</span> Rodar a bateria completa de E2E de todos os times a cada deploy.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="O contrato pega a quebra antes do deploy, e a pasta versionada faz o rollback ser a troca de uma URL.">
+                  <span class="te-letter">C</span> Teste de contrato no CI, pasta versionada e promoção pelo manifesto.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Como fazer rollback de um micro frontend em segundos?</p>
+                <span class="tf-hint">Pense em onde a versão anterior está →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">Publicando cada versão numa pasta imutável e promovendo pela troca da URL no manifesto. Voltar é apontar o manifesto para a pasta da versão anterior, que continua lá, sem novo build.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="mfe-10">marcar dominado</button>
+      </article>
+    </section>
+
+    <!-- ===================== PARTE 05 ===================== -->
+    <section class="part" id="p5">
+      <div class="ph"><span class="num">05</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Micro frontends só fazem sentido quando você sente o problema: monte dois remotes e um shell.</p></div></div>
 
       <article class="topic" id="mfe-aprender">
         <div class="th"><h3>O ciclo, as fontes e como praticar</h3><div class="badges"><span class="badge b-ess">método</span></div></div>

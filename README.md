@@ -32,7 +32,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | — | [Governança e Segurança de TI](cadernos/governanca-seguranca.html) | Governança, risco, controles, IAM, privacidade, desenvolvimento seguro, incidentes e continuidade |
 | — | [Finanças e investimentos](cadernos/financas-investimentos.html) | Orçamento, objetivos, reserva, renda fixa e variável, plano educacional em três fases, aportes, custos e fontes oficiais; sem carteira recomendada |
 | — | [Python para quem vem de Java](cadernos/python-para-java.html) | Transição prática: ambiente, tipagem, Pydantic, FastAPI, pytest e a ponte para IA e agentes |
-| — | [Micro Frontends & Native Federation](cadernos/micro-frontends.html) | Arquitetura vertical, ESM nativo, W3C Import Maps, federation.config.js e barramento desacoplado |
+| — | [Micro Frontends & Native Federation](cadernos/micro-frontends.html) | Quando dividir, estratégias de composição, Native Federation, shell resiliente, login no shell, eventos, design system, performance, testes e deploy |
 
 ### 🛠️ Laboratório & Prática (`lab/`)
 | # | Documento | Foco |

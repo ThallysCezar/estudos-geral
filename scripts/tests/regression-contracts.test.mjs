@@ -50,6 +50,7 @@ const DOCUMENTOS_ESPERADOS = [
   'cadernos/governanca-seguranca.html',
   'cadernos/financas-investimentos.html',
   'cadernos/python-para-java.html',
+  'cadernos/micro-frontends.html',
   'lab/projetos.html',
   'ferramentas/pomodoro.html'
 ];

@@ -3735,6 +3735,357 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
           </div>
         <button class="done" type="button" data-k="g3">marcar dominado</button>
       </article>
+
+      <article class="topic" id="g4">
+        <div class="th">
+          <h3>Keycloak: o Identity Provider corporativo (Realms, Clients, Roles e Tokens)</h3>
+          <div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">IAM corporativo</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma empresa com 12 microsserviços mantinha tabelas locais de tb_usuario com hash BCrypt em cada banco. Uma alteração de senha forçada por vazamento exigia sincronizar 12 bancos de dados; a revogação de acesso de um funcionário demitido demorava 48 horas porque dependia de scripts manuais. A centralização no Keycloak transformou os 12 serviços em Resource Servers stateless que apenas validam a assinatura RSA/EdDSA do Access Token via chave pública (JWKS). O tempo de revogação de sessão caiu de 48 horas para 0 segundos via backchannel logout e refresh tokens curtos de 5 minutos.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Keycloak é um servidor de gerenciamento de identidade e acesso (IAM) open source mantido pela Red Hat. Ele atua como Identity Provider (IdP) centralizado, entregando Single Sign-On (SSO), autenticação multifator (MFA), federação de usuários e emissão de tokens padronizados em OpenID Connect e OAuth 2.0. Em vez de sua aplicação gerenciar senhas e fluxos de login, ela delega essa responsabilidade ao Keycloak e valida apenas tokens criptográficos na borda.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O Passaporte e os Vistos Consulares.</b> Em vez de cada país (serviço) manter um arquivo secreto com seus dados de nascimento e investigar seu histórico na fronteira, você apresenta um passaporte oficial emitido pela Polícia Federal (Keycloak). A autoridade carimba e assina digitalmente o documento; qualquer país do mundo pode verificar o selo holográfico (assinatura criptográfica do JWT) e aceitar sua entrada instantaneamente, sem nunca ter acesso aos registros internos do cartório de origem.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Como surgiu</h4>
+            <p>Antes de servidores dedicados de IAM, cada aplicação web construía seu próprio formulário de login, tabela de credenciais, recuperação de senha por e-mail e controle de sessão. Conforme a arquitetura evoluiu para centenas de APIs e SPAs, manter identidades dispersas tornou-se inviável e inseguro.</p>
+            <div class="repl"><b>Veio substituir:</b> tabelas proprietárias de credenciais espalhadas por bancos relacionais distintos e integrações de login caseiras que misturavam identidade de negócio com segurança da informação.</div>
+          </div>
+          <div>
+            <h4>O mecanismo</h4>
+            <p>O Keycloak gerencia Realms (espaços isolados), Clients (aplicações registradas), Roles (papéis globais ou de cliente) e Users. Ao autenticar, ele emite três tokens: ID Token (identidade do usuário para o front), Access Token (permissões para as APIs) e Refresh Token (renovação). As APIs não consultam o Keycloak a cada request: baixam o conjunto de chaves públicas via JWKS e validam a assinatura do JWT offline na memória.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Keycloak como Identity Provider Corporativo">
+          <rect x="16" y="26" width="126" height="34" rx="8" class="b2"/><text x="79" y="48" class="bs">Usuário (Browser)</text>
+          <rect x="190" y="26" width="138" height="34" rx="8" class="b1"/><text x="259" y="48" class="bs">SPA (Public Client)</text>
+          <rect x="376" y="26" width="156" height="34" rx="8" class="b4"/><text x="454" y="48" class="bs">Keycloak (Realm IdP)</text>
+          <rect x="580" y="26" width="126" height="34" rx="8" class="b1"/><text x="643" y="48" class="bs">Resource Server</text>
+          <path d="M142,43 L188,43" class="l"/><path d="M190,43 L182,39 L182,47 Z" class="h"/><text x="165" y="20" class="bs">1</text>
+          <text x="360" y="86" class="bs">2. Redireciona para login OIDC com code_challenge (PKCE)</text>
+          <path d="M259,60 C259,92 376,92 450,62" class="lt"/><path d="M454,60 L445,62 L448,69 Z" class="ht"/>
+          <text x="360" y="116" class="bs">3. Autentica usuário (MFA / SSO) e emite Authorization Code efêmero</text>
+          <text x="360" y="146" class="bs">4. SPA envia Code + code_verifier e recebe Access/ID/Refresh Token</text>
+          <path d="M454,76 C376,126 262,126 260,80" class="lb"/><path d="M259,78 L262,86 L268,82 Z" class="hb"/>
+          <text x="360" y="176" class="bs">5. Requisição com Bearer Access Token (JWT curto)</text>
+          <path d="M328,43 L578,43" class="lt"/><path d="M580,43 L572,39 L572,47 Z" class="ht"/>
+          <text x="360" y="206" class="bt">6. Resource Server valida assinatura offline via chaves JWKS em cache (CPU pura)</text>
+        </svg><figcaption>Fluxo de autenticação centralizada com Keycloak: delegação OIDC, tokens assinados e validação offline via JWKS</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Prover Single Sign-On corporativo (login único para múltiplos sistemas), unificar a rotação de credenciais, aplicar políticas de MFA globais e abstrair a complexidade de tokens JWT para a engenharia de software.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Mais de 80% das violações de segurança corporativa exploram credenciais fracas ou acessos órfãos de ex-colaboradores. O Keycloak permite que uma única ação de desativação corte o acesso do indivíduo a todos os sistemas da empresa imediatamente.</p>
+          </div>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Anatomia dos Tokens e a Troca Segura (RFC 8693 &amp; JWKS caching)</span></summary>
+          <div class="alem-body">
+            <p>A tríade de tokens cumpre papéis estritamente separados: o <code>id_token</code> carrega perfil do usuário (<code>name</code>, <code>email</code>, <code>sub</code>) para a interface e nunca deve ser enviado como Bearer no header de APIs; o <code>access_token</code> transporta escopos e permissões em JWT com tempo de vida efêmero (1 a 5 minutos); o <code>refresh_token</code> reside protegido para obter novos pares sem reautenticar o usuário. No backend (Spring Security), a validação offline é viabilizada pelo cache local do endpoint <code>/protocol/openid-connect/certs</code> (JWKS), verificando a assinatura matemática RSA/EdDSA em frações de milissegundo por CPU sem tráfego de rede.</p>
+            <small class="alem-src">RFC 7519 (JSON Web Token), RFC 8693 (OAuth 2.0 Token Exchange) &amp; OpenID Connect Core 1.0</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> a governança corporativa de identidades e privilégio mínimo está em <a href="governanca-seguranca.html#c1">Identidade e Acesso</a>; a configuração de Resource Server stateless está em <a href="../trilhas/spring.html#f5">Spring Security</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Usar o Realm 'master' para regras de negócio:</b> o realm master existe exclusivamente para administrar o Keycloak. Crie sempre um realm dedicado para cada ambiente e produto.</li>
+            <li><b>Configurar SPA como Confidential Client:</b> Single Page Applications rodam no navegador e não conseguem ocultar um client_secret; devem ser configuradas como Public Client com PKCE obrigatório.</li>
+            <li><b>Ignorar a validação de Audience (aud):</b> tokens emitidos para o serviço de pagamentos podem ser reenviados ao serviço de relatórios se este não conferir o claim aud.</li>
+            <li><b>Tokens gigantes inchados com centenas de Roles:</b> injetar todas as permissões no JWT infla o header HTTP acima de 8KB, quebrando proxies e balanceadores (HTTP 431).</li>
+            <li><b>Refresh Token sem rotação:</b> não habilitar a rotação de refresh token permite que um token interceptado seja usado indefinidamente.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Keycloak como IdP Corporativo</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>IdP Centralizado vs APIs Stateless</b>
+                  <p>A aplicação delega o login ao Keycloak e atua apenas como Resource Server, validando tokens assinados via chave pública.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>Papéis de Realm vs Client</b>
+                  <p>Realm isola o namespace de usuários e configurações; Client é o registro individual de cada aplicação ou serviço consumidor.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Chaves JWKS e Validação Offline</b>
+                  <p>O backend faz cache do conjunto de chaves públicas (/certs) e confere a integridade criptográfica localmente em CPU sem overhead de rede.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>O Resource Server precisa consultar o Keycloak a cada requisição REST recebida? Não! Ele faz o download das chaves públicas (JWKS) uma única vez com cache e valida a assinatura criptográfica do JWT localmente na CPU em frações de milissegundo.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>O Keycloak emite a verdade criptográfica; as APIs apenas verificam o carimbo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-cb-g4">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #g4</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Uma equipe configurou uma Single Page Application em React para autenticar usuários via Keycloak. Durante o processo de homologação, o time gerou um client_secret no console do Keycloak e embutiu essa credencial nas variáveis de ambiente do build do React, configurando o cliente como 'Confidential'.</p>
+              <p class="te-instrucao">Qual é a falha arquitetural cometida e qual a configuração adequada?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O navegador não se conecta diretamente a bancos de dados de IdPs e mTLS em SPAs é impraticável no modelo web público comum.">
+                  <span class="te-letter">A</span> SPAs demandam mTLS direto entre o navegador e o banco de dados do Keycloak para que o client_secret não trafegue em chamadas de inspeção de claims no protocolo OpenID Connect.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O código frontend é executado na máquina do usuário e inspecionável no DevTools. SPAs devem ser Public Clients com PKCE e sem segredos embutidos.">
+                  <span class="te-letter">B</span> O client_secret fica exposto publicamente no código do bundle no navegador; a SPA deve ser Public Client utilizando Authorization Code com PKCE sem secret.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. RS256 é o algoritmo padrão do Keycloak suportado por todos os navegadores e clientes REST modernos sem restrições.">
+                  <span class="te-letter">C</span> O Keycloak bloqueia qualquer requisição HTTP originada de navegadores modernos caso o cabeçalho Authorization contenha assinaturas baseadas no algoritmo RSA SHA-256.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Qual a diferença de uso entre o Access Token e o ID Token emitidos pelo Keycloak em um fluxo OIDC?</p>
+                <span class="tf-hint">Pense em autorização para consumir APIs versus identificação do usuário na interface →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta">O <strong>Access Token</strong> concede autorização com escopos e roles para consumo de APIs (Resource Servers), trafegando no header Authorization Bearer.<br>O <strong>ID Token</strong> destina-se exclusivamente à interface cliente para exibir dados de perfil do usuário (nome, e-mail), nunca devendo ser utilizado para autorizar APIs.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="g4">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="g5">
+        <div class="th">
+          <h3>Multi-tenancy e Federação de Identidade no Keycloak: Realm-per-tenant, Organizações e LDAP</h3>
+          <div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-prof">arquitetura</span></div>
+        </div>
+
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma plataforma SaaS B2B de gestão hospitalar começou criando um Realm no Keycloak para cada novo cliente cadastrado. Ao atingir 1.500 tenants, a instância do Keycloak entrou em contenção severa de memória, as rotinas de cache do cluster Infinispan colapsaram com pausas de Garbage Collector de 12 segundos e o tempo de boot subiu para 25 minutos. A equipe migrou para uma arquitetura com Keycloak Organizations e Client-per-tenant em Realm compartilhado, reduzindo o consumo de memória de 16 GB para 2 GB e suportando provedores corporativos dedicados por domínio de e-mail.</p>
+        </div>
+
+        <p class="direto"><b>Direto:</b> Multi-tenancy no Keycloak é a capacidade de hospedar múltiplos clientes, empresas ou partições lógicas na mesma infraestrutura de autenticação, isolando usuários, sessões e permissões. As três abordagens principais são: Realm-per-tenant, que entrega isolamento criptográfico e administrativo total com alta sobrecarga de memória; Client-per-tenant, que compartilha o diretório sob o mesmo realm; e Organizações, modelo corporativo que particiona empresas sob demanda.</p>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O Condomínio Fechado vs o Prédio Comercial.</b> Realm-per-tenant é construir uma portaria, guarita e equipe de segurança inteira para cada casa isolada do bairro: isolamento total, mas custo e desperdício astronômicos. Client-per-tenant é um prédio comercial com portaria única onde cada andar é uma empresa diferente: segurança eficiente e custo rateado. Keycloak Organizations é permitir que cada andar mantenha seu próprio crachá corporativo conectado à matriz, sem duplicar a estrutura do prédio.</p>
+        </div>
+
+        <div class="duo o">
+          <div>
+            <h4>Topologias de Multi-tenancy</h4>
+            <p>No Realm-per-tenant, cada cliente ganha seu próprio Realm com chaves RSA independentes e URL própria (/realms/empresa-a). No Client-per-tenant, todos compartilham o mesmo diretório de usuários e a mesma chave de assinatura no mesmo Realm. No modelo de Organizações (Keycloak moderno), usuários são agrupados por domínio corporativo dentro do mesmo Realm sem colisão de dados.</p>
+            <div class="repl"><b>Veio substituir:</b> instâncias dedicadas de servidores de autenticação por cliente corporativo e código proprietário de segregação de inquilinos em tabelas SQL.</div>
+          </div>
+          <div>
+            <h4>User Federation vs Identity Brokering</h4>
+            <p>User Federation conecta o Keycloak a repositórios legados de credenciais (Active Directory ou OpenLDAP), delegando a validação de senhas sem copiá-las. Identity Brokering transforma o Keycloak em proxy federado: o usuário clica em 'Entrar com Okta/Azure AD', autentica-se no provedor externo via SAML ou OIDC e ingressa na aplicação com sessão corporativa unificada.</p>
+          </div>
+        </div>
+
+        <figure class="dg"><svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Topologias de Multi-tenancy no Keycloak">
+          <rect x="20" y="20" width="310" height="180" rx="12" class="b3"/>
+          <text x="175" y="42" class="bt">Realm-per-tenant (Isolamento Criptográfico)</text>
+          <rect x="36" y="58" width="130" height="32" rx="6" class="b5"/><text x="101" y="78" class="bs">Realm Alfa (RSA-1)</text>
+          <rect x="184" y="58" width="130" height="32" rx="6" class="b5"/><text x="249" y="78" class="bs">Realm Beta (RSA-2)</text>
+          <text x="175" y="118" class="bs">Caches Infinispan e metadados duplicados</text>
+          <text x="175" y="142" class="bs">Isolamento total de base e administradores</text>
+          <text x="175" y="174" class="bt">Alto consumo de Heap JVM (dezenas a centenas)</text>
+
+          <rect x="390" y="20" width="310" height="180" rx="12" class="b1"/>
+          <text x="545" y="42" class="bt">Keycloak Organizations (Escala B2B)</text>
+          <rect x="406" y="58" width="278" height="32" rx="6" class="b2"/><text x="545" y="78" class="bs">Realm Compartilhado SaaS (Cache Único)</text>
+          <rect x="406" y="100" width="132" height="30" rx="6" class="b4"/><text x="472" y="120" class="bs">Org Alfa (@alfa.com)</text>
+          <rect x="552" y="100" width="132" height="30" rx="6" class="b4"/><text x="618" y="120" class="bs">Org Beta (@beta.com)</text>
+          <text x="545" y="152" class="bs">Identity Brokering e LDAP particionados por tenant</text>
+          <text x="545" y="174" class="bt">Memória leve (2 GB para 1.500 tenants corporativos)</text>
+        </svg><figcaption>Comparativo de topologias: Realm-per-tenant (ilhas isoladas) vs Keycloak Organizations (realm compartilhado com federação B2B)</figcaption></figure>
+
+        <div class="duo">
+          <div>
+            <h4>Para que serve</h4>
+            <p>Permitir que plataformas SaaS atendam clientes corporativos com requisitos distintos de autenticação, integrando Single Sign-On via Active Directory de cada cliente e mantendo isolamento de permissões sem duplicar infraestrutura.</p>
+          </div>
+          <div>
+            <h4>Por que é importante</h4>
+            <p>Erros na escolha da topologia de multi-tenancy geram colapso de memória da JVM por exaustão do Infinispan ou vazamento catastrófico de dados entre clientes concorrentes por compartilhamento indevido de escopo.</p>
+          </div>
+        </div>
+
+        <details class="alem">
+          <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">UserStorageProvider SPI e Arquitetura Quarkus</span></summary>
+          <div class="alem-body">
+            <p>Quando o repositório legado de identidades não é LDAP nem Active Directory (por exemplo, um webservice proprietário ou base legada criptografada), o Keycloak permite estender seu motor criando um provedor customizado através da Service Provider Interface (SPI) <code>UserStorageProviderFactory</code> em Java. Além disso, a substituição da base WildFly pelo runtime Quarkus no Keycloak moderno reduziu o tempo de inicialização a frio em até 80% e cortou o consumo de memória heap pela metade, viabilizando escalabilidade elástica em Kubernetes sob alto volume de requisições de autenticação.</p>
+            <small class="alem-src">Keycloak Server Developer Guide &amp; Quarkus High-Performance Distribution</small>
+          </div>
+        </details>
+
+        <div class="ver">
+          <b>onde a teoria mora:</b> a segregação de banco de dados e arquitetura de dados multi-tenant está em <a href="conceitos-backend.html#b1">Modelagem de Banco</a>; a gestão corporativa de identidades e auditoria está em <a href="governanca-seguranca.html#c1">Identidade e Acesso</a>.
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Explosão de Realms sem monitorar Infinispan:</b> criar centenas de realms satura as caches distribuídas e a tabela de metadados da JVM, provocando congelamentos por GC pauses.</li>
+            <li><b>Sincronização full de LDAP em horário de pico:</b> sincronizações periódicas completas de dezenas de milhares de usuários sobrecarregam rede e CPU; configure autenticação sob demanda ou sincronização incremental.</li>
+            <li><b>Mesclar usuários B2B no mesmo Realm sem isolamento de grupos:</b> gera risco de colisão de usernames (admin@empresa) e compartilhamento indevido de roles globais entre competidores.</li>
+            <li><b>Ignorar logout federado (Backchannel Logout):</b> deslogar da aplicação sem disparar a terminação de sessão no IdP externo mantém o acesso aberto para tokens subsequentes.</li>
+          </ul>
+        </div>
+
+        <div class="topico-fechamento">
+          <div class="topico-revisao">
+            <div class="tr-header">
+              <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+              <h4 class="tr-title">Síntese de Fixação: Multi-tenancy e Federação de Identidade</h4>
+            </div>
+            <div class="tr-grid">
+              <div class="tr-item">
+                <span class="tr-dot teal"></span>
+                <div class="tr-corpo">
+                  <b>Topologias de Segregação</b>
+                  <p>Realm-per-tenant entrega isolamento criptográfico ao custo de JVM; Organizações viabilizam escala B2B leve dentro do mesmo namespace.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot purple"></span>
+                <div class="tr-corpo">
+                  <b>User Federation com LDAP/AD</b>
+                  <p>Sincroniza metadados e grupos, mas delega a checagem de senhas ao diretório de origem sem duplicar senhas.</p>
+                </div>
+              </div>
+              <div class="tr-item">
+                <span class="tr-dot rose"></span>
+                <div class="tr-corpo">
+                  <b>Identity Brokering Corporativo</b>
+                  <p>O Keycloak atua como intermediário SAML/OIDC conectando provedores externos (Azure AD, Okta) ao ecossistema da aplicação.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tr-takeaway">
+              <div class="tr-takeaway-item alert">
+                <span class="tr-icon">⚠️</span>
+                <div>
+                  <b>Pegadinha de Entrevista:</b>
+                  <p>Na federação de usuários via LDAP, o Keycloak copia e armazena os hashes de senha dos usuários no banco de dados local? Não! O Keycloak delega a validação da credencial diretamente ao servidor LDAP em tempo de execução, garantindo que as políticas de senha corporativas da empresa permaneçam centralizadas.</p>
+                </div>
+              </div>
+              <div class="tr-takeaway-item tip">
+                <span class="tr-icon">💡</span>
+                <div>
+                  <b>Modelo Mental de Decisão Técnica:</b>
+                  <p>Para poucos clientes com conformidade estrita, use Realm-per-tenant; para centenas de tenants SaaS B2B, use Keycloak Organizations.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topico-exercicio" data-exercise-id="ex-cb-g5">
+            <div class="te-header">
+              <div class="te-badge">
+                <span class="te-icon">🎮</span>
+                <span>DESAFIO PRÁTICO DE FIXAÇÃO #g5</span>
+              </div>
+              <div class="te-reward">
+                <span class="te-xp-badge">⭐ +50 XP</span>
+                <span class="te-status">Aguardando resposta</span>
+              </div>
+            </div>
+            <div class="te-body">
+              <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Uma startup SaaS corporativa com 800 empresas clientes implementou Realm-per-tenant no Keycloak. O time de operações relata lentidão crítica no boot da aplicação (mais de 20 minutos) e alertas constantes de esgotamento de memória no cluster de cache Infinispan.</p>
+              <p class="te-instrucao">Qual é a melhor abordagem técnica para corrigir o problema preservando a integração SSO de cada cliente?</p>
+              <div class="te-options">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Desativar caches transfere uma sobrecarga brutal ao banco de dados relacional, derrubando a infraestrutura sob tráfego de produção.">
+                  <span class="te-letter">A</span> Desativar integralmente o mecanismo de cache distribuído Infinispan e forçar todas as consultas de validação de tokens a lerem diretamente tabelas relacionais do banco SQL a cada requisição.
+                </button>
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O modelo de Organizações unifica o realm e as caches do Infinispan, reduzindo drasticamente o consumo de memória enquanto atende federação B2B.">
+                  <span class="te-letter">B</span> Migrar para o recurso Keycloak Organizations em um realm compartilhado, particionando provedores externos e políticas por domínio de e-mail corporativo.
+                </button>
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas posterga o problema e agrava as pausas de Garbage Collector, sem resolver o crescimento insustentável de metadados por realm.">
+                  <span class="te-letter">C</span> Aumentar a memória heap da JVM para 64 GB em cada instância sem alterar a arquitetura de particionamento de realms existente no cluster.
+                </button>
+              </div>
+              <div class="te-feedback" hidden></div>
+            </div>
+          </div>
+
+          <div class="topico-flashcard">
+            <div class="tf-card">
+              <div class="tf-face tf-front">
+                <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                <p class="tf-pergunta">Qual a diferença funcional entre User Federation e Identity Brokering no Keycloak?</p>
+                <span class="tf-hint">Diferencie consulta a banco de credenciais (ex: LDAP) de delegação de autenticação a outro IdP (ex: Okta) →</span>
+              </div>
+              <div class="tf-face tf-back">
+                <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                <p class="tf-resposta"><strong>User Federation</strong> consulta repositórios de credenciais pré-existentes (como LDAP ou Active Directory) para validar usuários diretamente no Keycloak.<br><strong>Identity Brokering</strong> atua como proxy delegando o fluxo completo de autenticação a um Identity Provider externo (como SAML ou Azure AD/Okta), recebendo o usuário já autenticado.</p>
+                <span class="tf-hint">← Toque para voltar à pergunta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="done" type="button" data-k="g5">marcar dominado</button>
+      </article>
     </section>
 
     <!-- ========================= PARTE 08 ========================= -->

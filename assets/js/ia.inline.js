@@ -562,6 +562,17 @@ var DATA = [
     cs: "var(--teal-s)",
     items: [
       {
+        id: "t7-mercado",
+        t: "IA no Mercado Corporativo",
+        x: "como o mercado realmente usa hoje",
+        oq: "A anatomia de sistemas reais com IA em produção: RAG corporativo híbrido, fronteira de segurança no tool calling, servidor MCP, multiagentes com harness, governança human-in-the-loop e observabilidade com OpenTelemetry.",
+        ps: "Superar a 'paralisia de tutoriais' e construir arquiteturas alinhadas com as práticas que empresas maduras contratam.",
+        sub: "Substituiu o modelo ingênuo de 'chamar API da OpenAI com texto puro' por microsserviços auditáveis e determinísticos.",
+        pq: "IA é componente probabilístico rodando sob políticas determinísticas; produção exige isolamento de tenant, controle de loops e barreiras de confirmação.",
+        ex: "RAG híbrido (pgvector + BM25) com re-ranker; Spring AI com @Tool validado no backend; servidor MCP com gateway corporativo.",
+        alem: "Antes de colocar um LLM em qualquer lugar, prove que um if, uma regex ou uma query SQL não resolvem com 0ms e R$ 0."
+      },
+      {
         id: "t7-ciclo",
         t: "Do Zero ao Deploy",
         x: "o ciclo de um projeto",

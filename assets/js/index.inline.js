@@ -10,10 +10,10 @@ var SEM=[
   slot:"seg",passado:"na segunda passada",
   opcoes:[
     {f:"trilhas/java.html",nome:"Java (7 Pilares)",tag:"Teoria & Runtime",nota:"Java 21 Moderno: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência."},
-    {f:"lab/projetos.html",nome:"Laboratório de Projetos",tag:"Prática & Bancada",nota:"Prática com a mão na massa: 19 projetos em seis oficinas e 18 aquecimentos locais de código (R$ 0 obrigatório)."}
+    {f:"lab/projetos.html",nome:"Laboratório de Projetos",tag:"Prática & Bancada",nota:"Prática com a mão na massa: 22 projetos em seis oficinas e 18 aquecimentos locais de código (R$ 0 obrigatório)."}
   ],
   n1:"Plataforma e runtime: valores, referências, generics, coleções, falhas, JDBC sem ORM, concorrência e JVM.",
-  n2:"Bancada prática de projetos: 19 projetos em seis oficinas e 18 aquecimentos de código.",
+  n2:"Bancada prática de projetos: 22 projetos em seis oficinas e 18 aquecimentos de código.",
   nota:"Comece a semana com Java: escolha entre os 7 Pilares de teoria e runtime ou a bancada prática de projetos."},
  {sig:"ter",tema:"Spring e Mensageria",cor:"var(--purple)",doc:"trilhas/spring.html",label:"Spring Boot 3",ini:"19:30",fim:"22:30",
   slot:"ter",passado:"na terça passada",

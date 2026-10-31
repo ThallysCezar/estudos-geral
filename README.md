@@ -18,7 +18,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | 05 | [Nuvem Multicloud](trilhas/nuvem.html) | 51 nós | 48 tópicos | Nuvem agnóstica (AWS/Azure/GCP), VPC/CIDR, IAM e FinOps |
 | 06 | [Mensageria & RabbitMQ](trilhas/mensageria.html) | 76 nós | 35 tópicos | AMQP, ack manual, DLQ, Outbox Pattern e Kafka |
 | 07 | [System Design](trilhas/system-design.html) | 67 nós | 45 tópicos | 17 Sistemas reais (YouTube, Spotify, Uber, etc.), sharding e LLM serving |
-| 08 | [Inteligência Artificial & AI Eng](trilhas/ia.html) | 28 nós | 33 tópicos | Transformers, RoPE, Speculative Decoding, RAG Híbrido, Multi-Agente e Evals |
+| 08 | [Inteligência Artificial & AI Eng](trilhas/ia.html) | 50 nós | 50 tópicos | Transformers, Reasoning Models, Speculative Decoding, GraphRAG, MCP e Evals |
 
 ### 📚 Cadernos de Apoio & Fundamentos (`cadernos/`)
 | # | Documento | Foco |

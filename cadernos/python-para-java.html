@@ -1279,7 +1279,7 @@ def avisar(n: Notificador, p: Pedido) -> None:
           <div><h4>Para que serve</h4><p>Validar tudo o que entra (corpo de pedido, resposta do LLM, configuração) num lugar só, e gerar schemas sem escrever JSON à mão.</p></div>
           <div><h4>Por que é importante</h4><p>Saída estruturada e tool calling, dois temas centrais das vagas de AI Engineer, são feitos com modelos Pydantic em quase todas as bibliotecas Python. É a ponte direta entre o seu código e o LLM.</p></div>
         </div>
-        <div class="ver"><b>a ponte com o Java</b>Bean Validation (<code>@NotNull</code>, <code>@Min</code>) ↔ <code>Field(...)</code> e tipos; DTO ↔ <code>BaseModel</code>; <code>@ConfigurationProperties</code> ↔ <code>BaseSettings</code>; Jackson ↔ <code>model_validate_json</code>/<code>model_dump_json</code>; <code>.entity(Classe.class)</code> do Spring AI ↔ modelo Pydantic na saída estruturada.</div>
+        <div class="ver"><b>a ponte com o Java</b>Bean Validation (<code>@NotNull</code>, <code>@Min</code>) ↔ <code>Field(...)</code> e tipos; DTO ↔ <code>BaseModel</code>; <code>@ConfigurationProperties</code> ↔ <code>BaseSettings</code>; Jackson ↔ <code>model_validate_json</code>/<code>model_dump_json</code>; <code>.entity(Classe.class)</code> do Spring AI ↔ modelo Pydantic na saída estruturada (ver <a href="../trilhas/ia.html#t4-structured">IA 4.1 Structured Output</a> e <a href="../trilhas/ia.html#lab-mcp-srv">Lab 5: Schemas MCP</a>).</div>
         <p><b>Como usar.</b></p>
         <pre><code>from pydantic import BaseModel, Field, ValidationError
 from pydantic_settings import BaseSettings
@@ -1416,7 +1416,7 @@ except ValidationError as e:
           <div><h4>Para que serve</h4><p>Publicar serviços HTTP em Python com validação e documentação automáticas, que é a forma padrão de servir modelos e agentes de IA.</p></div>
           <div><h4>Por que é importante</h4><p>Aparece em boa parte das vagas de AI Engineer e é a porta de entrada do Projeto 1 da trilha de IA. Para quem vem do Spring, é o ponto em que você fica produtivo em Python mais rápido.</p></div>
         </div>
-        <div class="ver"><b>a ponte com o Java</b><code>@RestController</code> + <code>@PostMapping</code> ↔ <code>@app.post</code>; DTO + <code>@Valid</code> ↔ modelo Pydantic; <code>@Autowired</code> ↔ <code>Depends()</code>; springdoc ↔ <code>/docs</code>; Tomcat ↔ uvicorn.</div>
+        <div class="ver"><b>a ponte com o Java</b><code>@RestController</code> + <code>@PostMapping</code> ↔ <code>@app.post</code>; DTO + <code>@Valid</code> ↔ modelo Pydantic; <code>@Autowired</code> ↔ <code>Depends()</code>; springdoc ↔ <code>/docs</code>; Tomcat ↔ uvicorn. Na trilha de IA, veja <a href="../trilhas/ia.html#t4-streaming">IA 4.5 Streaming SSE</a> e o <a href="../trilhas/ia.html#t7-escada">Projeto 1 em escada</a>.</div>
         <p><b>Como usar.</b></p>
         <pre><code>from fastapi import FastAPI, Depends
 from pydantic import BaseModel
@@ -1678,7 +1678,7 @@ async def chat(p: Pergunta):
           <div><h4>Para que serve</h4><p>Testar o código com pouca cerimônia e montar conjuntos de casos (inclusive as avaliações de um sistema de IA) que rodam no CI.</p></div>
           <div><h4>Por que é importante</h4><p>As avaliações de um projeto de IA (os 20 casos de "pronto quando") viram testes parametrizados. É o que transforma "parece funcionar" em número que o CI confere a cada mudança.</p></div>
         </div>
-        <div class="ver"><b>a ponte com o Java</b>JUnit 5 ↔ pytest; <code>@BeforeEach</code>/<code>@AfterEach</code> ↔ fixture com <code>yield</code>; <code>@ParameterizedTest</code> ↔ <code>@pytest.mark.parametrize</code>; Mockito ↔ <code>unittest.mock</code> ou fixture com objeto falso; MockMvc ↔ <code>TestClient</code>.</div>
+        <div class="ver"><b>a ponte com o Java</b>JUnit 5 ↔ pytest; <code>@BeforeEach</code>/<code>@AfterEach</code> ↔ fixture com <code>yield</code>; <code>@ParameterizedTest</code> ↔ <code>@pytest.mark.parametrize</code>; Mockito ↔ <code>unittest.mock</code> ou fixture com objeto falso; MockMvc ↔ <code>TestClient</code>. Usado na trilha de IA em <a href="../trilhas/ia.html#t6-harness">IA 6.1 Test Harness</a> e no <a href="../trilhas/ia.html#lab-evals">Lab 6: Eval Harness em Pytest</a>.</div>
         <p><b>Como usar.</b></p>
         <pre><code>import pytest
 from fastapi.testclient import TestClient
@@ -1812,7 +1812,7 @@ def test_chat_responde(cliente, texto):
           <div><h4>Para que serve</h4><p>Entregar o serviço do mesmo jeito em qualquer lugar (sua máquina, o CI, a nuvem), com builds rápidos e imagens pequenas.</p></div>
           <div><h4>Por que é importante</h4><p>O "pronto quando" de todo projeto da trilha termina num link no ar. Docker e CI/CD aparecem em boa parte das vagas, e uma imagem de 2 GB é uma das primeiras coisas que um revisor nota.</p></div>
         </div>
-        <div class="ver"><b>a ponte com o Java</b>fat jar ↔ imagem com o código e o <code>.venv</code>; Tomcat embutido ↔ <code>uvicorn</code>; <code>application.yml</code> por ambiente ↔ variáveis de ambiente com <code>BaseSettings</code>; Jib/buildpacks ↔ Dockerfile em estágios.</div>
+        <div class="ver"><b>a ponte com o Java</b>fat jar ↔ imagem com o código e o <code>.venv</code>; Tomcat embutido ↔ <code>uvicorn</code>; <code>application.yml</code> por ambiente ↔ variáveis de ambiente com <code>BaseSettings</code>; Jib/buildpacks ↔ Dockerfile em estágios. Na trilha de IA, consulte <a href="../trilhas/ia.html#t6-harness">IA 6.1 Sandboxing de Agentes</a> e execução segura em <a href="../trilhas/ia.html#lab-mcp-srv">Lab 5: Servidor MCP</a>.</div>
         <p><b>Como usar.</b></p>
         <pre><code>FROM python:3-slim AS build
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv

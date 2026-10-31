@@ -7280,8 +7280,189 @@ void reembolsoEmiteUmaUnicaVez() {
 
     <!-- ==================== PARTE 07 ==================== -->
     <!-- ==================== PARTE 07 ==================== -->
+    <section class="part" id="labs">
+      <div class="ph"><span class="num">07</span><div><h2>Laboratórios curtos: ver o conceito acontecer</h2><p>Exercícios de 1 a 2 horas, um conceito por vez, com resultado no mesmo dia. Servem de aquecimento para os projetos da parte seguinte. Piloto com 3 laboratórios.</p></div></div>
+
+      <article class="topic" id="lab-tokens">
+        <div class="th"><h3>Lab 1 · Tokenizador na mão: quanto custa o português</h3><div class="badges"><span class="badge b-ess">laboratório · 1 hora</span></div></div>
+        <div class="direto"><b>O que você vai ver:</b> como o modelo enxerga o texto. A mesma frase em português e em inglês gasta quantidades diferentes de tokens, e isso muda custo, latência e quanto cabe na janela de contexto.</div>
+
+        <div class="duo">
+          <div>
+            <h4>Antes de começar</h4>
+            <p>Python com <code>uv</code> e a biblioteca <code>tiktoken</code> (tokenizador aberto, usado por modelos da OpenAI). Não precisa de chave de API.</p>
+          </div>
+          <div class="o">
+            <h4>Ligado a</h4>
+            <p>aos tópicos <a href="#t2-mecanica">2.1 tokens e embeddings</a> e <a href="#t2-tokens">2.2 janela de contexto</a>.</p>
+          </div>
+        </div>
+
+        <h4>Passo a passo</h4>
+        <ol class="ciclo-pj">
+          <li><div>Crie o projeto com <code>uv init lab-tokens</code> e <code>uv add tiktoken</code>.</div></li>
+          <li><div>Escolha 10 frases do seu dia a dia de trabalho, em português, e escreva a tradução de cada uma em inglês.</div></li>
+          <li><div>Para cada frase, conte os tokens nas duas línguas e imprima os pedaços (os tokens decodificados um a um).</div></li>
+          <li><div>Monte uma tabela com caracteres, tokens e a razão tokens por palavra nas duas línguas.</div></li>
+          <li><div>Teste três casos especiais: um trecho de código Java, um JSON e um texto com acentos e emojis.</div></li>
+        </ol>
+
+        <pre><code>import tiktoken
+
+enc = tiktoken.get_encoding("o200k_base")
+frases = [
+    ("O pedido foi cancelado porque o pagamento expirou.",
+     "The order was canceled because the payment expired."),
+]
+for pt, en in frases:
+    t_pt, t_en = enc.encode(pt), enc.encode(en)
+    print(len(t_pt), len(t_en), round(len(t_pt) / len(t_en), 2))
+    print([enc.decode([t]) for t in t_pt])   # os pedaços que o modelo vê</code></pre>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O que observar:</b> palavras comuns em inglês costumam ser um token só, enquanto palavras em português são quebradas em pedaços, principalmente as com acento. Código e JSON gastam muitos tokens com espaços, aspas e chaves. É por isso que um prompt em português custa um pouco mais e que JSON compacto economiza.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Achar que token é palavra:</b> a conta "1 token ≈ 4 caracteres" vale para inglês; meça para o seu texto.</li>
+            <li><b>Generalizar de um tokenizador:</b> cada família de modelos tem o seu. Os números mudam; a lição (contar antes de mandar) não.</li>
+          </ul>
+        </div>
+
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Pronto quando</span><span class="pj-onde">aquecimento do Projeto 1</span></div>
+          <p>você tem a tabela das 10 frases, sabe dizer quanto o português custa a mais para os seus textos, e o seu endpoint de chat passa a contar tokens antes de chamar o modelo.</p>
+          <p class="pj-java"><b>Para ir além:</b> conte os tokens de um documento grande seu e calcule quantos caberiam na janela de contexto de um modelo e quanto custaria mandar tudo a cada pergunta. É a conta que justifica o RAG.</p>
+        </div>
+        <button class="done" type="button" data-k="lab-tokens">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="lab-sampling">
+        <div class="th"><h3>Lab 2 · Temperatura, top-k e top-p na prática</h3><div class="badges"><span class="badge b-ess">laboratório · 1 a 2 horas</span></div></div>
+        <div class="direto"><b>O que você vai ver:</b> o efeito real dos parâmetros de amostragem. Com a mesma pergunta repetida várias vezes, você mede quanto as respostas variam e quando a variação ajuda ou atrapalha.</div>
+
+        <div class="duo">
+          <div>
+            <h4>Antes de começar</h4>
+            <p>Uma chave de API de um provedor (ou o Ollama com um modelo local, que é grátis e aceita <code>top_k</code>). Nem todo provedor expõe os três parâmetros: confira na documentação qual aceita <code>top_k</code>.</p>
+          </div>
+          <div class="o">
+            <h4>Ligado a</h4>
+            <p>ao tópico <a href="#t2-temperatura">2.3 temperatura, top-k e top-p</a>.</p>
+          </div>
+        </div>
+
+        <h4>Passo a passo</h4>
+        <ol class="ciclo-pj">
+          <li><div>Escolha duas perguntas: uma de resposta única (extrair a data de um texto) e uma criativa (sugerir um nome para um produto).</div></li>
+          <li><div>Rode cada pergunta 20 vezes com temperatura 0, 0.7 e 1.2, mantendo o resto igual.</div></li>
+          <li><div>Repita fixando a temperatura e variando top-p (0.1, 0.5, 0.95) e, se o provedor aceitar, top-k (1, 10, 50).</div></li>
+          <li><div>Para cada combinação, conte quantas respostas diferentes saíram e, na pergunta de extração, quantas estavam certas.</div></li>
+          <li><div>Escreva a regra que você vai usar no seu projeto: que valores para extração, para resposta e para texto criativo.</div></li>
+        </ol>
+
+        <pre><code>from collections import Counter
+
+def rodar(pergunta, n=20, **params):
+    respostas = [chamar_llm(pergunta, **params).strip() for _ in range(n)]
+    return Counter(respostas)
+
+for temp in (0, 0.7, 1.2):
+    c = rodar("Qual a data de entrega em: 'chega dia 12/11'?", temperature=temp)
+    print(temp, len(c), c.most_common(2))   # quantas respostas distintas</code></pre>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O que observar:</b> com temperatura 0 a extração quase sempre repete a mesma resposta, mas nem sempre idêntica: a saída de modelos grandes não é totalmente determinística. Com temperatura alta, a extração começa a errar enquanto a pergunta criativa fica mais variada. Top-k e top-p cortam as palavras improváveis antes do sorteio; temperatura muda o quanto o sorteio favorece as prováveis.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Mexer em tudo ao mesmo tempo:</b> varie um parâmetro por vez, senão não dá para saber qual causou o efeito.</li>
+            <li><b>Usar temperatura alta em extração ou tool calling:</b> a variação vira erro de formato e de argumento.</li>
+            <li><b>Esquecer o custo:</b> 20 chamadas por combinação somam rápido; use um modelo barato ou local.</li>
+          </ul>
+        </div>
+
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Pronto quando</span><span class="pj-onde">aquecimento do Projeto 1</span></div>
+          <p>você tem uma tabela de respostas distintas e acertos por combinação, e o seu projeto usa valores diferentes e justificados para extração e para texto livre.</p>
+          <p class="pj-java"><b>Para ir além:</b> meça também o tempo e o custo de cada combinação e veja se algum parâmetro muda a latência. Depois repita com outro modelo e compare.</p>
+        </div>
+        <button class="done" type="button" data-k="lab-sampling">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="lab-busca">
+        <div class="th"><h3>Lab 4 · Busca semântica sem framework: o RAG em 50 linhas</h3><div class="badges"><span class="badge b-ess">laboratório · 2 horas</span></div></div>
+        <div class="direto"><b>O que você vai ver:</b> o que um framework de RAG faz por baixo. Você gera embeddings, guarda os vetores numa matriz, calcula similaridade e monta o prompt com os trechos encontrados, sem LangChain nem banco vetorial.</div>
+
+        <div class="duo">
+          <div>
+            <h4>Antes de começar</h4>
+            <p>Python com <code>numpy</code> e um modelo de embeddings: pela API de um provedor ou local, com a biblioteca <code>sentence-transformers</code>. Separe 30 a 50 parágrafos de um assunto que você conhece (anotações suas de estudo servem).</p>
+          </div>
+          <div class="o">
+            <h4>Ligado a</h4>
+            <p>aos tópicos <a href="#t4-chunks">4.3 chunks</a> e <a href="#t4-rag">4.4 RAG</a>, e ao <a href="#t7-escada">Projeto 2</a>.</p>
+          </div>
+        </div>
+
+        <h4>Passo a passo</h4>
+        <ol class="ciclo-pj">
+          <li><div>Quebre os textos em parágrafos e gere o embedding de cada um; guarde tudo numa matriz NumPy e salve em disco.</div></li>
+          <li><div>Escreva a função de busca: gere o embedding da pergunta, calcule a similaridade de cosseno com todos os parágrafos e devolva os 3 maiores.</div></li>
+          <li><div>Escreva 10 perguntas e, para cada uma, anote qual parágrafo deveria voltar.</div></li>
+          <li><div>Meça quantas vezes o parágrafo certo aparece entre os 3 primeiros (é o recall@3).</div></li>
+          <li><div>Monte o prompt com os trechos encontrados e a regra "responda só com base nos trechos; se não estiver lá, diga que não encontrou", e chame o LLM.</div></li>
+        </ol>
+
+        <pre><code>import numpy as np
+
+def normalizar(m):
+    return m / np.linalg.norm(m, axis=-1, keepdims=True)
+
+docs = carregar_paragrafos()                    # lista de str
+M = normalizar(np.array([embed(d) for d in docs]))
+
+def buscar(pergunta, k=3):
+    q = normalizar(np.array(embed(pergunta)))
+    notas = M @ q                                # cosseno = produto escalar
+    melhores = np.argsort(-notas)[:k]
+    return [(docs[i], float(notas[i])) for i in melhores]
+
+trechos = "\n---\n".join(t for t, _ in buscar("Como funciona o outbox?"))
+resposta = chamar_llm(f"Use só os trechos abaixo.\n{trechos}\n\nPergunta: ...")</code></pre>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>O que observar:</b> a busca acerta perguntas escritas com palavras diferentes das do texto, o que uma busca por palavra-chave não faz. Mas erra nomes próprios, siglas e números, em que a busca por palavra-chave é melhor: é por isso que o RAG de produção usa busca híbrida. Olhe também as notas de similaridade: quando a melhor nota é baixa, o certo é responder "não encontrei".</p>
+        </div>
+
+        <div class="gotcha">
+          <b>Armadilhas</b>
+          <ul>
+            <li><b>Esquecer de normalizar:</b> sem normalizar os vetores, o produto escalar não é o cosseno e textos longos ganham sempre.</li>
+            <li><b>Misturar modelos de embedding:</b> a pergunta e os documentos precisam do mesmo modelo, senão os vetores não são comparáveis.</li>
+            <li><b>Medir só no olho:</b> sem as 10 perguntas com resposta esperada, você não sabe se uma mudança melhorou.</li>
+          </ul>
+        </div>
+
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Pronto quando</span><span class="pj-onde">primeira versão do Projeto 2</span></div>
+          <p>a busca acerta o parágrafo certo entre os 3 primeiros em pelo menos 7 das 10 perguntas, e uma pergunta fora do assunto recebe "não encontrei".</p>
+          <p class="pj-java"><b>Para ir além:</b> troque a matriz por um PostgreSQL com pgvector (é o tópico 4.4) e compare o resultado; depois acrescente busca por palavra-chave e veja quais perguntas passam a acertar.</p>
+        </div>
+        <button class="done" type="button" data-k="lab-busca">marcar dominado</button>
+      </article>
+
+    </section>
+
     <section class="part" id="p7">
-      <div class="ph"><span class="num">07</span><div><h2>Projetos da trilha: do zero ao deploy</h2><p>Cada conceito da trilha constrói uma peça. As peças formam três projetos em escada e um carro-chefe, que resolve um problema seu e vai da ideia até o deploy.</p></div></div>
+      <div class="ph"><span class="num">08</span><div><h2>Projetos da trilha: do zero ao deploy</h2><p>Cada conceito da trilha constrói uma peça. As peças formam três projetos em escada e um carro-chefe, que resolve um problema seu e vai da ideia até o deploy.</p></div></div>
 
       <!-- t7-ciclo -->
       <article class="topic" id="t7-ciclo">
@@ -7580,7 +7761,7 @@ Deploy: Docker → registry → container na nuvem, pipeline e Terraform</pre>
 
     <!-- ==================== PARTE 08 ==================== -->
     <section class="part" id="p8">
-      <div class="ph"><span class="num">08</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>O ciclo que fixa a engenharia de IA, referências técnicas consolidadas e laboratórios práticos com modelos e ferramentas.</p></div></div>
+      <div class="ph"><span class="num">09</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>O ciclo que fixa a engenharia de IA, referências técnicas consolidadas e laboratórios práticos com modelos e ferramentas.</p></div></div>
 
       <!-- t8-ciclo -->
       <article class="topic" id="t8-ciclo">
@@ -8318,7 +8499,42 @@ var DATA = [
     ]
   },
   {
-    g: "07", n: "Nível 7: Projetos", s: "do zero ao deploy, em escada até o carro-chefe", c: "var(--teal)", cs: "var(--teal-s)",
+    g: "07", n: "Nível 7: Laboratórios curtos", s: "um conceito por vez, resultado no mesmo dia", c: "var(--orange)", cs: "var(--orange-s)",
+    items: [
+      {
+        id: "n-lab-tokens",
+        t: "Lab: Tokenizador", x: "quanto custa o português",
+        oq: "Contar e ver os tokens de frases em português e inglês, código e JSON.",
+        ps: "Entender custo, latência e limite de contexto medindo, não estimando.",
+        sub: "Substituiu a regra de bolso de 4 caracteres por token.",
+        pq: "Use tiktoken; compare línguas e formatos. Erro comum: achar que token é palavra.",
+        ex: "enc.encode(texto) e enc.decode([t]) para ver cada pedaço.",
+        alem: "Calcule quanto custaria mandar um documento grande a cada pergunta."
+      },
+      {
+        id: "n-lab-sampling",
+        t: "Lab: Temperatura, top-k e top-p", x: "a mesma pergunta 20 vezes",
+        oq: "Repetir uma pergunta de extração e uma criativa variando um parâmetro por vez.",
+        ps: "Escolher valores justificados para extração, resposta e texto criativo.",
+        sub: "Substituiu o valor padrão usado sem pensar.",
+        pq: "Conte respostas distintas e acertos por combinação. Erro comum: variar tudo ao mesmo tempo.",
+        ex: "Counter das 20 respostas para temperature 0, 0.7 e 1.2.",
+        alem: "Meça também tempo e custo e repita com outro modelo."
+      },
+      {
+        id: "n-lab-busca",
+        t: "Lab: Busca semântica sem framework", x: "o RAG em 50 linhas",
+        oq: "Embeddings numa matriz NumPy, cosseno, top-3 e prompt com os trechos.",
+        ps: "Entender o que o framework de RAG faz por baixo.",
+        sub: "Substituiu a caixa-preta do framework na primeira experiência com RAG.",
+        pq: "Normalize os vetores e meça o recall@3 com 10 perguntas. Erro comum: misturar modelos de embedding.",
+        ex: "notas = M @ q; np.argsort(-notas)[:3].",
+        alem: "Troque por pgvector e acrescente busca por palavra-chave."
+      }
+    ]
+  },
+  {
+    g: "08", n: "Nível 8: Projetos", s: "do zero ao deploy, em escada até o carro-chefe", c: "var(--teal)", cs: "var(--teal-s)",
     items: [
       {
         id: "n-proj-ciclo",
@@ -8353,7 +8569,7 @@ var DATA = [
     ]
   },
   {
-    g: "08", n: "Nível 8: Como aprender de verdade", s: "o ciclo que fixa, fontes que valem e laboratórios reais", c: "var(--purple)", cs: "var(--purple-soft)",
+    g: "09", n: "Nível 9: Como aprender de verdade", s: "o ciclo que fixa, fontes que valem e laboratórios reais", c: "var(--purple)", cs: "var(--purple-soft)",
     items: [
       {
         t: "O ciclo de aprendizado", x: "sandboxes e evals",

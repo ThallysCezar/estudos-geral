@@ -77,7 +77,7 @@ var DOCS=[
    desc:"Não é curso do zero: cada tópico parte do que você já faz no Java e no Spring e mostra o equivalente em Python, a diferença prática e o erro comum. Termina no FastAPI, a base para serviços de IA, agents e LLMs.",
    tags:["ponte para IA","FastAPI","Pydantic"],
    chaves:"python java spring fastapi pydantic type hints mypy dataclass pytest uvicorn poetry venv virtualenv pip async asyncio gil decorators comprehensions duck typing ai engenharia de ia agentes"},
-  {n:"18",nome:"Micro Frontends & Native Federation",curto:"MFE",file:"cadernos/micro-frontends.html",cor:"var(--cyan)",hex:"#8be9fd",nos:0,top:4,radar:false,
+  {n:"18",nome:"Micro Frontends & Native Federation",curto:"MFE",file:"cadernos/micro-frontends.html",cor:"var(--cyan)",hex:"#8be9fd",nos:5,top:5,radar:false,
    meta:"Caderno de fundamentos · Micro Frontends com Native Federation",
    desc:"Arquitetura e decomposição vertical orientada a domínios de negócio. Mecânica de Native Federation com ECMAScript Modules (ESM) e W3C Import Maps, contratos do federation.config.js (exposes, shared, singleton, strictVersion) e comunicação desacoplada via CustomEvent e BroadcastChannel.",
    tags:["MFE","Native Federation","Import Maps"],

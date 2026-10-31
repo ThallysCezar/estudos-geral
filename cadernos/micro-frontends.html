@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Micro Frontends & Native Federation · Estudos</title>
-<meta name="description" content="Caderno de fundamentos e arquitetura: Micro Frontends (MFE) com Native Federation, ESM nativo, W3C Import Maps, federation.config.js (exposes, shared, singleton, strictVersion) e comunicação desacoplada via CustomEvent e BroadcastChannel. Tema Dracula.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M8 10h6v6H8zm10 0h6v6h-6zM8 20h6v6H8zm10 0h6v6h-6z' fill='%238be9fd'/></svg>">
+<title>Micro Frontends &amp; Native Federation — trilha visual e conteúdo</title>
+<meta name="description" content="Micro frontends: quando dividir o frontend, Native Federation com ESM e import maps, o federation.config.js e a comunicação entre micro frontends.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23282a36'/><path d='M16 10.2C13.7 8.6 11 8 7.8 8c-.6 0-1.1.5-1.1 1.1v12.6c0 .6.5 1.1 1.1 1.1 3.2 0 5.9.6 8.2 2.2z' fill='%23bd93f9'/><path d='M16 10.2c2.3-1.6 5-2.2 8.2-2.2.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1-3.2 0-5.9.6-8.2 2.2z' fill='%238be9fd'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cascadia+Code&display=swap" rel="stylesheet">
@@ -19,9 +19,19 @@
   --gold:#f1fa8c; --gold-s:#36381e;
   --violet:#ff79c6; --violet-s:#3d2135;
   --rose:#ff5555; --rose-s:#3d2027;
-  --cyan:#8be9fd; --cyan-s:#12303a;
-  --orange:#ffb86c; --orange-s:#3a2a17;
+  --cyan:#8be9fd;
   --code:#1e1f29; --r:14px;
+  --purple:#bd93f9; --purple-soft:#2e2648;
+  --green:#50fa7b;  --green-soft:#173726;
+  --blue:#79b8ff;   --blue-soft:#16294a;
+  --red:#ff5555;    --red-soft:#3d2027;
+  --orange:#ffb86c; --orange-soft:#3a2a17;
+  --yellow:#f1fa8c; --yellow-soft:#36381e;
+  --pink:#ff79c6;   --pink-soft:#3d2135;
+  --java:#ff9580;   --java-soft:#3b231d;
+  --teal-soft:#173726;
+  --arc:#8be9fd;    --arc-soft:#12303a;
+  --amber:#ffc978; --amber-soft:#3f2f18;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -34,17 +44,17 @@ a{color:var(--brand)}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px;border:2px solid var(--bg2)}
 ::-webkit-scrollbar-thumb:hover{background:var(--soft)}
 .topbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:transparent}
-.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--brand))}
-.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1440px;margin:0 auto}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brand))}
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);max-width:1400px;margin:0 auto}
 .side{position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding:22px 18px 0;border-right:1px solid var(--line);background:var(--bg2)}
 .brand{display:flex;align-items:center;gap:10px;margin-bottom:2px}
-.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--cyan);color:#1e1f29;font:800 .75rem/1 "Inter",sans-serif;font-style:normal}
+.brand i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--brand);color:#1e1f29;font:800 .82rem/1 "Inter",sans-serif;font-style:normal}
 .brand b{font:800 .82rem/1.2 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
 .side .sub{color:var(--soft);font:italic 400 .84rem/1.4 Georgia,serif;margin:2px 0 14px}
 .meter{display:flex;align-items:center;gap:9px;margin-bottom:12px}
-.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--cyan) var(--deg,0deg),var(--line2) 0)}
+.meter .ring{position:relative;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:conic-gradient(var(--teal) var(--deg,0deg),var(--line2) 0)}
 .meter .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}
-.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--cyan);z-index:1}
+.meter .ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 .6rem "Inter",sans-serif;color:var(--teal);z-index:1}
 .meter p{margin:0;font:600 .74rem/1.3 "Inter",sans-serif;color:var(--muted)}
 .meter p b{display:block;color:var(--ink);font-size:.82rem}
 .tools{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
@@ -66,10 +76,10 @@ nav a.top.ok::after{content:"✓";position:absolute;right:7px;color:var(--teal);
 nav a.hide{display:none}
 main{padding:0 clamp(20px,4vw,64px);min-width:0}
 .hero{padding:74px 0 34px}
-.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--cyan);border-radius:999px;padding:6px 12px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal);border-radius:999px;padding:6px 12px}
 h1{font-size:clamp(2.3rem,5vw,3.9rem);line-height:1.02;margin:20px 0 16px;letter-spacing:-.025em;font-weight:400}
 h1 em{font-style:normal;color:var(--brand)}
-.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:68ch;margin:0}
+.hero .lede{font-size:1.14rem;color:var(--ink2);max-width:66ch;margin:0}
 .hero .lede b{color:var(--ink)}
 .jump{display:flex;gap:10px;margin:24px 0 0;flex-wrap:wrap}
 .jump a{flex:1 1 200px;text-decoration:none;border:1px solid var(--line2);background:var(--card);border-radius:12px;padding:12px 14px;font:600 .8rem "Inter",sans-serif;color:var(--muted);transition:.15s}
@@ -84,6 +94,34 @@ section.part{padding:56px 0 4px;scroll-margin-top:8px}
 .ph .num{font:800 2.5rem/1 "Inter",sans-serif;color:var(--brand);letter-spacing:-.04em;flex:0 0 auto}
 .ph h2{font-size:clamp(1.6rem,3vw,2.15rem);margin:0 0 3px;letter-spacing:-.015em;font-weight:400}
 .ph p{margin:0;color:var(--muted);font-style:italic;font-size:.96rem}
+.trailwrap{padding:40px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 0;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:6px;font:600 .72rem "Inter",sans-serif;color:var(--muted)}
+.legend b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.trail{position:relative;margin:34px auto 0;max-width:1120px;padding:10px 0 30px}
+.trail::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line2);transform:translateX(-1px)}
+.grp{display:grid;grid-template-columns:1fr minmax(190px,240px) 1fr;align-items:center;margin:0 0 26px;position:relative;scroll-margin-top:8px}
+.grp.hide{display:none}
+.milestone{grid-column:2;justify-self:center;text-align:center;border:2px solid var(--gc);background:var(--gs);border-radius:14px;padding:11px 14px;position:relative;z-index:2;box-shadow:0 0 0 7px var(--bg);min-width:100%}
+.milestone .n{display:block;font:800 .68rem/1 "Inter",sans-serif;letter-spacing:.16em;color:var(--gc);margin-bottom:5px}
+.milestone h2{margin:0;font:600 1rem/1.25 "Inter",sans-serif;color:var(--ink);letter-spacing:-.01em}
+.milestone small{display:block;margin-top:3px;color:var(--muted);font:italic 400 .77rem/1.35 Georgia,serif}
+.cluster{display:flex;flex-wrap:wrap;gap:7px;position:relative;padding:0 30px}
+.grp.l .cluster{grid-column:1;grid-row:1;justify-content:flex-end}
+.grp.r .cluster{grid-column:3;grid-row:1;justify-content:flex-start}
+.grp.l .cluster::after{content:"";position:absolute;right:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.grp.r .cluster::before{content:"";position:absolute;left:2px;top:50%;width:26px;border-top:2px dotted var(--gc);opacity:.75}
+.node{text-align:left;border:1px solid var(--line2);background:var(--card);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.14s;font-family:"Inter","Segoe UI",sans-serif;max-width:230px}
+.node b{display:block;font-size:.82rem;color:var(--ink);font-weight:600;line-height:1.25}
+.node span{display:block;font-size:.7rem;color:var(--soft);margin-top:1px;line-height:1.25}
+.node:hover{border-color:var(--gc);background:var(--gs);transform:translateY(-1px)}
+.node.done{background:var(--gs);border-color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc)}
+.node.done b::after{content:" ✓";color:var(--teal)}
+.node.torev{box-shadow:inset 3px 0 0 var(--rose)}
+.node.hit{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-s)}
+.node.dim{opacity:.22}
+.trail-end{text-align:center;margin-top:6px;position:relative;z-index:2}
+.trail-end span{display:inline-block;background:var(--brand);color:#1e1f29;border-radius:999px;padding:9px 20px;font:800 .76rem "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 7px var(--bg)}
 article.topic{padding:34px 0 30px;border-bottom:1px solid var(--line);scroll-margin-top:8px}
 article.topic.hide{display:none}
 .th{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
@@ -92,26 +130,37 @@ article.topic h3{font-size:1.46rem;margin:0;letter-spacing:-.015em;font-weight:4
 .badge{font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
 .b-ess{background:var(--teal-s);color:var(--teal)}
 .b-prof{background:var(--violet-s);color:var(--violet)}
+.b-imp{background:var(--violet-s);color:var(--violet)}
 .b-ver{background:var(--gold-s);color:var(--gold)}
+.b-caso{background:var(--brand-s);color:var(--brand)}
 .direto{font-size:1.09rem;color:var(--ink);margin:15px 0 0;padding:13px 18px;background:var(--brand-s);border-radius:12px;border-left:3px solid var(--brand)}
 .direto b{font-weight:700}
 article.topic p{margin:1rem 0 0}
-.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--cyan-s);border:1px solid var(--cyan)}
-.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
-.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
-.caso p+p{margin-top:.6rem!important}
 .analogia{margin:18px 0 0;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--card);display:flex;gap:13px;align-items:flex-start}
-.analogia .ic{flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
-.analogia p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.analogia .ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--gold-s);color:var(--gold);display:grid;place-items:center;font:800 .95rem/1 "Inter",sans-serif;font-style:normal}
+.analogia p{margin:0!important;font-size:.98rem;color:var(--ink2)}
 .analogia p b{color:var(--gold)}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
 .duo>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
-.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.duo h4{margin:0 0 7px;font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.duo.o h4{color:var(--violet)}
 .duo p{margin:0!important;font-size:.93rem;color:var(--ink2)}
 .duo ul{margin:0;padding-left:1.05rem;font-size:.93rem;color:var(--ink2)}
 .duo li{margin:.3rem 0}
 .duo .repl{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);font-size:.88rem;color:var(--muted)}
 .duo .repl b{color:var(--violet)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.vs>div{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs .lab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:9px 13px}
+.vs .antes .lab{background:var(--rose-s);color:var(--rose)}
+.vs .depois .lab{background:var(--teal-s);color:var(--teal)}
+.vs pre{margin:0;border:0;border-radius:0}
+.codelab{font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin:18px 0 -10px}
+pre{margin:14px 0 0;padding:15px 17px;background:var(--code);border:1px solid var(--line);border-radius:12px;overflow:auto}
+pre code{font:500 .825rem/1.62 "Cascadia Code","JetBrains Mono",Consolas,monospace;color:#f8f8f2;white-space:pre;display:block}
+.k{color:#ff79c6}.t{color:#8be9fd;font-style:italic}.s{color:#f1fa8c}.c{color:#6272a4;font-style:italic}.a{color:#50fa7b}.n{color:#bd93f9}.d{color:#50fa7b}
+code.i{font:600 .87em "Cascadia Code",monospace;background:var(--teal-s);color:var(--teal);padding:.1em .38em;border-radius:5px;white-space:nowrap}
+code.ic{font:600 .87em "Cascadia Code",monospace;background:var(--brand-s);color:var(--brand);padding:.1em .38em;border-radius:5px;white-space:nowrap}
 figure.dg{margin:20px 0 0;padding:16px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
 figure.dg svg{display:block;width:100%;height:auto}
 figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);text-align:center;padding:10px 6px 4px}
@@ -127,42 +176,167 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 .dg .lt{stroke:var(--teal);stroke-width:1.8;fill:none}
 .dg .lb{stroke:var(--brand);stroke-width:1.8;fill:none}
 .dg .lr{stroke:var(--rose);stroke-width:1.8;fill:none}
+.dg .d{stroke-dasharray:5 4}
 .dg .h{fill:var(--soft)}.dg .ht{fill:var(--teal)}.dg .hb{fill:var(--brand)}.dg .hr{fill:var(--rose)}
-.alem{margin:18px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
-.alem summary{padding:12px 16px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font:600 .84rem "Inter",sans-serif;color:var(--ink)}
-.alem summary::-webkit-details-marker{display:none}
-.alem-tag{padding:3px 8px;border-radius:6px;background:var(--brand-s);color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;text-transform:uppercase;letter-spacing:.06em}
-.alem-opt{color:var(--muted);font-weight:400}
-.alem-body{padding:0 16px 16px;border-top:1px solid var(--line)}
-.alem-body p{margin:12px 0 0!important;font-size:.92rem;color:var(--ink2)}
-.alem-src{display:block;margin-top:10px;color:var(--soft);font-size:.76rem;font-style:italic}
-.ver{margin:18px 0 0;padding:12px 16px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);font-size:.92rem;color:var(--ink2)}
-.ver b{color:var(--brand);text-transform:lowercase;font:700 .75rem "Inter",sans-serif;letter-spacing:.06em;margin-right:4px}
+.dg .sf{fill:var(--teal-s);stroke:var(--teal);stroke-width:1.4}
+.dg .bx{fill:var(--bg2);stroke:var(--line2);stroke-width:1.3}
+.dg .ln{stroke:var(--soft);stroke-width:1.5;fill:none}
+.dg .ln.dash{stroke-dasharray:4 3}
+.dg .hd{fill:var(--soft)}
 .gotcha{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--rose-s);border:1px solid var(--rose)}
 .gotcha b{color:var(--rose);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
 .gotcha p,.gotcha ul{margin:0!important;font-size:.95rem;color:var(--ink2)}
 .gotcha ul{padding-left:1.1rem}.gotcha li{margin:.3rem 0}
-button.done{margin-top:22px;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:9px 16px;font:600 .82rem "Inter",sans-serif;cursor:pointer;transition:.15s}
-button.done:hover{color:var(--ink);border-color:var(--teal)}
-button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.cs{margin:16px 0 0;padding:12px 17px;border-radius:12px;background:var(--gold-s);border:1px solid var(--gold);font-size:.95rem;color:var(--ink2)}
+.cs b{color:var(--gold)}
+.caso{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--arc-soft);border:1px solid var(--cyan)}
+.caso b{color:var(--cyan);font:700 .72rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.caso p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.caso p+p{margin-top:.6rem!important}
+table.cmd{width:100%;border-collapse:collapse;margin:18px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.cmd th{background:var(--bg2);text-align:left;padding:10px 13px;font:700 .66rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+table.cmd td{padding:10px 13px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink2);vertical-align:top}
+table.cmd td:first-child{white-space:nowrap;width:1%}
+table.cmd code{font:600 .85em "Cascadia Code",monospace;background:var(--code);color:var(--teal);padding:.15em .45em;border-radius:5px;white-space:nowrap}
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 0}
+.prova>div{border:1px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);font-size:.93rem;color:var(--ink2)}
+.prova b{display:block;font:700 .67rem/1 "Inter",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.prova .lab b{color:var(--brand)}
+.done{margin:16px 0 0;border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;padding:8px 18px;font:700 .8rem "Inter",sans-serif;cursor:pointer;transition:.15s}
+.done:hover{background:var(--teal-s)}
+.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
+.foot{padding:44px 0 100px;color:var(--soft);font-size:.93rem}
+.up{position:fixed;right:20px;bottom:20px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:1rem;cursor:pointer;box-shadow:0 6px 20px #0006;display:none;z-index:50}
+.up.on{display:block}
+.nores{display:none;padding:40px 0;color:var(--muted);font-style:italic;text-align:center}
+.nores.on{display:block}
+.scrim{position:fixed;inset:0;background:#0d0e14cc;opacity:0;pointer-events:none;transition:.2s;z-index:70}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line2);z-index:80;transform:translateX(101%);transition:transform .24s;display:flex;flex-direction:column;box-shadow:-16px 0 46px #0007}
+.panel.on{transform:none}
+.p-h{display:flex;gap:12px;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--pc,var(--brand))}
+.p-h .tag{display:inline-block;font:700 .64rem/1 "Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--pc,var(--brand));margin-bottom:7px}
+.p-h h3{margin:0;font-size:1.3rem;font-weight:500;letter-spacing:-.015em}
+.p-h p{margin:3px 0 0;color:var(--muted);font-size:.88rem;font-style:italic}
+.p-h .x{margin-left:auto;flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.p-b{flex:1;overflow:auto;padding:16px 22px 24px}
+.blk{margin:0 0 16px}
+.blk h4{margin:0 0 5px;font:700 .65rem/1 "Inter",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--brand))}
+.blk p{margin:0!important;font-size:.95rem;color:var(--ink2)}
+.blk pre{margin:0}
+.p-f{display:flex;gap:8px;flex-wrap:wrap;padding:13px 22px;border-top:1px solid var(--line);background:var(--bg)}
+.p-f button{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:9px;padding:8px 13px;font:600 .78rem "Inter",sans-serif;cursor:pointer}
+.p-f .mark{border-color:var(--teal);color:var(--teal)}
+.p-f .mark.is{background:var(--teal);color:#1e1f29}
+.p-f .nav-b{margin-left:auto}
+.p-f .nav-b+.nav-b{margin-left:0}
+.p-f .grade.ok{border-color:var(--teal);color:var(--teal)}
+.p-f .grade.no{border-color:var(--rose);color:var(--rose)}
+.panel.test .p-b>.blk{display:none}
+.panel.test.revealed .p-b>.blk{display:block}
+.gate{margin:0 0 16px}
+.gate-in{border:1px dashed var(--line2);border-radius:14px;padding:28px 20px;text-align:center;background:var(--card)}
+.ghint{display:block;font:700 .62rem/1 "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+.gate-in h5{margin:0;font-size:1.22rem;font-weight:500}
+.gate-in em{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+.reveal-btn{margin-top:18px;border:1.5px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:9px 20px;font:700 .8rem "Inter",sans-serif;cursor:pointer}
+.reveal-btn:hover{background:var(--brand-s)}
+.panel.revealed .gate{display:none}
+table.vmap{width:100%;border-collapse:collapse;margin-top:4px}
+table.vmap td{padding:7px 9px;border-bottom:1px solid var(--line);font:400 .84rem/1.4 Georgia,serif;color:var(--ink2);vertical-align:top}
+table.vmap tr:last-child td{border-bottom:0}
+table.vmap td.vp{width:104px;font:700 .72rem/1.4 "Inter",sans-serif;letter-spacing:.02em;color:var(--pc,var(--brand));white-space:nowrap}
+.ver{margin:18px 0 0;padding:12px 17px;border-radius:12px;background:var(--card);border:1px dashed var(--line2);font-size:.9rem;color:var(--muted)}
+.ver b{color:var(--brand);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ver a{color:var(--cyan);text-decoration:none;border-bottom:1px solid transparent}
+.ver a:hover{border-bottom-color:var(--cyan)}
+@media(max-width:1100px){
+  .trail::before{left:34px}
+  .grp{grid-template-columns:68px 1fr;margin-bottom:22px}
+  .milestone{grid-column:2;grid-row:1;justify-self:start;text-align:left;min-width:0;box-shadow:none}
+  .grp.l .cluster,.grp.r .cluster{grid-column:2;grid-row:2;justify-content:flex-start;padding:10px 0 0}
+  .grp.l .cluster::after,.grp.r .cluster::before{display:none}
+  .trail-end{text-align:left;padding-left:12px}
+}
 @media(max-width:980px){
   .shell{grid-template-columns:1fr}
-  .side{display:none}
-  .duo{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav{max-height:230px}
+  .duo,.vs,.prova{grid-template-columns:1fr}
+  .panel{width:100%}
 }
+@media print{.side,.up,.topbar,.done,.panel,.scrim{display:none}.shell{display:block}article.topic{break-inside:avoid}}
+</style>
+<style>
+
+/* ==================== V5.5 SPLIT-SCREEN LAYOUT ==================== */
+@media (min-width: 1200px) {
+  .shell {
+    display: grid !important;
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+    max-width: 1680px !important;
+    margin: 0 auto !important;
+  }
+  main {
+    padding: 0 clamp(28px, 3.5vw, 56px) !important;
+  }
+  .topic-split {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.95fr !important;
+    gap: 36px !important;
+    align-items: start !important;
+    margin-top: 20px !important;
+  }
+  .topic-split-left {
+    min-width: 0;
+  }
+  .topic-split-right {
+    min-width: 0;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .topic-split-right .topic-img,
+  .topic-split-right .visual-diagram,
+  .topic-split-right .exemplo-box,
+  .topic-split-right pre,
+  .topic-split-right .code-title,
+  .topic-split-right .sim-box,
+  .topic-split-right .diag-card {
+    margin: 0 !important;
+  }
+}
+
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
-<link rel="stylesheet" href="../assets/css/pratica.css">
+  <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="projeto-css">
+/* "Projeto do conceito": cada tópico constrói uma peça de um dos projetos da trilha. */
+.projeto{margin:18px 0 0;padding:16px 18px;border-radius:14px;border:1px solid color-mix(in srgb,var(--teal) 40%,transparent);background:color-mix(in srgb,var(--teal) 7%,transparent)}
+.pj-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;margin-bottom:6px}
+.pj-tag{color:var(--teal);font:800 .7rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.pj-onde{color:var(--muted);font:600 .78rem/1.3 "Inter",sans-serif}
+.pj-onde a{color:var(--muted)}
+.projeto p{margin:.45rem 0 0}
+.pj-ok b{color:var(--teal)}
+.pj-java{color:var(--muted);font-size:.9rem}
+.ciclo-pj{counter-reset:c;list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.55rem}
+.ciclo-pj li{counter-increment:c;display:grid;grid-template-columns:2rem 1fr;gap:.6rem;align-items:start}
+.ciclo-pj li::before{content:counter(c);display:grid;place-items:center;width:2rem;height:2rem;border-radius:10px;background:color-mix(in srgb,var(--teal) 18%,transparent);color:var(--teal);font:800 .85rem "Inter",sans-serif}
+pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",monospace;padding:14px 16px;border-radius:12px;background:var(--bg2);border:1px solid var(--line2)}
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
 <div class="shell">
   <aside class="side">
-    <div class="brand"><i>MFE</i><b>Micro Frontends</b></div>
-    <p class="sub">Native Federation, ESM e desacoplamento na interface.</p>
+    <div class="brand"><i>MF</i><b>Micro Frontends</b></div>
+    <p class="sub">Do monólito na interface à Native Federation.</p>
     <div class="meter">
       <div class="ring" id="ring"><span id="rpct">0%</span></div>
-      <p><b id="rdone">0 de 4</b><span id="rsub">0 dominados</span></p>
+      <p><b id="rdone">0 de 0</b><span id="rsub">0 nós · 0 tópicos</span></p>
     </div>
     <div class="tools">
       <button id="mode" type="button" title="alternar entre ler e se testar">📖 estudo</button>
@@ -170,40 +344,37 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
       <button id="top" type="button">topo</button>
       <button id="reset" type="button">zerar</button>
     </div>
-    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (ESM, import map, shared, singleton)" autocomplete="off">
-    <nav id="nav">
-      <a class="sec" href="#p1"><b>01</b>Fundamentos &amp; Prática</a>
-      <a class="top" href="#mfe-01" data-k="mfe-01">Arquitetura de Micro Frontends</a>
-      <a class="top" href="#mfe-02" data-k="mfe-02">Native Federation &amp; Import Maps</a>
-      <a class="top" href="#mfe-03" data-k="mfe-03">federation.config.js &amp; Contratos</a>
-      <a class="top" href="#mfe-04" data-k="mfe-04">Comunicação e Orquestração</a>
-    </nav>
+    <input class="search ui" id="q" type="search" placeholder="buscar em tudo… (shell, import map, singleton)" autocomplete="off">
+    <nav id="nav"></nav>
   </aside>
 
   <main id="main">
     <header class="hero">
-      <span class="eyebrow">Micro Frontends · Outubro 2026</span>
+      <span class="eyebrow">Micro Frontends · outubro 2026</span>
       <h1>Do <em>monólito na UI</em> à <em>Native Federation</em>.</h1>
-      <p class="lede">Arquitetura de micro frontends com decomposição vertical orientada a domínios de negócio, eliminação da dependência de Webpack via <b>ECMAScript Modules (ESM)</b> e <b>W3C Import Maps</b>, contratos rigorosos de <b>federation.config.js</b> e comunicação desacoplada via <b>CustomEvent</b> e <b>BroadcastChannel</b>.</p>
+      <p class="lede">Micro frontends dividem a interface em partes verticais, cada uma de um time, integradas no navegador. Aqui está quando isso vale a pena (e quando não vale), como a <b>Native Federation</b> carrega módulos com <b>ESM</b> e <b>import maps</b>, o contrato do <b>federation.config.js</b> e como os micro frontends conversam sem se acoplar.</p>
       <div class="jump">
-        <a href="#mfe-01"><b>↓ MFE-01: Arquitetura</b>Decomposição vertical e Conway</a>
-        <a href="#mfe-02"><b>↓ MFE-02: Native Federation</b>ESM nativo e W3C Import Maps</a>
-        <a href="#mfe-03"><b>↓ MFE-03: federation.config</b>exposes, shared e singletons</a>
-        <a href="#mfe-04"><b>↓ MFE-04: Eventos</b>CustomEvent e BroadcastChannel</a>
+        <a href="#trilha"><b>↓ A trilha visual</b>navegar, consultar e revisar</a>
+        <a href="#p1"><b>↓ O conteúdo</b>da decisão à comunicação</a>
       </div>
       <div class="legenda">
-        <div><b>Decomposição Vertical</b><span>Squads autônomos com deploy independente ponta a ponta.</span></div>
-        <div><b>W3C Import Maps</b><span>Resolução de módulos no navegador sem wrappers proprietários.</span></div>
-        <div><b>federation.config.js</b><span>Controle estrito de SemVer e deduplicação de memória.</span></div>
-        <div><b>Eventos Desacoplados</b><span>Comunicação assíncrona entre módulos sem monólito de store.</span></div>
+        <div><b>Problema de organização</b><span>MFE resolve o gargalo entre times, não o desempenho da página.</span></div>
+        <div><b>Padrões do navegador</b><span>ESM e import maps no lugar do runtime do empacotador.</span></div>
+        <div><b>Contrato explícito</b><span>O que cada remote expõe e compartilha fica declarado.</span></div>
+        <div><b>Eventos, não chamadas</b><span>Um time avisa; o outro decide o que fazer.</span></div>
       </div>
     </header>
 
-    <!-- ========================= PARTE 01 ========================= -->
-    <section class="part" id="p1">
-      <div class="ph"><span class="num">01</span><div><h2>Fundamentos &amp; Prática de Micro Frontends</h2><p>Da decomposição de domínio com ESM nativo ao barramento assíncrono de eventos no navegador.</p></div></div>
+    <section class="part trailwrap" id="trilha">
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: da decisão à comunicação</h2><p>Comece por aqui. Siga o caminho de cima para baixo, clique em qualquer nó para abrir o painel — e use o modo teste para revisar sem reler.</p></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="trail" id="track"></div>
+    </section>
 
-      <!-- TÓPICO mfe-01 -->
+            <!-- ===================== PARTE 01 ===================== -->
+    <section class="part" id="p1">
+      <div class="ph"><span class="num">01</span><div><h2>Quando dividir o frontend</h2><p>Micro frontends resolvem um problema de organização entre times, não de desempenho.</p></div></div>
+
       <article class="topic" id="mfe-01">
         <div class="th">
           <h3>Micro Frontends: decomposição vertical, autonomia e a Lei de Conway na interface</h3>
@@ -262,7 +433,7 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         <div class="duo">
           <div>
             <h4>Para que serve</h4>
-            <p>Desbloquear o trabalho paralelo de dezenas de desenvolvedores, reduzir radicalmente o tempo de build e permitir que cada equipe implante melhorias no seu domínio de negócio sem sincronização nem aprovações cruzadas.</p>
+            <p>Desbloquear o trabalho paralelo de dezenas de desenvolvedores, reduzir o tempo de build e permitir que cada equipe implante melhorias no seu domínio de negócio sem sincronização nem aprovações cruzadas.</p>
           </div>
           <div>
             <h4>Por que é importante</h4>
@@ -273,7 +444,7 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         <details class="alem">
           <summary><span class="alem-tag">Para ir além</span><span class="alem-opt">Isolamento de Estilos CSS e Scoping em Micro Frontends</span></summary>
           <div class="alem-body">
-            <p>Um dos desafios mais críticos de micro frontends integrados no mesmo DOM é o vazamento de CSS global. Uma classe <code>.btn-primary { padding: 20px }</code> definida pelo Checkout pode distorcer visualmente o Catálogo. Para mitigar esse risco sem recorrer ao isolamento rígido de Shadow DOM (que quebra acessibilidade, foco e certos frameworks), as abordagens recomendadas pela indústria são: CSS Modules com hashes únicos compilados por componente, Styled Components / Emotion com escopo por nó, ou frameworks de utilitários atômicos com prefixos exclusivos (Tailwind com prefixo <code>chk-</code>, <code>cat-</code>).</p>
+            <p>Um dos desafios mais críticos de micro frontends integrados no mesmo DOM é o vazamento de CSS global. Uma classe <code>.btn-primary { padding: 20px }</code> definida pelo Checkout pode distorcer visualmente o Catálogo. Para mitigar esse risco sem recorrer ao Shadow DOM (que isola bem, mas complica estilos globais, foco e integração com alguns frameworks), as abordagens recomendadas pela indústria são: CSS Modules com hashes únicos compilados por componente, Styled Components / Emotion com escopo por nó, ou frameworks de utilitários atômicos com prefixos exclusivos (Tailwind com prefixo <code>chk-</code>, <code>cat-</code>).</p>
             <small class="alem-src">ThoughtWorks Technology Radar &amp; W3C Web Components Shadow DOM Spec</small>
           </div>
         </details>
@@ -285,8 +456,8 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         <div class="gotcha">
           <b>Armadilhas</b>
           <ul>
-            <li><b>Adotar Micro Frontends para equipes minúsculas:</b> times com menos de 15 desenvolvedores sofrem com complexidade acidental sem colher benefícios de autonomia.</li>
-            <li><b>Poliglotismo inconsequente de frameworks:</b> misturar React, Angular e Vue na mesma página quadruplica o peso da página para 8MB e deteriora o tempo de carregamento para o cliente.</li>
+            <li><b>Adotar Micro Frontends para equipes minúsculas:</b> com um time só, não existe o gargalo entre times que MFE resolve; sobra a complexidade de tooling, versionamento e deploy.</li>
+            <li><b>Poliglotismo inconsequente de frameworks:</b> misturar React, Angular e Vue na mesma página carrega vários runtimes, aumenta o peso da página e piora o tempo de carregamento.</li>
             <li><b>CSS global vazando entre equipes:</b> estilos declarados em seletores genéricos quebram componentes de outros times em tempo de execução.</li>
             <li><b>Dependência em tempo de compilação:</b> importar código TypeScript/JavaScript diretamente entre remotes via npm recria um monólito distribuído com acoplamento de versão.</li>
           </ul>
@@ -354,14 +525,14 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
               <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Uma diretoria técnica propôs adotar Micro Frontends em um produto que conta atualmente com um time de 5 desenvolvedores, argumentando que a arquitetura vai acelerar a entrega e permitir que cada dev use uma biblioteca diferente.</p>
               <p class="te-instrucao">Com base nas boas práticas arquiteturais, qual é a análise técnica correta sobre essa decisão?</p>
               <div class="te-options">
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. MFEs não reduzem o consumo de banda nem transformam HTML em blocos binários; ao contrário, tendem a aumentar requisições HTTP.">
-                  <span class="te-letter">A</span> A arquitetura deve ser adotada imediatamente porque reduz o consumo de banda de rede em conexões móveis ao fragmentar o arquivo index.html em blocos binários.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Para o usuário, MFE costuma custar mais (mais requisições e runtime duplicado); o ganho é organizacional, não de desempenho.">
+                  <span class="te-letter">A</span> Adotar, porque micro frontends sempre deixam a aplicação mais rápida para o usuário.
                 </button>
-                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! MFEs resolvem problemas organizacionais de muitas equipes trabalhando no mesmo código. Para times pequenos, um monólito modular é muito mais eficiente.">
-                  <span class="te-letter">B</span> A decisão adiciona complexidade acidental desnecessária: o overhead de tooling, governança e orquestração de deploy supera os ganhos para um time pequeno.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Vários frameworks na mesma página aumentam o peso e a complexidade; liberdade de framework não é o objetivo de MFE.">
+                  <span class="te-letter">B</span> Adotar, desde que cada dev possa usar um framework diferente para ganhar autonomia.
                 </button>
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Navegadores não executam contêineres Docker para renderizar interfaces JavaScript; a proposta é totalmente descabida.">
-                  <span class="te-letter">C</span> A recomendação técnica correta é aprovar o projeto apenas se todos os módulos forem compilados obrigatoriamente dentro de contêineres Docker executados dentro do navegador.
+                <button class="te-opt" type="button" data-correct="true" data-rationale="MFE resolve o gargalo entre vários times que disputam o mesmo repositório e o mesmo deploy; com um time só, esse gargalo não existe.">
+                  <span class="te-letter">C</span> Não adotar agora: com um time só, o custo de tooling, versionamento e deploy coordenado supera o ganho; um monólito modular resolve.
                 </button>
               </div>
               <div class="te-feedback" hidden></div>
@@ -386,8 +557,12 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
 
         <button class="done" type="button" data-k="mfe-01">marcar dominado</button>
       </article>
+    </section>
 
-      <!-- TÓPICO mfe-02 -->
+    <!-- ===================== PARTE 02 ===================== -->
+    <section class="part" id="p2">
+      <div class="ph"><span class="num">02</span><div><h2>Native Federation</h2><p>Como o navegador carrega e compartilha módulos de vários times sem o runtime do Webpack.</p></div></div>
+
       <article class="topic" id="mfe-02">
         <div class="th">
           <h3>Native Federation por baixo dos panos: ESM nativo, W3C Import Maps e adeus ao Webpack</h3>
@@ -399,7 +574,7 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
           <p>Uma equipe migrou suas aplicações corporativas para o build system moderno do Angular baseado em esbuild e Vite, alcançando uma aceleração de 75% nos tempos de compilação. No entanto, o sistema legado de Micro Frontends utilizava o Module Federation Plugin proprietário do Webpack, que não funcionava com esbuild. A adoção de Native Federation desbloqueou o uso do novo compilador de alta performance preservando 100% da federação dinâmica em produção sem alterar os contratos dos micro frontends.</p>
         </div>
 
-        <p class="direto"><b>Direto:</b> Native Federation é uma tecnologia criada por Manfred Steyer para implementar federação de módulos em micro frontends de forma completamente agnóstica de empacotador. Em vez de depender de patches internos proprietários do Webpack, o Native Federation utiliza padrões W3C oficiais: ECMAScript Modules (ESM) nativos do navegador e W3C Import Maps. Isso permite federar aplicações construídas com Vite, esbuild, Rollup ou Webpack com altíssima velocidade e zero acoplamento.</p>
+        <p class="direto"><b>Direto:</b> Native Federation é uma tecnologia criada por Manfred Steyer para implementar federação de módulos em micro frontends de forma completamente agnóstica de empacotador. Em vez de depender de patches internos proprietários do Webpack, o Native Federation utiliza padrões W3C oficiais: ECMAScript Modules (ESM) nativos do navegador e W3C Import Maps. Isso permite federar aplicações construídas com Vite, esbuild, Rollup ou Webpack sem prender o projeto a um empacotador.</p>
 
         <div class="analogia">
           <i class="ic">≈</i>
@@ -409,12 +584,12 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         <div class="duo o">
           <div>
             <h4>Como surgiu</h4>
-            <p>O Module Federation revolucionou a indústria com o Webpack 5 em 2020, mas acoplou fortemente os projetos à arquitetura interna do Webpack. Com a ascensão meteórica de ferramentas ultra-rápidas baseadas em Go e Rust (como esbuild e Vite), a comunidade precisava de uma solução de federação baseada em padrões abertos da web.</p>
+            <p>O Module Federation revolucionou a indústria com o Webpack 5 em 2020, mas acoplou fortemente os projetos à arquitetura interna do Webpack. Com a chegada de ferramentas mais rápidas, escritas em Go e Rust (como esbuild e Vite), a comunidade precisava de uma solução de federação baseada em padrões abertos da web.</p>
             <div class="repl"><b>Veio substituir:</b> a dependência obrigatória do runtime proprietário do Webpack ContainerPlugin para carregar módulos remotos.</div>
           </div>
           <div>
             <h4>O mecanismo</h4>
-            <p>No build, o Native Federation analisa as dependências compartilhadas e os módulos expostos, gerando artefatos ESM nativos. No runtime, o navegador recebe um &lt;script type="importmap"&gt; que mapeia aliases de pacotes (como '@angular/core') para URLs absolutas em CDN. Ao invocar import(), o próprio motor V8 carrega e deduplica os módulos nativamente.</p>
+            <p>No build, o Native Federation analisa as dependências compartilhadas e os módulos expostos, gerando artefatos ESM nativos. No runtime, o navegador recebe um &lt;script type="importmap"&gt; que mapeia aliases de pacotes (como '@angular/core') para URLs absolutas em CDN. Ao chamar import(), o carregador de módulos do navegador resolve o nome pelo import map, baixa o módulo e reaproveita o que já foi carregado.</p>
           </div>
         </div>
 
@@ -457,13 +632,13 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         </details>
 
         <div class="ver">
-          <b>onde a teoria mora:</b> o funcionamento de modularidade e empacotamento web moderno está em <a href="linux.html#c1">Processos e Sinais</a>; a estrutura de pipeline e entrega contínua está em <a href="conceitos-backend.html#h2">A Imagem Docker e Deploy</a>.
+          <b>onde a teoria mora:</b> a decisão de quando dividir um sistema, e o custo de dividir, está em <a href="../trilhas/arquitetura.html#a2">Arquitetura de Software</a>; a estrutura de pipeline e entrega contínua está em <a href="conceitos-backend.html#h2">A Imagem Docker e Deploy</a>.
         </div>
 
         <div class="gotcha">
           <b>Armadilhas</b>
           <ul>
-            <li><b>Bloqueio por CORS no servidor de módulos remotos:</b> arquivos ESM carregados de origens distintas falham se o servidor HTTP não enviar o cabeçalho Access-Control-Allow-Origin: *.</li>
+            <li><b>Bloqueio por CORS no servidor de módulos remotos:</b> arquivos ESM carregados de origens distintas falham se o servidor HTTP não enviar o cabeçalho Access-Control-Allow-Origin; libere a origem do shell, não <code>*</code>.</li>
             <li><b>Esquecer o polyfill em navegadores antigos:</b> páginas quebram silenciosamente sem es-module-shims em navegadores corporativos desatualizados.</li>
             <li><b>Duplicação por caminhos de importação divergentes:</b> importar 'lodash' em um remote e 'lodash/fp' em outro sem mapeamento adequado pode anular a deduplicação de módulos.</li>
             <li><b>Falta de cabeçalhos de cache imutável:</b> módulos com nomes não hasheados podem causar inconsistências de versão no cache do navegador após deploys.</li>
@@ -532,14 +707,14 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
               <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Durante a migração de um projeto corporativo de Webpack para Vite com Native Federation, o desenvolvedor nota que ao tentar carregar um componente remoto de outro domínio na nuvem, o navegador emite um erro de bloqueio de rede no console.</p>
               <p class="te-instrucao">Qual é a causa mais provável desse erro e como solucioná-lo?</p>
               <div class="te-options">
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Micro frontends rodam em navegadores web sob protocolo HTTP, não via sockets Unix do sistema operacional.">
-                  <span class="te-letter">A</span> O Vite exige que todos os micro frontends sejam hospedados no mesmo processo do sistema operacional sob um socket Unix compartilhado.
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Módulos ESM são carregados em modo CORS: sem o cabeçalho liberando a origem do shell, o navegador bloqueia.">
+                  <span class="te-letter">A</span> O servidor do remote não envia o cabeçalho de CORS liberando a origem do shell; módulos ESM de outra origem exigem CORS.
                 </button>
-                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ESM dinâmicos carregados entre diferentes origens exigem configuração explícita de CORS no servidor que serve os arquivos.">
-                  <span class="te-letter">B</span> O servidor de arquivos estáticos do remote não configurou o cabeçalho Access-Control-Allow-Origin, violando a política de CORS do navegador.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Import Maps aceitam URLs de outras origens; o que falta é o servidor liberar CORS.">
+                  <span class="te-letter">B</span> Import Maps só funcionam com módulos da mesma origem, então o remote precisa ser servido pelo mesmo domínio do shell.
                 </button>
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. W3C Import Maps foi desenvolvido exatamente para viabilizar e gerenciar módulos ESM em navegadores web.">
-                  <span class="te-letter">C</span> O padrão W3C Import Maps proíbe o carregamento de qualquer biblioteca que contenha trechos escritos em sintaxe ECMAScript Modules moderna.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="import() dinâmico funciona nos navegadores modernos; erro de rede ao carregar de outra origem é CORS.">
+                  <span class="te-letter">C</span> O navegador bloqueia import() dinâmico em produção; é preciso trocar por uma tag script comum.
                 </button>
               </div>
               <div class="te-feedback" hidden></div>
@@ -565,7 +740,6 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
         <button class="done" type="button" data-k="mfe-02">marcar dominado</button>
       </article>
 
-      <!-- TÓPICO mfe-03 -->
       <article class="topic" id="mfe-03">
         <div class="th">
           <h3>O contrato do federation.config.js: exposes, shared, singleton e strictVersion</h3>
@@ -592,7 +766,7 @@ button.done.is{background:var(--teal);color:#1e1f29;border-color:var(--teal)}
           </div>
           <div>
             <h4>O mecanismo</h4>
-            <p>O federation.config.js é lido pelo plugin de build para extrair metadados e gerar o package.json compartilhado. Ao configurar singleton: true, o runtime assegura que apenas uma instância da biblioteca seja mantida na memória. O atributo strictVersion: true emite erro explícito caso o remote exija uma faixa SemVer incompatível.</p>
+            <p>O federation.config.js é lido pelo plugin de build para gerar os metadados da federação (o <code>remoteEntry.json</code>, com os módulos expostos e as dependências compartilhadas) e o import map usado em tempo de execução. Ao configurar singleton: true, o runtime assegura que apenas uma instância da biblioteca seja mantida na memória. O atributo strictVersion: true emite erro explícito caso o remote exija uma faixa SemVer incompatível.</p>
           </div>
         </div>
 
@@ -652,7 +826,7 @@ module.exports = withNativeFederation({
         </details>
 
         <div class="ver">
-          <b>onde a teoria mora:</b> o versionamento semântico e contratos de release estão em <a href="git.html#g2">SemVer no Git</a>; a resolução de dependências no ecossistema Java está em <a href="python-para-java.html#py-ambiente">Dependências e Ambientes</a>.
+          <b>onde a teoria mora:</b> o versionamento semântico e contratos de release estão em <a href="git.html#g2">SemVer no Git</a>.
         </div>
 
         <div class="gotcha">
@@ -727,14 +901,14 @@ module.exports = withNativeFederation({
               <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Ao carregar um micro frontend de carrinho de compras dentro do Shell da aplicação, o console do navegador acusa o seguinte erro clássico: 'Error: Invalid hook call. Hooks can only be called inside the body of a function component'.</p>
               <p class="te-instrucao">Qual foi o erro de configuração no federation.config.js e como corrigi-lo?</p>
               <div class="te-options">
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A tag meta viewport diz respeito à escala visual de tela em dispositivos móveis, sem relação com hooks do framework.">
-                  <span class="te-letter">A</span> O micro frontend foi configurado sem a tag meta viewport responsiva, impedindo que o mecanismo de renderização do DOM execute scripts de UI.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="O build do Native Federation compila os módulos expostos; o erro de hooks não vem daí.">
+                  <span class="te-letter">A</span> O remote expôs o componente em TypeScript; é preciso expor apenas arquivos .js já compilados.
                 </button>
-                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O erro clássico de 'Invalid hook call' em micro frontends quase sempre decorre de duas instâncias da biblioteca react coexistindo na mesma página.">
-                  <span class="te-letter">B</span> O React foi carregado em duas instâncias diferentes de memória; deve-se configurar singleton: true para o pacote react no bloco shared.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="strictVersion só confere a faixa de versão; quem garante uma única instância é singleton.">
+                  <span class="te-letter">B</span> Faltou strictVersion: true no React, que garantiria uma única instância.
                 </button>
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Native Federation suporta perfeitamente módulos TypeScript compilados em ESM; WebAssembly não é requisito para componentes.">
-                  <span class="te-letter">C</span> O arquivo federation.config.js utilizou a propriedade exposes para publicar código escrito em TypeScript em vez de código compilado em WebAssembly.
+                <button class="te-opt" type="button" data-correct="true" data-rationale="Hooks dependem de uma única instância do React; com duas, o componente do remote chama hooks numa instância que não está renderizando.">
+                  <span class="te-letter">C</span> O React foi carregado duas vezes (uma pelo shell e outra pelo remote); falta singleton: true para react e react-dom no shared.
                 </button>
               </div>
               <div class="te-feedback" hidden></div>
@@ -759,8 +933,12 @@ module.exports = withNativeFederation({
 
         <button class="done" type="button" data-k="mfe-03">marcar dominado</button>
       </article>
+    </section>
 
-      <!-- TÓPICO mfe-04 -->
+    <!-- ===================== PARTE 03 ===================== -->
+    <section class="part" id="p3">
+      <div class="ph"><span class="num">03</span><div><h2>Comunicação entre micro frontends</h2><p>Avisar por evento, sem chamar o código do outro time.</p></div></div>
+
       <article class="topic" id="mfe-04">
         <div class="th">
           <h3>Comunicação e orquestração desacoplada: CustomEvent, BroadcastChannel e sincronização de rotas</h3>
@@ -782,7 +960,7 @@ module.exports = withNativeFederation({
         <div class="duo o">
           <div>
             <h4>Como surgiu</h4>
-            <p>Na tentativa de fazer micro frontends conversarem, muitas arquiteturas iniciais criaram um Redux global ou biblioteca de estado compartilhado em window. Essa prática causou acoplamento catastrófico: qualquer alteração no formato do estado quebrava aplicações de squads distintos no mesmo instante.</p>
+            <p>Na tentativa de fazer micro frontends conversarem, muitas arquiteturas iniciais criaram um Redux global ou biblioteca de estado compartilhado em window. Essa prática acoplou os times: qualquer alteração no formato do estado quebrava aplicações de squads distintos no mesmo instante.</p>
             <div class="repl"><b>Veio substituir:</b> estados globais acoplados em window e chamadas síncronas a métodos de instâncias de outros componentes.</div>
           </div>
           <div>
@@ -840,13 +1018,13 @@ module.exports = withNativeFederation({
         </details>
 
         <div class="ver">
-          <b>onde a teoria mora:</b> a arquitetura orientada a eventos no backend está em <a href="../trilhas/mensageria.html#c1">Topologia de Mensageria</a>; o isolamento de domínios corporativos está em <a href="conceitos-backend.html#g1">Broken Access Control</a>.
+          <b>onde a teoria mora:</b> a arquitetura orientada a eventos no backend está em <a href="../trilhas/mensageria.html#c1">Topologia de Mensageria</a>; os mesmos cuidados de contrato e versão de evento valem no navegador.
         </div>
 
         <div class="gotcha">
           <b>Armadilhas</b>
           <ul>
-            <li><b>Usar o localStorage como fila síncrona de eventos:</b> o evento storage possui latência inconsistente e satura a cota de 5MB de armazenamento do navegador.</li>
+            <li><b>Usar o localStorage como fila síncrona de eventos:</b> o evento storage não dispara na própria aba, grava em disco a cada mensagem e disputa a cota de armazenamento com o resto da aplicação.</li>
             <li><b>Criar um estado global gigante compartilhado em window:</b> recria o monólito em tempo de execução e acopla todos os deploys de todos os squads.</li>
             <li><b>Esquecer de remover os event listeners (Memory Leaks):</b> remotes destruídos ou recarregados que não removem seus listeners causam vazamentos cumulativos de memória na aplicação.</li>
             <li><b>Payloads não versionados nos eventos customizados:</b> alterar campos do detail de um evento sem compatibilidade regressiva quebra os ouvintes de outros times.</li>
@@ -915,14 +1093,14 @@ module.exports = withNativeFederation({
               <p class="te-pergunta"><strong>Cenário Prático de Engenharia / Aplicação:</strong> Ao deslogar em uma aba do sistema financeiro, o usuário percebe que as outras 3 abas abertas no mesmo navegador continuam exibindo dados sensíveis de saldo até que a página seja manualmente recarregada.</p>
               <p class="te-instrucao">Qual é a solução nativa mais elegante e resiliente para propagar o logout imediato entre todas as abas abertas?</p>
               <div class="te-options">
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Polling contínuo de 10ms gera um ataque de negação de serviço (DDoS) auto-infligido contra os servidores de backend.">
-                  <span class="te-letter">A</span> Criar um loop síncrono com setInterval de 10ms em cada aba para consultar o endpoint /status do servidor de backend continuamente.
+                <button class="te-opt" type="button" data-correct="true" data-rationale="BroadcastChannel entrega mensagens entre abas da mesma origem, sem servidor e sem polling.">
+                  <span class="te-letter">A</span> Publicar o logout num BroadcastChannel('auth'); as outras abas da mesma origem recebem a mensagem e limpam a tela na hora.
                 </button>
-                <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A BroadcastChannel API permite que diferentes abas da mesma origem troquem mensagens diretamente no cliente sem qualquer chamada ao servidor.">
-                  <span class="te-letter">B</span> Instanciar um BroadcastChannel('auth') para transmitir o evento de encerramento de sessão instantaneamente a todas as abas da mesma origem.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas gera tráfego constante e atraso; o navegador já oferece um canal entre abas.">
+                  <span class="te-letter">B</span> Fazer cada aba consultar o servidor a cada poucos segundos para saber se a sessão acabou.
                 </button>
-                <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Scripts de navegador não possuem permissão do sistema operacional para fechar janelas alheias nem devem usar sockets inseguros.">
-                  <span class="te-letter">C</span> Forçar o fechamento abrupto de todas as janelas do sistema operacional através de chamadas privilegiadas via WebSockets não autenticados.
+                <button class="te-opt" type="button" data-correct="false" data-rationale="CustomEvent circula só no documento atual; não atravessa abas.">
+                  <span class="te-letter">C</span> Disparar um CustomEvent('logout') em window, que chega a todas as abas abertas.
                 </button>
               </div>
               <div class="te-feedback" hidden></div>
@@ -938,7 +1116,7 @@ module.exports = withNativeFederation({
               </div>
               <div class="tf-face tf-back">
                 <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                <p class="tf-resposta">A BroadcastChannel API foi desenhada especificamente como um canal pub/sub de mensageria em memória entre contextos da mesma origem. Ela não grava dados no disco, não concorre pela cota de 5MB de armazenamento e entrega mensagens de forma limpa sem deixar resíduos no browser.</p>
+                <p class="tf-resposta">A BroadcastChannel API foi desenhada especificamente como um canal pub/sub de mensageria em memória entre contextos da mesma origem. Ela não grava em disco, não ocupa a cota do localStorage e não deixa dados sobrando no navegador depois da mensagem.</p>
                 <span class="tf-hint">← Toque para voltar à pergunta</span>
               </div>
             </div>
@@ -948,22 +1126,101 @@ module.exports = withNativeFederation({
         <button class="done" type="button" data-k="mfe-04">marcar dominado</button>
       </article>
     </section>
+
+    <!-- ===================== PARTE 04 ===================== -->
+    <section class="part" id="p4">
+      <div class="ph"><span class="num">04</span><div><h2>Como aprender de verdade: vídeos, pesquisa e prática</h2><p>Micro frontends só fazem sentido quando você sente o problema: monte dois remotes e um shell.</p></div></div>
+
+      <article class="topic" id="mfe-aprender">
+        <div class="th"><h3>O ciclo, as fontes e como praticar</h3><div class="badges"><span class="badge b-ess">método</span></div></div>
+        <p class="direto"><b>Direto:</b> Ler sobre micro frontends dá a falsa impressão de que é só configuração. O que ensina é montar um shell com dois remotes, quebrar de propósito (React duplicado, CORS, evento sem versão) e consertar. Vídeo dá o mapa, documentação dá a precisão, o laboratório fixa.</p>
+
+        <div class="caso"><b>o caso</b>
+          <p>Você entende o <code>federation.config.js</code> lendo, mas na primeira integração real o remote carrega em branco e o console mostra um erro de CORS e outro de hooks. Os dois estão nesta página; reconhecê-los na tela é o que só o laboratório ensina.</p>
+        </div>
+        <figure class="dg"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+          <text x="170" y="16" class="bt">o ciclo que fixa</text><rect x="8" y="34" width="92" height="28" rx="8" class="b2"/><text x="54" y="52" class="bs">ler</text><path d="M102,48 L120,48" class="l"/><path d="M120,48 L113,44 L113,52 Z" class="h"/><rect x="122" y="34" width="96" height="28" rx="8" class="b1"/><text x="170" y="52" class="bs">doc oficial</text><path d="M220,48 L238,48" class="l"/><path d="M238,48 L231,44 L231,52 Z" class="h"/><rect x="240" y="34" width="92" height="28" rx="8" class="b2"/><text x="286" y="52" class="bs">montar o lab</text><text x="170" y="96" class="bs">shell + 2 remotes + evento</text>
+        </svg></figure>
+        <p><b>Fontes.</b></p>
+        <ul>
+          <li><b>Documentação do Native Federation</b> (pacote <code>@angular-architects/native-federation</code>, no npm e no GitHub da Angular Architects) e o blog de Manfred Steyer, autor da ferramenta. Em inglês.</li>
+          <li><b>MDN Web Docs</b> sobre <code>&lt;script type="importmap"&gt;</code>, <code>import()</code>, <code>CustomEvent</code> e <code>BroadcastChannel</code>, com tradução para o português em boa parte das páginas.</li>
+          <li><b>Artigo "Micro Frontends" de Cam Jackson</b>, no site de Martin Fowler: a referência mais citada para quando dividir e quando não dividir. Em inglês.</li>
+        </ul>
+        <p class="fine">Não encontrei um canal em português dedicado a micro frontends que eu possa indicar com segurança. Pesquise "micro frontends native federation" e "module federation angular" no YouTube, e confira a data: o assunto mudou muito desde 2021, e vídeos antigos ensinam o Module Federation do Webpack.</p>
+        <p><b>Como pesquisar.</b> Pesquise o sintoma, não o conceito: "Invalid hook call module federation", "native federation CORS remoteEntry", "shared singleton strictVersion". Confira sempre na documentação da versão que você usa, porque as opções mudaram entre versões.</p>
+        <div class="cs"><b>Mini-projeto na sua stack.</b> Monte um shell e dois remotes com Native Federation:<br>1. <b>Shell</b> com layout e rotas; remotes <b>catálogo</b> e <b>carrinho</b>, cada um com o seu servidor.<br>2. <b>Compartilhe</b> o framework como <code>singleton</code>; depois tire o singleton de propósito e veja o erro.<br>3. <b>Evento:</b> o carrinho dispara <code>cart:updated</code> e o shell atualiza o contador; o logout vai por <code>BroadcastChannel</code>.<br>4. <b>Backend:</b> uma API Spring que valida o token do Keycloak (tópico de Keycloak no <a href="conceitos-backend.html#g4">Caderno de Dúvidas</a>), com o login feito uma vez no shell.</div>
+        <div class="ver"><b>onde a teoria mora</b>A decisão de dividir e o custo de dividir estão em <a href="../trilhas/arquitetura.html#a2">Arquitetura de Software</a>; o login centralizado está em <a href="conceitos-backend.html#g4">Keycloak</a>.</div>
+        <button class="done" type="button" data-k="mfe-aprender">marcar dominado</button>
+      </article>
+    </section>
+
+<footer class="foot">
+      <p>Micro Frontends &amp; Native Federation · outubro de 2026 · caderno de apoio do acervo, em tema Dracula. Os pares deste arquivo são <code class="i">Arquitetura de Software</code> e o tópico de <code class="i">Keycloak</code> do Caderno de Dúvidas.</p>
+    </footer>
   </main>
 </div>
+<button class="up" id="up" type="button" aria-label="Voltar ao topo">↑</button>
+<p class="nores" id="nores">Nada corresponde ao filtro.</p>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="p-h"><div><span class="tag" id="pTag"></span><h3 id="pTitle"></h3><p id="pSub"></p></div><button class="x" id="pX" type="button" aria-label="Fechar">✕</button></div>
+  <div class="p-b" id="pBody"></div>
+  <div class="p-f"><button class="mark" id="pMark" type="button">marcar estudado</button><button class="grade ok" id="gOk" type="button" hidden>acertei ✓</button><button class="grade no" id="gNo" type="button" hidden>errei ✗</button><button class="nav-b" id="pPrev" type="button">← anterior</button><button class="nav-b" id="pNext" type="button">próximo →</button></div>
+</aside>
+
+<script defer src="../assets/js/micro-frontends.inline.js"></script>
+<style>
+/* ===== camada de animação dos diagramas (.dg) =====
+   O estado "escondido" depende da classe .dganim, que o script só adiciona
+   quando vai mesmo animar. Sem IntersectionObserver, ou com movimento
+   reduzido, a classe nunca entra e todo diagrama aparece normalmente. */
+.dganim figure.dg .l:not(.d):not(.dash),.dganim figure.dg .lt:not(.d):not(.dash),.dganim figure.dg .lb:not(.d):not(.dash),.dganim figure.dg .lr:not(.d):not(.dash),.dganim figure.dg .ln:not(.d):not(.dash){stroke-dasharray:100;stroke-dashoffset:100}
+.dganim figure.dg .b1,.dganim figure.dg .b2,.dganim figure.dg .b4,.dganim figure.dg .b5,.dganim figure.dg .b6,.dganim figure.dg .bx,.dganim figure.dg .sf{opacity:0;transform-box:fill-box;transform-origin:center}
+.dganim figure.dg .bt,.dganim figure.dg .bs,.dganim figure.dg .h,.dganim figure.dg .ht,.dganim figure.dg .hb,.dganim figure.dg .hr,.dganim figure.dg .hd,.dganim figure.dg .b3,.dganim figure.dg .l.d,.dganim figure.dg .lt.d,.dganim figure.dg .lb.d,.dganim figure.dg .lr.d,.dganim figure.dg .ln.d,.dganim figure.dg .l.dash,.dganim figure.dg .ln.dash{opacity:0}
+figure.dg.in .l:not(.d):not(.dash),figure.dg.in .lt:not(.d):not(.dash),figure.dg.in .lb:not(.d):not(.dash),figure.dg.in .lr:not(.d):not(.dash),figure.dg.in .ln:not(.d):not(.dash){animation:dgDraw .8s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .b1,figure.dg.in .b2,figure.dg.in .b4,figure.dg.in .b5,figure.dg.in .b6,figure.dg.in .bx,figure.dg.in .sf{animation:dgPop .5s cubic-bezier(.22,1,.36,1) var(--d,0s) forwards}
+figure.dg.in .bt,figure.dg.in .bs,figure.dg.in .h,figure.dg.in .ht,figure.dg.in .hb,figure.dg.in .hr,figure.dg.in .hd,figure.dg.in .b3,figure.dg.in .l.d,figure.dg.in .lt.d,figure.dg.in .lb.d,figure.dg.in .lr.d,figure.dg.in .ln.d,figure.dg.in .l.dash,figure.dg.in .ln.dash{animation:dgFade .5s cubic-bezier(.22,1,.36,1) calc(var(--d,0s) + .22s) forwards}
+@keyframes dgDraw{to{stroke-dashoffset:0}}
+@keyframes dgPop{to{opacity:1;transform:none}}
+@keyframes dgFade{to{opacity:1}}
+.dganim figure.dg .pulse,.dganim figure.dg .flow{opacity:0}
+figure.dg.in .pulse{animation:dgFade .5s ease var(--pd,1.1s) forwards}
+figure.dg.in .flow{animation:dgFade .5s ease var(--pd,1.1s) forwards,dgFlow 1.2s linear infinite}
+figure.dg .pulse.gen circle{filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor)}
+figure.dg.in .pulse.gen{animation:none;opacity:0}
+figure.dg.in .pulse.gen.go{animation:dgFade .5s ease var(--pd,1.15s) forwards}
+@keyframes dgFlow{to{stroke-dashoffset:-27}}
+@media(prefers-reduced-motion:reduce){
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+/* impressão: diagrama que não foi rolado na tela não pode sair em branco no papel */
+@media print{
+  figure.dg svg *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+  figure.dg .pulse,figure.dg .flow{display:none!important}
+}
+::view-transition-old(root),::view-transition-new(root){
+  animation-duration:.4s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+</style>
 
 <div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Imagem">
   <div class="im-backdrop" id="imBackdrop"></div>
   <div class="im-container">
     <header class="im-header">
       <div class="im-title-group">
-        <span class="im-badge" id="imBadge">DIAGRAMA TÉCNICO</span>
+        <span class="im-badge" id="imBadge">MAPA MENTAL</span>
         <h3 class="im-caption" id="imCaption">Visualização Ampliada</h3>
       </div>
       <div class="im-actions">
-        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom">−</button>
-        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala">100%</button>
-        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom">+</button>
-        <button type="button" class="im-btn im-close" id="imClose" title="Fechar">✕</button>
+        <button type="button" class="im-btn" id="imZoomOut" title="Diminuir Zoom (Scroll para baixo)">−</button>
+        <button type="button" class="im-btn im-scale-val" id="imZoomReset" title="Resetar escala (100%)">100%</button>
+        <button type="button" class="im-btn" id="imZoomIn" title="Aumentar Zoom (Scroll para cima)">+</button>
+        <button type="button" class="im-btn im-close" id="imClose" title="Fechar (Esc ou clique fora)">✕</button>
       </div>
     </header>
     <div class="im-viewport" id="imViewport">
@@ -972,16 +1229,15 @@ module.exports = withNativeFederation({
       </div>
     </div>
     <footer class="im-footer">
-      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora para fechar.</span>
+      <span class="im-hint">💡 <b>Dica:</b> Use a roda do mouse para zoom, arraste para mover ou clique fora da imagem para fechar.</span>
     </footer>
   </div>
 </div>
 
 <script defer src="../assets/js/img-modal.js"></script>
 <script src="../assets/js/responsive-drawer.js" defer></script>
-<script src="../assets/js/quiz-engine.js" defer></script>
-<script defer src="../assets/js/instant-nav.js"></script>
+  <script src="../assets/js/quiz-engine.js" defer></script>
+  <script defer src="../assets/js/instant-nav.js"></script>
 <script defer src="../assets/js/pomodoro.js"></script>
-<script defer src="../assets/js/micro-frontends.inline.js"></script>
 </body>
 </html>

@@ -958,13 +958,13 @@ The dependencies of some of the beans in the application context form a cycle:
                 <p class="te-instrucao">Qual é a correção arquitetural correta segundo as melhores práticas do ecossistema Spring?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Essa propriedade é apenas um contorno que mascara falhas de design e introduz comportamentos imprevisíveis com proxies.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Essa propriedade é apenas um contorno que mascara falhas de design e introduz comportamentos imprevisíveis com proxies.">
                     <span class="te-letter">A</span> Habilitar spring.main.allow-circular-references=true no application.properties para manter o design sem alterar os beans.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Dependências circulares são sintomas de acoplamento bidirecional. Criar um coordenador terceiro ou publicar eventos de domínio assíncronos elimina o ciclo mantendo a arquitetura modular e extensível.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Dependências circulares são sintomas de acoplamento bidirecional. Criar um coordenador terceiro ou publicar eventos de domínio assíncronos elimina o ciclo mantendo a arquitetura modular e extensível.">
                     <span class="te-letter">B</span> Extrair a responsabilidade comum para um terceiro serviço ou usar eventos de domínio desacoplados via ApplicationEventPublisher.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Escopo Prototype em dependências circulares causa StackOverflowError imediato por loops infinitos de instanciação.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Escopo Prototype em dependências circulares causa StackOverflowError imediato por loops infinitos de instanciação.">
                     <span class="te-letter">C</span> Alterar o escopo de ambos os beans para @Scope('prototype') para que a JVM instancie novas cópias dinamicamente em tempo de execução.
                   </button>
                 </div>
@@ -1140,13 +1140,13 @@ public class CustomRegistryModifier implements BeanFactoryPostProcessor {
                 <p class="te-instrucao">O que esse método pode fazer com segurança?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Repositórios e conexões com o banco ainda não existem nessa fase embrionária do container IoC.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Repositórios e conexões com o banco ainda não existem nessa fase embrionária do container IoC.">
                     <span class="te-letter">A</span> Executar consultas SQL em repositórios Spring Data JPA injetados com @Autowired antes do carregamento completo do banco de dados.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring opera dentro da JVM gerenciada e não tem controle sobre o subsistema interno de memória do GC.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring opera dentro da JVM gerenciada e não tem controle sobre o subsistema interno de memória do GC.">
                     <span class="te-letter">B</span> Desativar a coleta de lixo da JVM durante o processo de boot para otimizar o tempo de inicialização de microsserviços.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O BeanFactoryPostProcessor atua estritamente na fase de metadados do container IoC. Ele pode ler ou modificar BeanDefinitions no registro antes que os construtores reais das classes comecem a ser invocados.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O BeanFactoryPostProcessor atua estritamente na fase de metadados do container IoC. Ele pode ler ou modificar BeanDefinitions no registro antes que os construtores reais das classes comecem a ser invocados.">
                     <span class="te-letter">C</span> Inspecionar e alterar metadados de BeanDefinitions no registro do container antes da instanciação dos objetos na memória.
                   </button>
                 </div>
@@ -1350,13 +1350,13 @@ public class AlertaService {
                 <p class="te-instrucao">O que acontece ao subir a aplicação e como resolver a ambiguidade no construtor de AlertaService?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Quando o container encontra múltiplos beans para um único ponto de injeção, recusa a ambiguidade. A resolução exige @Qualifier no ponto de injeção ou definir a implementação padrão via @Primary.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Quando o container encontra múltiplos beans para um único ponto de injeção, recusa a ambiguidade. A resolução exige @Qualifier no ponto de injeção ou definir a implementação padrão via @Primary.">
                     <span class="te-letter">A</span> Falha com NoUniqueBeanDefinitionException; deve-se desambiguar com @Qualifier no construtor ou marcar uma classe com @Primary.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring nunca adota ordem de arquivos do sistema de arquivos para desempate sem anotações explícitas de prioridade.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring nunca adota ordem de arquivos do sistema de arquivos para desempate sem anotações explícitas de prioridade.">
                     <span class="te-letter">B</span> O Spring seleciona deterministicamente a classe cuja compilação gerou o primeiro arquivo .class no diretório de classes do ClassLoader.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O erro é de montagem do grafo no container IoC em tempo de execução no startup, não de compilação Java.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O erro é de montagem do grafo no container IoC em tempo de execução no startup, não de compilação Java.">
                     <span class="te-letter">C</span> O compilador javac gera erro de compilação estática durante o build antes da geração do bytecode por falta de implementação única.
                   </button>
                 </div>
@@ -1548,13 +1548,13 @@ public class ExportadorService {
                 <p class="te-instrucao">O que acontece ao chamar o método de exportação repetidamente em produção?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Beans Singleton vivem por todo o ciclo de vida do ApplicationContext e não são recriados periodicamente.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Beans Singleton vivem por todo o ciclo de vida do ApplicationContext e não são recriados periodicamente.">
                     <span class="te-letter">A</span> O Spring recria o bean Singleton periodicamente a cada 5 minutos para renovar as instâncias dependentes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O bean Singleton é construído uma única vez no boot, capturando a referência do Prototype naquele instante. Para criar uma nova instância a cada uso, deve-se injetar ObjectProvider<RelatorioGerador> ou usar @Lookup.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O bean Singleton é construído uma única vez no boot, capturando a referência do Prototype naquele instante. Para criar uma nova instância a cada uso, deve-se injetar ObjectProvider<RelatorioGerador> ou usar @Lookup.">
                     <span class="te-letter">B</span> O Prototype foi injetado uma única vez na criação do Singleton, congelando a mesma instância; a correção exige usar ObjectProvider ou @Lookup para obter novas instâncias sob demanda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring permite essa injeção sem erros sintáticos, gerando o clássico bug de reutilização de estado.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring permite essa injeção sem erros sintáticos, gerando o clássico bug de reutilização de estado.">
                     <span class="te-letter">C</span> O container lança IllegalScopeException durante o escaneamento de pacotes por incompatibilidade de escopo.
                   </button>
                 </div>
@@ -1758,13 +1758,13 @@ public class CacheWarmupService {
                 <p class="te-instrucao">Apesar da anotação @Transactional, o método executa sem contexto transacional e sem conexão de banco gerenciada. Por que isso ocorreu?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O framework não impõe travas baseadas em relógio, mas obedece à sequência de ciclo de vida dos componentes.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O framework não impõe travas baseadas em relógio, mas obedece à sequência de ciclo de vida dos componentes.">
                     <span class="te-letter">A</span> O Spring restringe o uso de conexões com bancos relacionais durante os primeiros 30 segundos de inicialização do contexto para estabilização.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A interface Ordered controla precedência entre beans, não acoplando proxies transacionais a métodos de inicialização.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A interface Ordered controla precedência entre beans, não acoplando proxies transacionais a métodos de inicialização.">
                     <span class="te-letter">B</span> Métodos anotados com @PostConstruct só podem ser executados com transações se a classe implementar a interface Ordered do Spring.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! @PostConstruct roda na inicialização crua do bean, antes do envelopamento por BeanPostProcessors que criam proxies dinâmicos (AOP/@Transactional). Para rodar com transação ativa no boot, escute ApplicationReadyEvent.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="@PostConstruct roda na inicialização crua do bean, antes do envelopamento por BeanPostProcessors que criam proxies dinâmicos (AOP/@Transactional). Para rodar com transação ativa no boot, escute ApplicationReadyEvent.">
                     <span class="te-letter">C</span> O @PostConstruct executa antes da geração dos proxies dinâmicos de @Transactional; deve-se escutar o ApplicationReadyEvent.
                   </button>
                 </div>
@@ -1965,13 +1965,13 @@ public class NotificadorListener {
                 <p class="te-instrucao">Se 'debitarEstoque()' falhar e a transação sofrer Rollback, o e-mail terá sido enviado? Como garantir que o e-mail só saia se o banco confirmar com sucesso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! @EventListener padrão reage no ato do disparo, antes da confirmação da transação. Se houver rollback, o efeito externo já ocorreu. @TransactionalEventListener(phase = AFTER_COMMIT) adia a execução até a gravação bem-sucedida.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="@EventListener padrão reage no ato do disparo, antes da confirmação da transação. Se houver rollback, o efeito externo já ocorreu. @TransactionalEventListener(phase = AFTER_COMMIT) adia a execução até a gravação bem-sucedida.">
                     <span class="te-letter">A</span> Sim, o e-mail saiu pois @EventListener executa imediatamente; use @TransactionalEventListener(phase = AFTER_COMMIT) para aguardar o commit.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Protocolos de rede externos (SMTP/HTTP) não participam de transações ACID locais de banco de dados.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Protocolos de rede externos (SMTP/HTTP) não participam de transações ACID locais de banco de dados.">
                     <span class="te-letter">B</span> Não, pois o Spring intercepta chamadas de rede externas e faz o rollback automático de conexões de email quando a transação de banco falha.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O publicador de eventos suporta transações nativamente e se sincroniza perfeitamente com TransactionSynchronizationManager.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O publicador de eventos suporta transações nativamente e se sincroniza perfeitamente com TransactionSynchronizationManager.">
                     <span class="te-letter">C</span> O código falha com EventDeliveryException porque o ApplicationEventPublisher bloqueia eventos disparados dentro de métodos @Transactional.
                   </button>
                 </div>
@@ -2180,13 +2180,13 @@ public class Inicializador implements ApplicationRunner {
                 <p class="te-instrucao">Qual a vantagem de usar ApplicationRunner em vez de CommandLineRunner nesse cenário?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ambos executam na mesma fase do ciclo de vida: após o refresh completo do ApplicationContext.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Ambos executam na mesma fase do ciclo de vida: após o refresh completo do ApplicationContext.">
                     <span class="te-letter">A</span> ApplicationRunner roda antes da criação do DataSource e CommandLineRunner roda exclusivamente após o encerramento do contexto.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! ApplicationRunner provê o ApplicationArguments, que separa flags nomeadas (--ambiente=prod) de argumentos posicionais. O CommandLineRunner recebe apenas o array bruto String[] sem tratamento estruturado.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="ApplicationRunner provê o ApplicationArguments, que separa flags nomeadas (--ambiente=prod) de argumentos posicionais. O CommandLineRunner recebe apenas o array bruto String[] sem tratamento estruturado.">
                     <span class="te-letter">B</span> ApplicationRunner fornece parsing estruturado com ApplicationArguments (args.getOptionValues), enquanto CommandLineRunner recebe apenas String[].
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ambas as interfaces continuam ativas e amplamente suportadas em toda a linha 3.x do Spring Boot.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Ambas as interfaces continuam ativas e amplamente suportadas em toda a linha 3.x do Spring Boot.">
                     <span class="te-letter">C</span> CommandLineRunner foi descontinuado no Spring Boot 3 devido à incompatibilidade com o suporte a compilação nativa em GraalVM.
                   </button>
                 </div>
@@ -2371,13 +2371,13 @@ public class Application {
                 <p class="te-instrucao">Ao iniciar a aplicação, o Spring falha informando que 'PedidoController' precisa de 'PagamentoService', mas o bean não foi encontrado. Por que o bean não foi registrado?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring e a JVM suportam pacotes com qualquer profundidade de diretórios válidos.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring e a JVM suportam pacotes com qualquer profundidade de diretórios válidos.">
                     <span class="te-letter">A</span> O Spring impede o escaneamento de pacotes com mais de três níveis de profundidade estrutural na aplicação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Beans do Spring não exigem serialização para serem descobertos e gerenciados pelo container.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Beans do Spring não exigem serialização para serem descobertos e gerenciados pelo container.">
                     <span class="te-letter">B</span> A classe PagamentoService deveria implementar a interface Serializable para ser indexada pelo ClassLoader.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Por convenção, o @ComponentScan escaneia a partir do pacote onde a classe com @SpringBootApplication está localizada para baixo. Pacotes irmãos ou em níveis superiores são ignorados, a menos que especificados em scanBasePackages.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Por convenção, o @ComponentScan escaneia a partir do pacote onde a classe com @SpringBootApplication está localizada para baixo. Pacotes irmãos ou em níveis superiores são ignorados, a menos que especificados em scanBasePackages.">
                     <span class="te-letter">C</span> O @SpringBootApplication inicia a varredura a partir do pacote da classe Main ('com.loja.app') e subpacotes; o pacote irmão 'com.loja.pagamento' ficou de fora da busca padrão.
                   </button>
                 </div>
@@ -2558,13 +2558,13 @@ public class RedisAutoConfiguration {
                 <p class="te-instrucao">O que acontece se uma aplicação que usa esse starter declarar explicitamente seu próprio 'public CacheService meuCacheCustomizado()' em uma classe @Configuration?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Starters adotam 'Convenção com Direito de Recusa'. A anotação @ConditionalOnMissingBean garante que o bean default só existe se a aplicação usuária não definir uma implementação própria, prevenindo duplicações.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Starters adotam 'Convenção com Direito de Recusa'. A anotação @ConditionalOnMissingBean garante que o bean default só existe se a aplicação usuária não definir uma implementação própria, prevenindo duplicações.">
                     <span class="te-letter">A</span> O bean da auto-configuração não é criado graças ao @ConditionalOnMissingBean; o Spring adota o bean customizado do usuário sem conflitos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Anotações condicionais de starters foram desenhadas justamente para evitar colisões de BeanDefinition.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Anotações condicionais de starters foram desenhadas justamente para evitar colisões de BeanDefinition.">
                     <span class="te-letter">B</span> Ocorre DuplicateBeanDefinitionException durante a inicialização do container IoC travando a subida da aplicação com erro fatal.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Configurações explícitas do usuário possuem precedência máxima sobre as auto-configurações dos starters.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Configurações explícitas do usuário possuem precedência máxima sobre as auto-configurações dos starters.">
                     <span class="te-letter">C</span> Ocorre DuplicateBeanDefinitionException durante a inicialização do container IoC travando a subida da aplicação com erro fatal no contexto.
                   </button>
                 </div>
@@ -2746,13 +2746,13 @@ server.port=8081
                 <p class="te-instrucao">Qual porta a aplicação abrirá ao subir no container e por quê?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Variáveis de ambiente do SO têm prioridade mais alta que arquivos application-{profile}.properties.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Variáveis de ambiente do SO têm prioridade mais alta que arquivos application-{profile}.properties.">
                     <span class="te-letter">A</span> Porta 8081, pois arquivos com perfil específico (application-prod) têm precedência sobre configurações do sistema operacional no pod.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Na ordem de precedência do Spring Environment, variáveis de ambiente do sistema operacional (com relaxed binding) superam arquivos application-{profile}.properties empacotados dentro do JAR.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Na ordem de precedência do Spring Environment, variáveis de ambiente do sistema operacional (com relaxed binding) superam arquivos application-{profile}.properties empacotados dentro do JAR.">
                     <span class="te-letter">B</span> Porta 9000, pois variáveis de ambiente do sistema operacional (SERVER_PORT) têm prioridade sobre arquivos internos de properties.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ser carregado primeiro na hierarquia de propriedades significa ter a menor prioridade na cadeia de sobreposição.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Ser carregado primeiro na hierarquia de propriedades significa ter a menor prioridade na cadeia de sobreposição.">
                     <span class="te-letter">C</span> Porta 8080, pois o application.properties básico é carregado primeiro no classpath e congela a porta.
                   </button>
                 </div>
@@ -2936,13 +2936,13 @@ public record FilaProperties(
                 <p class="te-instrucao">Qual é o comportamento do Spring Boot ao iniciar se o arquivo application.properties contiver 'integracao.fila.porta=-5'?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Injetar com @Value em múltiplos pontos espalha chaves mágicas pela aplicação e dificulta validação e refatoração.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Injetar com @Value em múltiplos pontos espalha chaves mágicas pela aplicação e dificulta validação e refatoração.">
                     <span class="te-letter">A</span> A anotação @Value é mais recomendada em grandes sistemas por permitir injeção direta de expressões SpEL sem necessidade de criar classes adicionais.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. @Value continua sendo uma anotação válida, embora desaconselhada para grupos hierárquicos de configuração.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="@Value continua sendo uma anotação válida, embora desaconselhada para grupos hierárquicos de configuração.">
                     <span class="te-letter">B</span> O compilador javac gera avisos de obsolescência (deprecation warnings) sempre que @Value é associado a tipos numéricos ou booleanos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! @ConfigurationProperties reúne propriedades relacionadas em um POJO tipado, suporta validação (@Validated) na inicialização, relaxed binding e autocompletion na IDE, sendo o padrão recomendado pela Spring Engineering.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="@ConfigurationProperties reúne propriedades relacionadas em um POJO tipado, suporta validação (@Validated) na inicialização, relaxed binding e autocompletion na IDE, sendo o padrão recomendado pela Spring Engineering.">
                     <span class="te-letter">C</span> @ConfigurationProperties oferece tipagem estrita, agrupamento coeso de propriedades, suporte a validação com Bean Validation e relaxed binding.
                   </button>
                 </div>
@@ -3153,13 +3153,13 @@ public class AuditAutoConfiguration {
                 <p class="te-instrucao">Onde a classe de auto-configuração deve ser registrada no JAR da biblioteca para ser reconhecida no Spring Boot 3+?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O advice @Around envelopa a execução do método alvo. O parâmetro ProceedingJoinPoint expõe o método proceed(), permitindo medir o tempo decorrido, capturar exceções ou até alterar argumentos e retornos.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O advice @Around envelopa a execução do método alvo. O parâmetro ProceedingJoinPoint expõe o método proceed(), permitindo medir o tempo decorrido, capturar exceções ou até alterar argumentos e retornos.">
                     <span class="te-letter">A</span> Advice @Around com ProceedingJoinPoint, que permite invocar joinPoint.proceed() controlando a execução antes, durante e após o método e capturando tempos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. @Before só executa antes e não tem capacidade de envolver o retorno ou medir a duração total diretamente.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="@Before só executa antes e não tem capacidade de envolver o retorno ou medir a duração total diretamente.">
                     <span class="te-letter">B</span> Advice @Before com JoinPoint estático, pois ele armazena o timestamp de início no ThreadLocal compartilhado do Spring.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ProceedingJoinPoint é exclusivo de @Around; advices @AfterReturning não controlam o proceed() do método.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="ProceedingJoinPoint é exclusivo de @Around; advices @AfterReturning não controlam o proceed() do método.">
                     <span class="te-letter">C</span> Advice @AfterReturning com ProceedingJoinPoint, pois ele recebe o tempo decorrido calculado nativamente pelo interceptor.
                   </button>
                 </div>
@@ -3362,13 +3362,13 @@ public class ContaService {
                 <p class="te-instrucao">O que acontece em tempo de execução quando outro serviço chama contaService.transferir()?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring Boot usa proxies dinâmicos em tempo de execução por padrão; AspectJ com ajc exige weave especial em build-time.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring Boot usa proxies dinâmicos em tempo de execução por padrão; AspectJ com ajc exige weave especial em build-time.">
                     <span class="te-letter">A</span> O Spring Boot utiliza exclusivamente compilação estática de bytecode via AspectJ Compiler (ajc) em todas as versões modernas da plataforma.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! JDK Dynamic Proxies exigem interfaces para envelopar classes. CGLIB gera subclasses em tempo de execução com herança, permitindo interceptar classes concretas diretamente. O Spring Boot usa CGLIB por padrão.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="JDK Dynamic Proxies exigem interfaces para envelopar classes. CGLIB gera subclasses em tempo de execução com herança, permitindo interceptar classes concretas diretamente. O Spring Boot usa CGLIB por padrão.">
                     <span class="te-letter">B</span> JDK Proxies interceptam interfaces via reflexão; CGLIB gera subclasses dinâmicas do alvo, sendo o padrão no Spring Boot moderno.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. JDK Proxies fazem parte da biblioteca padrão do Java (java.lang.reflect.Proxy) e rodam em qualquer plataforma.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="JDK Proxies fazem parte da biblioteca padrão do Java (java.lang.reflect.Proxy) e rodam em qualquer plataforma.">
                     <span class="te-letter">C</span> JDK Dynamic Proxies são incompatíveis com servidores Linux e funcionam exclusivamente em ambientes operacionais de desenvolvimento.
                   </button>
                 </div>
@@ -3554,13 +3554,13 @@ public class MedidorTempoAspect {
                 <p class="te-instrucao">Um método de busca de cliente 'public Cliente buscarPorId(Long id)' anotado com @MedirTempo passou a retornar 'null' para todos os controllers da aplicação. Qual o erro evidente no Aspect?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O código compila sem erros; a falha ocorre de forma silenciosa em runtime durante a interceptação do proxy.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O código compila sem erros; a falha ocorre de forma silenciosa em runtime durante a interceptação do proxy.">
                     <span class="te-letter">A</span> O compilador javac bloqueia o build emitindo erro de compilação quando métodos anotados com @Transactional são marcados como final no código.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos final são perfeitamente válidos na JVM; apenas não podem ser sobrescritos por subclasses dinâmicas.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Métodos final são perfeitamente válidos na JVM; apenas não podem ser sobrescritos por subclasses dinâmicas.">
                     <span class="te-letter">B</span> A JVM lança NoSuchMethodException durante a carga da classe no ClassLoader ao tentar descarregar o método final do Metaspace.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Como o CGLIB funciona gerando uma subclasse do bean, ele não consegue sobrescrever métodos declarados como final. A chamada executa o método real sem passar pelo interceptador de transação.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Como o CGLIB funciona gerando uma subclasse do bean, ele não consegue sobrescrever métodos declarados como final. A chamada executa o método real sem passar pelo interceptador de transação.">
                     <span class="te-letter">C</span> CGLIB cria subclasses dinâmicas e o Java proíbe sobrescrever métodos final; o método executa na instância crua sem transação.
                   </button>
                 </div>
@@ -3755,13 +3755,13 @@ public class AuditoriaService {
                 <p class="te-instrucao">A gravação do log deveria rodar em uma transação isolada (REQUIRES_NEW), mas se a transação do chamador sofrer rollback, o log também é cancelado. Por que a nova transação não foi aberta?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Ao chamar outro método da mesma classe via 'this', a chamada não passa pelo Proxy dinâmico do Spring. A anotação @Transactional(REQUIRES_NEW) é solenemente ignorada e o método roda no contexto atual.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Ao chamar outro método da mesma classe via 'this', a chamada não passa pelo Proxy dinâmico do Spring. A anotação @Transactional(REQUIRES_NEW) é solenemente ignorada e o método roda no contexto atual.">
                     <span class="te-letter">A</span> Problema de Self-Invocation: chamar 'this.gravarLog()' ignora o Proxy do Spring, executando na transação existente sem abrir a nova.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Bancos e pools suportam múltiplas conexões; o erro reside na chamada direta que desviou do proxy AOP.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Bancos e pools suportam múltiplas conexões; o erro reside na chamada direta que desviou do proxy AOP.">
                     <span class="te-letter">B</span> O banco de dados relacional recusa mais de uma conexão simultânea originada da mesma thread da aplicação durante o fluxo transacional.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. @Primary é utilizado para desambiguação de injeção de dependências, não tendo relação com transações.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="@Primary é utilizado para desambiguação de injeção de dependências, não tendo relação com transações.">
                     <span class="te-letter">C</span> A propagação REQUIRES_NEW exige que a classe seja explicitamente anotada com @Primary para viabilizar injeção de conexões.
                   </button>
                 </div>
@@ -3949,13 +3949,13 @@ public void cobrarTaxa(Conta conta) throws TaxaBancariaException { // Checked Ex
                 <p class="te-instrucao">A exceção é lançada, mas ao consultar o banco de dados os R$ 15,00 foram debitados e o commit foi efetuado. Por que a transação não sofreu rollback?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos de repositórios e serviços tradicionais são síncronos e bloqueantes.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Métodos de repositórios e serviços tradicionais são síncronos e bloqueantes.">
                     <span class="te-letter">A</span> O método debitarTaxa() foi executado de forma assíncrona por padrão em uma thread separada.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Por convenção histórica, o TransactionInterceptor do Spring só faz rollback para exceções não verificadas (RuntimeException). Para reverter com Checked Exceptions, declare explicitamente @Transactional(rollbackFor = Exception.class).">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Por convenção histórica, o TransactionInterceptor do Spring só faz rollback para exceções não verificadas (RuntimeException). Para reverter com Checked Exceptions, declare explicitamente @Transactional(rollbackFor = Exception.class).">
                     <span class="te-letter">B</span> O Spring só aciona rollback automático por padrão para RuntimeException e Error; para Checked Exceptions deve-se declarar rollbackFor = Exception.class.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O comando de rollback da conexão JDBC desfaz todas as alterações pendentes anteriores ao commit.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O comando de rollback da conexão JDBC desfaz todas as alterações pendentes anteriores ao commit.">
                     <span class="te-letter">C</span> Transações JDBC não suportam comandos de rollback após a liberação do ResultSet.
                   </button>
                 </div>
@@ -4142,13 +4142,13 @@ public void processarPedido(Pedido p) {
                 <p class="te-instrucao">O serviço filho falhou e a exceção foi capturada no catch. O que acontece na linha final quando o pai tenta comitar?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O TransactionSynchronizationManager mantém o status da transação marcado como rollback-only após a falha no filho.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O TransactionSynchronizationManager mantém o status da transação marcado como rollback-only após a falha no filho.">
                     <span class="te-letter">A</span> O pai consegue comitar com sucesso porque a exceção foi devidamente capturada e tratada no bloco catch da aplicação sem propagação de erro.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Transações de banco de dados não podem ser reabertas de forma retroativa após falha no contexto compartilhado.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Transações de banco de dados não podem ser reabertas de forma retroativa após falha no contexto compartilhado.">
                     <span class="te-letter">B</span> O Spring abre automaticamente uma nova transação retroativa persistindo apenas as alterações efetuadas no método pai.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Com propagação REQUIRED, pai e filho compartilham a mesma transação física. Se o filho falha, o Spring marca a transação como rollback-only. Mesmo capturando a exceção no pai, o commit final falha com UnexpectedRollbackException.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Com propagação REQUIRED, pai e filho compartilham a mesma transação física. Se o filho falha, o Spring marca a transação como rollback-only. Mesmo capturando a exceção no pai, o commit final falha com UnexpectedRollbackException.">
                     <span class="te-letter">C</span> Lança UnexpectedRollbackException; como ambos compartilham a transação REQUIRED, o erro no filho marcou o contexto como rollback-only.
                   </button>
                 </div>
@@ -4326,13 +4326,13 @@ public void processarPagamento(Pagamento p) {
                 <p class="te-instrucao">Para que o retry funcione criando uma nova transação limpa a cada tentativa, qual deve ser a ordem de interceptação dos proxies?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Retryable deve ser a casca externa. Ao capturar o erro, a transação interna já realizou o rollback e fechou a conexão. A nova tentativa entra pelo proxy transacional novamente, pegando uma nova conexão limpa do pool.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O Retryable deve ser a casca externa. Ao capturar o erro, a transação interna já realizou o rollback e fechou a conexão. A nova tentativa entra pelo proxy transacional novamente, pegando uma nova conexão limpa do pool.">
                     <span class="te-letter">A</span> O interceptador do @Retryable deve envelopar externamente o @Transactional para que cada tentativa abra uma transação limpa.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Colocar a transação por fora mantém o contexto marcado por rollback, fazendo as tentativas subsequentes falharem.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Colocar a transação por fora mantém o contexto marcado por rollback, fazendo as tentativas subsequentes falharem.">
                     <span class="te-letter">B</span> O @Transactional deve obrigatoriamente rodar na casca exterior para prender a thread de processamento no sistema operacional do servidor.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Ambos são amplamente combinados configurando a ordem de execução dos aspects via Order.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Ambos são amplamente combinados configurando a ordem de execução dos aspects via Order.">
                     <span class="te-letter">C</span> O ecossistema Spring proíbe o uso simultâneo de @Retryable e @Transactional aplicados conjuntamente na mesma classe de serviço.
                   </button>
                 </div>
@@ -4538,13 +4538,13 @@ public class FilterRegistrationConfig {
                 <p class="te-instrucao">Após ativar o filtro, todos os endpoints anotados com @RequestBody passaram a falhar com 'HttpMessageNotReadableException: Required request body is missing'. Por quê?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O container web não inspeciona saídas de log nem bloqueia conexões por impressões no stdout.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O container web não inspeciona saídas de log nem bloqueia conexões por impressões no stdout.">
                     <span class="te-letter">A</span> O servidor Tomcat bloqueia conexões HTTP POST sempre que filtros de aplicação realizam impressões no console do sistema.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O InputStream da requisição HTTP só pode ser lido uma vez. Ler todos os bytes no filtro consome o stream por completo, deixando o Jackson sem dados no Controller. A solução é envelopar com ContentCachingRequestWrapper.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O InputStream da requisição HTTP só pode ser lido uma vez. Ler todos os bytes no filtro consome o stream por completo, deixando o Jackson sem dados no Controller. A solução é envelopar com ContentCachingRequestWrapper.">
                     <span class="te-letter">B</span> O InputStream do Servlet é forward-only e ler o corpo no filtro exauriu o stream; use ContentCachingRequestWrapper.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. WebMvcConfigurer é para interceptores e formatadores do MVC, enquanto filtros de rede operam na FilterChain do Servlet.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="WebMvcConfigurer é para interceptores e formatadores do MVC, enquanto filtros de rede operam na FilterChain do Servlet.">
                     <span class="te-letter">C</span> O filtro deveria ter implementado WebMvcConfigurer em vez de Filter para integrar com o ciclo de vida do Spring MVC em requisições web.
                   </button>
                 </div>
@@ -4717,13 +4717,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 <p class="te-instrucao">Qual componente do pipeline do DispatcherServlet é responsável por traduzir o objeto Java retornado pelo Controller no fluxo de bytes JSON enviado na rede?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ViewResolvers são utilizados em aplicações web MVC tradicionais que renderizam HTML, não em APIs REST.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="ViewResolvers são utilizados em aplicações web MVC tradicionais que renderizam HTML, não em APIs REST.">
                     <span class="te-letter">A</span> O ViewResolver através do mecanismo tradicional de templates de renderização JSP do servidor web embutido.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O HandlerMapping é responsável por selecionar o Controller no início do pipeline, não por serializar a resposta.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O HandlerMapping é responsável por selecionar o Controller no início do pipeline, não por serializar a resposta.">
                     <span class="te-letter">B</span> O HandlerMapping através da compilação de expressões regulares de URI e roteamento de cabeçalhos de rede da infraestrutura de borda.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em métodos com @ResponseBody ou @RestController, o HandlerAdapter aciona os HttpMessageConverters. O MappingJackson2HttpMessageConverter serializa o grafo de objetos em bytes JSON gravados no OutputStream da resposta.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Em métodos com @ResponseBody ou @RestController, o HandlerAdapter aciona os HttpMessageConverters. O MappingJackson2HttpMessageConverter serializa o grafo de objetos em bytes JSON gravados no OutputStream da resposta.">
                     <span class="te-letter">C</span> HttpMessageConverter (MappingJackson2HttpMessageConverter), que utiliza o Jackson para serializar o objeto retornado em bytes JSON.
                   </button>
                 </div>
@@ -4908,13 +4908,13 @@ public ResponseEntity<Void> excluir(@PathVariable Long id) {
                 <p class="te-instrucao">Qual é o status HTTP retornado e qual o corpo esperado da resposta pelo padrão RFC do protocolo HTTP?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O status HTTP 204 No Content indica que a operação foi bem-sucedida e que o servidor não enviará payload de volta, economizando banda. É o padrão da RFC para métodos DELETE bem-sucedidos sem retorno de entidade.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O status HTTP 204 No Content indica que a operação foi bem-sucedida e que o servidor não enviará payload de volta, economizando banda. É o padrão da RFC para métodos DELETE bem-sucedidos sem retorno de entidade.">
                     <span class="te-letter">A</span> HTTP 204 No Content com corpo de resposta obrigatoriamente vazio, indicando sucesso na exclusão sem necessidade de retornar payload ao cliente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Invocar .noContent().build() define explicitamente o status 204 e suprime qualquer corpo de resposta.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Invocar .noContent().build() define explicitamente o status 204 e suprime qualquer corpo de resposta.">
                     <span class="te-letter">B</span> HTTP 200 OK contendo um documento JSON no corpo com mensagem de confirmação do registro excluído.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. 404 é um código de erro para recurso ausente antes da operação, não um indicativo de sucesso na remoção.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="404 é um código de erro para recurso ausente antes da operação, não um indicativo de sucesso na remoção.">
                     <span class="te-letter">C</span> HTTP 404 Not Found indicando que o recurso já não existe mais no banco de dados após a exclusão.
                   </button>
                 </div>
@@ -5103,13 +5103,13 @@ public ResponseEntity<?> criar(@RequestBody ClienteDTO dto) { // Falta anotaçã
                 <p class="te-instrucao">O que faltou adicionar no parâmetro 'ClienteDTO dto' do Controller para que as validações sejam executadas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Validações de payload ocorrem na borda HTTP antes de qualquer transação de banco de dados ser inicializada.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Validações de payload ocorrem na borda HTTP antes de qualquer transação de banco de dados ser inicializada.">
                     <span class="te-letter">A</span> A anotação @Transactional(rollbackFor = ValidationException.class) para acionar a validação antes da persistência no banco.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Anotações de validação no DTO são passivas. O Spring só ativa o mecanismo do Bean Validation e valida os campos se o parâmetro no Controller estiver anotado com @Valid ou @Validated.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Anotações de validação no DTO são passivas. O Spring só ativa o mecanismo do Bean Validation e valida os campos se o parâmetro no Controller estiver anotado com @Valid ou @Validated.">
                     <span class="te-letter">B</span> A anotação @Valid (ou @Validated) no parâmetro do Controller; sem ela, anotações como @NotBlank e @Email são ignoradas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Java Records são nativamente suportados pelo Jakarta Validation e pelo Jackson no Spring moderno.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Java Records são nativamente suportados pelo Jakarta Validation e pelo Jackson no Spring moderno.">
                     <span class="te-letter">C</span> A declaração do DTO como classe Java tradicional com getters e setters públicos, pois Records não são suportados pelo validador corporativo.
                   </button>
                 </div>
@@ -5318,13 +5318,13 @@ public record ApiEnvelope&lt;T&gt;(T data, Instant timestamp) {}</code></pre>
                 <p class="te-instrucao">Qual é o componente correto do ecossistema Spring para implementar cada uma dessas três necessidades, respectivamente?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. ControllerAdvice opera no nível de controllers, não antes da requisição atingir o servlet container.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="ControllerAdvice opera no nível de controllers, não antes da requisição atingir o servlet container.">
                     <span class="te-letter">A</span> 1: ControllerAdvice para cabeçalhos; 2: Servlet Filter para métricas; 3: HandlerInterceptor para tratamento global de exceções da API.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filtros não devem conter lógica de conversão de exceções de controllers em payloads JSON REST.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Filtros não devem conter lógica de conversão de exceções de controllers em payloads JSON REST.">
                     <span class="te-letter">B</span> 1: HandlerInterceptor para correlação; 2: ControllerAdvice para métricas; 3: Servlet Filter para respostas de erro.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Filter inicializa o MDC antes de qualquer framework web e garante limpeza no finally; o Interceptor mede a execução do controller; e o @RestControllerAdvice centraliza o tratamento global de exceções.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O Filter inicializa o MDC antes de qualquer framework web e garante limpeza no finally; o Interceptor mede a execução do controller; e o @RestControllerAdvice centraliza o tratamento global de exceções.">
                     <span class="te-letter">C</span> 1: Servlet Filter (OncePerRequestFilter); 2: HandlerInterceptor (ou Aspecto AOP); 3: @RestControllerAdvice com @ExceptionHandler.
                   </button>
                 </div>
@@ -5517,13 +5517,13 @@ public class GlobalExceptionHandler {
                 <p class="te-instrucao">Qual cabeçalho HTTP 'Content-Type' o Spring MVC define por padrão para essa resposta conforme a RFC 7807?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A RFC 7807 define 'application/problem+json' para representar detalhes de problemas de forma padronizada. O Spring 6+ configura esse Content-Type automaticamente para retornos ProblemDetail.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A RFC 7807 define 'application/problem+json' para representar detalhes de problemas de forma padronizada. O Spring 6+ configura esse Content-Type automaticamente para retornos ProblemDetail.">
                     <span class="te-letter">A</span> application/problem+json, que é o tipo de mídia oficial padronizado pela RFC 7807 para respostas de erro em APIs REST.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A RFC 7807 exige JSON estruturado com campos semânticos como status, title, detail e instance.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A RFC 7807 exige JSON estruturado com campos semânticos como status, title, detail e instance.">
                     <span class="te-letter">B</span> text/plain contendo a pilha completa de exceções da aplicação formatada em caracteres Base64 legíveis pelo cliente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Em APIs REST baseadas em JSON, o media type oficial de ProblemDetail é application/problem+json.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Em APIs REST baseadas em JSON, o media type oficial de ProblemDetail é application/problem+json.">
                     <span class="te-letter">C</span> application/xml gerado através do conversor Jakarta JAXB padrão mantido por compatibilidade em servidores corporativos.
                   </button>
                 </div>
@@ -5705,13 +5705,13 @@ public OrderResponse processarPedido(OrderRequest request) {
                 <p class="te-instrucao">Qual é a causa raiz da exaustão do HikariCP e a refatoração arquitetural correta?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Aumentar excessivamente conexões satura a CPU e a memória do banco de dados sem resolver a retenção indevida.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Aumentar excessivamente conexões satura a CPU e a memória do banco de dados sem resolver a retenção indevida.">
                     <span class="te-letter">A</span> Elevar o tamanho do pool HikariCP para 1.000 conexões para absorver o tempo das requisições externas concorrentes.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Conexões de banco devem ficar abertas pelo menor tempo possível. Fazer chamadas de rede externas lentas dentro de @Transactional mantém a conexão retida por segundos, esgotando o pool HikariCP sob carga.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Conexões de banco devem ficar abertas pelo menor tempo possível. Fazer chamadas de rede externas lentas dentro de @Transactional mantém a conexão retida por segundos, esgotando o pool HikariCP sob carga.">
                     <span class="te-letter">B</span> A conexão JDBC permanece presa e ociosa durante a chamada de rede externa ao gateway; mova a chamada HTTP para fora do método @Transactional, abrindo transação apenas para a gravação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema não é a implementação do pool, mas manter conexões físicas presas em esperas de rede.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O problema não é a implementação do pool, mas manter conexões físicas presas em esperas de rede.">
                     <span class="te-letter">C</span> Substituir o HikariCP pelo Tomcat JDBC Pool para desabilitar a checagem de timeout de conexões ociosas.
                   </button>
                 </div>
@@ -5902,13 +5902,13 @@ List<UsuarioDto> lista = jdbcTemplate.query(
                 <p class="te-instrucao">Qual das afirmativas abaixo descreve corretamente o comportamento técnico do JdbcTemplate neste código?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. JdbcTemplate opera sobre JDBC puro e é totalmente desacoplado de JPA e anotações ORM.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="JdbcTemplate opera sobre JDBC puro e é totalmente desacoplado de JPA e anotações ORM.">
                     <span class="te-letter">A</span> O código falha em runtime porque JdbcTemplate só aceita entidades mapeadas com a anotação @Entity do Jakarta Persistence.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O JdbcTemplate gerencia a abertura e o fechamento de Statements, ResultSets e Connections automaticamente.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O JdbcTemplate gerencia a abertura e o fechamento de Statements, ResultSets e Connections automaticamente.">
                     <span class="te-letter">B</span> O desenvolvedor deve obrigatoriamente chamar connection.close() manualmente na conexão para evitar vazamento de memória no pool.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O método query do JdbcTemplate prepara o PreparedStatement, vincula os argumentos evitando SQL Injection e garante o fechamento determinístico de todos os recursos JDBC, traduzindo erros para DataAccessException.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O método query do JdbcTemplate prepara o PreparedStatement, vincula os argumentos evitando SQL Injection e garante o fechamento determinístico de todos os recursos JDBC, traduzindo erros para DataAccessException.">
                     <span class="te-letter">C</span> O JdbcTemplate compila um PreparedStatement seguro com parâmetros vinculados, prevenindo SQL Injection e gerenciando recursos.
                   </button>
                 </div>
@@ -6104,13 +6104,13 @@ jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                 <p class="te-instrucao">Por que o batchUpdate é ordens de grandeza mais rápido que chamadas individuais de update?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A latência de rede é o principal gargalo em operações remotas de banco. O batchUpdate consolida centenas de inserts em um único pacote de rede, reduzindo dramaticamente as viagens de ida e volta.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A latência de rede é o principal gargalo em operações remotas de banco. O batchUpdate consolida centenas de inserts em um único pacote de rede, reduzindo dramaticamente as viagens de ida e volta.">
                     <span class="te-letter">A</span> O batchUpdate agrupa instruções enviando lotes consolidados ao banco, eliminando milhares de round-trips de rede entre cliente e servidor.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O banco mantém integridade e garantias ACID completas gravando no log normalmente durante o lote.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O banco mantém integridade e garantias ACID completas gravando no log normalmente durante o lote.">
                     <span class="te-letter">B</span> O batchUpdate desativa temporariamente o log de transações Write-Ahead Logging (WAL) no banco para acelerar as operações.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O lote é executado sequencialmente na mesma thread através do driver JDBC padrão.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O lote é executado sequencialmente na mesma thread através do driver JDBC padrão.">
                     <span class="te-letter">C</span> O Spring processa as instruções SQL em threads paralelas no processador da máquina cliente antes de realizar o envio.
                   </button>
                 </div>
@@ -6293,13 +6293,13 @@ public void cadastrarCliente(ClienteRequest request) {
                 <p class="te-instrucao">Como garantir com elegância arquitetural no Spring que o evento só seja publicado se o commit do banco for concluído com sucesso?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O commit do banco só ocorre após o retorno do método quando o proxy assume o controle; o try-catch não protege contra falhas no commit.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O commit do banco só ocorre após o retorno do método quando o proxy assume o controle; o try-catch não protege contra falhas no commit.">
                     <span class="te-letter">A</span> Envolver a chamada de envio de mensagem em um bloco try-catch genérico dentro do mesmo método anotado com @Transactional para capturar erros.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O @TransactionalEventListener sincroniza com a transação e só dispara após a confirmação bem-sucedida do commit no banco de dados. Se a transação sofrer rollback, a mensagem nunca é enviada à fila externa.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O @TransactionalEventListener sincroniza com a transação e só dispara após a confirmação bem-sucedida do commit no banco de dados. Se a transação sofrer rollback, a mensagem nunca é enviada à fila externa.">
                     <span class="te-letter">B</span> Publicar um ApplicationEvent interno e consumi-lo em listener com @TransactionalEventListener(phase = AFTER_COMMIT).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso degrada a consistência de dados sem resolver o problema de disparar mensagens antes da persistência.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Isso degrada a consistência de dados sem resolver o problema de disparar mensagens antes da persistência.">
                     <span class="te-letter">C</span> Configurar o nível de isolamento da transação no banco de dados para Isolation.READ_UNCOMMITTED para acelerar confirmações.
                   </button>
                 </div>
@@ -6495,13 +6495,13 @@ public void reservarEstoque(Long produtoId) {
                 <p class="te-instrucao">Sem nenhum mecanismo de concorrência configurado, o que acontece se duas threads lerem o produto com quantidade = 1 ao mesmo tempo sob READ_COMMITTED?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O HikariCP apenas gerencia conexões físicas e desconhece a lógica de dados ou bloqueios.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O HikariCP apenas gerencia conexões físicas e desconhece a lógica de dados ou bloqueios.">
                     <span class="te-letter">A</span> O pool HikariCP detecta a concorrência na mesma tabela e serializa as conexões automaticamente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Apenas uma coluna numérica está sendo atualizada sem alteração de chaves primárias.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Apenas uma coluna numérica está sendo atualizada sem alteração de chaves primárias.">
                     <span class="te-letter">B</span> O banco de dados lança uma SQLException de violação de chave primária bloqueando a segunda transação.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em READ_COMMITTED leituras não bloqueiam leituras. Ambas as threads encontram saldo positivo, decrementam e sobrescrevem o registro. A blindagem exige lock otimista com @Version ou lock pessimista (PESSIMISTIC_WRITE).">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Em READ_COMMITTED leituras não bloqueiam leituras. Ambas as threads encontram saldo positivo, decrementam e sobrescrevem o registro. A blindagem exige lock otimista com @Version ou lock pessimista (PESSIMISTIC_WRITE).">
                     <span class="te-letter">C</span> Ocorre Lost Update (atualização perdida): ambas as threads leem estoque 1 simultaneamente, decrementam e gravam 0, resultando em venda duplicada (overselling); a correção exige Lock Otimista (@Version) ou Pessimista.
                   </button>
                 </div>
@@ -6687,13 +6687,13 @@ public List<PedidoDto> listar() {
                 <p class="te-instrucao">O que acontece em tempo de execução ao tentar serializar o PedidoDto?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Com spring.jpa.open-in-view=false, a sessão do Hibernate é encerrada assim que o método @Transactional do Service retorna. Tentar acessar proxies não inicializados no Controller lança LazyInitializationException.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Com spring.jpa.open-in-view=false, a sessão do Hibernate é encerrada assim que o método @Transactional do Service retorna. Tentar acessar proxies não inicializados no Controller lança LazyInitializationException.">
                     <span class="te-letter">A</span> Lança LazyInitializationException; com open-in-view=false a sessão fecha no Service e acessar coleções LAZY fora da transação falha.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Hibernate exige uma sessão aberta vinculada e não cria transações mágicas para resolver proxies fechados.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Hibernate exige uma sessão aberta vinculada e não cria transações mágicas para resolver proxies fechados.">
                     <span class="te-letter">B</span> O Spring abre automaticamente uma nova transação anônima em segundo plano para carregar os itens associados sob demanda em tempo de execução.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Acessar o getter do proxy dispara a tentativa de carregamento que explode com LazyInitializationException.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Acessar o getter do proxy dispara a tentativa de carregamento que explode com LazyInitializationException.">
                     <span class="te-letter">C</span> O serializador Jackson preenche coleções não carregadas com listas vazias automaticamente sem disparar avisos de erro.
                   </button>
                 </div>
@@ -6890,13 +6890,13 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                 <p class="te-instrucao">O que acontece quando um cliente não autenticado faz uma requisição GET para '/actuator/health'?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Não existe precedência estática por tipo de regra; a avaliação é estritamente sequencial na ordem de declaração.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Não existe precedência estática por tipo de regra; a avaliação é estritamente sequencial na ordem de declaração.">
                     <span class="te-letter">A</span> O acesso é permitido porque a regra permitAll() tem precedência estática sobre authenticated() no Spring Security 6.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Spring Security a primeira regra que der match é aplicada. Como anyRequest() intercepta qualquer requisição, declará-la antes de regras específicas inutiliza completamente as diretivas declaradas abaixo.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="No Spring Security a primeira regra que der match é aplicada. Como anyRequest() intercepta qualquer requisição, declará-la antes de regras específicas inutiliza completamente as diretivas declaradas abaixo.">
                     <span class="te-letter">B</span> Acesso negado (401/403); as regras são avaliadas na ordem e como anyRequest().authenticated() veio primeiro, capturou o endpoint.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A configuração é sintaticamente válida para o framework, resultando em um erro lógico de autorização em runtime.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A configuração é sintaticamente válida para o framework, resultando em um erro lógico de autorização em runtime.">
                     <span class="te-letter">C</span> A aplicação lança BeanCreationException durante o startup por detecção de regras redundantes no filtro de segurança do framework.
                   </button>
                 </div>
@@ -7086,13 +7086,13 @@ if (auth != null && auth.isAuthenticated()) {
                 <p class="te-instrucao">Se esse mesmo serviço for invocado dentro de um método anotado com @Async comum sem configuração adicional de segurança, o que auth retornará?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O contexto não é global para evitar vazamento de credenciais entre threads de requisições de usuários distintos.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O contexto não é global para evitar vazamento de credenciais entre threads de requisições de usuários distintos.">
                     <span class="te-letter">A</span> Retorna a mesma instância Authentication normalmente, pois o contexto de segurança reside em área estática global da memória da máquina virtual.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Sem anotações de autorização (@PreAuthorize) a chamada executa normalmente, mas o contexto de autenticação vem nulo.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sem anotações de autorização (@PreAuthorize) a chamada executa normalmente, mas o contexto de autenticação vem nulo.">
                     <span class="te-letter">B</span> Lança AccessDeniedException imediatamente antes da execução do método assíncrono por ausência de credenciais no header.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! SecurityContextHolder.MODE_THREADLOCAL armazena autenticação exclusivamente na thread atual. Tarefas disparadas por @Async executam em threads separadas, a menos que se configure propagação de contexto ou MODE_INHERITABLETHREADLOCAL.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="SecurityContextHolder.MODE_THREADLOCAL armazena autenticação exclusivamente na thread atual. Tarefas disparadas por @Async executam em threads separadas, a menos que se configure propagação de contexto ou MODE_INHERITABLETHREADLOCAL.">
                     <span class="te-letter">C</span> Retorna null, pois a estratégia padrão é MODE_THREADLOCAL e métodos @Async rodam em uma thread diferente de outro pool.
                   </button>
                 </div>
@@ -7281,13 +7281,13 @@ public class FuncionarioService {
                 <p class="te-instrucao">O que acontece quando um usuário com papel comum (ROLE_ESTAGIARIO) chama alterarSalario() nessa aplicação?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Spring Security 6, a segurança em nível de método vem desativada por padrão. Sem a anotação @EnableMethodSecurity, os interceptadores AOP de autorização não são gerados, deixando anotações como @PreAuthorize sem efeito prático.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="No Spring Security 6, a segurança em nível de método vem desativada por padrão. Sem a anotação @EnableMethodSecurity, os interceptadores AOP de autorização não são gerados, deixando anotações como @PreAuthorize sem efeito prático.">
                     <span class="te-letter">A</span> O método executa com sucesso e o salário é alterado; sem @EnableMethodSecurity na configuração, os proxies de segurança de métodos não são registrados e @PreAuthorize é ignorado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A proteção sequer foi acoplada ao bean porque o aspect de method security não foi habilitado.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A proteção sequer foi acoplada ao bean porque o aspect de method security não foi habilitado.">
                     <span class="te-letter">B</span> O Spring Security intercepta a chamada e lança AccessDeniedException HTTP 403 automaticamente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O bean é criado normalmente; apenas a interceptação de segurança não foi aplicada aos métodos.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O bean é criado normalmente; apenas a interceptação de segurança não foi aplicada aos métodos.">
                     <span class="te-letter">C</span> A aplicação recusa a inicialização no startup lançando NoSuchBeanDefinitionException no container.
                   </button>
                 </div>
@@ -7481,13 +7481,13 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 <p class="te-instrucao">Qual é a causa da falha e como corrigi-la corretamente no Spring Security?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A falha ocorreu na requisição preliminar OPTIONS (preflight) por política CORS antes de qualquer autenticação.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A falha ocorreu na requisição preliminar OPTIONS (preflight) por política CORS antes de qualquer autenticação.">
                     <span class="te-letter">A</span> O erro ocorreu porque o token de autorização JWT expirou no frontend antes do envio da requisição POST.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Requisições cross-origin disparam preflight OPTIONS. Se o Spring Security não estiver configurado com http.cors() e um CorsConfigurationSource autorizando a origem localhost:3000, o preflight falha e o navegador bloqueia a requisição.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Requisições cross-origin disparam preflight OPTIONS. Se o Spring Security não estiver configurado com http.cors() e um CorsConfigurationSource autorizando a origem localhost:3000, o preflight falha e o navegador bloqueia a requisição.">
                     <span class="te-letter">B</span> A requisição OPTIONS (preflight) enviada pelo navegador foi barrada no Spring Security por falta de CorsConfigurationSource.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As aplicações operam em HTTP local; a divergência de porta (3000 vs 8080) é o que caracteriza chamada Cross-Origin.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="As aplicações operam em HTTP local; a divergência de porta (3000 vs 8080) é o que caracteriza chamada Cross-Origin.">
                     <span class="te-letter">C</span> A correção consiste em desabilitar a verificação de certificados SSL no servidor Tomcat para a porta 8080 durante testes de desenvolvimento local.
                   </button>
                 </div>
@@ -7667,13 +7667,13 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
                 <p class="te-instrucao">O que o Spring Security faz durante a inicialização e no processamento do primeiro token recebido?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Isso seria introspecção remota opaca, eliminando a performance e o desacoplamento de tokens JWT assinados.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Isso seria introspecção remota opaca, eliminando a performance e o desacoplamento de tokens JWT assinados.">
                     <span class="te-letter">A</span> Dispara uma chamada HTTP REST para o Keycloak a cada requisição de cliente para checar se o token permanece ativo nos servidores de autorização.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A arquitetura de Resource Server com JWT é totalmente stateless e não persiste sessões em banco.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A arquitetura de Resource Server com JWT é totalmente stateless e não persiste sessões em banco.">
                     <span class="te-letter">B</span> Armazena os tokens recebidos no banco de dados local para manter o controle de sessão compartilhada entre nós.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Com JWT assimétrico, o Resource Server consulta o JWKS na inicialização para obter as chaves públicas. A cada requisição, a assinatura do token é verificada em microssegundos na memória local, sem round-trips ao provedor de identidade.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Com JWT assimétrico, o Resource Server consulta o JWKS na inicialização para obter as chaves públicas. A cada requisição, a assinatura do token é verificada em microssegundos na memória local, sem round-trips ao provedor de identidade.">
                     <span class="te-letter">C</span> Baixa as chaves públicas via JWKS no boot e valida as assinaturas criptográficas localmente na CPU sem chamadas de rede.
                   </button>
                 </div>
@@ -7875,13 +7875,13 @@ class RelatorioControllerTest {
                 <p class="te-instrucao">O que a anotação @WithMockUser faz internamente durante a execução deste teste?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! hasRole('ADMIN') espera uma autoridade com o prefixo 'ROLE_ADMIN'. Por padrão, o conversor de JWT do Spring mapeia claims para 'SCOPE_permissao'. Para validar papéis, deve-se configurar o JwtGrantedAuthoritiesConverter definindo authorityPrefix('ROLE_').">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="HasRole('ADMIN') espera uma autoridade com o prefixo 'ROLE_ADMIN'. Por padrão, o conversor de JWT do Spring mapeia claims para 'SCOPE_permissao'. Para validar papéis, deve-se configurar o JwtGrantedAuthoritiesConverter definindo authorityPrefix('ROLE_').">
                     <span class="te-letter">A</span> O JwtAuthenticationConverter mapeia escopos sem prefixo ROLE_ por padrão; configure JwtGrantedAuthoritiesConverter.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring Security compara strings de autoridade de forma case-sensitive respeitando o prefixo configurado.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring Security compara strings de autoridade de forma case-sensitive respeitando o prefixo configurado.">
                     <span class="te-letter">B</span> A anotação @PreAuthorize exige que a autoridade venha expressamente declarada em letras minúsculas no payload do token.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A especificação de JWT encoraja a inclusão de claims privadas para representar perfis e identidades.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A especificação de JWT encoraja a inclusão de claims privadas para representar perfis e identidades.">
                     <span class="te-letter">C</span> A anotação @PreAuthorize exige que a autoridade venha expressamente declarada em letras minúsculas no payload do token para conferência.
                   </button>
                 </div>
@@ -8086,13 +8086,13 @@ public RestClient paymentRestClient(RestClient.Builder builder) {
                 <p class="te-instrucao">Qual das afirmativas abaixo justifica a necessidade de configurar readTimeout em chamadas REST externas?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring Cache suporta qualquer tipo serializável ou em memória independentemente de ser Record ou classe.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring Cache suporta qualquer tipo serializável ou em memória independentemente de ser Record ou classe.">
                     <span class="te-letter">A</span> O Spring Cache não suporta métodos cujo tipo de retorno seja um Record ou classe imutável.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Anotações como @Cacheable dependem de interceptadores AOP envelopados em proxies. Ao chamar buscarCliente() internamente via 'this', a chamada vai direto ao método real, ignorando a verificação de cache.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Anotações como @Cacheable dependem de interceptadores AOP envelopados em proxies. Ao chamar buscarCliente() internamente via 'this', a chamada vai direto ao método real, ignorando a verificação de cache.">
                     <span class="te-letter">B</span> Problema de Self-Invocation: a chamada via 'this' dentro da mesma classe ignora o Proxy de cache do Spring; a interceptação exige injeção externa do serviço ou separação em outro componente.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O SimpleCacheManager em memória opera com a mesma semântica AOP do Redis ou Caffeine.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O SimpleCacheManager em memória opera com a mesma semântica AOP do Redis ou Caffeine.">
                     <span class="te-letter">C</span> O provedor de cache precisa ser obrigatoriamente configurado com Redis em vez de SimpleCacheManager.
                   </button>
                 </div>
@@ -8301,13 +8301,13 @@ public List<ProdutoDto> obterRecomendacoesFallback(Long clienteId, Throwable t) 
                 <p class="te-instrucao">Qual é a assinatura OBRIGATÓRIA do método de fallback no Resilience4j para que o Spring consiga invocá-lo?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring Data JPA e o Spring Cache são módulos desacoplados; a invalidação de cache não é automática.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring Data JPA e o Spring Cache são módulos desacoplados; a invalidação de cache não é automática.">
                     <span class="te-letter">A</span> O Spring Cache detecta atualizações em repositórios JPA automaticamente e limpa as entradas afetadas sem necessidade de anotações adicionais no código.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reiniciar o CacheManager descartaria todo o cache de todos os clientes da aplicação indiscriminadamente.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Reiniciar o CacheManager descartaria todo o cache de todos os clientes da aplicação indiscriminadamente.">
                     <span class="te-letter">B</span> O CacheManager deve ser reiniciado programaticamente a cada alteração de registro no banco de dados para evitar inconsistências.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Para manter a coerência de dados após mutações, anota-se o método de alteração com @CacheEvict indicando a chave que deve ser expurgada do cache, garantindo que a próxima leitura recarregue o dado fresco do banco.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Para manter a coerência de dados após mutações, anota-se o método de alteração com @CacheEvict indicando a chave que deve ser expurgada do cache, garantindo que a próxima leitura recarregue o dado fresco do banco.">
                     <span class="te-letter">C</span> Anotar o método de atualização com @CacheEvict(value = 'clientes', key = '#id') para remover a entrada desatualizada do cache.
                   </button>
                 </div>
@@ -8502,13 +8502,13 @@ rabbitTemplate.convertAndSend("pedidos.topic", "pedido.sp.urgente", payload);</c
                 <p class="te-instrucao">Quais filas receberão a mensagem publicada?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Se nenhum executor for explicitamente configurado, o @Async recorre ao SimpleAsyncTaskExecutor, que não reutiliza threads e instancia uma nova thread nativa para cada execução, esgotando recursos do SO sob avalanche de tarefas.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Se nenhum executor for explicitamente configurado, o @Async recorre ao SimpleAsyncTaskExecutor, que não reutiliza threads e instancia uma nova thread nativa para cada execução, esgotando recursos do SO sob avalanche de tarefas.">
                     <span class="te-letter">A</span> O executor padrão SimpleAsyncTaskExecutor cria uma nova thread por tarefa; use ThreadPoolTaskExecutor com limites bem definidos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O framework e a JVM não impõem limites estáticos por contagem de métodos anotados.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O framework e a JVM não impõem limites estáticos por contagem de métodos anotados.">
                     <span class="te-letter">B</span> A JVM desativa a criação de threads de sistema operacional quando o número de anotações @Async ultrapassa cinquenta métodos concorrentes no container.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Métodos assíncronos podem retornar CompletableFuture<T> com total segurança para coleta de resultados.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Métodos assíncronos podem retornar CompletableFuture<T> com total segurança para coleta de resultados.">
                     <span class="te-letter">C</span> Métodos anotados com @Async devem obrigatoriamente retornar void para evitar sobrecarga de memória na Heap da aplicação.
                   </button>
                 </div>
@@ -8690,13 +8690,13 @@ public void processarPagamento(PagamentoDto dto) {
                 <p class="te-instrucao">Como a fila 'pagamentos.queue' deve ser configurada para que mensagens rejeitadas com basicNack(requeue=false) vão automaticamente para a DLQ?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Mensagens rejeitadas sem tratamento de descarte ou DLQ são reencaminhadas (requeue) indefinidamente pelo broker.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mensagens rejeitadas sem tratamento de descarte ou DLQ são reencaminhadas (requeue) indefinidamente pelo broker.">
                     <span class="te-letter">A</span> O broker RabbitMQ descarta automaticamente qualquer mensagem de fila cujo consumidor sofra erro de runtime.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Erros de parsing ou dados corrompidos (poison pills) geram loops infinitos de reentrega se o consumidor apenas rejeitar com requeue. A arquitetura correta define retries limitados e desvio para uma Dead Letter Queue.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Erros de parsing ou dados corrompidos (poison pills) geram loops infinitos de reentrega se o consumidor apenas rejeitar com requeue. A arquitetura correta define retries limitados e desvio para uma Dead Letter Queue.">
                     <span class="te-letter">B</span> Configurar Dead Letter Exchange (DLQ) com limite de retentativas; mensagens com erro persistente são roteadas para análise.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Filas exclusivas são vinculadas à conexão do canal e são deletadas quando a conexão fecha, sem relação com poison pills.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Filas exclusivas são vinculadas à conexão do canal e são deletadas quando a conexão fecha, sem relação com poison pills.">
                     <span class="te-letter">C</span> Declarar a fila com a flag exclusive=true para impedir que mensagens repetidas sejam distribuídas para outras instâncias concorrentes do consumidor.
                   </button>
                 </div>
@@ -8889,13 +8889,13 @@ public Pedido criarPedido(CriarPedidoCommand cmd) {
                 <p class="te-instrucao">Por que essa abordagem é resiliente a quedas de rede do broker de mensageria?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O broker apenas armazena o log imutável de mensagens e desconhece erros internos da JVM do consumidor.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O broker apenas armazena o log imutável de mensagens e desconhece erros internos da JVM do consumidor.">
                     <span class="te-letter">A</span> O broker Kafka reinicia a partição do tópico automaticamente ao constatar falhas de deserialização no consumidor.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Por padrão o DefaultErrorHandler tenta retentativas e bloqueia o avanço do offset da partição se não houver DLT.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Por padrão o DefaultErrorHandler tenta retentativas e bloqueia o avanço do offset da partição se não houver DLT.">
                     <span class="te-letter">B</span> O Spring Kafka ignora silenciosamente qualquer mensagem que lance exceção no consumidor por padrão de fábrica.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No Kafka o offset não avança se o processamento da mensagem falhar. Para evitar paralisação da partição por mensagens envenenadas, usa-se DefaultErrorHandler com DeadLetterPublishingRecoverer para enviar o registro para a DLT após tentativas controladas.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="No Kafka o offset não avança se o processamento da mensagem falhar. Para evitar paralisação da partição por mensagens envenenadas, usa-se DefaultErrorHandler com DeadLetterPublishingRecoverer para enviar o registro para a DLT após tentativas controladas.">
                     <span class="te-letter">C</span> Configurar DefaultErrorHandler com DeadLetterPublishingRecoverer e BackOff exponencial, permitindo desviar poison pills para um tópico DLT sem paralisar o consumo da partição.
                   </button>
                 </div>
@@ -9068,13 +9068,13 @@ public class CleanupScheduledTask {
                 <p class="te-instrucao">Qual é o impacto prático dessa única linha de configuração no servidor web embutido (Tomcat) e nas tarefas @Async?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! A propriedade spring.threads.virtual.enabled=true instrui o Tomcat e os TaskExecutors a utilizarem Virtual Threads (Project Loom), permitindo milhares de conexões concorrentes bloqueantes com baixíssimo consumo de memória.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A propriedade spring.threads.virtual.enabled=true instrui o Tomcat e os TaskExecutors a utilizarem Virtual Threads (Project Loom), permitindo milhares de conexões concorrentes bloqueantes com baixíssimo consumo de memória.">
                     <span class="te-letter">A</span> O Tomcat passa a alocar uma Virtual Thread por requisição e o executor do @Async usa Virtual Threads para I/O bloqueante massivo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Garbage Collector opera normalmente; a diferença é que Virtual Threads são objetos leves no Heap da JVM.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Garbage Collector opera normalmente; a diferença é que Virtual Threads são objetos leves no Heap da JVM.">
                     <span class="te-letter">B</span> A JVM desativa permanentemente o Garbage Collector e aloca blocos estáticos de memória contígua para cada thread do servidor web.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Virtual Threads são multiplexadas pelo Loom sobre um pool de Carrier Threads nativas vinculadas aos núcleos da CPU.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Virtual Threads são multiplexadas pelo Loom sobre um pool de Carrier Threads nativas vinculadas aos núcleos da CPU.">
                     <span class="te-letter">C</span> O servidor web desativa o multithreading do processador e passa a executar todas as requisições em uma única thread síncrona.
                   </button>
                 </div>
@@ -9284,13 +9284,13 @@ class FreteServiceTest {
                 <p class="te-instrucao">Quanto tempo em média leva a execução deste teste e por que ele é preferível para lógica de negócio?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Spring não participa do teste unitário; o Mockito instancia e injeta mocks em memória pura via ByteBuddy.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Spring não participa do teste unitário; o Mockito instancia e injeta mocks em memória pura via ByteBuddy.">
                     <span class="te-letter">A</span> Leva cerca de 8 segundos porque o Mockito precisa gerar os proxies CGLIB e escanear anotações do Spring.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Testes com MockitoExtension testam POJOs isoladamente em memória. Sem subir o container do Spring nem inicializar datasources ou beans periféricos, o feedback de execução é praticamente instantâneo.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Testes com MockitoExtension testam POJOs isoladamente em memória. Sem subir o container do Spring nem inicializar datasources ou beans periféricos, o feedback de execução é praticamente instantâneo.">
                     <span class="te-letter">B</span> Leva frações de milissegundo (5 a 20 ms), pois executa na JVM com Mockito isolado sem subir o ApplicationContext do Spring.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A anotação @InjectMocks do Mockito injeta os campos mockados diretamente no POJO sem precisar do container.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A anotação @InjectMocks do Mockito injeta os campos mockados diretamente no POJO sem precisar do container.">
                     <span class="te-letter">C</span> O teste falha com NullPointerException por falta de injeção automática de dependências via @Autowired.
                   </button>
                 </div>
@@ -9498,13 +9498,13 @@ class ClienteControllerTest {
                 <p class="te-instrucao">Por que @WebMvcTest é a escolha arquitetural ideal para esse cenário em comparação a @SpringBootTest?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Jackson e os conversores HTTP são explicitamente configurados e testados no slice web.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Jackson e os conversores HTTP são explicitamente configurados e testados no slice web.">
                     <span class="te-letter">A</span> Porque o @WebMvcTest desativa o validador Jackson e converte os dados do payload HTTP em cadeias de texto brutas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. @SpringBootTest suporta MockMvc com @AutoConfigureMockMvc, mas carrega o contexto completo da aplicação.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="@SpringBootTest suporta MockMvc com @AutoConfigureMockMvc, mas carrega o contexto completo da aplicação.">
                     <span class="te-letter">B</span> Porque a anotação @SpringBootTest é incompatível com MockMvc e exige inicialização de navegador real via Selenium no pipeline de integração.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! @WebMvcTest é um teste em fatia (slice test). Ele carrega apenas o pipeline do Spring MVC (controllers, conversores, validadores) e permite mockar serviços com @MockBean, executando em centenas de milissegundos.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="@WebMvcTest é um teste em fatia (slice test). Ele carrega apenas o pipeline do Spring MVC (controllers, conversores, validadores) e permite mockar serviços com @MockBean, executando em centenas de milissegundos.">
                     <span class="te-letter">C</span> Porque inicializa apenas a camada web (rotas, validação, Jackson e filtros), sem carregar repositórios ou conexões de banco de dados.
                   </button>
                 </div>
@@ -9703,13 +9703,13 @@ class PedidoIntegrationTest {
                 <p class="te-instrucao">Qual é a função da anotação @ServiceConnection introduzida no Spring Boot 3.1?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Introduzido no Spring Boot 3.1, o @ServiceConnection inspeciona contêineres gerenciados pelo Testcontainers e preenche as propriedades de conexão no Spring Environment automaticamente, eliminando métodos estáticos verbosos.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Introduzido no Spring Boot 3.1, o @ServiceConnection inspeciona contêineres gerenciados pelo Testcontainers e preenche as propriedades de conexão no Spring Environment automaticamente, eliminando métodos estáticos verbosos.">
                     <span class="te-letter">A</span> Detecta dinamicamente a porta efêmera aleatória do contêiner Docker e injeta 'spring.datasource.url', 'username' e 'password' no Environment, dispensando @DynamicPropertySource manual.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. @ServiceConnection atua sobre contêineres Docker locais descartáveis instanciados pelo Testcontainers.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="@ServiceConnection atua sobre contêineres Docker locais descartáveis instanciados pelo Testcontainers.">
                     <span class="te-letter">B</span> Conecta os testes automatizados diretamente ao banco de dados relacional de produção sem exigir credenciais de acesso.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. As imagens Docker são baixadas e reutilizadas a partir do cache local do Docker daemon.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="As imagens Docker são baixadas e reutilizadas a partir do cache local do Docker daemon.">
                     <span class="te-letter">C</span> Obriga o Docker a reconstruir as imagens do banco de dados do zero a cada execução de método de teste no pipeline.
                   </button>
                 </div>
@@ -9898,13 +9898,13 @@ public class GatewayHealthIndicator implements HealthIndicator {
                 <p class="te-instrucao">Como o Kubernetes usa os endpoints de Liveness e Readiness fornecidos pelo Actuator?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Eles possuem finalidades operacionais distintas: um controla roteamento de rede e o outro reinicialização de pods.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Eles possuem finalidades operacionais distintas: um controla roteamento de rede e o outro reinicialização de pods.">
                     <span class="te-letter">A</span> Ambos os probes têm a mesma função no Kubernetes e sua configuração conjunta é redundante em arquiteturas de contêineres.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! O Readiness Probe retira o pod da rota do Load Balancer enquanto ele aquece caches ou inicializa. O Liveness Probe detecta se a aplicação travou em deadlock irrecuperável e reinicia o contêiner se necessário.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O Readiness Probe retira o pod da rota do Load Balancer enquanto ele aquece caches ou inicializa. O Liveness Probe detecta se a aplicação travou em deadlock irrecuperável e reinicia o contêiner se necessário.">
                     <span class="te-letter">B</span> Readiness verifica se a aplicação está pronta para receber tráfego no Service; Liveness checa se o pod travou e deve ser reiniciado.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Liveness não deve depender de bancos externos, sob risco de derrubar todos os pods em falhas de infraestrutura.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Liveness não deve depender de bancos externos, sob risco de derrubar todos os pods em falhas de infraestrutura.">
                     <span class="te-letter">C</span> O probe de Liveness desativa temporariamente a porta HTTP do pod sempre que consultas no banco relacional sofrem lentidão temporária na rede.
                   </button>
                 </div>
@@ -10094,13 +10094,13 @@ timer.record(() -> servicoLiquidacao.liquidar(operacao));</code></pre>
                 <p class="te-instrucao">Por que a tag 'tipo_ativo' com valores pré-determinados ('ACOES', 'TITULOS') é correta, mas adicionar uma tag 'cliente_cpf' seria um desastre operacional?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O Micrometer aceita qualquer string; a restrição é de engenharia sobre volumetria e cardinalidade.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Micrometer aceita qualquer string; a restrição é de engenharia sobre volumetria e cardinalidade.">
                     <span class="te-letter">A</span> O Micrometer não aceita caracteres numéricos em nomes ou valores de tags em virtude da especificação do OpenTelemetry.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O método record(Runnable) é a sintaxe idiomática recomendada para medição de temporizadores.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O método record(Runnable) é a sintaxe idiomática recomendada para medição de temporizadores.">
                     <span class="te-letter">B</span> A JVM bloqueia a execução de funções lambda dentro do método record() para conter alocações em áreas de memória estática.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em sistemas baseados em séries temporais (Prometheus/Micrometer), cada combinação de tags cria uma série independente. Usar dados de alta cardinalidade como CPF ou ID gera explosão de cardinalidade e esgota a memória do sistema.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Em sistemas baseados em séries temporais (Prometheus/Micrometer), cada combinação de tags cria uma série independente. Usar dados de alta cardinalidade como CPF ou ID gera explosão de cardinalidade e esgota a memória do sistema.">
                     <span class="te-letter">C</span> CPF tem alta cardinalidade; cada valor único gera uma nova série temporal no Prometheus, esgotando a memória do coletor.
                   </button>
                 </div>
@@ -10282,13 +10282,13 @@ spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
                 <p class="te-instrucao">O que acontece exatamente no servidor Tomcat embutido quando a aplicação recebe o sinal SIGTERM do orquestrador?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! No graceful shutdown, o conector HTTP para de receber novos sockets e concede um período de tolerância para que requisições em andamento terminem com sucesso, evitando respostas 502/503 durante deploys.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="No graceful shutdown, o conector HTTP para de receber novos sockets e concede um período de tolerância para que requisições em andamento terminem com sucesso, evitando respostas 502/503 durante deploys.">
                     <span class="te-letter">A</span> O Tomcat para de aceitar novas requisições e aguarda o término das requisições ativas antes de encerrar o processo.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Salvar memória em disco é hibernação de SO; o graceful shutdown apenas drena conexões em trânsito.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Salvar memória em disco é hibernação de SO; o graceful shutdown apenas drena conexões em trânsito.">
                     <span class="te-letter">B</span> A JVM desliga no mesmo milissegundo em que recebe o sinal SIGTERM e salva o estado da memória RAM no disco rígido do nó.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O shutdown hook da JVM captura o SIGTERM e coordena o encerramento ordenado dos beans e conectores.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O shutdown hook da JVM captura o SIGTERM e coordena o encerramento ordenado dos beans e conectores.">
                     <span class="te-letter">C</span> O Spring Framework ignora o sinal de encerramento do sistema operacional e mantém as threads ativas indefinidamente até a finalização forçada.
                   </button>
                 </div>
@@ -10491,13 +10491,13 @@ public Pedido fecharPedido(Long pedidoId) {
                 <p class="te-instrucao">Por que a publicação na fila do RabbitMQ NÃO deve ser feita diretamente dentro desse método transacional?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O RabbitMQ aceita conexões de qualquer cliente Java independentemente de anotações.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O RabbitMQ aceita conexões de qualquer cliente Java independentemente de anotações.">
                     <span class="te-letter">A</span> O RabbitMQ recusa conexões estabelecidas a partir de classes de serviço que utilizem anotações do ecossistema Spring.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Nunca execute I/O de mensageria externa dentro de transações de banco. A mensagem pode ser enviada ao broker e o banco falhar no commit final (inconsistência dual-write). A arquitetura correta usa Outbox Pattern ou AFTER_COMMIT.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Nunca execute I/O de mensageria externa dentro de transações de banco. A mensagem pode ser enviada ao broker e o banco falhar no commit final (inconsistência dual-write). A arquitetura correta usa Outbox Pattern ou AFTER_COMMIT.">
                     <span class="te-letter">B</span> Chamadas de mensageria dentro de @Transactional mantêm conexões de banco presas e podem publicar mensagens com rollback do banco; use Transactional Outbox ou @TransactionalEventListener(AFTER_COMMIT).
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A coleta de métricas do Micrometer é assíncrona e não interfere na sincronização de transações.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A coleta de métricas do Micrometer é assíncrona e não interfere na sincronização de transações.">
                     <span class="te-letter">C</span> A biblioteca Micrometer bloqueia a thread de execução sempre que mensagens são postadas no RabbitMQ sem transações XA.
                   </button>
                 </div>
@@ -10667,13 +10667,13 @@ public Pedido fecharPedido(Long pedidoId) {
                 <p class="te-instrucao">De acordo com os princípios da neurociência da aprendizagem (Active Recall / Desejável Dificuldade), qual estratégia garantirá retenção duradoura?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Consumo passivo gera ilusão de competência (fluency illusion), com esquecimento rápido e sem retenção prática.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Consumo passivo gera ilusão de competência (fluency illusion), com esquecimento rápido e sem retenção prática.">
                     <span class="te-letter">A</span> A visualização passiva de videoaulas em velocidade acelerada é superior por registrar mais frames por segundo na memória de longo prazo do desenvolvedor.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. A ausência de feedback de execução e depuração empírica impede a validação de hipóteses técnicas.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A ausência de feedback de execução e depuração empírica impede a validação de hipóteses técnicas.">
                     <span class="te-letter">B</span> Apenas leitura estática de código de terceiros desenvolve modelos mentais sólidos, sendo desnecessário rodar código em IDE.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Em neurociência cognitiva, o esforço de evocar conhecimento (Retrieval Practice / Active Recall) e solucionar problemas reais de código cria conexões neurais sólidas, garantindo retenção e fluência técnica real.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Em neurociência cognitiva, o esforço de evocar conhecimento (Retrieval Practice / Active Recall) e solucionar problemas reais de código cria conexões neurais sólidas, garantindo retenção e fluência técnica real.">
                     <span class="te-letter">C</span> Prática deliberada e recuperação ativa (Active Recall), depurando falhas e implementando soluções na IDE com repetição espaçada.
                   </button>
                 </div>
@@ -10831,13 +10831,13 @@ Cenário: Sistema contábil que exige transações financeiras ACID estritas e r
                 <p class="te-instrucao">Qual postura crítica de engenharia deve prevalecer na escolha da tecnologia?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Engenharia de software sênior é fundamentada na análise crítica de trade-offs. Escolhe-se tecnologia com base em garantias transacionais e necessidades do negócio, e não por tendências passageiras.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Engenharia de software sênior é fundamentada na análise crítica de trade-offs. Escolhe-se tecnologia com base em garantias transacionais e necessidades do negócio, e não por tendências passageiras.">
                     <span class="te-letter">A</span> Pesar requisitos e trade-offs: sistemas contábeis com forte consistência ACID e joins relacionais demandam bancos relacionais robustos.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Adotar NoSQL sem necessidade sacrifica consistência ACID nativa e encarece rotinas contábeis críticas.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Adotar NoSQL sem necessidade sacrifica consistência ACID nativa e encarece rotinas contábeis críticas.">
                     <span class="te-letter">B</span> Adotar bancos NoSQL distribuídos imediatamente em todas as novas aplicações corporativas porque tecnologias recentes são sempre melhores e mais modernas.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Reinventar motores de persistência adiciona riscos extremos de corrupção de dados e custos injustificáveis.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Reinventar motores de persistência adiciona riscos extremos de corrupção de dados e custos injustificáveis.">
                     <span class="te-letter">C</span> Implementar um motor próprio de armazenamento de arquivos binários em Java para dispensar o uso de bancos de terceiros.
                   </button>
                 </div>
@@ -10996,13 +10996,13 @@ Opção B: Abrir a classe CglibAopProxy ou JdkDynamicAopProxy no debugger da IDE
                 <p class="te-instrucao">Qual método de trabalho reflete a postura de um desenvolvedor com domínio profundo do ecossistema?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. Tentativa e erro cega consome tempo, gera soluções frágeis e não elucida a causa raiz da interceptação.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Tentativa e erro cega consome tempo, gera soluções frágeis e não elucida a causa raiz da interceptação.">
                     <span class="te-letter">A</span> Tentativa e erro aleatória no código da aplicação é mais rápida do que inspecionar classes internas do framework no debugger durante o desenvolvimento.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="Exato! Engenheiros que dominam o ecossistema entram nas classes internas do Spring (TransactionInterceptor, CglibAopProxy) com o debugger. Isso revela exatamente como a mágica funciona e resolve bugs complexos na raiz.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Engenheiros que dominam o ecossistema entram nas classes internas do Spring (TransactionInterceptor, CglibAopProxy) com o debugger. Isso revela exatamente como a mágica funciona e resolve bugs complexos na raiz.">
                     <span class="te-letter">B</span> Depurar o código-fonte do framework na IDE desmistifica o comportamento interno, revelando a cadeia de proxies e limites de self-invocation.
                   </button>
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Incorreto. O problema não é o framework, mas compreender seu ciclo de interceptação para utilizá-lo com maestria.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O problema não é o framework, mas compreender seu ciclo de interceptação para utilizá-lo com maestria.">
                     <span class="te-letter">C</span> Reescrever a funcionalidade em scripts shell para evitar dependência de interceptadores dinâmicos gerenciados por containers.
                   </button>
                 </div>

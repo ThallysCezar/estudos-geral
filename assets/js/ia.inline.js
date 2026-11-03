@@ -551,6 +551,72 @@ var DATA = [
         pq: "O juiz avalia as respostas através de uma rubrica CoT Pydantic estruturada medindo a métrica de Faithfulness.",
         ex: "Teste Pytest reprovando resposta com alucinação médica e aprovando resposta 100% sustentada pelo contexto.",
         alem: "Avaliações de trajetória de agentes monitoram chamadas redundantes de ferramentas e limites de passos."
+      },
+      {
+        id: "lab-tools",
+        t: "Lab 7 · Tool calling do zero",
+        x: "o loop sem framework",
+        oq: "Escrever à mão o loop de tool calling: ferramentas, pedido, validação, execução e resultado.",
+        ps: "Entender o que todo framework de agentes faz por baixo.",
+        sub: "Substituiu a caixa-preta do framework no primeiro contato com agentes.",
+        pq: "O modelo só pede; o código valida, autoriza e executa. Erro comum: não limitar os passos.",
+        ex: "Duas ferramentas, schema Pydantic e limite de 5 passos.",
+        alem: "Chamadas paralelas na mesma resposta."
+      },
+      {
+        id: "lab-agno",
+        t: "Lab 8 · O mesmo agente com Agno em 30 linhas",
+        x: "Agno em 30 linhas",
+        oq: "Refazer o agente do Lab 7 com o Agno e comparar com a versão à mão.",
+        ps: "Ganhar produtividade sabendo o que o framework esconde.",
+        sub: "Substituiu o loop à mão quando o projeto cresce.",
+        pq: "Docstring e tipos viram a descrição da ferramenta. Erro comum: seguir exemplo de versão antiga.",
+        ex: "Agent(model=..., tools=[...], show_tool_calls=True).",
+        alem: "Memória entre execuções."
+      },
+      {
+        id: "lab-injecao",
+        t: "Lab 9 · Prompt injection",
+        x: "atacar e defender",
+        oq: "Dez ataques diretos e indiretos contra o seu RAG, antes e depois de defesas em camadas.",
+        ps: "Saber quanto o sistema resiste e onde a defesa precisa estar.",
+        sub: "Substituiu a confiança no prompt de sistema como única proteção.",
+        pq: "Separar instrução de dado, checar a saída e limitar as ferramentas. Erro comum: testar só ataque direto.",
+        ex: "Documento com instrução escondida que tenta incluir um link.",
+        alem: "Ataque que tenta disparar uma ação de escrita."
+      },
+      {
+        id: "lab-ragas",
+        t: "Lab 10 · Ragas no seu RAG",
+        x: "medir antes de mudar",
+        oq: "Fidelidade, relevância e contexto do RAG com o Ragas, antes e depois de uma mudança.",
+        ps: "Decidir mudanças no RAG com números, não com impressão.",
+        sub: "Substituiu a avaliação no olho de algumas perguntas.",
+        pq: "20 perguntas com referência e uma mudança por vez. Erro comum: confiar cegamente na nota.",
+        ex: "evaluate(dataset, metrics=[faithfulness, context_recall, ...]).",
+        alem: "Reprovar o PR no CI se a fidelidade cair."
+      },
+      {
+        id: "lab-ollama",
+        t: "Lab 11 · Modelo local com Ollama",
+        x: "de graça na sua máquina",
+        oq: "Rodar um modelo local com o Ollama pela API compatível e comparar com um modelo de API.",
+        ps: "Ter uma opção sem custo por chamada e sem o dado sair da máquina.",
+        sub: "Substituiu a dependência exclusiva de APIs pagas.",
+        pq: "Mesma API, troca só a URL base. Erro comum: esperar qualidade de modelo grande.",
+        ex: "OpenAI(base_url='http://localhost:11434/v1', api_key='ollama').",
+        alem: "Achar o menor modelo com acerto aceitável."
+      },
+      {
+        id: "lab-custo",
+        t: "Lab 12 · Custo e cache",
+        x: "quanto você economiza",
+        oq: "Custo e tempo de 100 perguntas sem cache, com cache exato e com cache semântico.",
+        ps: "Reduzir custo e latência sem servir resposta errada.",
+        sub: "Substituiu a otimização sem medir.",
+        pq: "O limite de similaridade troca economia por segurança. Erro comum: cachear resposta personalizada.",
+        ex: "Cache exato por pergunta normalizada e semântico por similaridade de embedding.",
+        alem: "Limite sem erros e tempo de expiração."
       }
     ]
   },

@@ -735,6 +735,14 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
   <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="estante-css">
+/* "Na estante": liga um tópico de trilha ao livro da biblioteca que trata do mesmo assunto (e o caminho de volta). */
+.estante{margin:18px 0 0;padding:13px 17px;border-radius:12px;background:var(--card);border:1px dashed color-mix(in srgb,var(--purple,#bd93f9) 55%,transparent);font-size:.9rem;color:var(--muted)}
+.estante b.et{display:block;margin-bottom:5px;color:var(--purple,#bd93f9);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.estante p{margin:.3rem 0 0}
+.estante a{color:var(--purple,#bd93f9);font-weight:600}
+.estante ul{margin:.35rem 0 0;padding-left:1.1rem}
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -879,7 +887,9 @@ public class PaymentConfig {
             <li><strong>Ciclos Circulares de Dependência (A depende de B, que depende de A):</strong> A partir do Spring Boot 2.6+, dependências circulares lançam <code>BeanCurrentlyInCreationException</code> no startup por padrão, travando o deploy imediatamente.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="estante"><b class="et">Na estante</b><p><i>Clean Architecture</i> (Martin): a injeção de dependência do Spring é a ferramenta; a regra da dependência é o motivo de usá-la. <a href="../cadernos/biblioteca.html#h1">Biblioteca · a regra da dependência →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -5023,7 +5033,9 @@ public @interface CpfValido {
             <li><strong>Desserialização polimórfica insegura:</strong> Configurar <code>enableDefaultTyping()</code> no Jackson pode abrir brechas gravíssimas de execução remota de código (RCE) via desserialização maliciosa.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="estante"><b class="et">Na estante</b><p><i>Clean Architecture</i> (Martin): o DTO fica na borda e o caso de uso recebe um comando; o request nunca chega ao domínio. <a href="../cadernos/biblioteca.html#h2">Biblioteca · casos de uso e portas →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -6603,7 +6615,9 @@ public class ClienteService {
             <li><strong>Open Session In View (OSIV) ativo por padrão:</strong> O Spring Boot mantém a conexão do banco aberta até o término da renderização do JSON no Controller para permitir carregamento tardio de proxies Lazy. Isso mantém conexões presas por dezenas de milissegundos a mais. Desative sempre em produção: <code>spring.jpa.open-in-view=false</code>.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="estante"><b class="et">Na estante</b><p><i>Learning DDD</i> (Khononov): agregado e repositório explicam o que uma entidade JPA deveria proteger, além de mapear uma tabela. <a href="../cadernos/biblioteca.html#c3">Biblioteca · os padrões táticos →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -9197,7 +9211,9 @@ void deveLancarExcecaoQuandoSaldoForInsuficiente() {
             <li><strong>Testar apenas o "Caminho Feliz":</strong> Deixar de testar cenários de borda (valores nulos, números negativos, listas vazias, timeouts) resulta em surpresas graves de <code>NullPointerException</code> no ambiente de produção.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="estante"><b class="et">Na estante</b><ul><li><i>Clean Architecture</i> (Martin): o teste de fogo é rodar o caso de uso sem Spring, só com fakes das portas. <a href="../cadernos/biblioteca.html#h3">Biblioteca · o teste de fogo →</a></li><li><i>Fundamentals of Software Architecture</i>: com ArchUnit, a regra que permite esse teste vira uma fitness function no CI. <a href="../cadernos/biblioteca.html#a5">Biblioteca · fitness functions →</a></li></ul></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->

@@ -727,6 +727,14 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
   <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="estante-css">
+/* "Na estante": liga um tópico de trilha ao livro da biblioteca que trata do mesmo assunto (e o caminho de volta). */
+.estante{margin:18px 0 0;padding:13px 17px;border-radius:12px;background:var(--card);border:1px dashed color-mix(in srgb,var(--purple,#bd93f9) 55%,transparent);font-size:.9rem;color:var(--muted)}
+.estante b.et{display:block;margin-bottom:5px;color:var(--purple,#bd93f9);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.estante p{margin:.3rem 0 0}
+.estante a{color:var(--purple,#bd93f9);font-weight:600}
+.estante ul{margin:.35rem 0 0;padding-left:1.1rem}
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -1078,7 +1086,9 @@ figure.dg figcaption{font:600 .74rem/1.4 "Inter",sans-serif;color:var(--soft);te
             <li><b>Trade-off sem prazo:</b> "por enquanto adotamos consistência eventual sem dead letter queue" sem registrar a data limite para implementar o tratamento de falhas.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> (Richards e Ford) é o livro que transformou esta ideia em método: a Primeira Lei (tudo é trade-off) e a escolha de no máximo três características de arquitetura por sistema, para o trade-off ficar explícito. <a href="../cadernos/biblioteca.html#a1">Biblioteca · trade-off e características →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -3488,7 +3498,9 @@ public class ContaBancaria {
             <li><b>Microsserviços em equipe diminuta:</b> adotar arquitetura distribuída com um time menor que 10 engenheiros. O overhead de governança devora toda a produtividade.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> trata Conway como responsabilidade do arquiteto: desenhar o sistema é também desenhar a conversa entre times, e o arquiteto que decide sozinho perde o contexto de quem implementa. <a href="../cadernos/biblioteca.html#a4">Biblioteca · Conway, ADR e o arquiteto que não desenha sozinho →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -3875,7 +3887,9 @@ class CatalogoService {
             <li><b>Dispersão horizontal:</b> cada nova funcionalidade exige abrir e alterar 4 arquivos em 4 pastas diferentes (<code class="i">controllers</code>, <code class="i">services</code>, <code class="i">dtos</code>, <code class="i">repositories</code>).</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> compara os estilos pelo que cada um favorece e cobra, e <i>Clean Architecture</i> mostra a variação das camadas em que a dependência aponta para o domínio, e não para o banco. <a href="../cadernos/biblioteca.html#a3">Biblioteca · estilos →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -4090,7 +4104,9 @@ public class LogisticaListener {
             <li><b>Módulos técnicos disfarçados:</b> criar módulos nomeados <code class="i">web-module</code>, <code class="i">service-module</code>, <code class="i">data-module</code>; isso é apenas arquitetura em camadas tradicional com nomes novos.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> coloca o monolito modular entre os estilos de menor custo, e <i>Clean Architecture</i> dá a regra para organizar cada módulo por dentro. <a href="../cadernos/biblioteca.html#h1">Biblioteca · a regra da dependência →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -4291,7 +4307,9 @@ boolean aprovado = antiFraudeService.analisar(pedido);
             <li><b>Sem tracing distribuído desde o primeiro serviço:</b> um erro 500 acontece na tela e o desenvolvedor passa 3 dias olhando logs em 8 terminais diferentes sem conseguir correlacionar a requisição.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Software Architecture: The Hard Parts</i> é o livro sobre o preço dos microsserviços: o architecture quantum mostra onde fica a fronteira de verdade e a ordem certa para decompor um monolito. <a href="../cadernos/biblioteca.html#b1">Biblioteca · architecture quantum e decompor →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -4683,7 +4701,9 @@ public void processar(ConsumerRecord&lt;String, String&gt; record) {
             <li><b>Decidir antes de quantificar atributos:</b> escolher arquitetura orientada a eventos sem saber se a consistência eventual é aceita pela área financeira da empresa.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> dá a tabela de estilos que esta árvore usa, e <i>Clean Architecture</i> lembra que a mesma estrutura pode pagar num módulo e só cobrar em outro. <a href="../cadernos/biblioteca.html#h3">Biblioteca · quando não vale a pena →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -5089,7 +5109,9 @@ public class ItemEstoque {
             <li><b>Integrar sem Camada Anticorrupção:</b> permitir que DTOs sujos de um ERP SAP legado vazem diretamente para o núcleo do seu novo microsserviço.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Learning Domain-Driven Design</i> (Khononov) mostra como achar o bounded context a partir da linguagem do negócio e por que nem todo subdomínio merece o mesmo esforço. <a href="../cadernos/biblioteca.html#c2">Biblioteca · bounded context →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -5286,7 +5308,9 @@ public class ItemEstoque {
             <li><b>Invariantes validadas no Controller/Service:</b> deixar a entidade aberta e colocar as regras <code class="i">if (status != ABERTO)</code> soltas no Service; qualquer novo desenvolvedor que crie outro fluxo esquecerá o IF e corromperá o banco.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Learning Domain-Driven Design</i> apresenta os padrões táticos como uma escada, do script de transação ao agregado, e mostra quando subir cada degrau. <a href="../cadernos/biblioteca.html#c3">Biblioteca · a escada dos padrões táticos →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -7271,7 +7295,9 @@ public class CheckoutSagaOrchestrator {
             <li><b>Perda de rastreabilidade (Saga Invisível):</b> sagas coreografadas complexas com 8 serviços onde ninguém sabe em qual estado o pedido está travado. Use sempre cabeçalhos de <code class="i">correlationId</code> propagados.</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Software Architecture: The Hard Parts</i> organiza as sagas por três escolhas (comunicação, consistência e coordenação) e mostra o cabo de guerra entre granularidade e transação. <a href="../cadernos/biblioteca.html#b3">Biblioteca · granularidade e sagas →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->
@@ -10372,7 +10398,9 @@ ocorrerá de forma 100% assíncrona. A janela de consistência medida é de 300 
             <li><b>Criar ADR para decisões triviais e sem custo de reversão:</b> escrever ADRs de 2 páginas para decidir qual formatador de código usar ou qual biblioteca utilitária de string adotar. Guarde ADRs exclusivamente para decisões de <b>mão única</b> (caras de reverter).</li>
           </ul>
         </div>
-          <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+        <div class="estante"><b class="et">Na estante</b><p><i>Fundamentals of Software Architecture</i> põe o ADR no centro do trabalho do arquiteto, e <i>Clean Architecture</i> mostra uma decisão típica para registrar: onde separar o domínio e onde aceitar o acoplamento. <a href="../cadernos/biblioteca.html#a4">Biblioteca · Conway e ADR →</a></p></div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
             <!-- A. REVISÃO / RECAPITULANDO EM SÍNTESE -->

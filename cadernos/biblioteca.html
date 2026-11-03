@@ -312,6 +312,14 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
 </style>
 <link rel="stylesheet" href="../assets/css/responsive-drawer.css">
   <link rel="stylesheet" href="../assets/css/pratica.css">
+<style id="estante-css">
+/* "Na estante": liga um tópico de trilha ao livro da biblioteca que trata do mesmo assunto (e o caminho de volta). */
+.estante{margin:18px 0 0;padding:13px 17px;border-radius:12px;background:var(--card);border:1px dashed color-mix(in srgb,var(--purple,#bd93f9) 55%,transparent);font-size:.9rem;color:var(--muted)}
+.estante b.et{display:block;margin-bottom:5px;color:var(--purple,#bd93f9);font:700 .68rem/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.estante p{margin:.3rem 0 0}
+.estante a{color:var(--purple,#bd93f9);font-weight:600}
+.estante ul{margin:.35rem 0 0;padding-left:1.1rem}
+</style>
 </head>
 <body>
 <div class="topbar"><i id="tp"></i></div>
@@ -337,7 +345,7 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
     <header class="hero">
       <span class="eyebrow">Biblioteca · setembro 2026</span>
       <h1>Os livros que formaram <em>o meu critério</em>.</h1>
-      <p class="lede">O oitavo da série, e o único que não é sobre uma tecnologia — é sobre <b>como decidir</b>. Reúne os cinco livros que estavam espalhados em três pastas do vault, dois deles com uma versão antiga convivendo com a nova. Em cima, a <b>trilha visual</b>: 38 nós em 6 marcos, um por livro. Embaixo, o <b>conteúdo</b>: 17 tópicos em 6 partes, com a síntese de cada obra, o que ela veio substituir no meu entendimento e as armadilhas. E a parte que só existe porque eles estão lado a lado: <b>onde os autores discordam</b> — que é exatamente onde mora o trade-off.</p>
+      <p class="lede">O oitavo da série, e o único que não é sobre uma tecnologia — é sobre <b>como decidir</b>. Reúne os seis livros que estavam espalhados em três pastas do vault, dois deles com uma versão antiga convivendo com a nova. Em cima, a <b>trilha visual</b>: 44 nós em 8 marcos, um por livro. Embaixo, o <b>conteúdo</b>: 23 tópicos em 8 partes, com a síntese de cada obra, o que ela veio substituir no meu entendimento e as armadilhas. E a parte que só existe porque eles estão lado a lado: <b>onde os autores discordam</b> — que é exatamente onde mora o trade-off.</p>
       <div class="jump">
         <a href="#trilha"><b>↓ A trilha visual</b>as ideias-chave de cada livro</a>
         <a href="#p1"><b>↓ O conteúdo</b>a síntese, e onde eles divergem</a>
@@ -352,7 +360,7 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
 
     <!-- ========================= A TRILHA ========================= -->
     <section class="part trailwrap" id="trilha">
-      <div class="ph"><span class="num">↗</span><div><h2>A trilha: cinco livros, uma estante</h2><p>Comece por aqui. Cada marco é um livro; cada nó, uma ideia que sobrevive à leitura. Use o modo teste para revisar sem reler.</p></div></div>
+      <div class="ph"><span class="num">↗</span><div><h2>A trilha: seis livros, uma estante</h2><p>Comece por aqui. Cada marco é um livro; cada nó, uma ideia que sobrevive à leitura. Use o modo teste para revisar sem reler.</p></div></div>
       <div class="legend" id="lg"></div>
       <div class="trail" id="track"></div>
     </section>
@@ -375,6 +383,8 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
         </div>
         <div class="cs"><b>A pergunta que muda uma reunião.</b> Quando alguém propõe uma solução, pergunte: <em>"o que isso está nos custando?"</em>. Se ninguém souber responder, a decisão não foi tomada — foi adotada. E note a assimetria: quase todo mundo consegue listar os benefícios da opção que prefere; quase ninguém prepara os custos. Chegar na reunião com os <b>dois lados da sua própria proposta</b> é o que separa quem argumenta de quem convence.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Currículo dirigindo a arquitetura.</b> Escolher a tecnologia que você quer aprender e construir a justificativa depois. Acontece muito mais do que se admite.</li><li><b>Copiar a big tech.</b> Netflix e Uber resolvem problemas de escala e de organização que você não tem — e a solução deles carrega o custo do problema deles.</li><li><b>Trade-off sem prazo.</b> "Por enquanto aceitamos X" sem definir quando será revisto é dívida sem vencimento.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#a2">Arquitetura · a2</a>: tudo é trade-off: não existe arquitetura melhor, existe adequada</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -625,6 +635,8 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
         </table>
         <div class="cs"><b>O caminho que os autores recomendam na prática.</b> Comece <b>monólito modular</b>. Ele dá organização de domínio com custo de operação quase zero, e mantém aberta a opção de extrair serviços depois — porque os módulos já existem. Ir direto para microsserviços paga a conta de operação, dados distribuídos e observabilidade <em>antes</em> de ter o problema que justifica pagá-la. É o mesmo raciocínio das alavancas de escala: o degrau caro por último.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Microsserviços com um time.</b> Você comprou a solução para um problema de coordenação entre times que não existe.</li><li><b>Event-driven sem observabilidade.</b> Desacoplou e perdeu a capacidade de responder "onde parou?".</li><li><b>Monólito modular sem fronteira imposta.</b> Se nada impede o import, em um ano os módulos se misturaram.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#d1">Arquitetura · d1</a>: camadas</li><li><a href="../trilhas/arquitetura.html#d2">Arquitetura · d2</a>: monolito modular</li><li><a href="../trilhas/arquitetura.html#d3">Arquitetura · d3</a>: microsserviços</li><li><a href="../trilhas/arquitetura.html#d5">Arquitetura · d5</a>: como escolher</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -746,6 +758,8 @@ article.topic table{width:100%;border-collapse:collapse;margin-top:18px;font:400
         <p><b>Lei de Conway</b>: o sistema tende a copiar a estrutura de comunicação da organização. Três times, três partes. Se você desenha módulos que atravessam fronteiras de time, a realidade vai corrigir o seu desenho — não o contrário. A manobra inversa é reorganizar os times para que a arquitetura desejada seja a natural, e é por isso que arquitetura também é assunto de gestão.</p>
         <div class="cs"><b>O ADR e o campo que todo mundo pula.</b> Um registro de decisão tem contexto, alternativas consideradas, escolha e <b>consequências</b>. É o último que carrega o valor — e é o que as pessoas deixam em branco. Sem consequências declaradas, o ADR vira ata de reunião. E sem as <em>alternativas</em>, ninguém daqui a um ano saberá se a opção óbvia de hoje já foi avaliada e descartada por um motivo real. Um ADR de meia página bem feito economiza a mesma discussão acontecendo três vezes.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>ADR só com a escolha.</b> Perde o raciocínio, que é a única coisa que não estava óbvia.</li><li><b>Arquitetura imposta.</b> Quem não entendeu vai contornar, e você só descobre no code review — ou depois.</li><li><b>Arquiteto que parou de programar.</b> Perde o contato com o custo real das próprias decisões.</li><li><b>Ignorar Conway.</b> Você desenha contra a organização e perde, sempre.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#c4">Arquitetura · c4</a>: lei de Conway</li><li><a href="../trilhas/arquitetura.html#j1">Arquitetura · j1</a>: ADR</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -894,6 +908,8 @@ cobranca-service ──→ banco de cobrança
         </div>
         <div class="cs"><b>Os dois testes que resolvem a discussão.</b> <em>Consigo implantar A sem implantar B?</em> e <em>consigo mudar o esquema de A sem quebrar B?</em> Se qualquer resposta for não, A e B são um quantum. Isso reposiciona a conversa inteira: em vez de discutir quantos serviços ter, você discute quantas fronteiras <b>reais</b> o sistema tem — e descobre que a maioria das migrações para microsserviços para no meio, exatamente na separação dos dados.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Banco compartilhado "temporário".</b> É o item que nunca sai do backlog, e é o que define o quantum.</li><li><b>Contar serviços como progresso.</b> Trinta serviços num quantum é pior que um monólito.</li><li><b>Extrair o serviço antes dos dados.</b> Você ganha a complexidade distribuída sem nenhum dos benefícios.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#d3">Arquitetura · d3</a>: microsserviços: o que se ganha, o que se paga</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1146,6 +1162,8 @@ cobranca-service ──→ banco de cobrança
         </div>
         <div class="cs"><b>A matriz das oito sagas, e o que ela resolve.</b> O livro classifica por três eixos binários — comunicação (síncrona ou assíncrona), consistência (atômica ou eventual) e coordenação (orquestrada ou coreografada). Oito combinações, cada uma com nome e consequência declarada. O valor está em parar de dizer "vamos usar saga" e passar a dizer <em>qual</em>, com o custo nomeado: quanto mais atômica e síncrona, mais fácil de raciocinar e menos disponível; quanto mais eventual e assíncrona, melhor escala e mais difícil de depurar. Na prática, a maioria dos fluxos aceita a versão mais simples — e o erro comum é escolher a mais sofisticada por padrão.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Só olhar os desintegradores.</b> Você fatia até que toda operação de negócio vire uma saga de cinco passos.</li><li><b>Ignorar a volatilidade.</b> É o desintegrador mais útil e o menos lembrado: separar o que muda toda semana do que é estável rende muito.</li><li><b>Coreografia com sete passos.</b> O fluxo não está escrito em lugar nenhum e ninguém consegue desenhá-lo.</li><li><b>Compensação que não compensa.</b> E-mail enviado não se apaga; planeje um segundo e-mail de correção.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#g3">Arquitetura · g3</a>: saga sem transação distribuída</li><li><a href="../trilhas/mensageria.html#g3">Mensageria · g3</a>: saga entre serviços</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1392,6 +1410,8 @@ cobranca-service ──→ banco de cobrança
         <p>A <b>linguagem ubíqua</b> é a outra metade: o mesmo vocabulário entre quem entende o negócio e quem escreve o código, dentro daquela fronteira. Quando o especialista diz "apólice" e o código diz <code class="ic">ContractEntity</code>, existe uma tradução acontecendo na cabeça de alguém a cada conversa — e é nessa tradução que as regras se perdem.</p>
         <div class="cs"><b>Bounded context não é microsserviço.</b> O primeiro é uma decisão de <em>modelo</em>; o segundo, de <em>implantação</em>. Eles costumam coincidir, e por isso muita gente trata como sinônimo — mas um bounded context pode perfeitamente viver como um módulo dentro de um monólito. Confundir os dois leva ao pior resultado possível: um microsserviço por entidade, cada um incapaz de fazer algo útil sozinho. <b>Defina os contextos primeiro; decida a implantação depois.</b></div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Modelo canônico único.</b> Serve mal a todos e trava a evolução de cada um.</li><li><b>Fronteira desenhada por entidade.</b> Contexto se define por <em>capacidade de negócio</em>, não por tabela.</li><li><b>Linguagem só no documento.</b> Se o código não usa os termos do negócio, a linguagem ubíqua não existe.</li><li><b>Consumir o modelo do legado direto.</b> O vocabulário dele vaza para dentro do seu domínio — é para isso que existe a camada anticorrupção.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#e2">Arquitetura · e2</a>: bounded context</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1519,6 +1539,8 @@ cobranca-service ──→ banco de cobrança
         </table>
         <div class="cs"><b>O agregado é a fronteira de consistência.</b> No degrau do domain model, o agregado é o que garante as invariantes: tudo dentro dele muda numa transação só. Três regras práticas que evitam a maioria dos problemas — <b>agregado pequeno</b>, <b>referência a outros agregados por identificador</b> (nunca por objeto) e <b>uma transação por agregado</b>. O agregado gigante, que carrega meio banco a cada operação, é o antipadrão mais comum e vira ponto de contenção sob concorrência.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Event sourcing por elegância.</b> Um ano depois ninguém consegue responder uma consulta simples sem construir projeções.</li><li><b>Domain model anêmico.</b> Classes com só getter e setter e a regra toda no service — você pagou o custo do padrão sem o benefício.</li><li><b>Agregado que referencia objeto.</b> Carrega o grafo inteiro e torna a transação enorme.</li><li><b>Subir a escada por padronização.</b> "Aqui a gente usa domain model em tudo" é a mesma desproporção, com outro nome.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#e3">Arquitetura · e3</a>: agregado e invariante</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1645,6 +1667,8 @@ cobranca-service ──→ banco de cobrança
         <p>As perguntas do passo 1 que mudam tudo: <b>quantos usuários e qual o pico?</b> <b>quais operações, e qual a proporção entre leitura e escrita?</b> <b>que garantias o negócio exige — pode ter atraso? pode duplicar?</b> <b>o que está fora de escopo?</b> Sem elas, qualquer desenho é chute com aparência de método.</p>
         <div class="cs"><b>A estimativa de guardanapo, e por que ela humilha a complexidade.</b> Um milhão de usuários ativos por dia, dez ações cada, dá dez milhões de ações — cerca de 115 por segundo, com pico talvez de 350. Isso cabe em pouquíssimas máquinas e num banco relacional bem indexado. A maior parte da complexidade que os times adicionam é para uma escala <em>imaginada</em>. Fazer a conta em dois minutos, no começo, é o que separa projetar de deslumbrar.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Desenhar antes de perguntar.</b> É o erro número um, e é visível de longe.</li><li><b>Gastar todo o tempo no desenho bonito.</b> Sem chegar nos gargalos, você não mostrou o que sabe.</li><li><b>Citar tecnologia sem o porquê.</b> "Coloco um Kafka aqui" sem justificar é ruído.</li><li><b>Não declarar o que ficou fora.</b> Escopo aberto é como a conversa se perde.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/system-design.html#j1">System Design · j1</a>: o framework de 8 passos, da pergunta ao sistema em produção</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1781,6 +1805,8 @@ cobranca-service ──→ banco de cobrança
         </div>
         <div class="cs"><b>O exemplo que ensina o padrão mais transferível: o feed.</b> Existem duas estratégias opostas. <em>Fan-out na escrita</em> — quando alguém publica, o sistema já grava a entrada na caixa de cada seguidor: leitura instantânea, escrita cara, e impraticável para quem tem milhões de seguidores. <em>Fan-out na leitura</em> — monta o feed na hora: escrita barata, leitura cara. A resposta real é <b>híbrida</b>: escrita para a maioria, leitura para as contas enormes. Esse raciocínio — "duas estratégias opostas, e a resposta é separar os casos" — reaparece em metade dos problemas de escala.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Decorar um desenho.</b> Trava assim que o domínio muda.</li><li><b>Ignorar a proporção leitura/escrita.</b> É o número que mais determina a arquitetura, e o mais esquecido.</li><li><b>Aplicar o híbrido sempre.</b> Ele só se justifica quando existe a cauda longa que o motiva.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/system-design.html#c2">System Design · c2</a>: sharding</li><li><a href="../trilhas/system-design.html#k11">System Design · k11</a>: rate limiter distribuído</li><li><a href="../trilhas/system-design.html#k12">System Design · k12</a>: cache distribuído</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -1925,6 +1951,8 @@ cobranca-service ──→ banco de cobrança
         </div>
         <div class="cs"><b>Onde isso conversa com o resto da estante.</b> A busca binária — cortar pela metade a cada passo, O(log n) — é a mesma ideia por trás do índice B-tree do banco (Conceitos de Backend, Parte 05) <em>e</em> do método de investigação por bisseção (Parte 08). Um milhão de itens em cerca de vinte comparações. Quando você entende por que a busca binária exige ordenação, entende de quebra por que o índice do banco é uma estrutura ordenada e por que ele não ajuda em <code class="ic">LIKE '%x'</code>.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Otimizar a constante com a ordem errada.</b> Deixar o laço aninhado 30% mais rápido não resolve nada.</li><li><b>Testar com dados pequenos.</b> O(n²) passa despercebido com vinte registros e trava com vinte mil.</li><li><b>Esquecer a complexidade de espaço.</b> A tabela hash acima resolve tempo e ocupa memória; com dez milhões de clientes, a conta muda.</li><li><b>Big-O como dogma.</b> Para n pequeno e fixo, a solução simples costuma ganhar.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/system-design.html#b2">System Design · b2</a>: índice como estrutura de acesso</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -2053,6 +2081,8 @@ cobranca-service ──→ banco de cobrança
         </table>
         <div class="cs"><b>A armadilha do <code class="ic">HashMap</code> que aparece em produção.</b> <code class="ic">equals</code> e <code class="ic">hashCode</code> precisam ser coerentes — e o objeto usado como chave não pode ser alterado depois de inserido. Se você muda um campo que participa do <code class="ic">hashCode</code>, o objeto passa a ser procurado num balde diferente daquele em que foi guardado: ele continua no mapa, ocupando memória, e <code class="ic">get</code> devolve <code class="ic">null</code>. Não há erro, não há exceção — o dado simplesmente sumiu. É o motivo pelo qual chave de mapa deve ser imutável, e por que <code class="ic">record</code> é uma escolha excelente para isso.</div>
         <div class="gotcha"><b>Armadilhas</b><ul><li><b>Chave mutável.</b> O item some dentro do mapa, em silêncio.</li><li><b><code class="ic">equals</code> sem <code class="ic">hashCode</code>.</b> Dois objetos iguais em baldes diferentes; duplicata no <code class="ic">HashSet</code>.</li><li><b>Implementar a própria ordenação.</b> A da biblioteca é melhor em tudo.</li><li><b>BFS sem conjunto de visitados.</b> Laço infinito no primeiro ciclo do grafo.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/java.html#d3">Java · d3</a>: HashMap por dentro: hash, colisão, árvore e resize</li></ul></div>
+
         <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
 
@@ -2160,9 +2190,353 @@ cobranca-service ──→ banco de cobrança
       </article>
     </section>
 
+    <!-- ===================== PARTE 06 ===================== -->
+    <section class="part" id="p8">
+      <div class="ph"><span class="num">06</span><div><h2>Clean Architecture</h2><p>Robert C. Martin · a regra de negócio no centro, os detalhes na borda e o teste que prova a diferença.</p></div></div>
+
+      <article class="topic" id="h1">
+        <div class="th"><h3>A regra da dependência: tudo aponta para dentro</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> Clean Architecture é o princípio da inversão de dependência (o D do SOLID) aplicado ao projeto inteiro. A regra de negócio mora no centro, os detalhes técnicos (web, banco, mensageria, gateway de pagamento) moram na borda, e toda dependência de código aponta para dentro: o centro nunca conhece um nome do círculo de fora.</p>
+        <div class="caso"><b>o caso</b>
+          <p>Uma loja em Spring Boot precisa trocar o gateway de pagamento. A classe <code>Pedido</code> importa <code>jakarta.persistence</code>, o serviço de pedidos chama o SDK do gateway direto e a regra de "pedido só fecha com itens" está espalhada entre controller e repositório. Trocar o gateway vira uma refatoração de semanas. Com a regra da dependência, o gateway seria só um adaptador na borda, implementando uma interface que o caso de uso define: a troca mexeria em uma classe.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como uma tomada e os aparelhos.</b> A parede define o formato da tomada (a porta); cada aparelho traz o seu plugue (o adaptador). Trocar a geladeira não exige quebrar a parede, porque é o aparelho que se adapta à tomada, e não o contrário.</p></div>
+        <div class="duo o">
+          <div><h4>Por que o livro existe</h4><p>Robert C. Martin juntou ideias que já circulavam (arquitetura hexagonal, onion architecture) numa regra só: as dependências apontam para dentro. O objetivo é que a regra de negócio sobreviva à troca de qualquer detalhe e possa ser testada sem subir nada.</p><p class="repl"><b>Veio substituir:</b> a arquitetura em camadas em que o domínio depende do banco, porque a camada de baixo é a de persistência, e o framework vaza para todo o código.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Quando o domínio importa anotação de framework.</li><li>Quando trocar banco, fila ou gateway exige mexer na regra de negócio.</li><li>Quando testar uma regra simples exige <code>@SpringBootTest</code>.</li></ul></div>
+        </div>
+        <div class="vs">
+          <div class="antes"><div class="lab">o centro conhece a borda</div><pre><code><span class="k">@Entity</span>                       <span class="c">// domínio sabe de JPA</span>
+<span class="k">public class</span> Pedido { ... }
+
+<span class="k">@Service</span>
+<span class="k">public class</span> PedidoService {
+  <span class="k">private final</span> MercadoPagoClient mp;   <span class="c">// SDK direto</span>
+  ...
+}</code></pre></div>
+          <div class="depois"><div class="lab">a borda implementa o que o centro pede</div><pre><code><span class="c">// aplicação define a PORTA</span>
+<span class="k">public interface</span> GatewayDePagamento {
+  Cobranca <span class="a">cobrar</span>(Money valor);
+}
+
+<span class="c">// infra implementa (é um Adapter)</span>
+<span class="k">class</span> MercadoPagoAdapter
+    <span class="k">implements</span> GatewayDePagamento { ... }</code></pre></div>
+        </div>
+        <div class="cs"><b>Onde isso conversa com o resto da estante.</b> É o mesmo raciocínio de <i>Fundamentals of Software Architecture</i> sobre separar o que muda do que fica: aqui a fronteira passa dentro de um serviço. E a distinção de <i>Learning DDD</i> entre subdomínio central e genérico diz onde a separação vale o custo.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Achar que é sobre nome de pasta.</b> Pastas <code>domain</code> e <code>infra</code> com o domínio importando Spring não são Clean Architecture.</li><li><b>Desenhar os quatro círculos do diagrama original.</b> Domínio, aplicação e borda resolvem a maioria dos projetos; mais camada é mais cerimônia.</li><li><b>Confundir com microsserviços.</b> Clean organiza dentro de um serviço; microsserviços decidem entre serviços.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#d1">Arquitetura · d1</a>: camadas, o estilo padrão e seus limites</li><li><a href="../trilhas/arquitetura.html#d2">Arquitetura · d2</a>: monolito modular, com módulos de fronteira clara</li></ul></div>
+        <!-- ==================== FECHAMENTO E FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: Clean Architecture — a regra da dependência</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Uma regra só</b>
+                    <p>Dependências de código apontam para dentro; o centro não conhece nomes da borda.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Três camadas bastam</b>
+                    <p>Domínio (regras puras), aplicação (casos de uso e portas) e borda (adaptadores).</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>A borda implementa</b>
+                    <p>Controller, JPA e clientes HTTP implementam as portas que o centro define.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div><b>Pôr anotação de framework no domínio sem decidir:</b><p>O acoplamento entra por acidente, e a primeira troca de banco ou framework mostra que a regra de negócio dependia dele.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Quem define a interface é quem precisa dela.</strong> O caso de uso diz o que precisa; a infraestrutura se adapta.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-bib-h1">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #h1</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> A classe <code>Pedido</code> do domínio importa <code>jakarta.persistence.Entity</code> e o time quer seguir Clean Architecture.</p>
+                <p class="te-instrucao">Qual é a leitura correta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A anotação é um nome da borda dentro do centro; é exatamente o que a regra da dependência proíbe, mesmo sem lógica.">
+                    <span class="te-letter">A</span> Está correto, porque a anotação JPA não tem lógica e por isso não conta como dependência de framework.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="As duas saídas são legítimas; o erro é o acoplamento acidental, sem decisão registrada.">
+                    <span class="te-letter">B</span> Viola a regra da dependência; as saídas são separar o Pedido puro de uma classe JPA na infra ou aceitar o acoplamento de forma consciente num módulo de regra simples, registrando a decisão.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Não é preciso remover o JPA: basta que ele fique na borda, ou que o acoplamento seja uma decisão consciente.">
+                    <span class="te-letter">C</span> Viola a regra, e a única saída aceitável é remover o JPA do projeto e usar JDBC puro em todos os módulos.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que diz a regra da dependência da Clean Architecture?</p>
+                  <span class="tf-hint">Dica: Pense em quem conhece o nome de quem →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">O código de um círculo interno nunca conhece nomes do círculo externo. O domínio não sabe que o Spring existe, o caso de uso não sabe se o pedido veio de REST ou de fila, e quem está no centro não importa nada de persistência nem de framework. As dependências de código apontam sempre para dentro.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        <button class="done" type="button" data-k="h1">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="h2">
+        <div class="th"><h3>Casos de uso e portas: o domínio sem framework</h3><div class="badges"><span class="badge b-ess">essencial</span></div></div>
+        <p class="direto"><b>Direto:</b> O caso de uso orquestra o domínio para cumprir uma intenção do usuário ("fechar pedido") e declara as portas de que precisa, como interfaces: o repositório, o gateway. A borda traduz o mundo de fora para o vocabulário do caso de uso: o DTO do controller vira um comando, e a mensagem da fila vira o mesmo comando.</p>
+        <div class="caso"><b>o caso</b>
+          <p>Chega o pedido "fechar pedido também por fila, não só por REST". No projeto em que o controller tem a regra, o time copia a lógica para o consumer e as duas versões começam a divergir. Com caso de uso e portas, muda só a borda: um consumer novo traduz a mensagem para <code>FecharPedidoCommand</code> e chama o mesmo <code>FecharPedido</code>. Domínio e aplicação nem ficam sabendo.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como o balcão de um cartório.</b> Não importa se o pedido chegou pelo correio, pela internet ou em pessoa: o atendente transforma tudo no mesmo formulário, e o processo lá dentro é um só. O formulário é o comando; o processo é o caso de uso.</p></div>
+        <div class="duo o">
+          <div><h4>O que o livro propõe</h4><p>Cada intenção do usuário vira um caso de uso com nome de negócio, e cada coisa externa de que ele precisa vira uma porta. Os dados atravessam a fronteira traduzidos: o objeto de entrada da web nunca entra no domínio.</p><p class="repl"><b>Veio substituir:</b> o serviço genérico com dezenas de métodos, que recebe DTO do controller e devolve entidade JPA, misturando todas as camadas.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao criar um segundo canal de entrada (fila, agendamento, CLI).</li><li>Ao decidir onde fica o <code>@Transactional</code>: na borda ou num decorator do caso de uso.</li><li>Ao ver um DTO de request chegando até a entidade.</li></ul></div>
+        </div>
+        <pre><code><span class="c">// aplicacao/pedido/FecharPedido.java: sem Spring, sem JPA, sem HTTP</span>
+<span class="k">public class</span> FecharPedido {
+  <span class="k">private final</span> Pedidos pedidos;               <span class="c">// porta</span>
+  <span class="k">private final</span> GatewayDePagamento gateway;    <span class="c">// porta</span>
+
+  <span class="k">public</span> Recibo <span class="a">executar</span>(FecharPedidoCommand cmd) {
+    Pedido pedido = pedidos.<span class="a">buscar</span>(cmd.<span class="a">pedidoId</span>())
+        .<span class="a">orElseThrow</span>(PedidoNaoEncontrado::<span class="k">new</span>);
+    pedido.<span class="a">fechar</span>();                          <span class="c">// a regra fica no domínio</span>
+    Cobranca c = gateway.<span class="a">cobrar</span>(pedido.<span class="a">total</span>());
+    pedido.<span class="a">confirmarPagamento</span>(c.<span class="a">id</span>());
+    pedidos.<span class="a">salvar</span>(pedido);
+    <span class="k">return</span> Recibo.<span class="a">de</span>(pedido, c);
+  }
+}</code></pre>
+        <div class="cs"><b>Onde isso conversa com o resto da estante.</b> O caso de uso é a Facade dos padrões de projeto, e o adaptador é o Adapter. Os comandos e o caso de uso com nome de negócio conversam com a linguagem ubíqua de <i>Learning DDD</i>: o nome da classe é o nome que o negócio usa.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>DTO do controller dentro do domínio.</b> <code>PedidoRequest</code> fica na borda; o caso de uso recebe <code>FecharPedidoCommand</code>.</li><li><b>Porta com cara de tecnologia.</b> <code>PedidoJpaRepository</code> como porta prende o centro ao JPA; a porta se chama <code>Pedidos</code>.</li><li><b>Caso de uso genérico.</b> Um <code>PedidoService</code> com 20 métodos é o serviço antigo com outro nome.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#e3">Arquitetura · e3</a>: agregado e invariante, o que escrever dentro do domínio</li></ul></div>
+        <!-- ==================== FECHAMENTO E FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: Clean Architecture — casos de uso e portas</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Uma intenção, um caso de uso</b>
+                    <p>O caso de uso tem nome de negócio e orquestra o domínio.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Portas são interfaces do centro</b>
+                    <p>O caso de uso declara do que precisa; a borda implementa.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>A fronteira traduz</b>
+                    <p>Request da web e mensagem da fila viram o mesmo comando.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div><b>Copiar a regra para cada canal de entrada:</b><p>REST e fila passam a ter duas versões da mesma regra, que divergem na primeira correção feita só em uma delas.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>Novo canal de entrada é só um adaptador novo.</strong> Se acrescentar uma fila mexe no caso de uso, a fronteira está vazando.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-bib-h2">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #h2</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> O fechamento de pedido precisa passar a ser acionado também por uma fila, além do endpoint REST.</p>
+                <p class="te-instrucao">O que muda numa Clean Architecture bem feita?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O caso de uso não deve saber de onde veio o pedido; a origem é detalhe da borda.">
+                    <span class="te-letter">A</span> O caso de uso ganha um parâmetro indicando a origem do pedido, para tratar REST e fila de formas diferentes.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Validação de mensagem é detalhe da borda; o domínio não muda por causa de um canal novo.">
+                    <span class="te-letter">B</span> O domínio passa a ter um método específico para pedidos vindos da fila, com as validações de mensageria.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Domínio e aplicação nem ficam sabendo; é a prova de que as dependências apontam para dentro.">
+                    <span class="te-letter">C</span> Só a borda: um consumer novo traduz a mensagem para o mesmo comando e chama o mesmo caso de uso.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que o DTO do controller não deve entrar no domínio?</p>
+                  <span class="tf-hint">Dica: Pense no que acontece quando o canal de entrada muda →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque o DTO é um detalhe da borda: tem o formato da API web. Se ele entra no domínio, trocar ou acrescentar um canal (fila, agendamento) obriga a mexer na regra de negócio. A borda traduz o DTO para um comando do caso de uso, e o centro continua o mesmo para qualquer canal.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        <button class="done" type="button" data-k="h2">marcar dominado</button>
+      </article>
+
+      <article class="topic" id="h3">
+        <div class="th"><h3>O teste de fogo, e quando não vale a pena</h3><div class="badges"><span class="badge b-ess">prática</span></div></div>
+        <p class="direto"><b>Direto:</b> O retorno da Clean Architecture é um teste: rodar o caso de uso central sem Spring, sem banco e sem rede, só com implementações falsas das portas, em milissegundos. Se testar regra de negócio exige subir o contexto inteiro, o centro está vazado. E onde não há regra que muda, a estrutura é custo sem retorno.</p>
+        <div class="caso"><b>o caso</b>
+          <p>Um time aplicou Clean Architecture em todos os módulos, inclusive no cadastro de categorias, que só grava e lista. Cada campo novo exigia mexer em entidade, comando, porta, adaptador e mapeador. Ao mesmo tempo, o fechamento de pedido, que tinha regra de verdade, ganhou testes que rodavam em 40 ms sem Spring. A lição: a mesma estrutura pagava num módulo e só cobrava no outro.</p>
+        </div>
+        <div class="analogia"><i class="ic">≈</i><p><b>Como um cofre.</b> Vale a pena para guardar joias; para guardar canetas, é só uma gaveta mais difícil de abrir. Uma casa com cofre para as joias e gaveta para as canetas não é inconsistente: é bem organizada.</p></div>
+        <div class="duo o">
+          <div><h4>Como decidir</h4><p>Separe onde há <b>regra que muda e precisa de teste rápido</b>: pedido, pagamento, cupom. Use controller e repositório direto onde é CRUD fino. Metade do sistema limpa e metade simples é uma arquitetura madura, não inconsistente. Registre a escolha num ADR.</p><p class="repl"><b>Veio substituir:</b> a arquitetura escolhida uma vez para o projeto inteiro, aplicada igual em módulos com necessidades opostas.</p></div>
+          <div><h4>Onde isso aparece para você</h4><ul><li>Ao medir quanto tempo leva o teste de uma regra de negócio.</li><li>Ao decidir se a entidade JPA e a de domínio são a mesma classe.</li><li>Ao revisar um módulo de cadastro com cinco camadas.</li></ul></div>
+        </div>
+        <pre><code><span class="c">// teste SEM Spring, SEM banco, SEM internet: roda em milissegundos</span>
+<span class="k">@Test</span>
+<span class="k">void</span> <span class="a">fecha_pedido_e_cobra_o_total</span>() {
+  <span class="k">var</span> pedidos = <span class="k">new</span> PedidosEmMemoria(<span class="a">pedidoCom2Itens</span>());
+  <span class="k">var</span> gateway = <span class="k">new</span> GatewayFake();
+  <span class="k">var</span> recibo  = <span class="k">new</span> FecharPedido(pedidos, gateway).<span class="a">executar</span>(<span class="a">cmd</span>());
+  <span class="a">assertEquals</span>(<span class="k">new</span> Money(<span class="s">"259.80"</span>), recibo.<span class="a">valorCobrado</span>());
+}
+<span class="c">// quebra por motivo de NEGÓCIO, não porque o container não subiu</span></code></pre>
+        <div class="cs"><b>Onde isso conversa com o resto da estante.</b> É a navalha de Ockham aplicada à arquitetura, e a ideia de <i>Fundamentals of Software Architecture</i> de que toda estrutura cobra um preço. <i>Learning DDD</i> dá o critério: subdomínio central merece investimento; subdomínio genérico, não.</div>
+        <div class="gotcha"><b>Armadilhas</b><ul><li><b>Clean em tudo.</b> CRUD fino com cinco camadas é cerimônia; reserve a estrutura para onde há regra.</li><li><b>Testar regra com <code>@SpringBootTest</code>.</b> Lento e frágil; se o caso de uso precisa do contexto, o centro vazou.</li><li><b>Refatorar o projeto inteiro de uma vez.</b> Um caso de uso limpo, com teste em menos de 50 ms, ensina mais que dez pela metade.</li></ul></div>
+        <div class="estante"><b class="et">Onde isso aparece nas trilhas</b><ul><li><a href="../trilhas/arquitetura.html#d5">Arquitetura · d5</a>: como escolher, a árvore de decisão honesta</li><li><a href="../trilhas/arquitetura.html#j1">Arquitetura · j1</a>: ADR, a memória de por que as coisas são assim</li></ul></div>
+        <!-- ==================== FECHAMENTO E FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese: Clean Architecture — o teste de fogo</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O teste de fogo</b>
+                    <p>O caso de uso central roda sem Spring, banco e rede, só com fakes das portas.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Onde paga</b>
+                    <p>Regra que muda e precisa de teste rápido: pedido, pagamento, cupom.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Onde não paga</b>
+                    <p>CRUD fino sem regra: controller e repositório direto.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div><b>Aplicar a mesma estrutura em todos os módulos:</b><p>Os módulos simples ficam lentos de mudar, o time associa Clean Architecture a burocracia e abandona até onde ela pagava.</p></div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div><b>Modelo mental:</b><p><strong>A estrutura segue a regra de negócio.</strong> Onde há regra que muda, separe; onde não há, simplifique, e escreva por quê.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-bib-h3">
+              <div class="te-header">
+                <div class="te-badge"><span>DESAFIO PRÁTICO DE FIXAÇÃO #h3</span></div>
+                <div class="te-reward"><span class="te-xp-badge">+50 XP</span><span class="te-status">Aguardando resposta</span></div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um módulo de cadastro de categorias só grava e lista registros, sem regra de negócio, e o time discute se aplica Clean Architecture nele como no módulo de pedidos.</p>
+                <p class="te-instrucao">Qual é a decisão mais madura?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A estrutura paga onde há regra e teste rápido; em CRUD fino, é custo sem retorno. Misturar com decisão registrada é maturidade.">
+                    <span class="te-letter">A</span> Usar controller e repositório direto nesse módulo e registrar a decisão num ADR, mantendo Clean Architecture onde há regra que muda.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Consistência não é motivo para pagar cerimônia onde não há regra; a decisão registrada resolve a inconsistência aparente.">
+                    <span class="te-letter">B</span> Aplicar Clean Architecture também nesse módulo, porque um projeto com duas estruturas diferentes fica inconsistente.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Perderia o teste rápido justamente onde há regra de negócio que muda.">
+                    <span class="te-letter">C</span> Remover Clean Architecture do módulo de pedidos também, para o projeto inteiro seguir o modelo simples.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Qual é o teste de fogo de que uma arquitetura está limpa de verdade?</p>
+                  <span class="tf-hint">Dica: Pense no que o teste do caso de uso precisa subir →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Testar o caso de uso central sem Spring, sem banco e sem rede, só com implementações falsas das portas, em milissegundos. Se testar regra de negócio exige @SpringBootTest, o centro está vazado: o domínio ou o caso de uso dependem de algum detalhe da borda.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        <button class="done" type="button" data-k="h3">marcar dominado</button>
+      </article>
+    </section>
+
     <!-- ========================= PARTE 06 ========================= -->
     <section class="part" id="p6">
-      <div class="ph"><span class="num">06</span><div><h2>Ler de verdade</h2><p>Como transformar leitura em decisão — e onde os autores discordam.</p></div></div>
+      <div class="ph"><span class="num">07</span><div><h2>Ler de verdade</h2><p>Como transformar leitura em decisão — e onde os autores discordam.</p></div></div>
 
       <article class="topic" id="f1">
         <div class="th"><h3>O método dos três passes</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
@@ -2543,7 +2917,7 @@ cobranca-service ──→ banco de cobrança
 
     <!-- ========================= PARTE 07 ========================= -->
     <section class="part" id="p7">
-      <div class="ph"><span class="num">07</span><div><h2>Como aprender de verdade</h2><p>O ciclo, os canais recomendados em português e como pesquisar para fixar o conteúdo.</p></div></div>
+      <div class="ph"><span class="num">08</span><div><h2>Como aprender de verdade</h2><p>O ciclo, os canais recomendados em português e como pesquisar para fixar o conteúdo.</p></div></div>
 
       <article class="topic" id="g1">
         <div class="th"><h3>O ciclo de aprendizado</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">método</span></div></div>
@@ -2599,7 +2973,7 @@ cobranca-service ──→ banco de cobrança
 
 
     <footer class="foot">
-      <p>Biblioteca completa · setembro de 2026 · reúne num só documento os cinco livros que estavam espalhados pelo vault, em tema Dracula. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code> e <code class="i">Conceitos de Backend completo</code>. Regra de ouro: livro terminado vira <b>marco na trilha</b>, <b>parte no conteúdo</b> e <b>uma linha na tabela de divergências</b> — nunca um arquivo novo solto.</p>
+      <p>Biblioteca completa · setembro de 2026 · reúne num só documento os seis livros que estavam espalhados pelo vault, em tema Dracula. Os pares deste arquivo são <code class="i">Java completo</code>, <code class="i">Spring completo</code>, <code class="i">Arquitetura completa</code>, <code class="i">Docker e Kubernetes completo</code>, <code class="i">Nuvem completo</code>, <code class="i">Mensageria e RabbitMQ completo</code> e <code class="i">Conceitos de Backend completo</code>. Regra de ouro: livro terminado vira <b>marco na trilha</b>, <b>parte no conteúdo</b> e <b>uma linha na tabela de divergências</b> — nunca um arquivo novo solto.</p>
     </footer>
   </main>
 </div>

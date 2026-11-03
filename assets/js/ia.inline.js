@@ -675,7 +675,137 @@ var DATA = [
   },
   {
     g: "09",
-    n: "09 · Como Aprender de Verdade",
+    n: "09 · Projeto Guiado OrderFlow AI",
+    s: "um produto em Java e Spring AI, construído em 10 etapas",
+    c: "var(--orange)",
+    cs: "var(--orange-s)",
+    items: [
+      {
+        id: "of-visao",
+        t: "Etapa 0 · O produto, a arquitetura e o esqueleto",
+        x: "o produto e a porta",
+        oq: "Definir o OrderFlow AI numa página e montar o esqueleto com o modelo atrás da porta Assistente.",
+        ps: "Ter uma base em que as 10 etapas cabem.",
+        sub: "Substituiu os projetos soltos, um repositório por tutorial.",
+        pq: "Porta na aplicação, adaptador Spring AI na infraestrutura. Erro comum: ChatClient no controller.",
+        ex: "POST /api/assistente com teste sem chave de API.",
+        alem: "Primeiro ADR do projeto."
+      },
+      {
+        id: "of-rag",
+        t: "Etapa 1 · Responder com base nos documentos da loja (RAG)",
+        x: "RAG com fonte",
+        oq: "Ingerir as políticas no pgvector e responder só com elas, citando a fonte.",
+        ps: "Acabar com a resposta inventada sobre regras da loja.",
+        sub: "Substituiu o modelo respondendo com o conhecimento geral.",
+        pq: "QuestionAnswerAdvisor com top-k e limite. Erro comum: reingerir e duplicar trechos.",
+        ex: "PagePdfDocumentReader, TokenTextSplitter, VectorStore.add.",
+        alem: "Busca híbrida comparada na avaliação."
+      },
+      {
+        id: "of-evals",
+        t: "Etapa 2 · Avaliação no CI",
+        x: "provar que funciona",
+        oq: "30 casos, checagens determinísticas, juiz com rubrica e job no CI.",
+        ps: "Medir toda mudança daqui para a frente.",
+        sub: "Substituiu o teste no olho de dez perguntas.",
+        pq: "Determinístico primeiro, juiz depois. Erro comum: avaliar em todo build local.",
+        ex: "@Tag(\"avaliacao\") e taxa mínima de 90%.",
+        alem: "Histórico da taxa de acerto por commit."
+      },
+      {
+        id: "of-tools",
+        t: "Etapa 3 · Ferramentas",
+        x: "consultar e propor",
+        oq: "Ferramentas @Tool com usuário no ToolContext e ação de escrita só proposta.",
+        ps: "Responder sobre os pedidos com segurança.",
+        sub: "Substituiu o chat que só sabe o que está nos documentos.",
+        pq: "Autorização no backend; propor e confirmar separados. Erro comum: usuário como argumento.",
+        ex: "consultarPedido e proporTroca.",
+        alem: "Resposta como structured output com ações."
+      },
+      {
+        id: "of-memoria",
+        t: "Etapa 4 · Conversa com memória e resposta em streaming",
+        x: "memória e streaming",
+        oq: "Histórico por conversa com dono, e resposta em SSE.",
+        ps: "Conversa natural e resposta que começa rápido.",
+        sub: "Substituiu a pergunta isolada e a espera pela resposta inteira.",
+        pq: "conversaId ligado ao usuário. Erro comum: memória sem limite.",
+        ex: "MessageChatMemoryAdvisor e .stream().content().",
+        alem: "TTFT com e sem streaming no README."
+      },
+      {
+        id: "of-observabilidade",
+        t: "Etapa 5 · Custo, latência e cache",
+        x: "custo e latência",
+        oq: "Métricas do Spring AI, custo por rota, painel e cache de políticas.",
+        ps: "Saber quanto custa e onde está lento.",
+        sub: "Substituiu a surpresa na fatura do mês.",
+        pq: "Só política vai para o cache. Erro comum: olhar só a média.",
+        ex: "Usage do ChatResponse vezes o preço, num contador.",
+        alem: "Cache semântico com limite escolhido pela avaliação."
+      },
+      {
+        id: "of-seguranca",
+        t: "Etapa 6 · Segurança",
+        x: "ataques viram testes",
+        oq: "15 ataques no CI, limites, checagem de saída e registro das ferramentas.",
+        ps: "Provar que nada vaza e nenhuma ação é forçada.",
+        sub: "Substituiu a confiança no prompt de sistema.",
+        pq: "Verifique o efeito, não o texto. Erro comum: testar só ataque direto.",
+        ex: "@MockitoBean ServicoDeTroca e verify(never()).",
+        alem: "Documento malicioso no conjunto de ingestão."
+      },
+      {
+        id: "of-mcp",
+        t: "Etapa 7 · Expor as ferramentas como servidor MCP",
+        x: "servidor MCP",
+        oq: "Ferramentas de catálogo expostas por MCP e testadas com o Inspector.",
+        ps: "Integrar com qualquer cliente de IA de uma vez.",
+        sub: "Substituiu uma integração por cliente.",
+        pq: "Servidor MCP é API: autenticação vale igual. Erro comum: expor ferramenta de usuário.",
+        ex: "MethodToolCallbackProvider.builder().toolObjects(...).",
+        alem: "Token por usuário e ferramenta autenticada."
+      },
+      {
+        id: "of-kafka",
+        t: "Etapa 8 · Eventos",
+        x: "reagir a eventos",
+        oq: "Consumidor Kafka idempotente que gera a mensagem de atraso para revisão.",
+        ps: "Atender antes do cliente perguntar.",
+        sub: "Substituiu o assistente que só responde.",
+        pq: "eventoId com chave única. Erro comum: enviar sem revisão no começo.",
+        ex: "@KafkaListener e .entity(MensagemAoCliente.class).",
+        alem: "DLT e consumer lag no painel."
+      },
+      {
+        id: "of-entrega",
+        t: "Etapa 9 · Empacotar, entregar e mostrar",
+        x: "entregar e mostrar",
+        oq: "Imagem, pipeline, deploy e README com números.",
+        ps: "Ter um portfólio que se explica numa entrevista.",
+        sub: "Substituiu o projeto que só roda na sua máquina.",
+        pq: "Avaliação no PR, imagem na main. Erro comum: README sem números.",
+        ex: "Dockerfile multi-stage e workflow com três jobs.",
+        alem: "Vídeo de 3 minutos do sistema funcionando."
+      },
+      {
+        id: "of-review",
+        t: "Bônus · Bot de code review para os seus pull requests",
+        x: "revisor de PR",
+        oq: "Spring Boot sem web que revisa o diff com a sua rubrica e comenta no PR.",
+        ps: "Usar IA no seu próprio fluxo, todo dia.",
+        sub: "Substituiu a revisão só humana dos PRs de estudo.",
+        pq: "O diff é dado não confiável; o bot só comenta. Erro comum: comentar demais.",
+        ex: "Structured output Revisao com lista de Achado.",
+        alem: "Medir o bot com 10 diffs conhecidos."
+      }
+    ]
+  },
+  {
+    g: "10",
+    n: "10 · Como Aprender de Verdade",
     s: "o ciclo que fixa, fontes que valem e laboratórios reais",
     c: "var(--purple)",
     cs: "var(--purple-soft)",

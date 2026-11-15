@@ -37,6 +37,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 ### 🛠️ Laboratório & Prática (`lab/`)
 | # | Documento | Foco |
 |---|---|---|
+| — | [Plano de prática](lab/plano-de-pratica.html) | O caminho principal: OrderFlow em três fases e doze marcos, cada um ligado a uma habilidade |
 | — | [Laboratório de Projetos](lab/projetos.html) | Missões e aquecimentos: OrderFlow, Saga, Outbox, Toxiproxy e K8s |
 
 ### 🧰 Ferramentas de Produtividade & IA (`ferramentas/`)

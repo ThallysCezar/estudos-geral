@@ -52,6 +52,7 @@ const DOCUMENTOS_ESPERADOS = [
   'cadernos/python-para-java.html',
   'cadernos/micro-frontends.html',
   'lab/projetos.html',
+  'lab/plano-de-pratica.html',
   'ferramentas/pomodoro.html'
 ];
 

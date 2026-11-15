@@ -1970,6 +1970,7 @@ import module java.base;
             <li><b>Migrar sem medir:</b> ganhos de memória e de inicialização dependem da carga. Meça antes e depois com o seu serviço.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Atualize o OrderFlow para o Java 25: primeiro o build e as dependências, depois o JDK.<br>2. Rode o serviço com e sem <code>-XX:+UseCompactObjectHeaders</code> sob a mesma carga.<br>3. Remova um contorno que só existia por causa do Java 21, se houver.<br><b>Pronto quando:</b> os testes passam no 25 e o README tem a tabela de memória e tempo de subida antes e depois. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m01">marco 01</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -10051,6 +10052,7 @@ log.info("rastreio={}", RASTREIO.get());</code></pre>
             <li><b>API em preview:</b> a forma do <code>StructuredTaskScope</code> mudou entre versões. Código escrito para o 21 não compila no 25.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Crie o endpoint da página do pedido com três chamadas paralelas num escopo estruturado.<br>2. Faça uma das chamadas falhar depois de 100 ms e registre em log o que acontece com as outras.<br>3. Passe o identificador de rastreio por <code>ScopedValue</code> e imprima-o dentro das tarefas filhas.<br><b>Pronto quando:</b> um teste comprova que as tarefas irmãs são interrompidas na falha e que as três enxergam o mesmo identificador. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">

@@ -3277,6 +3277,7 @@ Estoque consultarComProtecao(String sku) { return estoqueClient.consultar(sku); 
             <li><b>Adotar tudo no mesmo PR:</b> migrar a versão e reescrever para os recursos novos ao mesmo tempo impede saber o que quebrou.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Leve o OrderFlow ao Spring Boot 3.5 e elimine todos os avisos de descontinuação.<br>2. Suba para o 4.0 seguindo o guia de migração e anote o que quebrou.<br>3. Crie a versão 2 do endpoint de busca de pedido com o versionamento nativo.<br><b>Pronto quando:</b> as versões 1 e 2 respondem conforme o cabeçalho e o build não tem aviso de descontinuação. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m01">marco 01</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -9376,6 +9377,7 @@ KeyResolver clienteKeyResolver() {
             <li><b>Prefixo de propriedade antigo:</b> tutoriais anteriores à versão 2025.0 usam <code>spring.cloud.gateway.routes</code>. Confira a documentação da sua versão.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Coloque um gateway na frente dos serviços de pedidos e de faturamento.<br>2. Limite cada cliente a 5 requisições por segundo, com Redis.<br>3. Derrube o faturamento e configure uma resposta alternativa pelo circuit breaker.<br><b>Pronto quando:</b> um teste de carga mostra resposta 429 só para o cliente que passou do limite, e o gateway responde mesmo com o faturamento fora do ar. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m10">marco 10</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -9544,6 +9546,7 @@ Mono&lt;PaginaPedido&gt; montar(String id) {
             <li><b>Reescrever CRUD por desempenho:</b> se o gargalo é o banco, a pilha web não muda o resultado.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Crie um endpoint de eventos enviados pelo servidor com as mudanças de status de um pedido.<br>2. Alimente o fluxo a partir do evento do Kafka.<br>3. Abra 500 conexões lentas e compare com um endpoint MVC com e sem virtual threads.<br><b>Pronto quando:</b> o README tem a tabela de threads e memória dos três casos e a sua conclusão sobre quando cada um compensa. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -10929,6 +10932,7 @@ class OrderFlowApplication { }</code></pre>
             <li><b>Diagnóstico diferente:</b> agentes Java e algumas ferramentas de análise não funcionam no executável nativo.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Gere a imagem nativa do serviço de faturamento.<br>2. Meça tempo de subida e memória da imagem nativa e da JVM.<br>3. Rode os testes em modo nativo e corrija o que falhar por reflexão.<br><b>Pronto quando:</b> os testes nativos passam e o README tem a comparação de subida, memória e tempo de build. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m12">marco 12</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -11111,6 +11115,7 @@ class FaturamentoListener {
             <li><b>Registro de eventos sem limpeza:</b> a tabela de eventos concluídos cresce. Defina a remoção.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Reorganize o serviço de pedidos em módulos <code>pedido</code> e <code>estoque</code>.<br>2. Adicione o teste de verificação ao pipeline e viole uma fronteira de propósito.<br>3. Troque a chamada direta entre os módulos por um evento com <code>@ApplicationModuleListener</code>.<br><b>Pronto quando:</b> o build quebra na violação, e um evento publicado antes de uma queda da aplicação é processado depois que ela volta. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">

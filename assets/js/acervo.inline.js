@@ -26,7 +26,7 @@ var DOCS=[
   desc:"Conceitual e sem vendor: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos & Simulador Interativo de Subnets VPC/CIDR, matriz comparativa e FinOps). Ao clicar, abre o modal de escolha.",
   tags:["VPC/CIDR","IAM","FinOps"],
   chaves:"nuvem v1 v2 cloud aws azure google gcp oracle vmware compute vm instância serverless lambda função rede vpc subnet balanceador storage bucket s3 blob banco rds identidade iam papel role mensageria fila sqs observabilidade métrica log terraform iac infraestrutura como código nuvem privada custo billing região zona"},
- {n:"06",nome:"Mensageria e RabbitMQ completo",curto:"Mensageria",file:"trilhas/mensageria.html",cor:"var(--pink)",hex:"#ff79c6",nos:86,top:47,
+ {n:"06",nome:"Mensageria e RabbitMQ completo",curto:"Mensageria",file:"trilhas/mensageria.html",cor:"var(--pink)",hex:"#ff79c6",nos:87,top:48,
   desc:"Da fila à operação confiável: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos: AMQP, Dead Letter Queue, Outbox Pattern e Kafka). Ao clicar, abre o modal de escolha.",
   tags:["AMQP","DLQ","Outbox"],
   chaves:"mensageria v1 v2 mensagem rabbitmq amqp exchange direct topic fanout headers routing key fila queue binding publisher confirm ack nack manual prefetch qos retry dlq dead letter idempotência outbox saga spring amqp listener quorum queue kafka partição offset ordem entrega duplicada"},

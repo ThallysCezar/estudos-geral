@@ -8057,6 +8057,7 @@ public void onPedido(PedidoCriado evento) {
             <li><b>Registry fora do ar:</b> serializadores usam cache, mas um schema nunca visto não é resolvido. O registry precisa da mesma disponibilidade do broker.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Suba o Schema Registry no Compose e registre <code>PedidoCriado</code> na versão 1.<br>2. Adicione um campo sem valor padrão e rode a checagem de compatibilidade: ela deve falhar.<br>3. Adicione o mesmo campo com valor padrão, atualize o consumidor e só depois o produtor.<br><b>Pronto quando:</b> o pipeline recusa a versão incompatível, aceita a compatível, e o consumidor antigo continua lendo as mensagens novas. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m03">marco 03</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -8228,6 +8229,7 @@ public void onPedido(PedidoCriado evento) {
             <li><b>Assumir entrega única:</b> após uma queda, o conector pode reenviar mudanças já publicadas. O consumidor precisa ser idempotente.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. No Compose, suba PostgreSQL com <code>wal_level=logical</code>, Kafka e Kafka Connect com o Debezium.<br>2. Registre o conector apontando para a tabela de outbox do OrderFlow.<br>3. Pare o conector, crie 100 pedidos, observe o slot de replicação crescer e ligue de novo.<br><b>Pronto quando:</b> os 100 eventos chegam depois de religar, na ordem, e você registra o tamanho do slot antes e depois. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m02">marco 02</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -8399,6 +8401,7 @@ class AlertaVolumeTopologia {
             <li><b>Usar para tudo:</b> se o trabalho é consumir e gravar num banco, um listener comum é mais simples.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Escreva a topologia que conta pedidos por cliente em janelas de 5 minutos e publica um alerta.<br>2. Teste a topologia com o <code>TopologyTestDriver</code>, sem broker.<br>3. Rode duas instâncias, derrube uma no meio da janela e confira a contagem.<br><b>Pronto quando:</b> a contagem continua correta depois da queda e o alerta é publicado uma vez só. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -8579,6 +8582,7 @@ record Conta(BigDecimal saldo, int versao) {
             <li><b>Consultar direto os eventos:</b> listar e filtrar sobre o histórico é lento. Consultas usam projeções.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Modele o ciclo de vida do pedido (criado, pago, enviado, cancelado) como eventos numa tabela só de inserção.<br>2. Calcule o estado do pedido aplicando os eventos e crie uma projeção de consulta.<br>3. Dispare dois comandos simultâneos sobre o mesmo pedido.<br><b>Pronto quando:</b> um dos comandos falha por conflito de versão e é repetido, e a projeção pode ser apagada e reconstruída do zero com o mesmo resultado. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -8744,6 +8748,7 @@ public void onPedido(PedidoCriado evento) {
             <li><b>Republicar o tópico de erro sem corrigir a causa:</b> as mensagens falham de novo e voltam para o mesmo lugar.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Introduza de propósito um defeito no cálculo do consumidor de faturamento e deixe rodar.<br>2. Corrija e reprocesse com um grupo novo, gravando numa tabela nova.<br>3. Confira a tabela nova contra a antiga e troque a leitura.<br><b>Pronto quando:</b> os totais ficam corretos e o consumidor de notificação não enviou nenhuma mensagem repetida. <b>No plano de prática:</b> <a href="../lab/plano-de-pratica.html#m03">marco 03</a>.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -8916,6 +8921,7 @@ class PedidoPublisher {
             <li><b>Esperar replay:</b> no SQS, a mensagem apagada não volta. Se o requisito é reler o histórico, o serviço certo é um log.</li>
             </ul>
           </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. No LocalStack, crie um tópico SNS com duas filas SQS assinantes, cada uma com a sua fila de erro.<br>2. Faça um dos consumidores falhar sempre para uma mensagem e configure <code>maxReceiveCount</code> em 3.<br>3. Reduza o tempo de visibilidade para menos que o processamento e observe a entrega duplicada.<br><b>Pronto quando:</b> a mensagem com defeito para na fila de erro depois de 3 tentativas e a outra fila segue sem ser afetada. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
           <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
           <div class="topico-fechamento">
             <div class="topico-revisao">
@@ -9007,6 +9013,189 @@ class PedidoPublisher {
           </div>
         </div>
         <button class="done" type="button" data-k="kf12">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf13">
+        <div class="th"><h3>Kafka 4: sem ZooKeeper, novo rebalanceamento e filas com share groups</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka 4</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um time precisava processar um tópico de 6 partições com 20 instâncias, porque cada mensagem disparava uma chamada lenta a um parceiro. Com consumer group, só 6 instâncias recebiam trabalho; as outras 14 ficavam paradas. Aumentar as partições para 20 resolveria, mas mudaria a distribuição das chaves e não podia ser desfeito. Na atualização para o Kafka 4.2, o time passou esse consumo para um share group: as 20 instâncias passaram a dividir as mensagens das mesmas 6 partições, com confirmação por mensagem.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Kafka 4</b>, lançado em março de 2025, é a primeira versão que funciona <b>só em modo KRaft</b>: o ZooKeeper foi removido. Além disso, traz um <b>novo protocolo de rebalanceamento</b> dos consumidores, coordenado pelo broker, e os <b>share groups</b> (chamados de filas para o Kafka), que deixam vários consumidores dividirem as mensagens de uma mesma partição, com confirmação individual. Os share groups ficaram prontos para produção na versão 4.2, de fevereiro de 2026.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o consumer group é uma fila única por caixa de supermercado: cada caixa (partição) atende uma fila, e um funcionário a mais não ajuda se não houver caixa livre. O share group é o balcão com senha: qualquer atendente livre chama a próxima senha, e se ele não concluir o atendimento, a senha volta para o painel.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Operar o Kafka com um componente a menos, ter rebalanceamentos que não param o grupo inteiro e usar o Kafka como fila de trabalho quando a ordem não importa, sem depender do número de partições.</p>
+                <p class="repl"><b>Veio substituir:</b> o conjunto de servidores ZooKeeper que guardava os metadados do cluster, o rebalanceamento coordenado pelos próprios clientes e o uso de um broker de filas separado só para distribuir trabalho.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Quem aprendeu Kafka por material antigo ainda descreve o ZooKeeper e o limite de um consumidor por partição como fatos. Os dois mudaram. Saber o que é da versão atual evita desenhar soluções em torno de limites que já não existem, e é o tipo de atualização que se espera de quem responde por arquitetura.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Em ambientes novos, suba direto em KRaft; em clusters antigos com ZooKeeper, a migração acontece antes, numa versão 3.x, e só depois vem o salto para a 4.</li><li>Confira as versões mínimas: o Kafka 4 exige Java 17 nos brokers e Java 11 nos clientes.</li><li>Ative o novo rebalanceamento nos consumidores com <code>group.protocol=consumer</code> e observe o comportamento ao escalar.</li><li>Use share group quando o trabalho é independente por mensagem e a ordem não importa; mantenha consumer group quando precisa de ordem por chave ou de replay controlado.</li><li>Em share group, o consumidor precisa ser idempotente: a mensagem não confirmada é entregue de novo.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>No <b>KRaft</b>, um grupo de nós controladores mantém os metadados do cluster (tópicos, partições, líderes) num log interno replicado pelo protocolo Raft. Os brokers leem esse log, e a eleição de controlador deixa de depender de um sistema externo. No <b>novo rebalanceamento</b>, o coordenador no broker calcula a distribuição e envia a cada consumidor só a diferença, de forma incremental: quem não muda de partição continua processando. No <b>share group</b>, o broker entrega lotes de mensagens a qualquer consumidor do grupo e controla o estado de cada mensagem: entregue, confirmada, liberada ou rejeitada. Se o consumidor não confirma dentro do prazo, a mensagem volta a ficar disponível; depois de um número máximo de entregas, é descartada do grupo. Não há garantia de ordem.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: KRaft, novo rebalanceamento e um consumidor de share group</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java"># broker em modo KRaft (um nó, para laboratório): server.properties
+process.roles=broker,controller
+node.id=1
+controller.quorum.voters=1@localhost:9093
+listeners=PLAINTEXT://:9092,CONTROLLER://:9093
+controller.listener.names=CONTROLLER
+
+# consumidor com o novo protocolo de rebalanceamento
+group.protocol=consumer
+
+// consumidor de share group (cliente Java do Kafka 4.2): confirmação por mensagem
+var props = new Properties();
+props.put("bootstrap.servers", "localhost:9092");
+props.put("group.id", "chamadas-parceiro");
+props.put("share.acknowledgement.mode", "explicit");
+props.put("key.deserializer", StringDeserializer.class.getName());
+props.put("value.deserializer", StringDeserializer.class.getName());
+
+try (var consumidor = new KafkaShareConsumer&lt;String, String&gt;(props)) {
+    consumidor.subscribe(List.of("pedidos.para-parceiro"));
+    while (true) {
+        for (var registro : consumidor.poll(Duration.ofSeconds(1))) {
+            try {
+                parceiro.enviar(registro.value());
+                consumidor.acknowledge(registro, AcknowledgeType.ACCEPT);    // concluído
+            } catch (ParceiroIndisponivel e) {
+                consumidor.acknowledge(registro, AcknowledgeType.RELEASE);   // devolve para nova tentativa
+            } catch (DadoInvalido e) {
+                consumidor.acknowledge(registro, AcknowledgeType.REJECT);    // não tentar de novo
+            }
+        }
+        consumidor.commitSync();
+    }
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Atualizar direto de um cluster com ZooKeeper:</b> o Kafka 4 não sobe com ZooKeeper. A migração para KRaft precisa estar concluída antes.</li>
+            <li><b>Esperar ordem num share group:</b> as mensagens são distribuídas a quem estiver livre. Se a ordem por chave importa, use consumer group.</li>
+            <li><b>Consumidor não idempotente:</b> mensagem liberada ou com prazo vencido é entregue de novo, possivelmente a outra instância.</li>
+            <li><b>Rejeitar sem destino:</b> a mensagem rejeitada sai do grupo. Se ela precisa ser analisada depois, publique num tópico de erro antes de rejeitar.</li>
+            <li><b>Clientes e bibliotecas antigos:</b> o novo rebalanceamento e os share groups dependem da versão do cliente e do suporte no framework. Confira a versão do Spring Kafka antes de planejar.</li>
+            <li><b>Aprender por material anterior a 2025:</b> tutoriais com ZooKeeper no Compose descrevem uma arquitetura que não existe mais na versão atual.</li>
+            </ul>
+          </div>
+          <div class="cs"><b>Laboratório no OrderFlow.</b><br>1. Suba o Kafka 4 em modo KRaft no Compose, com um nó só e sem ZooKeeper.<br>2. Ative <code>group.protocol=consumer</code> e observe os logs ao adicionar e remover instâncias.<br>3. Crie um tópico de uma partição e consuma com quatro instâncias num share group.<br><b>Pronto quando:</b> as quatro instâncias processam em paralelo as mensagens da mesma partição, e uma mensagem liberada é entregue de novo a outra instância. <b>No plano de prática:</b> extensão opcional, fora dos doze marcos.</div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Kafka 4</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Só KRaft</b>
+                    <p>Os metadados ficam num log replicado pelos controladores; o ZooKeeper saiu.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Rebalanceamento pelo broker</b>
+                    <p>Incremental: quem não muda de partição continua trabalhando.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Share groups</b>
+                    <p>Vários consumidores na mesma partição, confirmação por mensagem, sem ordem.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: no Kafka, o número de consumidores úteis é sempre limitado pelo número de partições?</b>
+                    <p>Isso vale para consumer groups. Com share groups, a partir do Kafka 4, vários consumidores dividem as mensagens da mesma partição, abrindo mão da ordem.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: escolha pelo que a mensagem exige</b>
+                    <p>Ordem por chave e replay: consumer group. Trabalho independente por mensagem: share group.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf13">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf13</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um tópico de 4 partições recebe pedidos de envio de e-mail. Cada envio leva cerca de 2 segundos e é independente dos outros. O time subiu 12 instâncias do consumidor num consumer group, mas o atraso continua crescendo.</p>
+                <p class="te-instrucao">Qual é a causa, e o que o Kafka 4 oferece?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O novo protocolo acelera a redistribuição, mas num consumer group cada partição continua com um só consumidor.">
+                    <span class="te-letter">A</span> O rebalanceamento antigo é lento; ativar o novo protocolo faz as 12 instâncias dividirem as 4 partições por igual, três em cada uma.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Em consumer group há um consumidor por partição; no share group, as mensagens vão para qualquer instância livre, e a ordem não é necessária aqui.">
+                    <span class="te-letter">B</span> Só 4 instâncias recebem partições; um share group deixa as 12 dividirem o trabalho.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O Kafka 4 não usa ZooKeeper, e a coordenação dos consumidores nunca foi o limite neste cenário.">
+                    <span class="te-letter">C</span> Falta um conjunto de servidores ZooKeeper dimensionado para coordenar 12 consumidores; é preciso aumentá-lo de três para cinco nós.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Quais são as três mudanças principais do Kafka 4?</p>
+                  <span class="tf-hint">Dica: pense em metadados, rebalanceamento e filas →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">O fim do ZooKeeper (só KRaft), o novo protocolo de rebalanceamento coordenado pelo broker e os share groups, que permitem vários consumidores por partição com confirmação por mensagem.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf13">marcar dominado</button>
       </article>
 
       </section>

@@ -6213,6 +6213,384 @@ public record ClienteResponse(
         </div>
         <button class="done" type="button" data-k="f2">marcar dominado</button>
       </article>
+      <article class="topic" id="f6">
+        <div class="th"><h3>OpenAPI e AsyncAPI: o contrato escrito antes do código</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">contratos</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Dois times combinaram uma integração numa reunião e cada um saiu implementando o seu lado. Três semanas depois, na hora de ligar os dois, descobriram que um mandava a data como texto e o outro esperava número, que o campo de valor tinha nomes diferentes e que ninguém tinha definido a resposta de erro. A integração atrasou duas semanas. No projeto seguinte, os times escreveram primeiro o arquivo OpenAPI, revisaram num pull request e geraram cliente e servidor a partir dele. A integração funcionou no primeiro dia.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>OpenAPI</b> é o formato padrão para descrever uma API HTTP num arquivo: caminhos, parâmetros, corpos, respostas e erros. <b>AsyncAPI</b> é o equivalente para comunicação por mensagens: canais (tópicos e filas), mensagens e quem publica ou consome. Nos dois casos, o arquivo é o <b>contrato</b>: um documento versionado, legível por pessoas e por ferramentas, que os dois lados aceitam como referência.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a planta de uma casa. O eletricista e o encanador não precisam se falar todo dia, porque os dois seguem a mesma planta. E qualquer mudança na planta é discutida antes de quebrar a parede.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Fazer os times concordarem sobre a interface antes de gastar tempo implementando, gerar código, documentação e simuladores a partir de uma fonte só, e detectar mudança incompatível de forma automática.</p>
+                <p class="repl"><b>Veio substituir:</b> a documentação escrita à mão depois do código, que ficava desatualizada, e o contrato implícito que só existia no código de quem implementou primeiro.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Em sistemas distribuídos, a maior parte dos defeitos de integração nasce de entendimentos diferentes sobre a interface. Um contrato explícito e versionado transforma essa conversa em revisão de arquivo, e permite que vários times trabalhem em paralelo sem esperar uns pelos outros.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Escreva o contrato primeiro e revise em pull request com quem vai consumir.</li><li>Gere as interfaces do servidor e os clientes a partir do arquivo, para o código não divergir.</li><li>Valide o estilo com um verificador (por exemplo, Spectral) no CI.</li><li>Compare a versão nova com a publicada e falhe o build em mudança incompatível (por exemplo, com oasdiff).</li><li>Publique os contratos num catálogo que todos os times consultam.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O arquivo é YAML ou JSON com uma estrutura definida pela especificação. Em OpenAPI, cada caminho lista operações, e cada operação aponta para esquemas reutilizáveis em <code>components</code>. Ferramentas leem esse arquivo para gerar interfaces Java, clientes em várias linguagens, páginas de documentação e servidores simulados. A detecção de quebra compara duas versões e classifica cada diferença: remover campo de resposta, tornar obrigatório um parâmetro ou mudar um tipo são incompatíveis; adicionar campo opcional é compatível. O AsyncAPI segue a mesma lógica para eventos e pode referenciar os mesmos esquemas usados no registro de schemas.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: o mesmo pedido como API e como evento</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-yaml"># openapi.yaml: a API HTTP
+openapi: 3.1.0
+info: { title: Pedidos, version: 1.4.0 }
+paths:
+  /pedidos/{id}:
+    get:
+      operationId: buscarPedido
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Pedido' }
+        '404':
+          description: Pedido não existe
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problema' }
+components:
+  schemas:
+    Pedido:
+      type: object
+      required: [id, valor]
+      properties:
+        id:    { type: string }
+        valor: { type: number }
+        canal: { type: string, default: site }
+
+# asyncapi.yaml: o evento
+asyncapi: 3.0.0
+info: { title: Eventos de Pedidos, version: 1.2.0 }
+channels:
+  pedidosEventos:
+    address: pedidos.eventos
+    messages:
+      pedidoCriado:
+        payload: { $ref: '#/components/schemas/PedidoCriado' }
+operations:
+  publicarPedidoCriado:
+    action: send
+    channel: { $ref: '#/channels/pedidosEventos' }</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Contrato gerado do código e nunca revisado:</b> vira um retrato da implementação, com nomes internos e sem decisão de desenho.</li>
+            <li><b>Arquivo e código divergentes:</b> sem geração ou teste que os ligue, o contrato mente. Gere o código ou valide as respostas contra o arquivo.</li>
+            <li><b>Sem verificação de quebra no CI:</b> a mudança incompatível passa na revisão humana e só aparece no consumidor.</li>
+            <li><b>Erros fora do contrato:</b> descrever só o caminho feliz deixa cada consumidor adivinhar o formato do erro.</li>
+            <li><b>Contrato escondido no repositório:</b> se os outros times não encontram o arquivo, ele não serve de contrato.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: OpenAPI e AsyncAPI</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Contrato primeiro</b>
+                    <p>A interface é discutida num arquivo antes da implementação.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Uma fonte, vários produtos</b>
+                    <p>Código, cliente, documentação e simulador saem do mesmo arquivo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Quebra detectada no CI</b>
+                    <p>A comparação entre versões impede a mudança incompatível.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: gerar o OpenAPI a partir das anotações do código é o mesmo que contrato primeiro?</b>
+                    <p>Não. Gerar do código documenta o que foi feito. Contrato primeiro decide a interface antes, com o consumidor na revisão.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: a interface é um produto</b>
+                    <p>Ela tem dono, versão, revisão e regra de compatibilidade, como qualquer coisa que outros times usam.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-arq-f6">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #f6</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois times vão integrar um serviço novo. O time provedor propõe implementar primeiro e gerar a documentação a partir do código no fim. O time consumidor só poderá começar quando o serviço estiver pronto.</p>
+                <p class="te-instrucao">O que muda com a abordagem de contrato primeiro?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Assim as divergências de entendimento só aparecem na integração, e o consumidor fica parado até lá.">
+                    <span class="te-letter">A</span> Nada de relevante: a documentação gerada do código é mais fiel, e o consumidor pode adaptar o seu lado quando o serviço ficar pronto.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A interface é decidida em conjunto, e o simulador gerado do contrato elimina a espera pelo provedor.">
+                    <span class="te-letter">B</span> Os dois revisam o arquivo antes, e o consumidor desenvolve em paralelo contra um simulador.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Contrato primeiro define a interface em conjunto, não transfere a implementação.">
+                    <span class="te-letter">C</span> O time consumidor passa a escrever a implementação do provedor, já que foi ele quem definiu os campos de que precisa.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Cite duas mudanças incompatíveis e uma compatível num contrato de API.</p>
+                  <span class="tf-hint">Dica: pense no que quebra quem já consome →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Incompatíveis: remover um campo da resposta e tornar obrigatório um parâmetro. Compatível: adicionar um campo opcional à resposta.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="f6">marcar dominado</button>
+      </article>
+      <article class="topic" id="f7">
+        <div class="th"><h3>Testes de contrato: saber no seu CI se você quebrou o vizinho</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">testes de contrato</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma empresa com 30 serviços mantinha um ambiente de integração onde uma bateria de testes de ponta a ponta rodava toda noite. A bateria levava 4 horas, falhava de forma intermitente e, quando falhava, ninguém sabia de qual time era o problema. Na prática, os times publicavam sem esperar o resultado. Depois de adotar testes de contrato, cada time passou a saber em minutos, no próprio pipeline, se a mudança quebrava algum consumidor, e a bateria noturna foi reduzida a poucos fluxos críticos.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>Um <b>teste de contrato</b> verifica só a interface entre dois serviços, sem subir os dois juntos. No modelo <b>guiado pelo consumidor</b>, o consumidor escreve um teste que registra as requisições que faz e as respostas de que precisa. Esse registro, o <b>contrato</b>, é publicado. O provedor então roda o contrato contra a sua aplicação real e confirma que atende. A ferramenta mais usada nesse modelo é o Pact; no ecossistema Spring existe também o Spring Cloud Contract.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o gabarito de encaixe numa fábrica. A fábrica de parafusos e a de porcas não testam cada peça uma na outra. Cada uma confere a sua peça contra o mesmo gabarito; se as duas passam, as peças encaixam.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Dar a cada time a confiança de publicar sozinho, com retorno em minutos, e mostrar ao provedor exatamente quais campos cada consumidor usa.</p>
+                <p class="repl"><b>Veio substituir:</b> a grande bateria de testes de ponta a ponta como única garantia de integração, lenta, instável e sem dono.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Deploy independente sem verificação de contrato é sorte. E sem saber o que os consumidores usam de fato, o provedor não consegue remover nem mudar nada com segurança, e a API só cresce.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>No consumidor, escreva o teste contra um simulador da ferramenta, declarando só os campos que você usa.</li><li>Publique o contrato gerado num repositório central (broker).</li><li>No pipeline do provedor, verifique todos os contratos dos consumidores contra a aplicação real.</li><li>Antes do deploy, consulte o broker: a versão que vou publicar é compatível com o que está em produção?</li><li>Mantenha poucos testes de ponta a ponta, só para os fluxos críticos.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O teste do consumidor roda contra um servidor simulado que responde como combinado e grava cada interação num arquivo. Esse arquivo vai para o broker, associado à versão do consumidor. A verificação do provedor lê os contratos, coloca a aplicação no estado pedido por cada interação (<code>given</code>), repete as requisições e compara as respostas com o esperado, por tipo e estrutura, não por valor exato. O broker guarda a matriz de quais versões de consumidor e de provedor foram verificadas entre si, e é isso que responde se um deploy é seguro. Como os dois lados nunca sobem juntos, o teste é rápido e determinístico.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// lado do CONSUMIDOR (faturamento): declara o que precisa do provedor "pedidos"
+@ExtendWith(PactConsumerTestExt.class)
+@PactTestFor(providerName = "pedidos")
+class PedidoClientContratoTest {
+
+    @Pact(consumer = "faturamento")
+    V4Pact pedidoExistente(PactDslWithProvider builder) {
+        return builder
+            .given("o pedido 42 existe")
+            .uponReceiving("busca do pedido 42")
+                .path("/pedidos/42").method("GET")
+            .willRespondWith()
+                .status(200)
+                .body(new PactDslJsonBody()
+                    .stringType("id", "42")          // só os campos que o faturamento usa
+                    .decimalType("valor", 99.90))
+            .toPact(V4Pact.class);
+    }
+
+    @Test
+    void buscaPedido(MockServer servidor) {
+        Pedido pedido = new PedidoClient(servidor.getUrl()).buscar("42");
+        assertEquals("42", pedido.id());
+    }
+}
+
+// lado do PROVEDOR (pedidos): verifica os contratos publicados contra a aplicação real
+@Provider("pedidos")
+@PactBroker
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class PedidosContratoVerificacaoTest {
+
+    @State("o pedido 42 existe")
+    void pedido42() { repositorio.save(new Pedido("42", new BigDecimal("99.90"))); }
+
+    @TestTemplate
+    @ExtendWith(PactVerificationInvocationContextProvider.class)
+    void verificar(PactVerificationContext contexto) { contexto.verifyInteraction(); }
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Contrato com valores exatos:</b> comparar o valor em vez do tipo faz o teste quebrar por qualquer dado diferente. Use os comparadores por tipo.</li>
+            <li><b>Consumidor declarando campos que não usa:</b> o provedor fica preso a campos que ninguém lê e não consegue evoluir.</li>
+            <li><b>Testar regra de negócio pelo contrato:</b> o contrato verifica formato e comunicação. A regra é testada dentro do provedor.</li>
+            <li><b>Verificação do provedor fora do pipeline:</b> se não bloqueia o deploy, o contrato vira relatório que ninguém lê.</li>
+            <li><b>Eliminar todos os testes de ponta a ponta:</b> o contrato não cobre configuração, rede nem fluxos que cruzam vários serviços. Mantenha alguns.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Testes de contrato</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Só a interface</b>
+                    <p>Cada lado testa contra o contrato, sem subir o outro serviço.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Consumidor declara, provedor verifica</b>
+                    <p>O contrato registra o que é de fato usado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Decisão de deploy</b>
+                    <p>O broker responde se a versão é compatível com o que está em produção.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: teste de contrato substitui teste de integração e de ponta a ponta?</b>
+                    <p>Não. Ele substitui a maior parte da bateria de ponta a ponta usada para pegar quebra de interface. Fluxos críticos completos ainda merecem alguns testes.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: a quebra aparece no pipeline de quem mudou</b>
+                    <p>Se o defeito de integração só aparece num ambiente compartilhado, o retorno chega tarde e sem dono.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-arq-f7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #f7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> O time de pedidos quer remover o campo observacao da resposta da API. Há 12 serviços consumidores, e ninguém sabe quais usam esse campo. A única verificação existente é uma bateria noturna de ponta a ponta, que falha com frequência por outros motivos.</p>
+                <p class="te-instrucao">O que dá a resposta mais rápida e confiável?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Os contratos listam os campos que cada consumidor usa; a verificação falha em minutos se algum depender do campo.">
+                    <span class="te-letter">A</span> Verificar os contratos dos consumidores no pipeline do time de pedidos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Descobre a quebra em produção e depende de uma bateria que falha por outros motivos.">
+                    <span class="te-letter">B</span> Remover o campo, publicar numa sexta à noite e acompanhar a bateria de ponta a ponta e os alertas durante o fim de semana.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Depende de memória e de resposta manual; quem não responder ou errar só será descoberto depois.">
+                    <span class="te-letter">C</span> Enviar um e-mail aos 12 times perguntando se usam o campo e aguardar a resposta de todos antes de remover.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Num teste de contrato guiado pelo consumidor, quem escreve o contrato e quem o verifica?</p>
+                  <span class="tf-hint">Dica: pense em quem sabe o que usa →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">O consumidor escreve, registrando as requisições que faz e os campos de que precisa. O provedor verifica, rodando esse contrato contra a sua aplicação real.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="f7">marcar dominado</button>
+      </article>
 
       <!-- TÓPICO f3 -->
       <article class="topic" id="f3">
@@ -7983,6 +8361,178 @@ SELECT * FROM pedido_resumo WHERE status = 'PROCESSANDO';
           </div>
         </div>
         <button class="done" type="button" data-k="g6">marcar dominado</button>
+      </article>
+      <article class="topic" id="g7">
+        <div class="th"><h3>Multi-tenancy: vários clientes no mesmo sistema, sem um ver o outro</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">multi-tenancy</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma plataforma de gestão atendia 200 empresas na mesma base, com uma coluna <code>empresa_id</code> em cada tabela. Um desenvolvedor escreveu um relatório novo e esqueceu o filtro por empresa numa das consultas. Durante uma tarde, cada cliente viu no relatório os totais de todos os outros. Depois do incidente, o time ativou a segurança em nível de linha no PostgreSQL: o próprio banco passou a aplicar o filtro, mesmo quando a consulta não o incluía.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Multi-tenancy</b> é uma única instalação do sistema atender vários clientes, os <b>tenants</b> (inquilinos), mantendo os dados de cada um isolados. Há três modelos de isolamento. No <b>silo</b>, cada tenant tem o seu banco ou a sua infraestrutura. No <b>pool</b>, todos dividem as mesmas tabelas, com uma coluna que identifica o tenant. No <b>bridge</b>, o intermediário, todos usam o mesmo servidor de banco, com um esquema por tenant.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> os três jeitos de morar. Casas separadas (silo): isolamento total, custo alto. Um prédio de apartamentos (bridge): estrutura comum, portas separadas. Um albergue com armários (pool): tudo compartilhado, e a segurança depende de cada armário estar trancado.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Atender muitos clientes com custo de operação e de infraestrutura por cliente baixo, com uma versão do sistema para todos.</p>
+                <p class="repl"><b>Veio substituir:</b> uma instalação separada por cliente, com versões divergentes, atualização cliente a cliente e custo que cresce na mesma proporção da carteira.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>É a decisão central de qualquer produto vendido como serviço e de plataformas internas compartilhadas. Ela define o custo por cliente, o risco de vazamento entre clientes e o que acontece quando um cliente consome demais. Mudar de modelo depois é uma das migrações mais caras que existem.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Escolha o modelo pelo requisito de isolamento e pelo porte dos clientes; é comum pool para os pequenos e silo para os grandes ou regulados.</li><li>Resolva o tenant uma vez, na entrada (a partir do token), e propague no contexto da requisição.</li><li>No modelo pool, faça o banco aplicar o filtro com segurança em nível de linha.</li><li>Aplique limites por tenant (requisições, conexões, filas) para conter o vizinho barulhento.</li><li>Registre o tenant em logs, métricas e rastros, e meça o custo por tenant.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>No modelo pool com PostgreSQL, cada tabela ganha uma <b>política</b> que compara a coluna do tenant com uma variável de sessão. A aplicação define essa variável no início de cada transação, e o banco acrescenta a condição a toda consulta, alteração e exclusão. Uma consulta sem filtro retorna só as linhas do tenant atual. No modelo de esquema por tenant, a aplicação troca o esquema ativo por requisição. No silo, um roteador escolhe a fonte de dados. Em todos, o risco está nos caminhos que não passam pela requisição: tarefas agendadas, consumidores de fila e caches precisam carregar o tenant de forma explícita.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">-- modelo pool: o banco aplica o filtro, mesmo se a consulta esquecer
+ALTER TABLE pedido ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pedido FORCE ROW LEVEL SECURITY;     -- vale também para o dono da tabela
+
+CREATE POLICY isolamento_por_tenant ON pedido
+  USING      (tenant_id = current_setting('app.tenant_id')::uuid)
+  WITH CHECK (tenant_id = current_setting('app.tenant_id')::uuid);
+
+// aplicação: o tenant vem do token e é definido no início de cada transação
+@Component
+class TenantNaTransacao {
+    private final JdbcTemplate jdbc;
+    TenantNaTransacao(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+
+    // chamado dentro da transação, antes de qualquer consulta
+    void aplicar(UUID tenantId) {
+        // o terceiro argumento true limita o valor à transação atual
+        jdbc.queryForObject("SELECT set_config('app.tenant_id', ?, true)",
+                String.class, tenantId.toString());
+    }
+}
+
+// a chave do cache também leva o tenant
+String chave = "tenant:" + tenantId + ":pedido:" + pedidoId;</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Filtro só na aplicação:</b> uma consulta sem a condição do tenant vaza dados de todos. Faça o banco aplicar.</li>
+            <li><b>Variável de sessão com pool de conexões:</b> definida fora da transação, ela fica na conexão e vaza para a próxima requisição. Limite o valor à transação.</li>
+            <li><b>Cache sem tenant na chave:</b> o segundo cliente recebe a resposta guardada do primeiro.</li>
+            <li><b>Vizinho barulhento:</b> um tenant com carga alta degrada todos. Sem limite por tenant, não há como conter.</li>
+            <li><b>Tarefas em segundo plano:</b> jobs e consumidores não têm requisição. O tenant precisa viajar na mensagem ou no parâmetro do job.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Multi-tenancy</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Três modelos</b>
+                    <p>Silo, bridge e pool trocam isolamento por custo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Tenant resolvido na entrada</b>
+                    <p>Vem do token e acompanha a requisição, a mensagem e o job.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>O banco aplica o filtro</b>
+                    <p>Segurança em nível de linha protege contra a consulta esquecida.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: a coluna tenant_id em todas as tabelas garante o isolamento?</b>
+                    <p>Não. Ela só permite filtrar. O isolamento depende de toda consulta, cache e job aplicar o filtro, e por isso se delega ao banco.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: isolamento, custo e ruído</b>
+                    <p>Para cada modelo pergunte: o que impede um tenant de ver o outro, quanto custa cada tenant, e o que acontece quando um deles exagera.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-arq-g7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #g7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma plataforma atende 300 empresas pequenas e 3 bancos. Os bancos exigem em contrato que os seus dados fiquem fisicamente separados. As empresas pequenas pagam pouco, e o custo por cliente precisa ser baixo.</p>
+                <p class="te-instrucao">Qual modelo de isolamento atende aos dois grupos?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Atende aos bancos, mas multiplica o custo e a operação para 300 clientes que não exigem isso.">
+                    <span class="te-letter">A</span> Um banco de dados separado para cada um dos 303 clientes, para ter um modelo único e o maior isolamento possível em todos os casos.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Tem o menor custo, mas descumpre a exigência contratual de separação física dos bancos.">
+                    <span class="te-letter">B</span> Todos nas mesmas tabelas com tenant_id e segurança em nível de linha, explicando aos bancos que o filtro do banco de dados é seguro.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Cada grupo recebe o isolamento que exige: custo baixo para muitos e separação física para os regulados.">
+                    <span class="te-letter">C</span> Pool com segurança em nível de linha para as empresas pequenas e silo para os três bancos.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é o problema do vizinho barulhento e como se controla?</p>
+                  <span class="tf-hint">Dica: pense em recursos compartilhados →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">É um tenant que consome tanto recurso compartilhado (CPU, conexões, fila) que degrada os outros. Controla-se com limites por tenant: taxa de requisições, cota de conexões e filas separadas ou com prioridade.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="g7">marcar dominado</button>
       </article>
     </section>
 
@@ -10505,6 +11055,189 @@ ocorrerá de forma 100% assíncrona. A janela de consistência medida é de 300 
           </div>
         </div>
         <button class="done" type="button" data-k="j1">marcar dominado</button>
+      </article>
+      <article class="topic" id="j6">
+        <div class="th"><h3>RFC: decidir por escrito antes de construir</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">processo de decisão</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma decisão de trocar o broker de mensagens foi tomada numa reunião de uma hora entre quatro pessoas. Dois meses depois, com a migração em andamento, o time de dados informou que dependia de um recurso do broker antigo que o novo não tinha. Ninguém desse time estava na reunião. No ciclo seguinte, a empresa passou a exigir uma RFC para mudanças que afetam mais de um time: um documento curto, aberto a comentários por uma semana. A objeção do time de dados teria aparecido no segundo dia.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>Uma <b>RFC</b> (do inglês <i>request for comments</i>, pedido de comentários) é um documento curto que propõe uma mudança técnica relevante e pede opinião <b>antes</b> da decisão. Ela descreve o problema, a proposta, as alternativas consideradas e os riscos. A RFC é o processo de decidir; o <b>ADR</b> é o registro do que foi decidido. Uma RFC aprovada costuma terminar num ADR.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a consulta pública antes de uma obra na rua. A prefeitura publica o projeto, os moradores têm um prazo para apontar problemas (a entrada da garagem, a feira de quarta), e só depois a obra começa. O alvará emitido no fim é o ADR.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Descobrir objeções e dependências enquanto mudar ainda é barato, incluir quem não estaria na reunião, obrigar o autor a pensar nas alternativas e deixar o raciocínio registrado.</p>
+                <p class="repl"><b>Veio substituir:</b> a decisão tomada em reunião, por quem estava presente, com o raciocínio guardado só na memória de quem participou.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Quanto mais sênior o papel, mais o trabalho é decidir e convencer por escrito. Uma RFC bem escrita escala a sua influência para além das reuniões em que você está, e é a principal evidência de pensamento arquitetural que se pode mostrar num processo seletivo.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Escreva RFC para o que é caro de reverter ou afeta outros times; o restante se decide no pull request.</li><li>Comece pelo problema e pelos objetivos, e liste também o que está fora do escopo.</li><li>Apresente pelo menos duas alternativas reais, incluindo não fazer nada.</li><li>Defina quem decide e o prazo para comentários, de uma a duas semanas.</li><li>Ao fechar, registre a decisão num ADR e ligue um ao outro.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>A RFC percorre estados: rascunho, em discussão, aceita, rejeitada ou substituída. O autor publica o documento num lugar que todos os afetados acompanham, em geral como pull request num repositório de RFCs, o que dá comentários por linha e histórico. Durante o prazo, o autor responde e ajusta o texto. No fim, a pessoa ou o grupo definido como responsável decide; consenso é desejável, mas não obrigatório, e as objeções não atendidas ficam registradas com a justificativa. O silêncio no prazo conta como aceitação, e por isso o prazo e os avisos precisam ser explícitos.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: modelo de RFC em Markdown</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-markdown"># RFC-012: Publicar eventos de pedido com outbox e CDC
+
+- Autor: (seu nome)
+- Estado: em discussão (comentários até 2026-11-29)
+- Decide: arquitetura de plataforma
+- Afeta: pedidos, faturamento, estoque, dados
+
+## Problema
+O serviço de pedidos grava no banco e publica no Kafka em duas operações.
+Em setembro, 37 pedidos foram gravados sem que o evento fosse publicado.
+
+## Objetivos
+- Nenhum pedido confirmado sem evento publicado.
+- Sem mudança de contrato para os consumidores.
+
+## Fora do escopo
+- Migrar os outros serviços (RFC própria, se esta for aceita).
+
+## Proposta
+Gravar o evento numa tabela de outbox na mesma transação e publicar com Debezium.
+
+## Alternativas consideradas
+1. Não fazer nada e reconciliar por job diário. Simples, mas o atraso chega a 24 h.
+2. Transação distribuída entre banco e Kafka. Sem suporte prático e com custo alto.
+3. Publicador próprio lendo a tabela de outbox. Menos infraestrutura, mais código nosso.
+
+## Riscos e mitigação
+- Slot de replicação parado enche o disco: alerta pelo tamanho do slot.
+- Nova peça para operar (Kafka Connect): runbook e ensaio de falha antes da produção.
+
+## Plano de implantação
+Fase 1 em paralelo ao fluxo atual, comparando eventos por 2 semanas. Fase 2: desligar a publicação direta.
+
+## Perguntas em aberto
+- O time de dados precisa do estado anterior da linha ou só do evento?</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>RFC para tudo:</b> vira burocracia e o time passa a evitar. Reserve para o que é caro de reverter ou cruza times.</li>
+            <li><b>RFC escrita depois da decisão:</b> pedir comentários sobre algo já decidido desmoraliza o processo.</li>
+            <li><b>Sem dono da decisão e sem prazo:</b> a discussão não termina, e a proposta morre por cansaço.</li>
+            <li><b>Uma alternativa só:</b> quem lê não consegue avaliar a escolha sem saber o que foi descartado e por quê.</li>
+            <li><b>Documento longo demais:</b> ninguém lê quinze páginas. O essencial cabe em duas ou três; o detalhe vai em anexo.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: RFC</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Antes da decisão</b>
+                    <p>A RFC pede comentários enquanto mudar ainda é barato.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Problema, proposta, alternativas, riscos</b>
+                    <p>O formato obriga a pensar no que foi descartado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>RFC decide, ADR registra</b>
+                    <p>A RFC aceita termina num ADR.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: RFC e ADR são a mesma coisa?</b>
+                    <p>Não. A RFC é a proposta em discussão, antes da decisão. O ADR é o registro curto da decisão tomada e do motivo, depois dela.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: escrever é o jeito mais barato de errar</b>
+                    <p>Uma objeção recebida num comentário custa minutos. A mesma objeção descoberta na implantação custa meses.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-arq-j6">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #j6</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um arquiteto quer trocar o banco de dados principal de um produto usado por cinco times. Ele já está convencido da escolha e pretende comunicar a decisão na reunião geral de sexta-feira.</p>
+                <p class="te-instrucao">Qual é o caminho mais adequado?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Uma mudança cara de reverter e que afeta cinco times, decidida sem consulta, tende a esbarrar em dependências desconhecidas.">
+                    <span class="te-letter">A</span> Comunicar na reunião de sexta, porque a decisão é técnica, o arquiteto tem autoridade para isso e a discussão só atrasaria a migração.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A mudança é cara de reverter e cruza times; a RFC revela dependências e objeções antes do custo da migração.">
+                    <span class="te-letter">B</span> Publicar uma RFC com alternativas, dono da decisão e prazo para comentários.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O ADR registra uma decisão, mas não dá aos times afetados a chance de opinar antes dela.">
+                    <span class="te-letter">C</span> Registrar um ADR com a decisão já tomada e enviar o link aos cinco times, para que fique documentado desde o início.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Quais seções não podem faltar numa RFC?</p>
+                  <span class="tf-hint">Dica: pense no que quem lê precisa para avaliar →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Problema, objetivos e o que está fora do escopo, proposta, alternativas consideradas (incluindo não fazer nada), riscos e quem decide, com prazo.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="j6">marcar dominado</button>
       </article>
 
       <!-- TÓPICO j2 -->

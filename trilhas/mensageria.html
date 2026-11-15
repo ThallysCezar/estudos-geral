@@ -7022,7 +7022,7 @@ public class OrderFlowFaturamentoConsumer {
 
     <!-- ==================== PARTE 11 ==================== -->
     <section class="part" id="pkafka">
-      <div class="ph"><span class="num">11</span><div><h2>Kafka na prática</h2><p>Partição e chave, consumer group, retenção e replay, garantias de escrita, Spring Kafka com tópico de erro e o lag: o Kafka no nível de quem o opera.</p></div></div>
+      <div class="ph"><span class="num">11</span><div><h2>Kafka na prática</h2><p>Partição e chave, consumer group, retenção e replay, garantias de escrita, Spring Kafka com tópico de erro, o lag e os contratos de eventos: o Kafka no nível de quem o opera.</p></div></div>
 
       <article class="topic" id="kf1">
         <div class="th"><h3>Tópico, partição e chave: como o Kafka divide e ordena</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">kafka</span></div></div>
@@ -7969,6 +7969,1044 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
           </div>
         </div>
         <button class="done" type="button" data-k="kf6">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf7">
+        <div class="th"><h3>Contratos de eventos: Schema Registry, Avro e compatibilidade</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">contratos</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>O time de Pedidos renomeou o campo <code>valor</code> para <code>valorTotal</code> no evento <code>PedidoCriado</code>, publicado em JSON. O deploy passou em todos os testes do serviço. Minutos depois, os consumidores de Faturamento e de Estoque começaram a falhar na desserialização, e os tópicos de erro encheram. Ninguém tinha avisado os outros times, porque nada no pipeline sabia quem lia aquele evento. Com o schema registrado e a regra de compatibilidade ligada, a mesma mudança teria sido recusada no CI do produtor, antes do deploy.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>contrato de um evento</b> é o formato que produtor e consumidores combinam: campos, tipos e o que é obrigatório. O <b>Schema Registry</b> é um serviço que guarda esses contratos com versão e aplica uma <b>regra de compatibilidade</b> a cada versão nova. O <b>Avro</b> é o formato binário mais usado com ele: o schema é um JSON que descreve os campos, e a mensagem carrega só os valores, mais o número do schema que a escreveu.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a tomada padronizada. O fabricante do aparelho e o eletricista não se conhecem, mas os dois seguem a mesma norma. Uma tomada nova pode ganhar um pino de aterramento, desde que os plugues antigos continuem encaixando. Quem verifica isso é o órgão de normas, não cada eletricista.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Deixar um time mudar o evento sem quebrar quem lê, e descobrir a mudança incompatível no CI de quem a fez, não em produção. Também documenta o que cada tópico carrega.</p>
+                <p class="repl"><b>Veio substituir:</b> o JSON sem contrato, em que o formato do evento vivia só no código do produtor e os consumidores descobriam a mudança quando quebravam.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>No Kafka, o produtor não sabe quem consome, e o evento fica guardado pela retenção. Uma mudança de formato afeta consumidores que você não conhece e mensagens antigas que ainda vão ser relidas num replay. Sem contrato verificado, cada mudança de evento vira uma negociação entre times.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Escreva o schema Avro (<code>.avsc</code>) no repositório do produtor e gere as classes Java a partir dele.</li><li>Use a compatibilidade <code>BACKWARD</code> (o padrão) ou <code>FULL</code> por tópico, e escolha de propósito.</li><li>Em produção, desligue o registro automático (<code>auto.register.schemas=false</code>): quem registra é o pipeline.</li><li>No CI do produtor, rode a checagem de compatibilidade contra o registry antes do deploy.</li><li>Campo novo sempre com <code>default</code>; nunca renomeie nem mude o tipo de um campo existente.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Ao publicar, o serializador procura o schema no registry (e guarda em cache), recebe um <b>id</b> numérico e escreve a mensagem como: 1 byte fixo, 4 bytes com o id e os valores em Avro. O consumidor lê o id, busca o schema que escreveu a mensagem e converte para o schema que ele próprio conhece. É essa conversão que permite versões diferentes dos dois lados. Com <code>BACKWARD</code>, o schema novo consegue ler dados escritos com o anterior: dá para adicionar campo com valor padrão e remover campo, e os <b>consumidores atualizam primeiro</b>. Com <code>FORWARD</code> é o inverso: o schema antigo lê dados novos, e os produtores atualizam primeiro. <code>FULL</code> exige os dois.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// src/main/avro/PedidoCriado.avsc  (versão 2: campo novo COM default)
+{
+  "type": "record",
+  "name": "PedidoCriado",
+  "namespace": "br.com.orderflow.eventos",
+  "fields": [
+    { "name": "pedidoId", "type": "string" },
+    { "name": "valor",    "type": { "type": "bytes", "logicalType": "decimal", "precision": 12, "scale": 2 } },
+    { "name": "canal",    "type": "string", "default": "site" }
+  ]
+}
+
+// application.yml (produtor e consumidor)
+spring:
+  kafka:
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    consumer:
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    properties:
+      schema.registry.url: http://localhost:8081
+      auto.register.schemas: false      # em produção, o pipeline registra
+      specific.avro.reader: true        # devolve a classe gerada, não um GenericRecord
+
+// o código não muda: a classe PedidoCriado é gerada a partir do .avsc
+@KafkaListener(topics = "pedidos.eventos", groupId = "faturamento")
+public void onPedido(PedidoCriado evento) {
+    faturamento.registrar(evento.getPedidoId(), evento.getValor());
+}
+
+// CI do produtor: falha o build se o schema novo quebrar a compatibilidade
+// mvn io.confluent:kafka-schema-registry-maven-plugin:test-compatibility</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Campo novo sem default:</b> o consumidor com o schema novo não consegue ler as mensagens antigas no replay. Com <code>BACKWARD</code>, o registry recusa.</li>
+            <li><b>Renomear ou mudar o tipo:</b> para o Avro é remover um campo e criar outro. Crie o campo novo, migre os consumidores e só depois remova o antigo.</li>
+            <li><b>Registro automático em produção:</b> qualquer serviço com um schema errado registra uma versão nova sem revisão.</li>
+            <li><b>Ordem de deploy trocada:</b> com <code>BACKWARD</code>, publicar o produtor antes dos consumidores pode entregar a eles um formato que ainda não conhecem.</li>
+            <li><b>Registry fora do ar:</b> serializadores usam cache, mas um schema nunca visto não é resolvido. O registry precisa da mesma disponibilidade do broker.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: contratos de eventos</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Schema versionado</b>
+                    <p>O formato do evento fica num registry, com versão, e não só no código do produtor.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Regra de compatibilidade</b>
+                    <p>BACKWARD: o schema novo lê dados antigos, e os consumidores atualizam primeiro.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Checagem no CI</b>
+                    <p>A mudança incompatível é recusada no pipeline do produtor, antes do deploy.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: adicionar campo é sempre seguro?</b>
+                    <p>Só com valor padrão. Sem default, o schema novo não lê as mensagens antigas que ainda estão no tópico.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: o evento é uma API pública</b>
+                    <p>Trate o schema como trata um endpoint REST usado por outros times: só evolui por adição, e remoção passa por transição.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> O tópico de pedidos usa Avro com compatibilidade BACKWARD e retenção de 7 dias. O time quer incluir o campo <code>canal</code> no evento, e três serviços de outros times consomem esse tópico.</p>
+                <p class="te-instrucao">Qual é a forma correta de fazer a mudança?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sem default, o schema novo não consegue ler as mensagens dos últimos 7 dias, e o registry recusa a versão.">
+                    <span class="te-letter">A</span> Adicionar o campo como obrigatório, sem default, e publicar o produtor primeiro para os consumidores já receberem o dado completo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O default permite ler as mensagens antigas, e atualizar os consumidores primeiro é a ordem que o BACKWARD garante.">
+                    <span class="te-letter">B</span> Adicionar o campo com default, checar no CI e atualizar os consumidores antes do produtor.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Um tópico novo a cada campo multiplica tópicos e obriga todos os consumidores a migrar, que é o que o contrato compatível evita.">
+                    <span class="te-letter">C</span> Criar um tópico novo, pedidos.eventos.v2, e pedir que os três times migrem os consumidores para ele.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que a compatibilidade BACKWARD garante, e quem atualiza primeiro?</p>
+                  <span class="tf-hint">Dica: pense em quem lê as mensagens antigas →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Garante que o schema novo consegue ler dados escritos com o schema anterior. Por isso é permitido adicionar campo com default e remover campo, e os consumidores atualizam antes dos produtores.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf7">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf8">
+        <div class="th"><h3>CDC com Debezium e Kafka Connect: o banco como fonte de eventos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">integração de dados</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um sistema legado de cadastro gravava clientes no PostgreSQL, e outros quatro serviços precisavam saber de cada alteração. A primeira solução foi um job que consultava a tabela a cada 5 minutos por <code>updated_at</code>. Ele perdia as exclusões, perdia alterações feitas duas vezes no intervalo e pesava no banco. Com o Debezium lendo o log de transações do PostgreSQL, cada inserção, alteração e exclusão passou a virar um evento no Kafka em menos de um segundo, sem mudar uma linha do sistema legado.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>CDC (Change Data Capture)</b> é capturar as mudanças de um banco de dados lendo o log de transações dele, em vez de consultar as tabelas. O <b>Debezium</b> é o conector que faz isso para PostgreSQL, MySQL, SQL Server e outros. Ele roda dentro do <b>Kafka Connect</b>, o serviço do ecossistema Kafka que executa conectores: os de origem trazem dados de fora para tópicos, e os de destino levam de tópicos para fora.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o extrato do banco. Em vez de comparar o saldo de hoje com o de ontem para adivinhar o que aconteceu, você lê o extrato, que lista cada movimentação na ordem em que ocorreu, inclusive as que se anulam.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Publicar eventos a partir de sistemas que você não pode alterar, alimentar buscas, caches e data lake com os dados do banco, e implementar o padrão outbox sem escrever o publicador.</p>
+                <p class="repl"><b>Veio substituir:</b> os jobs de consulta periódica por coluna de data e a escrita dupla, em que a aplicação grava no banco e publica no broker em duas operações separadas.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>A escrita dupla falha em silêncio: o banco confirma, a publicação falha e os sistemas divergem. O log de transações é a única fonte que contém tudo o que foi confirmado, na ordem certa. É também o caminho padrão para integrar legado sem reescrever.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>No PostgreSQL, configure <code>wal_level=logical</code> e um usuário com permissão de replicação.</li><li>Registre o conector no Kafka Connect com a lista de tabelas (<code>table.include.list</code>).</li><li>Para o outbox, capture só a tabela de outbox e use o roteador de eventos do Debezium para mandar cada linha ao tópico certo.</li><li>Monitore o atraso do conector e o tamanho do slot de replicação.</li><li>Trate os consumidores como idempotentes: a entrega é pelo menos uma vez.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O Debezium cria um <b>slot de replicação lógica</b> no PostgreSQL. O banco passa a guardar o log (WAL) a partir da posição que o conector confirmou e envia cada mudança já decodificada. Na primeira execução, o conector faz um <b>snapshot</b> das tabelas e depois segue o log. Cada mudança vira uma mensagem com o estado <code>before</code>, o estado <code>after</code>, a operação (<code>c</code>, <code>u</code>, <code>d</code>) e a posição no log, num tópico por tabela. O Kafka Connect guarda a posição lida; se o conector cair, ele retoma dali.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: conector Debezium para o outbox</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-json">// POST http://localhost:8083/connectors
+{
+  "name": "orderflow-outbox",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "debezium",
+    "database.password": "${file:/secrets/db.properties:password}",
+    "database.dbname": "orderflow",
+    "topic.prefix": "orderflow",
+    "slot.name": "orderflow_outbox",
+    "table.include.list": "public.outbox",
+
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.route.by.field": "aggregatetype",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}.eventos"
+  }
+}
+
+// a aplicação só faz, na MESMA transação do pedido:
+// INSERT INTO outbox (id, aggregatetype, aggregateid, type, payload) VALUES (...)</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Slot de replicação parado:</b> se o conector fica fora do ar, o PostgreSQL guarda o WAL sem limite e o disco do banco enche. Alerte pelo tamanho do slot.</li>
+            <li><b>Snapshot inicial de tabela grande:</b> pode levar horas e competir com a carga normal. Planeje a janela ou use snapshot incremental.</li>
+            <li><b>Expor a tabela interna como evento:</b> capturar a tabela de negócio direto acopla os consumidores ao seu modelo de dados. Para eventos de domínio, use a tabela de outbox.</li>
+            <li><b>Mudança de schema da tabela:</b> renomear ou remover coluna muda o evento. Vale a mesma regra de compatibilidade dos contratos.</li>
+            <li><b>Assumir entrega única:</b> após uma queda, o conector pode reenviar mudanças já publicadas. O consumidor precisa ser idempotente.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: CDC com Debezium</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Ler o log, não a tabela</b>
+                    <p>O log de transações tem todas as mudanças confirmadas, na ordem, inclusive exclusões.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Kafka Connect executa</b>
+                    <p>O Debezium é um conector de origem; o Connect guarda a posição e retoma após falha.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Outbox sem publicador</b>
+                    <p>A aplicação grava na tabela de outbox, e o CDC publica.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: CDC substitui eventos de domínio?</b>
+                    <p>Não. O CDC de uma tabela de negócio mostra linhas alteradas, não a intenção. Evento de domínio continua sendo desenhado; o CDC é o transporte.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: o banco já escreve o log de tudo</b>
+                    <p>Em vez de criar um segundo registro das mudanças, leia o que o banco já mantém.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf8">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf8</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> O serviço de pedidos grava o pedido no PostgreSQL e depois publica o evento no Kafka. Em alguns casos o pedido existe no banco, mas o evento nunca chegou, porque a publicação falhou depois do commit.</p>
+                <p class="te-instrucao">Qual desenho elimina essa divergência?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Só inverte o problema: o evento pode ser publicado e a gravação falhar, criando evento de pedido que não existe.">
+                    <span class="te-letter">A</span> Publicar o evento no Kafka antes de gravar no banco, para garantir que o evento sempre exista quando o pedido for salvo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Tentativas reduzem a frequência, mas a aplicação ainda pode cair entre o commit e a publicação.">
+                    <span class="te-letter">B</span> Envolver a gravação e a publicação num bloco try/catch com três tentativas de publicação antes de desistir e registrar o erro no log.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A transação garante que pedido e evento são gravados juntos, e o CDC publica tudo o que foi confirmado.">
+                    <span class="te-letter">C</span> Gravar o evento numa tabela de outbox na mesma transação e publicar com CDC.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que um slot de replicação parado é perigoso?</p>
+                  <span class="tf-hint">Dica: pense no que o banco precisa guardar →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque o PostgreSQL mantém o WAL desde a última posição confirmada pelo slot. Se o conector para de consumir, o log cresce sem limite e pode encher o disco do banco de produção.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf8">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf9">
+        <div class="th"><h3>Kafka Streams: processar o fluxo com estado, janela e junção</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">processamento de streams</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>A área de risco queria um alerta quando um cliente fizesse mais de 10 pedidos em 5 minutos. A primeira versão era um consumidor comum que guardava contadores num mapa em memória. Quando a aplicação reiniciava, os contadores zeravam; com duas instâncias, cada uma via só parte dos pedidos do mesmo cliente. Reescrito com Kafka Streams, o contador passou a ficar num armazenamento local com cópia num tópico, agrupado por cliente e em janelas de tempo. Reinício e várias instâncias deixaram de ser problema.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Kafka Streams</b> é uma biblioteca Java para transformar, agregar e juntar fluxos de eventos do Kafka, dentro da sua própria aplicação. Não é um cluster separado: é um jar. Ela oferece dois tipos centrais. O <code>KStream</code> é o fluxo de fatos, um evento após o outro. A <code>KTable</code> é o último valor de cada chave, como uma tabela que se atualiza.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o caixa do mercado que mantém o total parcial da compra. Ele não guarda todos os itens para somar no fim; a cada item que passa, atualiza o total. Se outro caixa assumir, ele continua a partir do total anotado, não do zero.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Calcular contagens e somas por janela de tempo, enriquecer um evento com dados de outro tópico, detectar padrões e manter visões materializadas, tudo com tolerância a falha.</p>
+                <p class="repl"><b>Veio substituir:</b> o consumidor escrito à mão com estado em memória ou num banco externo, e os jobs em lote que calculavam os mesmos números com horas de atraso.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Estado é a parte difícil do processamento de eventos. Manter contadores corretos com reinício, rebalanceamento e várias instâncias, à mão, costuma dar errado. O Kafka Streams resolve isso com as mesmas garantias do Kafka.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Defina a topologia com o <code>StreamsBuilder</code>: de onde lê, o que transforma, onde escreve.</li><li>Dê um <code>application.id</code> estável: ele é o grupo de consumo e o prefixo dos tópicos internos.</li><li>Agrupe pela chave certa; trocar a chave gera um tópico de reparticionamento.</li><li>Para operações sem duplicata no resultado, use <code>processing.guarantee=exactly_once_v2</code>.</li><li>Teste a topologia com o <code>TopologyTestDriver</code>, sem broker.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Cada instância recebe partições, como um consumidor comum. Para operações com estado, a biblioteca mantém um <b>armazenamento local</b> (RocksDB) e grava cada alteração num <b>tópico de changelog</b>. Se a instância cai, outra assume a partição e reconstrói o estado relendo o changelog. Quando a agregação usa uma chave diferente da chave do tópico, os eventos são regravados num tópico de <b>reparticionamento</b>, para que todos os eventos da mesma chave cheguem à mesma instância. Janelas agrupam eventos pelo horário do evento, não pelo horário de chegada.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">@Configuration
+@EnableKafkaStreams
+class AlertaVolumeTopologia {
+
+    @Bean
+    KStream&lt;String, PedidoCriado&gt; alertaDeVolume(StreamsBuilder builder) {
+        KStream&lt;String, PedidoCriado&gt; pedidos = builder.stream("pedidos.eventos");
+
+        pedidos
+            .groupBy((pedidoId, pedido) -&gt; pedido.getClienteId())       // troca a chave: reparticiona
+            .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(5)))
+            .count(Materialized.as("pedidos-por-cliente"))               // estado local + changelog
+            .toStream()
+            .filter((janela, total) -&gt; total &gt; 10)
+            .map((janela, total) -&gt; KeyValue.pair(janela.key(), new AlertaVolume(janela.key(), total)))
+            .to("risco.alertas");
+
+        return pedidos;
+    }
+}
+
+// application.yml
+// spring.kafka.streams.application-id: risco-alerta-volume
+// spring.kafka.streams.properties.processing.guarantee: exactly_once_v2</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Mudar o <code>application.id</code>:</b> a aplicação vira um grupo novo, relê tudo do início e cria novos tópicos internos.</li>
+            <li><b>Junção entre tópicos com número de partições diferente:</b> a junção exige a mesma chave e o mesmo particionamento dos dois lados; sem isso, a aplicação nem sobe.</li>
+            <li><b>Estado grande e reinício lento:</b> reconstruir gigabytes de changelog leva tempo. Use réplicas de standby e disco persistente.</li>
+            <li><b>Evento atrasado fora da janela:</b> sem período de tolerância, o evento que chega depois do fim da janela é descartado. Decida isso de propósito.</li>
+            <li><b>Usar para tudo:</b> se o trabalho é consumir e gravar num banco, um listener comum é mais simples.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Kafka Streams</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>KStream e KTable</b>
+                    <p>Fluxo de fatos e último valor por chave: os dois tipos que compõem as topologias.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Estado tolerante a falha</b>
+                    <p>Armazenamento local com cópia num tópico de changelog.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Chave manda</b>
+                    <p>Agregar e juntar exige todos os eventos da chave na mesma instância.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: Kafka Streams precisa de um cluster próprio?</b>
+                    <p>Não. É uma biblioteca que roda dentro da sua aplicação Java; escalar é subir mais instâncias com o mesmo application.id.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: o estado é derivado do log</b>
+                    <p>Tudo o que a aplicação guarda pode ser reconstruído relendo tópicos. Por isso ela pode cair sem perder contagem.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf9">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf9</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um consumidor conta pedidos por cliente num mapa em memória para gerar alertas. Com duas instâncias, os alertas ficaram errados, e a cada reinício as contagens voltam a zero.</p>
+                <p class="te-instrucao">Qual é a causa e a correção?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O agrupamento por chave leva todos os eventos do cliente à mesma instância, e o changelog recupera o estado após reinício.">
+                    <span class="te-letter">A</span> O estado está fora do Kafka e os eventos do cliente se dividem entre instâncias; agrupar por cliente com Kafka Streams resolve os dois.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Uma partição elimina o paralelismo e não resolve a perda do estado em memória no reinício.">
+                    <span class="te-letter">B</span> O tópico tem partições demais; reduzir para uma única partição garante que só uma instância consuma e o contador fique consistente.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O commit controla o que é relido, mas o mapa em memória continua zerando e dividido entre instâncias.">
+                    <span class="te-letter">C</span> Falta commit manual do offset; confirmando só depois de atualizar o mapa, as contagens deixam de se perder nos reinícios.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Como o Kafka Streams recupera o estado depois que uma instância cai?</p>
+                  <span class="tf-hint">Dica: pense no tópico de changelog →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Cada alteração do armazenamento local é gravada num tópico de changelog. A instância que assume a partição relê esse tópico e reconstrói o estado antes de continuar o processamento.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf9">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf10">
+        <div class="th"><h3>Event sourcing na prática: o estado como soma dos eventos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">modelagem por eventos</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Num sistema de conta digital, o saldo era uma coluna atualizada a cada operação. Quando um cliente contestou um valor, o time não conseguiu explicar como o saldo tinha chegado ali: a coluna guardava só o número final. Depois da mudança para event sourcing, cada depósito, saque e estorno passou a ser um evento gravado e nunca alterado. O saldo virou o resultado da soma desses eventos, e qualquer valor passou a ser explicável linha a linha.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Event sourcing</b> é guardar, como fonte da verdade, a sequência de eventos que aconteceram com uma entidade, em vez do estado atual dela. O estado é calculado aplicando os eventos em ordem. Os eventos são fatos no passado (<code>PedidoCriado</code>, <code>ItemAdicionado</code>, <code>PedidoPago</code>), só são acrescentados e nunca são alterados nem apagados.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o livro-caixa da contabilidade. O contador não apaga um lançamento errado: ele faz um lançamento de estorno. O saldo é a soma do livro, e o livro conta a história inteira.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Ter auditoria completa por construção, reconstruir o estado em qualquer ponto do tempo, criar novas visões dos dados relendo o histórico e investigar defeitos reproduzindo a sequência exata.</p>
+                <p class="repl"><b>Veio substituir:</b> a tabela de estado atual acompanhada de uma tabela de auditoria paralela, que costumava ficar incompleta e divergir do estado.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Em domínios financeiros e regulados, saber como se chegou a um valor é requisito. Mas o custo é alto: modelagem, versionamento de eventos e consultas ficam mais difíceis. Saber quando não usar é tão importante quanto saber usar.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Use só nos agregados em que o histórico tem valor de negócio (conta, pedido, apólice). O resto fica em CRUD.</li><li>Grave os eventos numa tabela só de inserção, com a versão do agregado.</li><li>Controle a concorrência com restrição única em <code>(agregado_id, versao)</code>.</li><li>Para consultas, mantenha projeções (visões de leitura) atualizadas pelos eventos.</li><li>Publique os eventos para outros serviços com outbox ou CDC.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Para executar um comando, o serviço carrega os eventos do agregado, aplica um a um para obter o estado atual, valida a regra e gera novos eventos. A gravação informa a versão esperada; se outra transação gravou antes, a restrição única falha e o comando é repetido. Quando o agregado tem muitos eventos, um <b>snapshot</b> periódico guarda o estado numa versão, e a carga lê só os eventos posteriores. As consultas não leem os eventos: leem <b>projeções</b>, tabelas montadas a partir deles, que podem ser apagadas e reconstruídas.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">-- o armazenamento: só INSERT; a restrição única é o controle de concorrência
+CREATE TABLE evento (
+  agregado_id UUID        NOT NULL,
+  versao      INT         NOT NULL,
+  tipo        TEXT        NOT NULL,
+  dados       JSONB       NOT NULL,
+  criado_em   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (agregado_id, versao)
+);
+
+// os fatos e o estado calculado a partir deles
+sealed interface EventoConta permits Depositado, Sacado {}
+record Depositado(BigDecimal valor) implements EventoConta {}
+record Sacado(BigDecimal valor) implements EventoConta {}
+
+record Conta(BigDecimal saldo, int versao) {
+    static Conta de(List&lt;EventoConta&gt; eventos) {
+        Conta conta = new Conta(BigDecimal.ZERO, 0);
+        for (EventoConta e : eventos) conta = conta.aplicar(e);
+        return conta;
+    }
+    Conta aplicar(EventoConta e) {
+        return switch (e) {
+            case Depositado d -&gt; new Conta(saldo.add(d.valor()), versao + 1);
+            case Sacado s     -&gt; new Conta(saldo.subtract(s.valor()), versao + 1);
+        };
+    }
+    Sacado sacar(BigDecimal valor) {                 // o comando valida e devolve o fato
+        if (saldo.compareTo(valor) &lt; 0) throw new SaldoInsuficiente();
+        return new Sacado(valor);
+    }
+}
+// gravar: INSERT ... (agregado_id, versao = conta.versao() + 1); conflito = repetir o comando</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Usar no sistema inteiro:</b> cadastros simples viram muito mais código sem ganho. Aplique por agregado.</li>
+            <li><b>Usar o Kafka como armazenamento dos agregados:</b> o Kafka não oferece leitura por entidade nem controle de versão esperada. Guarde em banco e publique no Kafka.</li>
+            <li><b>Mudar a estrutura de um evento antigo:</b> eventos são imutáveis. Crie uma versão nova do evento e converta os antigos na leitura.</li>
+            <li><b>Dado pessoal no evento:</b> a LGPD dá direito à exclusão, e o evento não se apaga. Guarde o dado pessoal fora do evento ou cifre com chave por titular e descarte a chave.</li>
+            <li><b>Consultar direto os eventos:</b> listar e filtrar sobre o histórico é lento. Consultas usam projeções.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Event sourcing</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Eventos são a verdade</b>
+                    <p>O estado é calculado aplicando os fatos em ordem.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Só inserção, com versão</b>
+                    <p>A restrição única por agregado e versão resolve a concorrência.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Projeções para ler</b>
+                    <p>Visões de leitura são derivadas e podem ser reconstruídas.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: event sourcing é o mesmo que arquitetura orientada a eventos?</b>
+                    <p>Não. Orientada a eventos é como os serviços se comunicam. Event sourcing é como um serviço guarda o próprio estado. Dá para ter um sem o outro.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: livro-caixa, não saldo</b>
+                    <p>Pergunte se o negócio precisa da história ou só do valor atual. Se só do valor atual, não use.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf10">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf10</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um time quer adotar event sourcing em todo o sistema, incluindo o cadastro de categorias de produto, que muda uma vez por mês e não tem requisito de auditoria. O módulo de conta corrente precisa explicar cada saldo ao regulador.</p>
+                <p class="te-instrucao">Qual é a recomendação correta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Padronizar aqui multiplica o custo de modelagem, versionamento e consulta em módulos que não ganham nada com o histórico.">
+                    <span class="te-letter">A</span> Adotar em todo o sistema, porque misturar dois modelos de persistência confunde o time e a padronização compensa o custo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O histórico tem valor de negócio na conta e nenhum nas categorias; aplicar por agregado concentra o custo onde há retorno.">
+                    <span class="te-letter">B</span> Usar na conta corrente e manter CRUD nas categorias.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A tabela de log paralela tende a divergir do estado, e não permite reconstruir o saldo nem criar novas visões.">
+                    <span class="te-letter">C</span> Não adotar em nenhum, e criar uma tabela de log com o saldo anterior e o novo a cada atualização da conta corrente.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Como o event sourcing evita que duas operações simultâneas corrompam o mesmo agregado?</p>
+                  <span class="tf-hint">Dica: pense na versão esperada →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Cada evento é gravado com a próxima versão do agregado, e há uma restrição única em (agregado, versão). Se duas transações tentam gravar a mesma versão, uma falha e repete o comando sobre o estado atualizado.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf10">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf11">
+        <div class="th"><h3>Reprocessamento em escala: reler o passado sem repetir os efeitos</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">operação</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um defeito no cálculo de imposto ficou três dias em produção e gravou valores errados em 40 mil notas. Corrigido o código, o time reposicionou o offset do grupo para três dias atrás. O cálculo foi refeito, mas o mesmo consumidor também enviava e-mail ao cliente a cada nota: 40 mil clientes receberam o e-mail de novo. O reprocessamento foi refeito do jeito certo com um consumidor separado, só de recálculo, gravando numa tabela nova, e a troca foi feita depois da conferência.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Reprocessar</b> é ler de novo eventos que já foram consumidos, para corrigir o resultado de um defeito, preencher uma visão nova ou recuperar mensagens que foram para o tópico de erro. No Kafka isso é possível porque ler não apaga: basta mudar a posição de leitura. O difícil é o que vem junto: refazer o cálculo <b>sem repetir os efeitos externos</b> e sem derrubar o consumo normal.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> recontar os votos de uma urna. Recontar as cédulas é seguro e pode ser feito várias vezes. O que não pode é anunciar o resultado na televisão a cada recontagem.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Corrigir dados depois de um defeito, criar uma projeção nova com todo o histórico, devolver ao fluxo as mensagens do tópico de erro depois de corrigida a causa, e migrar um consumidor para um formato novo.</p>
+                <p class="repl"><b>Veio substituir:</b> os scripts de correção manual no banco, escritos às pressas durante o incidente e impossíveis de repetir ou auditar.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Poder reprocessar é a principal vantagem do log sobre a fila, e é o que torna um defeito de consumo reversível. Mas sem preparação o reprocessamento vira um segundo incidente: efeitos duplicados, consumidores atrasados e clientes afetados.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Separe o consumidor em dois papéis: o que calcula e grava, e o que dispara efeitos externos (e-mail, pagamento, chamada a parceiro).</li><li>Garanta idempotência: reprocessar o mesmo evento precisa dar o mesmo resultado.</li><li>Para reconstruir uma visão, use um grupo novo gravando numa tabela nova e troque no fim.</li><li>Para repetir no mesmo grupo, pare o consumidor e use a redefinição de offset com <code>--dry-run</code> antes.</li><li>Limite a velocidade para não competir com o tráfego normal.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Há três caminhos. No primeiro, um <b>grupo novo</b> começa do início do tópico (ou de uma data) e escreve num destino novo, enquanto o grupo atual segue; ao alcançar o presente, a leitura passa para o destino novo. No segundo, a <b>redefinição de offset</b> move a posição do grupo existente para uma data ou offset; o grupo precisa estar parado. No terceiro, as mensagens do <b>tópico de erro</b> são republicadas no tópico original ou num tópico de nova tentativa. Em todos, a retenção define até onde dá para voltar, e a ordem só é garantida dentro de cada partição.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: comandos e a proteção contra efeito repetido</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-bash"># 1) ver o que a redefinição faria (o grupo precisa estar parado)
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group faturamento --topic pedidos.eventos \
+  --reset-offsets --to-datetime 2026-11-10T00:00:00.000 --dry-run
+
+# 2) aplicar
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group faturamento --topic pedidos.eventos \
+  --reset-offsets --to-datetime 2026-11-10T00:00:00.000 --execute
+
+// no consumidor Java: o efeito externo só acontece uma vez por evento
+@KafkaListener(topics = "pedidos.eventos", groupId = "notificacao")
+@Transactional
+public void onPedido(PedidoCriado evento) {
+    // INSERT ... ON CONFLICT DO NOTHING; devolve false se o evento já foi tratado
+    if (!eventosTratados.registrar(evento.getEventoId(), "notificacao")) return;
+    email.enviarConfirmacao(evento);
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Efeito externo repetido:</b> e-mail, cobrança e chamada a parceiro acontecem de novo se o consumidor não registrar o que já tratou.</li>
+            <li><b>Redefinir offset com o grupo ativo:</b> o comando é recusado; e, se a aplicação subir no meio, ela confirma offsets por cima.</li>
+            <li><b>Retenção menor que o problema:</b> se o defeito durou 10 dias e a retenção é de 7, parte dos eventos já não existe.</li>
+            <li><b>Reprocessar na velocidade máxima:</b> o banco e os serviços chamados recebem dias de carga em minutos. Limite a taxa.</li>
+            <li><b>Republicar o tópico de erro sem corrigir a causa:</b> as mensagens falham de novo e voltam para o mesmo lugar.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Reprocessamento</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Ler de novo é fácil</b>
+                    <p>O log guarda os eventos; mudar a posição de leitura basta.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>O efeito é o problema</b>
+                    <p>Cálculo pode repetir; efeito externo precisa de registro do que já foi feito.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Grupo novo, destino novo</b>
+                    <p>A forma mais segura de reconstruir é em paralelo, com troca no fim.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: reprocessar é só voltar o offset?</b>
+                    <p>Voltar o offset repete tudo o que o consumidor faz, inclusive e-mails e cobranças. Sem idempotência e sem separar os efeitos, o reprocessamento vira outro incidente.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: calcular é repetível, avisar não é</b>
+                    <p>Separe os consumidores por tipo de efeito antes de precisar reprocessar.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf11">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf11</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Um defeito gravou totais errados numa tabela de relatório por dois dias. O mesmo consumidor que grava a tabela também envia uma notificação ao cliente. A retenção do tópico é de 7 dias.</p>
+                <p class="te-instrucao">Qual é a forma mais segura de corrigir os totais?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O consumidor atual também notifica: todos os clientes daqueles dois dias seriam avisados de novo.">
+                    <span class="te-letter">A</span> Voltar o offset do grupo atual em dois dias e deixar o consumidor corrigido processar tudo de novo, na velocidade máxima, para terminar rápido.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O grupo novo não dispara notificações nem interfere no consumo normal, e a conferência acontece antes da troca.">
+                    <span class="te-letter">B</span> Subir um consumidor só de recálculo, em grupo novo, gravando numa tabela nova, e trocar depois de conferir.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A correção manual não é repetível nem auditável, e ignora que os eventos corretos ainda estão no tópico.">
+                    <span class="te-letter">C</span> Corrigir os totais com um UPDATE manual no banco, calculado a partir de uma planilha exportada pelo time de negócio.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que separar o consumidor que calcula do consumidor que dispara efeitos externos?</p>
+                  <span class="tf-hint">Dica: pense no que acontece ao reler o tópico →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">Porque o cálculo pode ser repetido sem dano, mas e-mail, cobrança e chamada a parceiro não. Com consumidores separados, dá para reprocessar o cálculo sem repetir os efeitos.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf11">marcar dominado</button>
+      </article>
+      <article class="topic" id="kf12">
+        <div class="th"><h3>SNS, SQS e EventBridge: mensageria gerenciada na AWS</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">aws</span></div></div>
+        <div class="caso">
+          <b>O caso</b>
+          <p>Um time em AWS subiu um cluster Kafka gerenciado para um único fluxo: avisar três serviços quando um pedido era pago, com cerca de 50 eventos por segundo. O cluster custava mais que o resto do sistema e exigia atenção a partições e versões. O fluxo foi refeito com um tópico SNS distribuindo para três filas SQS, cada uma com sua fila de erro. O custo caiu para uma fração, e o time deixou de operar brokers.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>São os três serviços de mensageria sem servidor da AWS. O <b>SQS</b> é fila: um consumidor busca a mensagem, processa e apaga. O <b>SNS</b> é publicação e assinatura: uma mensagem publicada no tópico é empurrada para todos os assinantes. O <b>EventBridge</b> é um barramento de eventos com roteamento por conteúdo: regras examinam o corpo do evento e o enviam a destinos, inclusive de outras contas e de serviços de terceiros.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o SQS é a caixa de entrada de uma pessoa: as tarefas esperam até ela pegar. O SNS é o megafone: todos os que estão ouvindo recebem ao mesmo tempo. O EventBridge é a recepção de um prédio, que lê o envelope e decide para qual sala encaminhar.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Desacoplar serviços em AWS sem operar brokers, distribuir um evento para vários consumidores independentes e ligar eventos de serviços da própria AWS a funções e filas.</p>
+                <p class="repl"><b>Veio substituir:</b> o broker próprio mantido pelo time para fluxos de volume moderado, com o custo de operar cluster, versão e capacidade.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Em AWS, a pergunta de arquitetura raramente é como subir o Kafka, e sim qual serviço usar. Escolher o log quando uma fila basta custa dinheiro e operação; escolher a fila quando se precisa de replay obriga a refazer depois.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Para um evento com vários consumidores, publique no SNS e assine uma fila SQS por consumidor.</li><li>Configure em toda fila uma fila de erro (DLQ) com <code>maxReceiveCount</code>.</li><li>Ajuste o tempo de visibilidade para ser maior que o tempo de processamento.</li><li>Use fila FIFO só quando a ordem por entidade for requisito; ela tem menos vazão.</li><li>Precisa de replay longo, ordem em alto volume ou processamento de fluxo: use MSK (Kafka) ou Kinesis.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>No SQS, ao receber uma mensagem ela fica invisível para os outros consumidores pelo <b>tempo de visibilidade</b>. Se o consumidor apaga a mensagem, acabou; se não apaga a tempo, ela reaparece e é entregue de novo. Depois de <code>maxReceiveCount</code> entregas, vai para a fila de erro. A fila padrão entrega pelo menos uma vez e sem garantia de ordem; a FIFO ordena por <code>MessageGroupId</code> e elimina duplicatas numa janela de 5 minutos. O SNS entrega uma cópia a cada assinatura, com filtro por atributos. O EventBridge avalia cada evento contra os padrões das regras e pode arquivar eventos para reenviar depois.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// build.gradle: io.awspring.cloud:spring-cloud-aws-starter-sqs  e  ...-starter-sns
+
+// consumir: a mensagem só é apagada se o método terminar sem exceção
+@Component
+class PedidoPagoListener {
+
+    @SqsListener("estoque-pedido-pago")
+    void onPedidoPago(PedidoPago evento) {
+        estoque.baixar(evento);          // exceção -&gt; a mensagem reaparece após o tempo de visibilidade
+    }
+}
+
+// publicar no tópico: cada fila assinante recebe a sua cópia
+@Service
+class PedidoPublisher {
+    private final SnsTemplate sns;
+    PedidoPublisher(SnsTemplate sns) { this.sns = sns; }
+
+    void publicar(PedidoPago evento) {
+        sns.convertAndSend("pedido-pago", evento);
+    }
+}
+
+# política de reenvio da fila (Terraform)
+# redrive_policy = jsonencode({ deadLetterTargetArn = aws_sqs_queue.estoque_dlq.arn, maxReceiveCount = 5 })</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Tempo de visibilidade menor que o processamento:</b> a mensagem reaparece enquanto ainda está sendo tratada, e outro consumidor a processa em paralelo.</li>
+            <li><b>Fila sem DLQ:</b> a mensagem que sempre falha fica circulando até o fim da retenção, consumindo processamento.</li>
+            <li><b>Assumir ordem na fila padrão:</b> ela não garante ordem nem entrega única. O consumidor precisa ser idempotente.</li>
+            <li><b>FIFO com um único grupo de mensagens:</b> um só <code>MessageGroupId</code> serializa a fila inteira e elimina o paralelismo.</li>
+            <li><b>Esperar replay:</b> no SQS, a mensagem apagada não volta. Se o requisito é reler o histórico, o serviço certo é um log.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: SNS, SQS e EventBridge</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>SQS é fila</b>
+                    <p>Um consumidor recebe, processa e apaga; o tempo de visibilidade controla a reentrega.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>SNS distribui</b>
+                    <p>Uma publicação, uma cópia por assinatura; SNS com SQS dá um consumidor independente por fila.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>EventBridge roteia</b>
+                    <p>Regras por conteúdo do evento, com arquivo e reenvio.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">!</span>
+                  <div>
+                    <b>Pegadinha: SQS é o Kafka da AWS?</b>
+                    <p>Não. SQS é fila: a mensagem some depois de processada. O equivalente ao Kafka na AWS é o MSK, e o Kinesis é o log próprio da AWS.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">i</span>
+                  <div>
+                    <b>Modelo mental: comece pelo mais simples que atende</b>
+                    <p>Fila para trabalho, tópico para distribuir, barramento para rotear, log só quando precisar de replay e ordem em volume.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-msg-kf12">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #kf12</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">+50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário:</strong> Em AWS, o evento de pedido pago precisa chegar a três serviços (estoque, fiscal e notificação), a cerca de 50 eventos por segundo. Cada serviço deve falhar e tentar de novo sem afetar os outros. Não há requisito de reler o histórico.</p>
+                <p class="te-instrucao">Qual desenho atende com o menor custo de operação?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Cada serviço tem a própria fila, com tentativas e DLQ independentes, e não há broker para operar.">
+                    <span class="te-letter">A</span> Um tópico SNS com três filas SQS assinantes, cada uma com a sua fila de erro.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Funciona, mas traz custo e operação de cluster para um requisito que não inclui replay nem volume alto.">
+                    <span class="te-letter">B</span> Um cluster Kafka gerenciado (MSK) com um tópico de três partições e um grupo de consumo por serviço, para ter retenção e replay disponíveis.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Numa fila, cada mensagem é entregue a um só consumidor: dois dos três serviços não a receberiam.">
+                    <span class="te-letter">C</span> Uma única fila SQS lida pelos três serviços, que apagam a mensagem depois de processar a parte que interessa a cada um.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">FLASHCARD · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é o tempo de visibilidade do SQS?</p>
+                  <span class="tf-hint">Dica: pense no que acontece se o consumidor cai no meio →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">RESPOSTA</div>
+                  <p class="tf-resposta">É o período em que uma mensagem recebida fica invisível para os outros consumidores. Se o consumidor não apagar a mensagem dentro desse tempo, ela reaparece e é entregue de novo.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="kf12">marcar dominado</button>
       </article>
 
       </section>

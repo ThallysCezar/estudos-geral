@@ -3198,6 +3198,178 @@ public class AuditAutoConfiguration {
         </div>
         <button class="done" type="button" data-k="b6">marcar dominado</button>
       </article>
+      <article class="topic" id="b7">
+        <div class="th"><h3>Spring Boot 4 e Framework 7: o que muda e como migrar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">boot 4 · framework 7</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Um time tentou ir do Spring Boot 3.2 direto para o 4.0 numa sexta-feira. O build quebrou em dezenas de pontos: importações do Jackson, um starter que tinha mudado de nome, propriedades removidas e uma biblioteca interna que ainda usava classes descontinuadas. A migração foi revertida. Na segunda tentativa, o time subiu primeiro para o 3.5, eliminou todos os avisos de descontinuação e só então trocou para o 4.0. A segunda etapa levou um dia.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Spring Boot 4.0</b> e o <b>Spring Framework 7.0</b> foram lançados em novembro de 2025 e abrem uma nova geração. A base passa a ser o <b>Jakarta EE 11</b> (Servlet 6.1), o Java mínimo continua o 17 e o recomendado é o 25. As mudanças que mais afetam o código são: <b>Jackson 3</b> como padrão, a autoconfiguração dividida em módulos menores, anotações de nulidade do <b>JSpecify</b>, versionamento de API nativo, clientes HTTP declarativos com menos configuração e recursos de resiliência no próprio framework.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a troca do padrão de tomada de um prédio. Os aparelhos continuam os mesmos, mas alguns precisam de adaptador e os muito antigos precisam ser trocados. Quem arruma os fios antes, andar por andar, faz a troca num dia.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Manter o projeto numa versão com suporte e aproveitar o que reduz código próprio: versão de API declarada na rota, cliente HTTP por interface e novas tentativas sem biblioteca extra.</p>
+                <p class="repl"><b>Veio substituir:</b> a geração 3.x, cujo suporte gratuito da última versão (3.5) termina em junho de 2026.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Ficar numa versão sem suporte significa não receber correções de segurança. E quem entende o que mudou entre gerações consegue estimar e conduzir a migração de um sistema real, que é trabalho típico de quem lidera tecnicamente.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Suba primeiro para o Spring Boot 3.5 e elimine todos os avisos de descontinuação.</li><li>Leia o guia de migração oficial do 4.0 e troque os starters que mudaram de nome.</li><li>Trate o Jackson 3 como uma etapa própria: os pacotes mudaram de <code>com.fasterxml.jackson</code> para <code>tools.jackson</code>, e há um modo de compatibilidade com o Jackson 2 para a transição.</li><li>Confira se o servidor embutido é suportado: o Undertow foi removido.</li><li>Depois de migrar, adote os recursos novos aos poucos.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O Framework 7 define a base (Jakarta EE 11, anotações de nulidade, versionamento, resiliência) e o Boot 4 a configura automaticamente. O <b>versionamento de API</b> resolve a versão pedida a partir de um cabeçalho, parâmetro ou trecho do caminho e escolhe o método cujo atributo <code>version</code> corresponde. Os <b>clientes HTTP declarativos</b> são interfaces com <code>@HttpExchange</code>; o framework gera a implementação sobre o <code>RestClient</code>. As anotações <code>@Retryable</code> e <code>@ConcurrencyLimit</code> passaram para o núcleo do framework. A autoconfiguração, antes num único jar grande, foi separada por tecnologia, o que reduz o que é carregado e analisado na subida.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// versionamento de API (Framework 7): a versão faz parte do mapeamento
+// application.properties:  spring.mvc.apiversion.use.header=X-API-Version
+@RestController
+@RequestMapping("/pedidos")
+class PedidoController {
+
+    @GetMapping(path = "/{id}", version = "1")
+    PedidoV1 buscarV1(@PathVariable String id) { return servico.buscarV1(id); }
+
+    @GetMapping(path = "/{id}", version = "2")
+    PedidoV2 buscarV2(@PathVariable String id) { return servico.buscarV2(id); }
+}
+
+// cliente HTTP declarativo: a interface é o contrato, o framework implementa
+@HttpExchange("/estoques")
+interface EstoqueClient {
+    @GetExchange("/{sku}")
+    Estoque consultar(@PathVariable String sku);
+}
+
+// resiliência no núcleo do framework (habilitar com @EnableResilientMethods)
+@Retryable(maxRetries = 3, delay = 200)
+@ConcurrencyLimit(10)
+Estoque consultarComProtecao(String sku) { return estoqueClient.consultar(sku); }</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Pular o 3.5:</b> o 4.0 remove o que estava descontinuado. Sem passar pelo 3.5, você descobre tudo de uma vez, com o build quebrado.</li>
+            <li><b>Jackson 3 em bibliotecas de terceiros:</b> dependências que ainda usam o Jackson 2 convivem, mas módulos e serializadores próprios precisam ser portados.</li>
+            <li><b>Starters e propriedades renomeados:</b> com a autoconfiguração dividida, alguns starters novos são necessários. O guia de migração lista cada um.</li>
+            <li><b>Nulidade mais rígida:</b> com JSpecify, ferramentas de análise e o Kotlin passam a apontar nulos que antes passavam.</li>
+            <li><b>Adotar tudo no mesmo PR:</b> migrar a versão e reescrever para os recursos novos ao mesmo tempo impede saber o que quebrou.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Spring Boot 4 e Framework 7</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Nova base</b>
+                    <p>Jakarta EE 11, Java 17 no mínimo e 25 recomendado, Jackson 3 e JSpecify.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Menos código próprio</b>
+                    <p>Versão de API no mapeamento, cliente HTTP por interface e resiliência no núcleo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Migrar em etapas</b>
+                    <p>Primeiro 3.5 sem avisos, depois 4.0, depois os recursos novos.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: o Spring Boot 4 exige Java 25?</b>
+                    <p>Não. O mínimo continua sendo o Java 17. O 25 é a versão recomendada, e alguns recursos, como a imagem nativa, exigem ferramentas mais novas.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: versão maior remove, versão menor avisa</b>
+                    <p>A última versão menor da geração anterior é a ponte: zere os avisos nela antes de atravessar.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-spring-b7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #b7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço está no Spring Boot 3.2. O time precisa chegar ao 4.0 antes do fim do suporte e quer também passar a usar o versionamento de API nativo.</p>
+                <p class="te-instrucao">Qual é a sequência mais segura?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Cada etapa isola um tipo de mudança, e os avisos do 3.5 antecipam o que o 4.0 remove.">
+                    <span class="te-letter">A</span> Subir para o 3.5, zerar os avisos de descontinuação, migrar para o 4.0 e só depois adotar o versionamento.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Mistura a migração com mudança funcional; se algo quebrar, não dá para saber qual das duas causou.">
+                    <span class="te-letter">B</span> Trocar a versão para 4.0 e, no mesmo PR, reescrever os controllers para o versionamento nativo, aproveitando que tudo já vai ser testado de novo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O 3.2 fica sem correções de segurança, e copiar classes internas do framework cria manutenção própria.">
+                    <span class="te-letter">C</span> Permanecer no 3.2 e copiar para o projeto as classes de versionamento do Framework 7, evitando o risco da migração.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Qual é a principal mudança de serialização JSON no Spring Boot 4?</p>
+                  <span class="tf-hint">Dica: pense no nome do pacote →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">O Jackson 3 passa a ser o padrão. Os pacotes mudam de com.fasterxml.jackson para tools.jackson, e existe um modo de compatibilidade com o Jackson 2 para a transição.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="b7">marcar dominado</button>
+      </article>
 
     </section>
 
@@ -9117,6 +9289,354 @@ public class CleanupScheduledTask {
         </div>
         <button class="done" type="button" data-k="g6">marcar dominado</button>
       </article>
+      <article class="topic" id="g7">
+        <div class="th"><h3>Spring Cloud Gateway e Config: a porta de entrada e a configuração central</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">spring cloud</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Cada um dos oito microsserviços de uma plataforma validava o token, aplicava limite de requisições e configurava CORS por conta própria, cada um de um jeito. Um parceiro descobriu que um dos serviços não tinha limite e o derrubou com chamadas em laço. Com um gateway na frente, autenticação, limite por cliente e CORS passaram a ser configurados num lugar só, e os serviços ficaram só com a regra de negócio e com a autorização de cada operação.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Spring Cloud Gateway</b> é um gateway de API feito com Spring: recebe as requisições externas, decide para qual serviço enviar e aplica filtros no caminho. Uma <b>rota</b> tem um destino, <b>predicados</b> (quando a rota vale: caminho, método, cabeçalho) e <b>filtros</b> (o que fazer: limitar, reescrever, repassar token, cortar com circuit breaker). O <b>Spring Cloud Config</b> é um servidor que entrega a configuração dos serviços a partir de um repositório central, em geral Git.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a portaria de um condomínio comercial. O visitante se identifica uma vez, a portaria confere, limita quantos sobem por vez e indica o andar. Cada empresa do prédio ainda decide quem entra na própria sala, mas não precisa de porteiro próprio.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Concentrar o que é comum a todas as chamadas externas (TLS, autenticação, limite, CORS, registro) e dar aos clientes um endereço único e estável, mesmo que os serviços internos mudem.</p>
+                <p class="repl"><b>Veio substituir:</b> a repetição dessas preocupações em cada serviço e os balanceadores configurados à mão com regras de caminho espalhadas.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>O gateway é o ponto único de controle de entrada, e o mesmo desenho reaparece nos gateways de modelos de IA: uma porta única com credencial por aplicação, roteamento, limite e medição de consumo. Entender um é meio caminho para o outro.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Declare as rotas em configuração; reserve código Java para rotas dinâmicas.</li><li>Limite por cliente com o filtro <code>RequestRateLimiter</code> e Redis, definindo a chave (cliente, token ou IP).</li><li>Envolva destinos instáveis com o filtro de circuit breaker e uma resposta alternativa.</li><li>Mantenha regra de negócio fora do gateway: ele roteia e protege.</li><li>Em Kubernetes, avalie ConfigMaps e Secrets antes de subir um Config Server.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>A versão reativa roda sobre o Netty: poucas threads atendem muitas conexões, o que combina com um componente que só repassa tráfego. Para cada requisição, o gateway procura a primeira rota cujos predicados são verdadeiros, monta a cadeia de filtros e encaminha. O limite usa o algoritmo de <b>balde de fichas</b> guardado no Redis: <code>replenishRate</code> é quantas fichas entram por segundo e <code>burstCapacity</code> é o tamanho do balde; sem ficha, a resposta é 429. No Config Server, o serviço busca a configuração na subida por <code>spring.config.import</code>; mudanças posteriores só chegam com atualização explícita.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: rotas, limite e circuit breaker</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-yaml"># gateway: application.yml
+# a partir do Spring Cloud 2025.0 o prefixo é spring.cloud.gateway.server.webflux
+# (nas versões anteriores: spring.cloud.gateway)
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: pedidos
+              uri: http://pedidos:8081
+              predicates:
+                - Path=/api/pedidos/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20    # fichas por segundo
+                    redis-rate-limiter.burstCapacity: 40    # tamanho do balde
+                    key-resolver: "#{@clienteKeyResolver}"
+                - name: CircuitBreaker
+                  args:
+                    name: pedidos
+                    fallbackUri: forward:/indisponivel
+
+# em cada serviço: buscar a configuração central na subida
+# spring.config.import: configserver:http://config:8888
+
+// a chave do limite: um balde por cliente autenticado
+@Bean
+KeyResolver clienteKeyResolver() {
+    return exchange -&gt; exchange.getPrincipal().map(Principal::getName);
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Ponto único de falha:</b> se o gateway cai, tudo cai. Rode várias instâncias e mantenha-o simples.</li>
+            <li><b>Regra de negócio no gateway:</b> ele vira um monólito de orquestração que todo time precisa alterar.</li>
+            <li><b>Confiar só no gateway para segurança:</b> quem alcança a rede interna chama o serviço direto. Cada serviço valida o token e autoriza a operação.</li>
+            <li><b>Limite sem chave por cliente:</b> um balde global faz um cliente abusivo consumir a cota de todos.</li>
+            <li><b>Prefixo de propriedade antigo:</b> tutoriais anteriores à versão 2025.0 usam <code>spring.cloud.gateway.routes</code>. Confira a documentação da sua versão.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Gateway e Config</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Rota, predicado e filtro</b>
+                    <p>Para onde vai, quando vale e o que fazer no caminho.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Limite por cliente</b>
+                    <p>Balde de fichas no Redis, com uma chave por cliente.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Configuração central</b>
+                    <p>O Config Server entrega propriedades a partir de um repositório.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: com o gateway validando o token, os serviços podem confiar em qualquer chamada?</b>
+                    <p>Não. O gateway reduz a superfície, mas cada serviço continua validando o token e autorizando a operação. Defesa em uma camada só não basta.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: o gateway cuida do que é igual para todos</b>
+                    <p>Se a regra depende do negócio de um serviço, ela fica no serviço.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-spring-g7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #g7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Uma plataforma tem oito serviços expostos direto à internet. Cada um implementa limite de requisições de forma diferente, e um deles foi derrubado por um parceiro em laço. O time quer resolver sem reescrever os serviços.</p>
+                <p class="te-instrucao">Qual é o desenho recomendado?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Padroniza o código, mas cada serviço ainda precisa aplicar e atualizar, e os serviços continuam expostos direto.">
+                    <span class="te-letter">A</span> Criar uma biblioteca interna de limite de requisições e exigir que os oito times a adotem e mantenham atualizada em cada serviço.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Centralizar o limite é certo, mas remover a validação dos serviços deixa a rede interna sem defesa.">
+                    <span class="te-letter">B</span> Colocar um gateway na frente, mover para ele o limite e toda a autorização, e remover a validação de token dos serviços para simplificar.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O gateway concentra o que é comum e protege todos os serviços de uma vez, sem abrir mão da defesa em cada um.">
+                    <span class="te-letter">C</span> Colocar um gateway na frente com limite por cliente, mantendo a validação de token em cada serviço.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">No limitador do Spring Cloud Gateway, o que significam replenishRate e burstCapacity?</p>
+                  <span class="tf-hint">Dica: pense num balde de fichas →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">replenishRate é quantas fichas entram no balde por segundo (a taxa sustentada). burstCapacity é o tamanho do balde (o pico permitido). Cada requisição gasta uma ficha; sem ficha, a resposta é 429.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="g7">marcar dominado</button>
+      </article>
+      <article class="topic" id="g8">
+        <div class="th"><h3>WebFlux e programação reativa: quando usar e quando não usar</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">reativo</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Um time reescreveu um serviço CRUD de Spring MVC para WebFlux esperando mais desempenho. O serviço usava JPA, que bloqueia. Em produção, sob carga, as poucas threads do laço de eventos ficaram presas nas consultas ao banco e o serviço inteiro parou de responder, pior que antes. O código também ficou mais difícil de ler e de depurar. O time voltou para o MVC com virtual threads e obteve a escala que queria com o código original.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Spring WebFlux</b> é a pilha web reativa do Spring. Em vez de uma thread por requisição, poucas threads atendem todas, sem nunca esperar paradas: toda operação de entrada e saída devolve na hora um <code>Mono</code> (zero ou um valor futuro) ou um <code>Flux</code> (uma sequência de valores), e o resultado é tratado quando chega. A biblioteca por baixo é o <b>Reactor</b>, e o servidor padrão é o Netty.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> o garçom de um restaurante. No modelo tradicional, cada mesa tem um garçom que fica parado esperando a cozinha. No modelo reativo, um garçom atende vinte mesas: anota, entrega o pedido e vai para a próxima; quando a cozinha chama, ele volta. Funciona muito bem, desde que nenhum cliente o segure numa conversa de dez minutos.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Atender muitas conexões simultâneas e lentas com poucos recursos: fluxo contínuo de dados para o cliente, gateways e serviços que passam a maior parte do tempo esperando outros serviços.</p>
+                <p class="repl"><b>Veio substituir:</b> o modelo de uma thread de plataforma por requisição nos casos em que a quantidade de conexões simultâneas esgotava o pool.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Reativo resolve um problema real, mas cobra um preço em complexidade. Desde as virtual threads, o MVC bloqueante escala a espera com código simples. Saber dizer que não precisa de WebFlux, e por quê, é sinal de maturidade técnica.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Antes de adotar, verifique se toda a cadeia é não bloqueante: cliente HTTP, driver do banco (R2DBC) e bibliotecas.</li><li>Para um serviço MVC com muita espera, ligue <code>spring.threads.virtual.enabled=true</code> antes de pensar em reescrever.</li><li>Use WebFlux onde há fluxo contínuo e contrapressão: respostas em streaming, eventos enviados pelo servidor, gateways.</li><li>Nunca chame código bloqueante no laço de eventos; se for inevitável, isole num agendador próprio.</li><li>O <code>WebClient</code> pode ser usado num serviço MVC sem adotar WebFlux no restante.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O Netty mantém um pequeno grupo de threads, o <b>laço de eventos</b>, em geral uma por núcleo. Cada thread percorre as conexões prontas e executa só o trecho de código que não espera. Uma cadeia reativa é uma descrição: nada acontece até alguém <b>assinar</b>. Ao assinar, o consumidor informa quantos itens aceita, e essa <b>contrapressão</b> sobe até a origem, que não produz mais do que o pedido. Como a execução salta entre threads, o que dependia de <code>ThreadLocal</code> (contexto de segurança, rastreio) passa a viajar no contexto do Reactor, e os rastros de pilha ficam menos legíveis.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// caso em que o reativo ganha: fluxo contínuo de eventos para o cliente (SSE)
+@RestController
+class AcompanhamentoController {
+
+    @GetMapping(path = "/pedidos/{id}/eventos", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    Flux&lt;StatusPedido&gt; acompanhar(@PathVariable String id) {
+        return statusService.fluxoDe(id);     // cada mudança de status é enviada quando acontece
+    }
+}
+
+// composição de chamadas sem bloquear: as duas saem em paralelo
+Mono&lt;PaginaPedido&gt; montar(String id) {
+    Mono&lt;Pedido&gt; pedido   = webClient.get().uri("/pedidos/{id}", id).retrieve().bodyToMono(Pedido.class);
+    Mono&lt;Entrega&gt; entrega = webClient.get().uri("/entregas/{id}", id).retrieve().bodyToMono(Entrega.class);
+    return Mono.zip(pedido, entrega, PaginaPedido::new)
+               .timeout(Duration.ofSeconds(2));
+}
+
+// alternativa para a maioria dos serviços: MVC com virtual threads
+// application.properties:  spring.threads.virtual.enabled=true</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Bloquear o laço de eventos:</b> uma chamada JDBC ou um <code>Thread.sleep</code> prende uma das poucas threads e degrada todas as requisições.</li>
+            <li><b>Nada acontece sem assinatura:</b> criar um <code>Mono</code> e não devolvê-lo nem assinar faz a operação nunca executar.</li>
+            <li><b>Depuração mais difícil:</b> o rastro de pilha mostra os operadores do Reactor, não o caminho do seu código.</li>
+            <li><b>ThreadLocal não acompanha:</b> contexto de segurança, MDC e transação precisam do contexto reativo.</li>
+            <li><b>Reescrever CRUD por desempenho:</b> se o gargalo é o banco, a pilha web não muda o resultado.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: WebFlux</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Poucas threads, sem esperar</b>
+                    <p>O laço de eventos atende todas as conexões e nunca pode ser bloqueado.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Mono e Flux</b>
+                    <p>Descrições de valores futuros; só executam quando assinadas, com contrapressão.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Use com critério</b>
+                    <p>Streaming e gateways ganham; para CRUD, MVC com virtual threads é mais simples.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: WebFlux deixa qualquer serviço mais rápido?</b>
+                    <p>Não. Ele melhora o uso de recursos com muitas conexões em espera. Uma requisição isolada não fica mais rápida, e um único trecho bloqueante piora tudo.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: escolha pelo tipo de carga</b>
+                    <p>Fluxo contínuo e muitas conexões lentas: reativo. Requisição e resposta com banco relacional: MVC, com virtual threads se a espera for o limite.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-spring-g8">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #g8</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço Spring MVC com JPA atende um CRUD de pedidos. Sob carga, o pool de threads do servidor se esgota porque cada requisição espera cerca de 300 ms por chamadas a outros serviços.</p>
+                <p class="te-instrucao">Qual é a primeira medida a tentar?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O JPA bloqueia; chamá-lo no laço de eventos prende as poucas threads e derruba o serviço.">
+                    <span class="te-letter">A</span> Reescrever o serviço em WebFlux mantendo o JPA, para que o laço de eventos atenda mais requisições com menos threads.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O limite é a espera, e a virtual thread torna a espera barata sem mudar o código nem o JPA.">
+                    <span class="te-letter">B</span> Ligar as virtual threads no MVC e medir de novo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Adia o esgotamento, mas cada thread de plataforma custa memória, e o limite volta com mais carga.">
+                    <span class="te-letter">C</span> Dobrar o tamanho do pool de threads do servidor e aumentar a memória do contêiner na mesma proporção.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Por que não se pode bloquear no laço de eventos do WebFlux?</p>
+                  <span class="tf-hint">Dica: pense em quantas threads existem →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Porque há poucas threads, em geral uma por núcleo, atendendo todas as conexões. Uma chamada bloqueante prende uma delas e atrasa todas as requisições que dependiam daquela thread.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="g8">marcar dominado</button>
+      </article>
 
     </section>
 
@@ -10332,6 +10852,357 @@ spring.lifecycle.timeout-per-shutdown-phase=20s</code></pre>
           </div>
         </div>
         <button class="done" type="button" data-k="h6">marcar dominado</button>
+      </article>
+      <article class="topic" id="h8">
+        <div class="th"><h3>Imagem nativa com GraalVM: subir em milissegundos, e o que isso custa</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">imagem nativa</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma função acionada por eventos, escrita em Spring Boot, levava cerca de 6 segundos para subir a frio na JVM. Como a plataforma desligava a função quando não havia tráfego, o primeiro usuário de cada período esperava esse tempo. Compilada como imagem nativa, a mesma aplicação passou a subir em menos de 100 milissegundos e a usar menos memória. Em compensação, o build passou de 1 para 8 minutos, e uma biblioteca que usava reflexão precisou de configuração extra.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>Uma <b>imagem nativa</b> é a aplicação Java compilada antes da execução (AOT, <i>ahead-of-time</i>) para um executável do sistema operacional, sem JVM. Quem compila é o <code>native-image</code> da <b>GraalVM</b>. O Spring Boot faz a sua parte no build: processa a configuração e gera código e metadados para que o compilador saiba quais beans, proxies e classes serão usados.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a marmita pronta e a cozinha. A JVM é uma cozinha completa: demora para esquentar, mas se adapta ao pedido e fica cada vez mais rápida. A imagem nativa é a marmita: sai na hora e ocupa pouco espaço, mas foi decidida de véspera e não muda mais.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Reduzir tempo de subida e memória onde isso vira dinheiro ou experiência: funções sem servidor, escala até zero, muitas instâncias pequenas e ferramentas de linha de comando.</p>
+                <p class="repl"><b>Veio substituir:</b> a aceitação da subida lenta e do consumo de memória da JVM em ambientes que ligam e desligam instâncias o tempo todo.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Em nuvem, memória e tempo de instância ligada são cobrados, e a subida lenta atrapalha a escala automática. Mas a imagem nativa não é melhor em tudo: em serviços de longa duração, a JVM com JIT costuma atingir vazão maior. A decisão exige medir.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Adicione o plugin <code>native-maven-plugin</code> (ou o equivalente no Gradle) e gere com o perfil <code>native</code>.</li><li>Rode os testes também em modo nativo: o comportamento pode diferir da JVM.</li><li>Para reflexão, recursos e proxies que o Spring não detecta, registre dicas com <code>RuntimeHintsRegistrar</code>.</li><li>Compare com alternativas na JVM antes de decidir: o cache AOT do JDK e o CRaC também reduzem a subida.</li><li>Meça subida, memória e vazão sob carga nos dois modos.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O compilador parte do método principal e percorre tudo o que é alcançável: é a <b>hipótese de mundo fechado</b>. O que não foi visto no build não existe na execução. Por isso, o que o Java resolve em tempo de execução (reflexão, proxies dinâmicos, carga de recursos, serialização) precisa ser declarado. O Spring gera essas declarações na fase AOT do build, em que também decide quais condições de autoconfiguração valem, e essa decisão fica fixa. O executável já traz o heap inicial pronto e não tem JIT nem carregamento de classes, daí a subida rápida. O <b>Quarkus</b> segue o mesmo caminho por outro desenho: foi projetado desde o início para resolver a injeção de dependência no build, e por isso a imagem nativa é o seu modo natural. Os conceitos (injeção, configuração, REST, persistência) são os mesmos; mudam as anotações e as extensões.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplo: gerar a imagem e declarar o que o compilador não vê</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java"># gerar o executável nativo (GraalVM instalado)
+./mvnw -Pnative native:compile
+./target/orderflow            # sobe em dezenas de milissegundos
+
+# ou gerar direto uma imagem de contêiner, sem GraalVM na máquina
+./mvnw -Pnative spring-boot:build-image
+
+// declarar reflexão e recursos que o Spring não detecta sozinho
+class OrderFlowHints implements RuntimeHintsRegistrar {
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+        hints.reflection().registerType(RegraDeFrete.class,
+                MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+                MemberCategory.INVOKE_DECLARED_METHODS);
+        hints.resources().registerPattern("tabelas/frete-*.json");
+    }
+}
+
+@SpringBootApplication
+@ImportRuntimeHints(OrderFlowHints.class)
+class OrderFlowApplication { }</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Biblioteca que usa reflexão sem metadados:</b> compila e falha na execução com classe não encontrada. Teste em modo nativo.</li>
+            <li><b>Configuração fixada no build:</b> beans condicionais e perfis são decididos na compilação. Trocar o perfil na execução não ativa outros beans.</li>
+            <li><b>Build lento e pesado:</b> vários minutos e alguns gigabytes de memória por build; o ciclo de desenvolvimento continua na JVM.</li>
+            <li><b>Vazão de pico menor:</b> sem JIT, serviços de longa duração e muita CPU podem render menos que na JVM.</li>
+            <li><b>Diagnóstico diferente:</b> agentes Java e algumas ferramentas de análise não funcionam no executável nativo.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Imagem nativa</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Compilação antecipada</b>
+                    <p>Um executável sem JVM, com subida em milissegundos e menos memória.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Mundo fechado</b>
+                    <p>O que o compilador não vê no build não existe na execução; reflexão exige dicas.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Troca, não ganho puro</b>
+                    <p>Build lento, menos flexibilidade e vazão de pico menor em serviços longos.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: imagem nativa é sempre mais rápida que a JVM?</b>
+                    <p>Não. Ela sobe muito mais rápido e usa menos memória, mas num serviço que roda por dias a JVM com JIT costuma alcançar vazão maior.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: pague no build ou pague na subida</b>
+                    <p>Se a instância vive pouco ou liga e desliga muito, compense no build. Se vive dias, a JVM se paga.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-spring-h8">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #h8</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Dois serviços Spring Boot: uma função acionada por eventos que escala até zero e sobe dezenas de vezes por hora, e um serviço de cálculo que roda continuamente por semanas com uso alto de CPU.</p>
+                <p class="te-instrucao">Onde a imagem nativa faz mais sentido?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A função ganha na subida e na memória a cada partida, e o serviço contínuo aproveita o JIT ao longo do tempo.">
+                    <span class="te-letter">A</span> Na função que escala até zero; o serviço de cálculo fica na JVM.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sem JIT, o serviço de longa duração e muita CPU tende a ter vazão menor que na JVM.">
+                    <span class="te-letter">B</span> Nos dois, porque o executável nativo elimina a JVM e por isso é mais rápido em qualquer cenário de execução.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="É o inverso: a função paga a subida lenta a cada partida, e o cálculo contínuo é onde o JIT mais ajuda.">
+                    <span class="te-letter">C</span> No serviço de cálculo, que usa muita CPU; a função pode ficar na JVM porque executa por pouco tempo.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é a hipótese de mundo fechado na imagem nativa?</p>
+                  <span class="tf-hint">Dica: pense no que o compilador consegue ver →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">O compilador inclui só o que é alcançável a partir do método principal durante o build. Classes usadas apenas por reflexão, proxies dinâmicos e recursos precisam ser declarados, ou não existirão na execução.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="h8">marcar dominado</button>
+      </article>
+      <article class="topic" id="h9">
+        <div class="th"><h3>Spring Modulith: módulos com fronteira verificada dentro de um só deploy</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">monolito modular</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Um monolito de dois anos tinha pacotes com nomes de domínio (pedido, estoque, faturamento), mas qualquer classe chamava qualquer outra. O serviço de faturamento lia direto as entidades de pedido, e uma mudança numa coluna quebrou três áreas. O time pensou em migrar para microsserviços. Em vez disso, adotou o Spring Modulith: um teste passou a falhar o build sempre que um módulo acessava a parte interna de outro, e a conversa entre módulos passou a ser por eventos. Seis meses depois, extrair o faturamento como serviço foi um trabalho pequeno.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Spring Modulith</b> é um projeto do Spring para construir <b>monolitos modulares</b>: uma aplicação, um deploy, mas com módulos de fronteira clara. Por convenção, cada pacote direto abaixo do pacote principal é um módulo. O que está na raiz do pacote é a API do módulo; os subpacotes são internos. A biblioteca verifica essas regras em teste, gera documentação dos módulos e oferece eventos confiáveis entre eles.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> um escritório aberto dividido por departamentos. Todos trabalham no mesmo andar, mas cada departamento tem um balcão de atendimento. Você pede no balcão; não entra na sala e abre a gaveta do colega.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Ter a organização por domínio dos microsserviços sem o custo de rede, deploy e consistência distribuída; e deixar o caminho pronto para extrair um módulo quando houver motivo.</p>
+                <p class="repl"><b>Veio substituir:</b> o monolito em que os pacotes são só pastas, e a migração prematura para microsserviços como única forma de impor fronteiras.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>A maioria dos sistemas não precisa de microsserviços, mas quase todos precisam de fronteiras. Fronteira que não é verificada some em poucos meses. Um monolito modular bem feito é também o melhor ponto de partida para dividir depois.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Organize um pacote por módulo de negócio logo abaixo do pacote principal.</li><li>Deixe na raiz do módulo só o que os outros podem usar; o restante vai para subpacotes.</li><li>Escreva um teste com <code>ApplicationModules.of(App.class).verify()</code> e rode no CI.</li><li>Entre módulos, publique eventos e consuma com <code>@ApplicationModuleListener</code>.</li><li>Teste um módulo isolado com <code>@ApplicationModuleTest</code>.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>A verificação analisa as dependências entre pacotes e falha se um módulo usa um tipo interno de outro ou se há ciclo entre módulos. O <code>@ApplicationModuleListener</code> combina três comportamentos: executa <b>depois do commit</b> da transação que publicou o evento, em <b>outra thread</b> e numa <b>transação nova</b>. Para não perder eventos se a aplicação cair entre o commit e a execução, o <b>registro de publicação de eventos</b> grava cada evento pendente numa tabela, na mesma transação do publicador, e marca como concluído quando o ouvinte termina. Eventos incompletos podem ser reenviados na subida. É o padrão outbox aplicado dentro da aplicação.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// estrutura: cada pacote abaixo de orderflow é um módulo
+// br.com.orderflow.pedido          &lt;- API do módulo (o que os outros enxergam)
+// br.com.orderflow.pedido.internal &lt;- interno
+// br.com.orderflow.faturamento
+
+// o build falha se um módulo acessar o interno de outro ou se houver ciclo
+class ModulosTest {
+    @Test
+    void fronteirasRespeitadas() {
+        ApplicationModules.of(OrderFlowApplication.class).verify();
+    }
+}
+
+// pedido publica um fato, sem conhecer quem ouve
+@Service
+class PedidoService {
+    private final ApplicationEventPublisher eventos;
+    PedidoService(ApplicationEventPublisher eventos) { this.eventos = eventos; }
+
+    @Transactional
+    public void confirmar(Pedido pedido) {
+        pedido.confirmar();
+        eventos.publishEvent(new PedidoConfirmado(pedido.getId(), pedido.getTotal()));
+    }
+}
+
+// faturamento reage depois do commit, em outra thread e em transação própria
+@Component
+class FaturamentoListener {
+    @ApplicationModuleListener
+    void aoConfirmar(PedidoConfirmado evento) {
+        faturamento.emitir(evento.pedidoId(), evento.total());
+    }
+}</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Sem o teste de verificação no CI:</b> a convenção de pacotes sozinha não impede nada; as fronteiras se desfazem.</li>
+            <li><b>Banco compartilhado sem regra:</b> um módulo que faz junção com as tabelas de outro continua acoplado, mesmo com o código separado.</li>
+            <li><b>Ouvinte não idempotente:</b> um evento reenviado depois de uma queda é processado de novo.</li>
+            <li><b>Esperar consistência imediata:</b> o ouvinte roda depois do commit. O outro módulo fica atrasado por um instante.</li>
+            <li><b>Registro de eventos sem limpeza:</b> a tabela de eventos concluídos cresce. Defina a remoção.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Spring Modulith</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Pacote é módulo</b>
+                    <p>A raiz é a API, os subpacotes são internos.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Fronteira verificada</b>
+                    <p>Um teste falha o build em acesso indevido ou ciclo.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Eventos confiáveis</b>
+                    <p>Ouvinte após o commit, com registro em tabela para não perder evento.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: monolito modular é só organizar bem os pacotes?</b>
+                    <p>Não. Sem verificação automática, qualquer classe pública pode ser importada por qualquer módulo. O que faz a fronteira existir é o build falhar quando ela é cruzada.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: fronteira primeiro, rede depois</b>
+                    <p>Separe os módulos dentro do processo. Só ponha rede entre eles quando escala ou autonomia de time justificarem.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-spring-h9">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #h9</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um monolito de time único tem acoplamento entre áreas: faturamento lê entidades de pedido direto, e mudanças numa área quebram outras. O time propõe migrar para seis microsserviços para impor fronteiras.</p>
+                <p class="te-instrucao">Qual é a alternativa mais adequada?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Resolve a fronteira, mas um time único passa a pagar rede, deploy e consistência distribuída sem precisar.">
+                    <span class="te-letter">A</span> Migrar para os seis microsserviços, porque a separação em processos é a única forma de impedir o acesso direto entre as áreas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Um acordo sem verificação automática se desfaz no primeiro prazo apertado.">
+                    <span class="te-letter">B</span> Manter o monolito e combinar em reunião que cada área só acessa as outras por meio de classes de serviço públicas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="Impõe a fronteira com um teste que quebra o build e mantém o custo de operação de um só deploy.">
+                    <span class="te-letter">C</span> Adotar módulos com verificação no build e eventos entre eles.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que o @ApplicationModuleListener garante sobre a execução do ouvinte?</p>
+                  <span class="tf-hint">Dica: pense em transação e thread →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Que ele executa depois do commit da transação que publicou o evento, em outra thread e numa transação nova. Com o registro de publicação, o evento fica gravado até o ouvinte concluir.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="h9">marcar dominado</button>
       </article>
 
       <!-- h7 -->

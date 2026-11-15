@@ -6,15 +6,15 @@
 /* ---------- bloco 1 de 1 ---------- */
 
 var DOCS=[
- {n:"01",nome:"Java completo",curto:"Java",file:"trilhas/java.html",cor:"var(--cyan)",hex:"#8be9fd",nos:134,top:49,
+ {n:"01",nome:"Java completo",curto:"Java",file:"trilhas/java.html",cor:"var(--cyan)",hex:"#8be9fd",nos:136,top:51,
   desc:"Da plataforma ao runtime em produção: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos & Lab Interativo de Concorrência: JMM, JIT C1/C2, Virtual Threads e GC). Ao clicar, abre o modal de escolha.",
   tags:["JMM","Virtual Threads","GC"],
   chaves:"java v1 v2 jvm generics coleções collections list map set stream lambda equals hashcode imutabilidade referência exceção try-with-resources jdbc sql pool concorrência thread synchronized volatile atomic executor java memory model jmm garbage collector gc heap performance bytecode classloader record optional"},
- {n:"02",nome:"Spring completo",curto:"Spring",file:"trilhas/spring.html",cor:"var(--purple)",hex:"#bd93f9",nos:85,top:52,
+ {n:"02",nome:"Spring completo",curto:"Spring",file:"trilhas/spring.html",cor:"var(--purple)",hex:"#bd93f9",nos:90,top:57,
   desc:"Do container de IoC à produção: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos: Spring Boot 3, CGLIB internals, Testcontainers e observabilidade). Ao clicar, abre o modal de escolha.",
   tags:["IoC","CGLIB","Testcontainers"],
   chaves:"spring v1 v2 boot ioc injeção dependência bean escopo ciclo de vida configuration component autowired aop proxy cglib transactional transação jpa hibernate repository mvc controller requisição filtro interceptor validação exception handler actuator profile properties teste mockmvc"},
- {n:"03",nome:"Arquitetura completa",curto:"Arquitetura",file:"trilhas/arquitetura.html",cor:"var(--gold)",hex:"#f1fa8c",nos:101,top:51,
+ {n:"03",nome:"Arquitetura completa",curto:"Arquitetura",file:"trilhas/arquitetura.html",cor:"var(--gold)",hex:"#f1fa8c",nos:105,top:55,
   desc:"O que arquitetura é de verdade: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos & Simulador Circuit Breaker com estados CLOSED/OPEN/HALF-OPEN, Saga e Outbox). Ao clicar, abre o modal de escolha.",
   tags:["SOLID","Circuit Breaker","C4"],
   chaves:"arquitetura v1 v2 solid conway acoplamento coesão hexagonal clean camadas monolito microserviço ddd domínio agregado bounded context evento consistência eventual saga cap escala resiliência disjuntor circuit breaker segurança observabilidade adr decisão documentação c4 trade-off"},
@@ -26,7 +26,7 @@ var DOCS=[
   desc:"Conceitual e sem vendor: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos & Simulador Interativo de Subnets VPC/CIDR, matriz comparativa e FinOps). Ao clicar, abre o modal de escolha.",
   tags:["VPC/CIDR","IAM","FinOps"],
   chaves:"nuvem v1 v2 cloud aws azure google gcp oracle vmware compute vm instância serverless lambda função rede vpc subnet balanceador storage bucket s3 blob banco rds identidade iam papel role mensageria fila sqs observabilidade métrica log terraform iac infraestrutura como código nuvem privada custo billing região zona"},
- {n:"06",nome:"Mensageria e RabbitMQ completo",curto:"Mensageria",file:"trilhas/mensageria.html",cor:"var(--pink)",hex:"#ff79c6",nos:76,top:35,
+ {n:"06",nome:"Mensageria e RabbitMQ completo",curto:"Mensageria",file:"trilhas/mensageria.html",cor:"var(--pink)",hex:"#ff79c6",nos:86,top:47,
   desc:"Da fila à operação confiável: escolha entre a Versão V1 (Vault) ou a Versão V2 (7 Pilares Didáticos: AMQP, Dead Letter Queue, Outbox Pattern e Kafka). Ao clicar, abre o modal de escolha.",
   tags:["AMQP","DLQ","Outbox"],
   chaves:"mensageria v1 v2 mensagem rabbitmq amqp exchange direct topic fanout headers routing key fila queue binding publisher confirm ack nack manual prefetch qos retry dlq dead letter idempotência outbox saga spring amqp listener quorum queue kafka partição offset ordem entrega duplicada"},

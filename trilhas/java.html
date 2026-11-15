@@ -1889,6 +1889,180 @@ public record ItemDTO(String sku, BigDecimal preco) {
         </div>
         <button class="done" type="button" data-k="a5">marcar dominado</button>
       </article>
+      <article class="topic" id="a6">
+        <div class="th"><h3>Java 25: o que mudou do 21 ao 25</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 25 · LTS</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Uma equipe adotou virtual threads no Java 21 e viu a vazão cair em vez de subir num serviço que usava um driver com blocos <code>synchronized</code> em volta de chamadas de rede. As threads virtuais ficavam presas à thread do sistema durante a espera. A equipe passou semanas trocando <code>synchronized</code> por <code>ReentrantLock</code> no próprio código, mas não podia mexer no driver. Ao atualizar para uma versão a partir do Java 24, o problema sumiu sem alterar o código: o <code>synchronized</code> deixou de prender a thread virtual.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p>O <b>Java 25</b>, lançado em setembro de 2025, é a versão de suporte longo (LTS) seguinte ao Java 21. Como as versões saem a cada seis meses, ele acumula o que entrou no 22, 23, 24 e 25. As mudanças mais úteis para quem escreve backend são: <code>synchronized</code> sem prender virtual threads, <b>scoped values</b> como recurso final, corpos de construtor flexíveis, variáveis sem nome (<code>_</code>), <b>stream gatherers</b>, cabeçalhos de objeto compactos e melhorias de inicialização com cache AOT.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> a revisão dos 40 mil quilômetros do carro. Você não troca de carro, mas sai com várias peças atualizadas de uma vez, e algumas delas resolvem aquele barulho com que você já tinha se acostumado.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Decidir a migração do 21 para o 25 com base no que muda de fato, e usar os recursos novos onde simplificam o código ou reduzem custo de memória e de inicialização.</p>
+                <p class="repl"><b>Veio substituir:</b> a prática de ficar anos numa LTS antiga e migrar tudo de uma vez, descobrindo as incompatibilidades só no dia da troca.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>LTS é o que as empresas adotam em produção, e os frameworks seguem: o Spring Boot 4 mantém o Java 17 como mínimo e recomenda o 25. Saber o que cada LTS trouxe é pergunta comum de entrevista e critério real para planejar migração.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Atualize primeiro o build e as dependências (Maven, plugins, bibliotecas de bytecode) e rode os testes no 25.</li><li>Reveja os contornos feitos para virtual threads no 21: a troca de <code>synchronized</code> por lock deixou de ser necessária.</li><li>Teste <code>-XX:+UseCompactObjectHeaders</code> em serviços com muitos objetos pequenos e meça a memória.</li><li>Recursos em preview (structured concurrency, padrões com tipos primitivos) exigem <code>--enable-preview</code> e podem mudar: não use em código de produção sem aceitar esse risco.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>Cada recurso passa por propostas numeradas (JEPs) e pode ficar várias versões em <b>preview</b> antes de virar final. Entre o 21 e o 25, viraram finais: variáveis e padrões sem nome (22), a API de funções e memória externas (22), comentários de documentação em Markdown (23), stream gatherers (24), a sincronização de virtual threads sem fixação (24), scoped values, importação de módulos, arquivos de código compactos com <code>main</code> de instância e corpos de construtor flexíveis (25). Na JVM, os cabeçalhos de objeto compactos reduzem o cabeçalho de 12 para 8 bytes, e o cache AOT guarda classes já carregadas e ligadas para acelerar a subida. Foram removidos o Security Manager e a versão para x86 de 32 bits. Os string templates, que estavam em preview no 21, foram retirados.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// variável sem nome (22): deixa claro que o valor não é usado
+try {
+    pedido.confirmar();
+} catch (EstoqueInsuficienteException _) {
+    metricas.incrementar("pedido.sem_estoque");
+}
+
+// corpo de construtor flexível (25): validar ANTES de chamar super()
+class PedidoExpresso extends Pedido {
+    PedidoExpresso(String id, Duration prazo) {
+        if (prazo.compareTo(Duration.ofHours(24)) &gt; 0)
+            throw new IllegalArgumentException("expresso é até 24h");
+        super(id);
+    }
+}
+
+// stream gatherers (24): operações intermediárias novas, como lotes de tamanho fixo
+List&lt;List&lt;Pedido&gt;&gt; lotes = pedidos.stream()
+    .gather(Gatherers.windowFixed(100))
+    .toList();
+
+// importação de módulo (25): todos os pacotes exportados de java.base
+import module java.base;
+
+// JVM: cabeçalhos compactos (final no 25, ligado por opção)
+// java -XX:+UseCompactObjectHeaders -jar orderflow.jar</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Bibliotecas que geram bytecode:</b> versões antigas de Lombok, ByteBuddy, ASM e Mockito não reconhecem o formato de classe novo. Atualize antes do JDK.</li>
+            <li><b>Código que dependia do Security Manager:</b> ele foi desativado de forma permanente; chamadas a ele falham.</li>
+            <li><b>Usar recurso em preview em produção:</b> a API pode mudar na versão seguinte, e o código deixa de compilar.</li>
+            <li><b>Assumir que tudo do 21 em preview virou final:</b> os string templates foram retirados, e a structured concurrency continua em preview no 25.</li>
+            <li><b>Migrar sem medir:</b> ganhos de memória e de inicialização dependem da carga. Meça antes e depois com o seu serviço.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Java 25</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>LTS de setembro de 2025</b>
+                    <p>Acumula o que entrou do 22 ao 25; é a base recomendada pelos frameworks atuais.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Linguagem</b>
+                    <p>Variável sem nome, construtor flexível, gatherers, importação de módulo e scoped values.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>JVM</b>
+                    <p>synchronized sem prender virtual threads, cabeçalhos compactos e cache AOT.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: no Java 25 ainda é preciso trocar synchronized por ReentrantLock para usar virtual threads?</b>
+                    <p>Não. Desde o Java 24, uma thread virtual que bloqueia dentro de synchronized libera a thread do sistema. Essa orientação valia para o 21.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: LTS é um pacote de quatro versões</b>
+                    <p>Ao avaliar uma LTS, olhe o acumulado desde a anterior e separe o que é final do que é preview.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-java-a6">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #a6</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um serviço em Java 21 usa virtual threads e sofre com threads presas por causa de blocos synchronized dentro de um driver de terceiros. O time avalia reescrever a camada de acesso para contornar.</p>
+                <p class="te-instrucao">Qual é a alternativa mais barata e correta?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Isso abandona o ganho das virtual threads por uma limitação que já foi removida em versões mais novas.">
+                    <span class="te-letter">A</span> Voltar para threads de plataforma com um pool grande, porque virtual threads não funcionam com código que usa synchronized.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A reescrita não alcança o synchronized que está dentro do driver de terceiros.">
+                    <span class="te-letter">B</span> Reescrever a camada de acesso com ReentrantLock e manter o Java 21, já que é a versão LTS que a empresa homologou.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A fixação por synchronized foi eliminada no Java 24, então a migração resolve sem alterar o código nem o driver.">
+                    <span class="te-letter">C</span> Migrar para o Java 25, em que synchronized não prende mais a thread virtual.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">Cite três recursos que viraram finais entre o Java 21 e o 25.</p>
+                  <span class="tf-hint">Dica: pense em concorrência, construtores e streams →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Scoped values, corpos de construtor flexíveis e stream gatherers. Também: variáveis sem nome, a sincronização de virtual threads sem fixação e os cabeçalhos de objeto compactos.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="a6">marcar dominado</button>
+      </article>
     </section>
 
 
@@ -9799,6 +9973,176 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
           </div>
         </div>
         <button class="done" type="button" data-k="i6">marcar dominado</button>
+      </article>
+      <article class="topic" id="i7">
+        <div class="th"><h3>Structured concurrency e scoped values: concorrência com escopo</h3><div class="badges"><span class="badge b-ess">essencial</span><span class="badge b-ver">Java 25 · concorrência</span></div></div>
+        <div class="caso">
+          <b>💻 CENÁRIO HIPOTÉTICO DE PRODUÇÃO</b>
+          <p>Um endpoint montava a página do pedido chamando três serviços em paralelo com <code>CompletableFuture</code>. Quando o serviço de estoque falhava rápido, a resposta de erro saía, mas as outras duas chamadas continuavam rodando até o fim, ocupando conexões. Em pico, essas chamadas órfãs esgotaram o pool. Além disso, o identificador de rastreio, guardado em <code>ThreadLocal</code>, não chegava às tarefas paralelas. Com structured concurrency, a falha de uma tarefa cancela as irmãs; com scoped value, o identificador passa a ser herdado por elas.</p>
+        </div>
+
+        <div class="topic-split">
+          <div class="topic-split-left">
+            <div class="pilar-card p-oque">
+              <div class="pilar-header"><b>1. O que é?</b></div>
+              <p><b>Structured concurrency</b> trata um grupo de tarefas paralelas como uma unidade: elas começam e terminam dentro do mesmo bloco de código, e a falha ou o cancelamento de uma se propaga às outras. No Java 25 a API (<code>StructuredTaskScope</code>) ainda está em preview. <b>Scoped values</b>, finais no Java 25, são valores imutáveis ligados a um trecho de execução e herdados pelas tarefas criadas dentro dele. São o substituto do <code>ThreadLocal</code> para contexto de requisição.</p>
+            </div>
+            <div class="analogia"><i class="ic">≈</i><p><b>Analogia:</b> uma excursão escolar. A professora sai com a turma e só volta quando todos estão no ônibus; se um aluno se machuca, o passeio acaba para todos. E o crachá da escola (o scoped value) é entregue na saída, vale só durante o passeio e ninguém consegue trocar o nome escrito nele.</p></div>
+            <div class="duo">
+              <div class="pilar-box p-serve">
+                <h4>2. Para que serve?</h4>
+                <p>Fazer chamadas paralelas sem deixar tarefas órfãs, propagar cancelamento e erro de forma previsível, e passar contexto (usuário, tenant, rastreio) para tarefas filhas sem vazamento.</p>
+                <p class="repl"><b>Veio substituir:</b> o encadeamento de <code>CompletableFuture</code> com cancelamento manual e o <code>ThreadLocal</code>, que é mutável, precisa ser limpo à mão e custa caro com milhões de virtual threads.</p>
+              </div>
+              <div class="pilar-box p-importa">
+                <h4>4. Por que importa?</h4>
+                <p>Com virtual threads, criar uma thread por tarefa ficou barato, e o estilo bloqueante voltou a ser o padrão. O que faltava era organizar o tempo de vida dessas tarefas. Sem isso, o código simples vaza threads e conexões nos caminhos de erro.</p>
+              </div>
+            </div>
+          </div>
+          <div class="topic-split-right">
+            <div class="pilar-card p-usar">
+              <div class="pilar-header"><b>3. Como usar / Como aplicar?</b></div>
+              <ul><li>Abra o escopo com <code>try-with-resources</code>, crie as tarefas com <code>fork</code> e chame <code>join</code> antes de ler os resultados.</li><li>Compile e execute com <code>--enable-preview</code> enquanto a API estiver em preview.</li><li>Declare o scoped value como <code>static final</code> e ligue o valor com <code>ScopedValue.where(...).run(...)</code>.</li><li>Use scoped value para contexto que só é lido; se precisar alterar, abra um escopo interno com outro valor.</li></ul>
+            </div>
+            <div class="pilar-card p-funciona">
+              <div class="pilar-header"><b>5. Como funciona por baixo dos panos?</b></div>
+              <p>O escopo registra cada tarefa criada com <code>fork</code>, e cada uma roda numa virtual thread própria. O <code>join</code> espera segundo uma política: a padrão espera todas terminarem e, se uma falhar, cancela as demais e lança a exceção. Ao sair do bloco, o escopo garante que nenhuma tarefa filha continua viva. Isso cria uma árvore de tarefas que aparece nos thread dumps. O scoped value guarda a ligação num registro associado ao trecho de execução; as threads criadas dentro de um escopo estruturado herdam essas ligações sem cópia, e ao sair do <code>run</code> a ligação deixa de existir, sem limpeza manual.</p>
+            </div>
+          </div>
+        </div>
+        <div class="topic-bottom-full">
+          <div class="pilar-card p-exemplo">
+            <div class="pilar-header code-studio-header">
+              <div class="cs-dots"><span class="cs-dot r"></span><span class="cs-dot y"></span><span class="cs-dot g"></span></div>
+              <div class="cs-title"><b>6. Exemplos com a linguagem Java</b></div>
+              <span class="cs-badge">CÓDIGO &amp; PRÁTICA</span>
+            </div>
+            <pre><code class="language-java">// scoped value (final no Java 25): contexto imutável, herdado pelas tarefas filhas
+static final ScopedValue&lt;String&gt; RASTREIO = ScopedValue.newInstance();
+
+PaginaPedido carregar(String pedidoId, String rastreioId) throws InterruptedException {
+    return ScopedValue.where(RASTREIO, rastreioId).call(() -&gt; montar(pedidoId));
+}
+
+// structured concurrency (preview no Java 25: --enable-preview)
+PaginaPedido montar(String pedidoId) throws InterruptedException {
+    try (var escopo = StructuredTaskScope.open()) {
+        var pedido  = escopo.fork(() -&gt; pedidos.buscar(pedidoId));
+        var estoque = escopo.fork(() -&gt; estoques.consultar(pedidoId));
+        var entrega = escopo.fork(() -&gt; entregas.prazo(pedidoId));
+
+        escopo.join();      // uma falha cancela as outras e lança a exceção
+
+        return new PaginaPedido(pedido.get(), estoque.get(), entrega.get());
+    }                       // ao sair, nenhuma tarefa filha continua rodando
+}
+
+// dentro de qualquer tarefa filha:
+log.info("rastreio={}", RASTREIO.get());</code></pre>
+          </div>
+          <div class="gotcha">
+            <b>⚠️ 7. Onde "quebra" em produção?</b>
+            <ul>
+            <li><b>Ler o resultado antes do <code>join</code>:</b> o <code>get</code> da subtarefa lança exceção se ela ainda não terminou.</li>
+            <li><b>Tarefa que ignora interrupção:</b> o cancelamento chega como interrupção. Código que engole <code>InterruptedException</code> continua rodando e segura o escopo.</li>
+            <li><b>Criar thread fora do escopo:</b> uma thread criada por um executor comum não herda os scoped values nem é cancelada com o grupo.</li>
+            <li><b>Tratar scoped value como variável:</b> não existe <code>set</code>. Para outro valor, abra um escopo interno.</li>
+            <li><b>API em preview:</b> a forma do <code>StructuredTaskScope</code> mudou entre versões. Código escrito para o 21 não compila no 25.</li>
+            </ul>
+          </div>
+          <!-- ==================== FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de fixação: Structured concurrency e scoped values</h4>
+              </div>
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Tarefas com escopo</b>
+                    <p>O grupo começa e termina no mesmo bloco; falha e cancelamento se propagam.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Sem órfãs</b>
+                    <p>Ao sair do bloco, nenhuma tarefa filha continua viva.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Contexto imutável</b>
+                    <p>Scoped value substitui ThreadLocal para dados de requisição e é herdado pelas filhas.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: scoped value é só um ThreadLocal mais rápido?</b>
+                    <p>Não. Ele é imutável, tem tempo de vida limitado ao bloco e é herdado pelas tarefas de um escopo estruturado. ThreadLocal é mutável e vive enquanto a thread viver.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo mental: concorrência com a forma do código</b>
+                    <p>Se o bloco terminou, tudo o que ele iniciou também terminou. O tempo de vida das tarefas segue as chaves do código.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="topico-exercicio" data-exercise-id="ex-java-i7">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #i7</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário hipotético de produção:</strong> Um endpoint dispara três chamadas paralelas com CompletableFuture. Quando uma falha, a resposta de erro sai na hora, mas as outras duas seguem até o timeout, e em pico o pool de conexões se esgota.</p>
+                <p class="te-instrucao">O que resolve a causa do problema?</p>
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Alivia o sintoma, mas as tarefas órfãs continuam existindo e voltam a esgotar o pool com mais carga.">
+                    <span class="te-letter">A</span> Aumentar o pool de conexões e reduzir o timeout das chamadas para que as tarefas restantes terminem mais cedo.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O escopo liga o tempo de vida das três tarefas: quando uma falha, as irmãs são canceladas e liberam as conexões.">
+                    <span class="te-letter">B</span> Agrupar as três chamadas num escopo estruturado, em que a falha de uma cancela as outras.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Elimina as órfãs, mas soma os tempos das três chamadas e piora a latência da página.">
+                    <span class="te-letter">C</span> Trocar as três chamadas paralelas por chamadas em sequência, para que uma falha interrompa as seguintes.
+                  </button>
+                </div>
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que acontece com as tarefas irmãs quando uma tarefa falha dentro de um StructuredTaskScope com a política padrão?</p>
+                  <span class="tf-hint">Dica: pense em cancelamento →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">Elas são canceladas (recebem interrupção), o join lança a exceção e, ao sair do bloco, o escopo garante que nenhuma continua rodando.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="done" type="button" data-k="i7">marcar dominado</button>
       </article>
     </section>
 

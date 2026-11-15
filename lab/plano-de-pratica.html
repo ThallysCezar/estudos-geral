@@ -304,6 +304,24 @@
     .resto-wrap{overflow-x:auto}
     @media(max-width:820px){.hab-grid,.marco-grid{grid-template-columns:1fr}.marco{padding:18px 16px}}
 
+
+    /* ---------- projetos de IA ---------- */
+    .pia-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
+    .pia{border:1px solid var(--line-strong);border-radius:18px;background:var(--panel);padding:18px 20px}
+    .pia-f{font:700 .68rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+    .pia h3{margin:8px 0 6px;font-size:1.08rem;color:var(--paper)}
+    .pia p{margin:0 0 6px;font-size:.89rem;line-height:1.55;color:var(--ink2)}
+    .pia p b{color:var(--paper)}
+    .piloto{margin-top:26px;border:1px solid var(--gold);border-radius:22px;background:var(--panel);padding:24px 26px}
+    .piloto h3{margin:6px 0 8px;font-size:1.3rem;color:var(--paper)}
+    .piloto h4{margin:22px 0 8px;font:700 .7rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+    .piloto p,.piloto li{font-size:.92rem;line-height:1.6;color:var(--ink2);margin:0 0 6px}
+    .piloto ol,.piloto ul{margin:0;padding-left:20px}
+    .piloto a{color:var(--mint);text-decoration:none;border-bottom:1px solid #8be9fd55}
+    .piloto pre{margin:10px 0 0;padding:14px 16px;border-radius:14px;background:#21222c;border:1px solid var(--line-strong);overflow:auto}
+    .piloto pre code{white-space:pre;font-family:var(--mono);font-size:.8rem;line-height:1.55;color:var(--ink2)}
+    .piloto .ok{color:var(--lime)}
+    @media(max-width:820px){.pia-grid{grid-template-columns:1fr}.piloto{padding:18px 16px}}
   </style>
 </head>
 <body>
@@ -318,6 +336,7 @@
       <a class="nav-link" href="#fase1">Fase 1</a>
       <a class="nav-link" href="#fase2">Fase 2</a>
       <a class="nav-link" href="#fase3">Fase 3</a>
+      <a class="nav-link" href="#projetos-ia">Projetos de IA</a>
     </div>
   </nav>
 
@@ -672,6 +691,161 @@
           <label class="marco-feito"><input type="checkbox" data-k="m12"> marco concluído</label>
         </article>
       </div>
+    </section>
+
+    <section class="section shell" id="projetos-ia">
+      <div class="section-head">
+        <div><span class="eyebrow">Depois ou em paralelo</span><h2>Projetos de IA: por onde começar.</h2></div>
+        <p>"Projeto de IA" confunde porque o nome sugere que o trabalho é sobre o modelo. Quase nunca é. Um projeto de IA é a combinação de três escolhas: um <b>formato</b>, um <b>problema</b> e uma <b>medida</b>.</p>
+      </div>
+
+      <div class="resto-wrap">
+        <table class="resto">
+          <thead><tr><th>Formato</th><th>O que o sistema faz</th><th>Como se mede</th></tr></thead>
+          <tbody>
+            <tr><td>Extração</td><td>Lê um documento e devolve dados estruturados.</td><td>Acerto por campo.</td></tr>
+            <tr><td>Assistente com RAG</td><td>Responde perguntas com base em documentos.</td><td>Resposta correta, com a fonte citada.</td></tr>
+            <tr><td>Agente com ferramentas</td><td>Executa uma tarefa chamando outros sistemas.</td><td>Tarefa concluída, sem ação indevida.</td></tr>
+            <tr><td>IA no desenvolvimento</td><td>Revisa código, gera testes, documenta.</td><td>Achados úteis contra falsos alarmes.</td></tr>
+            <tr><td>Plataforma</td><td>Controla acesso, custo e qualidade para outros times.</td><td>Custo por sistema e regressões bloqueadas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pl-nota">
+        <h3>Quatro projetos, um de cada formato</h3>
+        <p>O OrderFlow já cobre RAG, agente e plataforma dentro de um sistema só. Estes quatro são projetos separados e menores, cada um num repositório próprio. Comece pelo primeiro: é o menor e ensina a base dos outros (saída estruturada, validação e avaliação).</p>
+      </div>
+
+      <div class="pia-grid">
+        <div class="pia">
+          <span class="pia-f">1 · Extração · comece por este</span>
+          <h3>Extrator de notas fiscais</h3>
+          <p>Recebe o PDF de uma nota fiscal e devolve um JSON validado: emitente, data, itens e total.</p>
+          <p><b>Medida:</b> acerto por campo num conjunto de notas.</p>
+          <p><b>Tempo:</b> uma a duas semanas. O roteiro completo está logo abaixo.</p>
+        </div>
+        <div class="pia">
+          <span class="pia-f">2 · IA no desenvolvimento</span>
+          <h3>Revisor de pull request</h3>
+          <p>Roda no pipeline, lê o diff e comenta os problemas que encontra. Você pode usar no seu próprio repositório.</p>
+          <p><b>Medida:</b> em 20 diffs com defeitos conhecidos, quantos ele acha e quantos alarmes falsos dá.</p>
+          <p><b>Primeira sessão:</b> junte 10 diffs antigos seus e anote à mão o que um bom revisor apontaria em cada um. Apoio: <a href="../trilhas/ia.html#of-review">bônus do OrderFlow AI</a>.</p>
+        </div>
+        <div class="pia">
+          <span class="pia-f">3 · Assistente com RAG</span>
+          <h3>Assistente do seu acervo de estudos</h3>
+          <p>Responde perguntas sobre este acervo citando o tópico de origem e gera perguntas de revisão.</p>
+          <p><b>Medida:</b> em 40 perguntas, quantas respostas estão certas e apontam para o tópico certo.</p>
+          <p><b>Primeira sessão:</b> escreva 20 perguntas que você faria ao acervo e anote, para cada uma, o tópico onde está a resposta. Apoio: <a href="../trilhas/ia.html#lab-rag-hib">Lab 3 · RAG híbrido</a>.</p>
+        </div>
+        <div class="pia">
+          <span class="pia-f">4 · Agente com ferramentas</span>
+          <h3>Agente que reage a eventos do Kafka</h3>
+          <p>Um pedido atrasa, o evento chega e o agente decide: avisar o cliente, oferecer um cupom ou passar para uma pessoa.</p>
+          <p><b>Medida:</b> em 30 cenários, quantas decisões batem com a regra do negócio, e nenhuma ação é repetida.</p>
+          <p><b>Primeira sessão:</b> escreva a tabela de decisão à mão (situação, ação esperada) para 15 cenários. Apoio: <a href="../trilhas/ia.html#of-kafka">OrderFlow AI · Etapa 8</a>.</p>
+        </div>
+      </div>
+
+      <article class="piloto" id="extrator">
+        <span class="pia-f">Roteiro completo · projeto 1</span>
+        <h3>Extrator de notas fiscais</h3>
+        <p>Você recebe o PDF de uma nota fiscal eletrônica (o DANFE) e devolve os dados num formato fixo, conferidos por regras. O projeto é em Python, para praticar a linguagem que as vagas pedem.</p>
+
+        <h4>Por que este projeto funciona como primeiro</h4>
+        <ul>
+          <li><b>A resposta certa já existe.</b> Toda nota tem um arquivo XML com os mesmos dados do PDF, em formato estruturado. O XML vira o seu gabarito, sem você rotular nada à mão.</li>
+          <li><b>A IA só entra onde faz sentido.</b> O XML se lê com código comum. O modelo é usado para o PDF, que é o que chega quando alguém manda a nota por e-mail ou foto.</li>
+          <li><b>Dá para conferir com regra.</b> A soma dos itens tem que bater com o total, a chave tem 44 dígitos, o CNPJ tem dígito verificador.</li>
+        </ul>
+
+        <h4>Cuidado com os dados</h4>
+        <p>Nota fiscal tem CNPJ, CPF, nome e endereço. Use notas de compras suas, mantenha a pasta de dados fora do Git e nunca publique notas reais. Para o repositório público, crie algumas notas fictícias.</p>
+
+        <h4>Os cinco passos do projeto</h4>
+        <ol>
+          <li><b>Dados e gabarito.</b> Pares de PDF e XML, e um programa que transforma o XML na resposta esperada.</li>
+          <li><b>Extração.</b> O texto do PDF vai ao modelo, que devolve o JSON no formato do contrato (saída estruturada).</li>
+          <li><b>Validação.</b> Regras de código conferem a resposta; o que falha é marcado para revisão humana, não aceito em silêncio.</li>
+          <li><b>Avaliação.</b> Acerto por campo em todas as notas, comparado com a versão anterior, rodando no pipeline.</li>
+          <li><b>Entrega.</b> Uma API que recebe o PDF, o custo por nota medido e um README com os números.</li>
+        </ol>
+
+        <h4>Primeira sessão (90 minutos): o gabarito, sem IA</h4>
+        <p>Nesta sessão você não chama nenhum modelo. O objetivo é ter a resposta certa de cada nota, porque sem ela não há como saber se a extração funciona.</p>
+        <ol>
+          <li>Crie o repositório <code>extrator-notas</code> e o projeto: <code>uv init</code>, depois <code>uv add pydantic pypdf</code> e <code>uv add --dev pytest</code>.</li>
+          <li>Crie a pasta <code>dados/</code>, coloque-a no <code>.gitignore</code> e guarde nela 5 notas suas, cada uma com o PDF e o XML.</li>
+          <li>Escreva o contrato em <code>modelo.py</code> (abaixo).</li>
+          <li>Escreva <code>gabarito.py</code>, que lê o XML e devolve uma <code>NotaFiscal</code> (abaixo).</li>
+          <li>Escreva um teste que roda o gabarito nas 5 notas e confere que a soma dos itens bate com o total.</li>
+          <li>Extraia o texto de um PDF com o <code>pypdf</code> e leia o que saiu. Anote o que veio fora de ordem ou quebrado: é com isso que o modelo vai ter que lidar.</li>
+        </ol>
+        <pre><code># modelo.py: o contrato da saída. É ele que o modelo de IA vai ter que preencher.
+from datetime import date
+from decimal import Decimal
+from pydantic import BaseModel, Field
+
+class Item(BaseModel):
+    descricao: str
+    quantidade: Decimal
+    valor_unitario: Decimal
+    valor_total: Decimal
+
+class NotaFiscal(BaseModel):
+    chave: str = Field(pattern=r"^\d{44}$")
+    cnpj_emitente: str = Field(pattern=r"^\d{14}$")
+    data_emissao: date
+    valor_total: Decimal
+    itens: list[Item]
+
+
+# gabarito.py: lê o XML da nota e devolve a resposta certa, sem IA nenhuma.
+import xml.etree.ElementTree as ET
+from modelo import Item, NotaFiscal
+
+NS = {"n": "http://www.portalfiscal.inf.br/nfe"}
+
+def gabarito(caminho_xml: str) -&gt; NotaFiscal:
+    inf = ET.parse(caminho_xml).getroot().find(".//n:infNFe", NS)
+    texto = lambda caminho, no=inf: no.findtext(caminho, namespaces=NS)
+    return NotaFiscal(
+        chave=inf.get("Id").removeprefix("NFe"),
+        cnpj_emitente=texto("n:emit/n:CNPJ"),
+        data_emissao=texto("n:ide/n:dhEmi")[:10],
+        valor_total=texto("n:total/n:ICMSTot/n:vNF"),
+        itens=[
+            Item(
+                descricao=texto("n:prod/n:xProd", det),
+                quantidade=texto("n:prod/n:qCom", det),
+                valor_unitario=texto("n:prod/n:vUnCom", det),
+                valor_total=texto("n:prod/n:vProd", det),
+            )
+            for det in inf.findall("n:det", NS)
+        ],
+    )</code></pre>
+        <p class="ok"><b>Pronto quando:</b> <code>uv run pytest</code> passa, e para cada uma das 5 notas você tem o texto do PDF e o JSON esperado lado a lado.</p>
+
+        <h4>Sessões seguintes</h4>
+        <ol start="2">
+          <li><b>Primeira extração.</b> Envie o texto de uma nota ao modelo pedindo a resposta no formato de <code>NotaFiscal</code>. Compare com o gabarito, campo a campo. Leia antes: <a href="../trilhas/ia.html#t4-structured">saída estruturada</a>.</li>
+          <li><b>Medir em todas.</b> Rode nas 5 notas e monte a tabela de acerto por campo. Descubra qual campo erra mais e por quê. Leia antes: <a href="../trilhas/ia.html#t6-golden">golden set e regressão</a>.</li>
+          <li><b>Validar e corrigir.</b> Adicione as regras (soma, chave, CNPJ). Quando uma falhar, devolva o erro ao modelo uma vez; se falhar de novo, marque para revisão.</li>
+          <li><b>Crescer o conjunto.</b> Chegue a 30 notas, de emitentes e formatos diferentes. Ponha a avaliação no pipeline.</li>
+          <li><b>API e custo.</b> Exponha com FastAPI, registre tokens e custo por nota e teste um modelo mais barato com a mesma bateria. Leia antes: <a href="../cadernos/python-para-java.html">Python para quem vem de Java</a>.</li>
+        </ol>
+
+        <h4>Pronto quando o projeto termina</h4>
+        <ul>
+          <li>O README mostra o acerto por campo em pelo menos 30 notas e o custo médio por nota.</li>
+          <li>O pipeline falha se o acerto de algum campo cair em relação à versão anterior.</li>
+          <li>Uma nota com a soma dos itens errada é marcada para revisão, não aceita.</li>
+          <li>Nenhum dado real de nota está no repositório.</li>
+        </ul>
+        <p><b>Em Java:</b> o mesmo contrato é um <code>record</code>, e o Spring AI preenche com <code>.entity(NotaFiscal.class)</code>. Refazer o passo 2 em Java depois de terminar em Python é um bom exercício curto.</p>
+        <label class="marco-feito pia-feito"><input type="checkbox" data-k="ia-extrator"> projeto concluído</label>
+      </article>
     </section>
 
     <section class="section shell" id="resto">

@@ -312,6 +312,7 @@
     .pia h3{margin:8px 0 6px;font-size:1.08rem;color:var(--paper)}
     .pia p{margin:0 0 6px;font-size:.89rem;line-height:1.55;color:var(--ink2)}
     .pia p b{color:var(--paper)}
+    .pia a{color:var(--mint);text-decoration:none;border-bottom:1px solid #8be9fd55}
     .piloto{margin-top:26px;border:1px solid var(--gold);border-radius:22px;background:var(--panel);padding:24px 26px}
     .piloto h3{margin:6px 0 8px;font-size:1.3rem;color:var(--paper)}
     .piloto h4{margin:22px 0 8px;font:700 .7rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
@@ -723,28 +724,28 @@
           <h3>Extrator de notas fiscais</h3>
           <p>Recebe o PDF de uma nota fiscal e devolve um JSON validado: emitente, data, itens e total.</p>
           <p><b>Medida:</b> acerto por campo num conjunto de notas.</p>
-          <p><b>Tempo:</b> uma a duas semanas. O roteiro completo está logo abaixo.</p>
+          <p><b>Tempo:</b> uma a duas semanas. <a href="#extrator">Roteiro completo abaixo</a>.</p>
         </div>
         <div class="pia">
           <span class="pia-f">2 · IA no desenvolvimento</span>
           <h3>Revisor de pull request</h3>
           <p>Roda no pipeline, lê o diff e comenta os problemas que encontra. Você pode usar no seu próprio repositório.</p>
           <p><b>Medida:</b> em 20 diffs com defeitos conhecidos, quantos ele acha e quantos alarmes falsos dá.</p>
-          <p><b>Primeira sessão:</b> junte 10 diffs antigos seus e anote à mão o que um bom revisor apontaria em cada um. Apoio: <a href="../trilhas/ia.html#of-review">bônus do OrderFlow AI</a>.</p>
+          <p><b>Tempo:</b> duas semanas. <a href="#revisor">Roteiro completo abaixo</a>.</p>
         </div>
         <div class="pia">
           <span class="pia-f">3 · Assistente com RAG</span>
           <h3>Assistente do seu acervo de estudos</h3>
           <p>Responde perguntas sobre este acervo citando o tópico de origem e gera perguntas de revisão.</p>
           <p><b>Medida:</b> em 40 perguntas, quantas respostas estão certas e apontam para o tópico certo.</p>
-          <p><b>Primeira sessão:</b> escreva 20 perguntas que você faria ao acervo e anote, para cada uma, o tópico onde está a resposta. Apoio: <a href="../trilhas/ia.html#lab-rag-hib">Lab 3 · RAG híbrido</a>.</p>
+          <p><b>Tempo:</b> duas a três semanas. <a href="#assistente">Roteiro completo abaixo</a>.</p>
         </div>
         <div class="pia">
           <span class="pia-f">4 · Agente com ferramentas</span>
           <h3>Agente que reage a eventos do Kafka</h3>
           <p>Um pedido atrasa, o evento chega e o agente decide: avisar o cliente, oferecer um cupom ou passar para uma pessoa.</p>
           <p><b>Medida:</b> em 30 cenários, quantas decisões batem com a regra do negócio, e nenhuma ação é repetida.</p>
-          <p><b>Primeira sessão:</b> escreva a tabela de decisão à mão (situação, ação esperada) para 15 cenários. Apoio: <a href="../trilhas/ia.html#of-kafka">OrderFlow AI · Etapa 8</a>.</p>
+          <p><b>Tempo:</b> três semanas. <a href="#agente">Roteiro completo abaixo</a>.</p>
         </div>
       </div>
 
@@ -845,6 +846,282 @@ def gabarito(caminho_xml: str) -&gt; NotaFiscal:
         </ul>
         <p><b>Em Java:</b> o mesmo contrato é um <code>record</code>, e o Spring AI preenche com <code>.entity(NotaFiscal.class)</code>. Refazer o passo 2 em Java depois de terminar em Python é um bom exercício curto.</p>
         <label class="marco-feito pia-feito"><input type="checkbox" data-k="ia-extrator"> projeto concluído</label>
+      </article>
+      <article class="piloto" id="revisor">
+        <span class="pia-f">Roteiro completo · projeto 2</span>
+        <h3>Revisor de pull request</h3>
+        <p>Um programa que roda no pipeline a cada pull request, lê o diff, pede a um modelo uma lista de problemas num formato fixo e publica os achados como comentário. O projeto é em Python e você usa no seu próprio repositório.</p>
+
+        <h4>O que este projeto ensina</h4>
+        <ul>
+          <li><b>Medir um sistema que dá opinião.</b> Um revisor tem dois jeitos de errar: deixar passar um defeito e reclamar do que está certo. Você mede os dois.</li>
+          <li><b>Criar o gabarito plantando defeitos.</b> Você pega código que funciona, insere um defeito conhecido e guarda onde ele está. Assim a resposta certa existe.</li>
+          <li><b>Tratar entrada como dado.</b> O diff é texto escrito por outra pessoa e pode conter instruções para o modelo. É o caso mais direto de prompt injection.</li>
+        </ul>
+
+        <h4>Cuidados</h4>
+        <ul>
+          <li>Use só repositórios seus. Código de empresa não vai a um modelo externo sem autorização.</li>
+          <li>A chave da API fica nos segredos do pipeline, nunca no repositório. Pull requests vindos de forks não recebem segredos, e isso é proposital.</li>
+          <li>O revisor comenta; ele não aprova nem bloqueia sozinho. A decisão continua com uma pessoa.</li>
+        </ul>
+
+        <h4>Os cinco passos do projeto</h4>
+        <ol>
+          <li><b>Casos.</b> Diffs com defeito plantado e diffs limpos, cada um com os achados esperados.</li>
+          <li><b>Revisão estruturada.</b> O diff vai ao modelo, que devolve uma lista de achados no formato do contrato.</li>
+          <li><b>Pontuação.</b> Um programa compara os achados com os esperados e conta acertos, defeitos perdidos e alarmes falsos.</li>
+          <li><b>Pipeline.</b> O revisor roda no GitHub Actions e comenta no pull request.</li>
+          <li><b>Limites.</b> Tamanho máximo de diff, arquivos ignorados, custo por revisão e defesa contra instruções dentro do diff.</li>
+        </ol>
+
+        <h4>Primeira sessão (90 minutos): os casos e a pontuação, sem IA</h4>
+        <p>Nesta sessão você monta o conjunto de casos e o programa que dá a nota. Sem isso, toda mudança de prompt vira impressão.</p>
+        <ol>
+          <li>Crie o repositório <code>revisor-pr</code>: <code>uv init</code>, <code>uv add pydantic</code>, <code>uv add --dev pytest</code>.</li>
+          <li>Escolha 6 trechos de código seu que funcionam e plante um defeito em cada: condição invertida, recurso não fechado, SQL montado por concatenação, segredo no código, falta de tratamento de nulo e consulta dentro de laço.</li>
+          <li>Gere o diff de cada um com <code>git diff</code> e salve em <code>casos/01.diff</code> a <code>casos/06.diff</code>. Junte mais 4 diffs limpos, de mudanças boas.</li>
+          <li>Para cada diff, escreva <code>casos/NN.json</code> com os achados esperados. Nos diffs limpos, a lista é vazia.</li>
+          <li>Escreva o contrato e a função de pontuação (abaixo).</li>
+          <li>Teste a pontuação com respostas inventadas: uma perfeita, uma vazia e uma cheia de alarmes falsos.</li>
+        </ol>
+        <pre><code># modelo.py: o formato que o modelo de IA vai ter que devolver
+from typing import Literal
+from pydantic import BaseModel
+
+class Achado(BaseModel):
+    arquivo: str
+    linha: int
+    categoria: Literal["logica", "recurso", "seguranca", "segredo", "nulo", "desempenho"]
+    comentario: str
+
+class Revisao(BaseModel):
+    achados: list[Achado]
+
+
+# pontuar.py: compara o que o revisor achou com o que era esperado
+from modelo import Achado
+
+def mesmo(a: Achado, b: Achado) -&gt; bool:
+    return (a.arquivo == b.arquivo and a.categoria == b.categoria
+            and abs(a.linha - b.linha) &lt;= 3)          # tolera 3 linhas de diferença
+
+def pontuar(esperados: list[Achado], obtidos: list[Achado]) -&gt; dict:
+    encontrados = [e for e in esperados if any(mesmo(e, o) for o in obtidos)]
+    falsos = [o for o in obtidos if not any(mesmo(e, o) for e in esperados)]
+    return {
+        "encontrados": len(encontrados),
+        "perdidos": len(esperados) - len(encontrados),
+        "alarmes_falsos": len(falsos),
+    }</code></pre>
+        <p class="ok"><b>Pronto quando:</b> você tem 10 pares de diff e gabarito, e os testes da pontuação passam nos três casos inventados.</p>
+
+        <h4>Sessões seguintes</h4>
+        <ol start="2">
+          <li><b>Primeira revisão.</b> Envie um diff ao modelo pedindo a resposta no formato de <code>Revisao</code> e pontue. Leia antes: <a href="../trilhas/ia.html#t4-structured">saída estruturada</a> e <a href="../trilhas/ia.html#t3-prompt">estruturar e testar prompts</a>.</li>
+          <li><b>Medir nos 10 casos.</b> Monte a tabela de encontrados, perdidos e alarmes falsos. Mude o prompt uma coisa de cada vez e veja o que acontece com os dois números.</li>
+          <li><b>Defesa.</b> Crie um diff com um comentário pedindo ao modelo para aprovar tudo. O revisor precisa continuar apontando o defeito. Leia antes: <a href="../trilhas/ia.html#lab-injecao">Lab 9 · Prompt injection</a>.</li>
+          <li><b>Pipeline.</b> Rode no GitHub Actions a cada pull request e publique os achados como comentário. Ignore arquivos gerados e diffs acima de um tamanho.</li>
+          <li><b>Custo e modelo.</b> Registre tokens e custo por revisão e rode a mesma bateria num modelo mais barato. Leia antes: <a href="../trilhas/ia.html#t6-golden">golden set e regressão</a>.</li>
+        </ol>
+
+        <h4>Pronto quando o projeto termina</h4>
+        <ul>
+          <li>O README mostra, para pelo menos 20 casos, quantos defeitos plantados o revisor acha e quantos alarmes falsos dá nos diffs limpos.</li>
+          <li>Um pull request real no seu repositório recebeu um comentário do revisor.</li>
+          <li>O diff com instrução maliciosa não muda o resultado.</li>
+          <li>O pipeline falha se o número de defeitos encontrados cair em relação à versão anterior.</li>
+        </ul>
+        <p><b>Em Java:</b> o contrato é um <code>record</code> com uma lista de achados, preenchido pelo Spring AI com <code>.entity(Revisao.class)</code>. O bônus do OrderFlow AI mostra a mesma ideia: <a href="../trilhas/ia.html#of-review">Bot de code review</a>.</p>
+        <label class="marco-feito pia-feito"><input type="checkbox" data-k="ia-revisor"> projeto concluído</label>
+      </article>
+      <article class="piloto" id="assistente">
+        <span class="pia-f">Roteiro completo · projeto 3</span>
+        <h3>Assistente do seu acervo de estudos</h3>
+        <p>Um assistente que responde perguntas sobre este acervo citando o tópico de origem, diz que não sabe quando o acervo não cobre o assunto e gera perguntas de revisão. O projeto é em Python, com PostgreSQL e pgvector no Docker.</p>
+
+        <h4>O que este projeto ensina</h4>
+        <ul>
+          <li><b>Separar a busca da resposta.</b> A maioria dos erros de um RAG está na busca: o trecho certo não foi recuperado. Você mede a busca sozinha, antes de gerar qualquer resposta.</li>
+          <li><b>Preparar o texto.</b> Os tópicos têm exercícios com alternativas erradas. Se elas forem indexadas, o assistente vai citar respostas erradas como se fossem conteúdo.</li>
+          <li><b>Você é o usuário.</b> Você conhece o acervo, então percebe na hora quando a resposta está errada ou aponta para o tópico errado.</li>
+        </ul>
+
+        <h4>Cuidados</h4>
+        <ul>
+          <li>Indexe só as páginas públicas do site. A pasta <code>privado/</code> e as suas notas pessoais ficam de fora.</li>
+          <li>Dá para fazer o projeto inteiro sem custo, com embeddings e modelo locais no Ollama. A qualidade é menor, e isso também é um dado para comparar.</li>
+          <li>A resposta precisa trazer o link do tópico. Sem a fonte, você não tem como conferir.</li>
+        </ul>
+
+        <h4>Os cinco passos do projeto</h4>
+        <ol>
+          <li><b>Corpus e perguntas.</b> Os tópicos extraídos dos HTML, e perguntas com o tópico onde está a resposta.</li>
+          <li><b>Busca.</b> Embeddings no pgvector, e a medida de recuperação: o tópico certo aparece entre os cinco primeiros?</li>
+          <li><b>Resposta.</b> O modelo responde só com os trechos recuperados, cita o tópico e recusa quando não há trecho que sustente.</li>
+          <li><b>Melhorar pela medida.</b> Tamanho dos trechos, busca híbrida e reordenação entram só se a medida de recuperação pedir.</li>
+          <li><b>Uso.</b> Uma linha de comando ou API, e o modo que gera perguntas de revisão a partir de um tópico.</li>
+        </ol>
+
+        <h4>Primeira sessão (90 minutos): o corpus e as perguntas, sem IA</h4>
+        <p>Nesta sessão você transforma as páginas em registros limpos e escreve as perguntas do gabarito. Nenhum modelo é chamado.</p>
+        <ol>
+          <li>Crie o repositório <code>assistente-acervo</code>: <code>uv init</code>, <code>uv add beautifulsoup4</code>, <code>uv add --dev pytest</code>.</li>
+          <li>Escreva <code>extrair.py</code> (abaixo), que lê os HTML das trilhas e dos cadernos e grava um registro por tópico em <code>corpus.jsonl</code>.</li>
+          <li>Abra o <code>corpus.jsonl</code> e leia três registros inteiros. Confira que as alternativas dos exercícios não estão lá.</li>
+          <li>Escreva 20 perguntas em <code>perguntas.jsonl</code>, cada uma com o documento e o id do tópico onde está a resposta.</li>
+          <li>Inclua 4 perguntas que o acervo não responde, marcadas para recusa.</li>
+          <li>Escreva um teste que confere que todo id citado nas perguntas existe no corpus.</li>
+        </ol>
+        <pre><code># extrair.py: um registro por tópico, sem os exercícios (eles contêm respostas erradas)
+import json
+from pathlib import Path
+from bs4 import BeautifulSoup
+
+def topicos(caminho: Path):
+    sopa = BeautifulSoup(caminho.read_text(encoding="utf-8"), "html.parser")
+    for artigo in sopa.select("article.topic"):
+        for bloco in artigo.select(".topico-fechamento, svg, button"):
+            bloco.decompose()
+        yield {
+            "doc": caminho.stem,
+            "id": artigo.get("id"),
+            "titulo": artigo.h3.get_text(" ", strip=True),
+            "texto": artigo.get_text(" ", strip=True),
+            "url": f"{caminho.parent.name}/{caminho.name}#{artigo.get('id')}",
+        }
+
+if __name__ == "__main__":
+    raiz = Path("../site-estudos")
+    with open("corpus.jsonl", "w", encoding="utf-8") as saida:
+        for pasta in ("trilhas", "cadernos"):
+            for html in sorted((raiz / pasta).glob("*.html")):
+                for registro in topicos(html):
+                    saida.write(json.dumps(registro, ensure_ascii=False) + "\n")
+
+# perguntas.jsonl: o gabarito
+# {"pergunta": "Como garantir que o evento sai junto com o pedido?", "doc": "mensageria", "id": "g2"}
+# {"pergunta": "Qual o melhor time de futebol do Brasil?", "recusar": true}</code></pre>
+        <p class="ok"><b>Pronto quando:</b> o <code>corpus.jsonl</code> tem um registro por tópico, sem texto de exercício, e você tem 24 perguntas com o tópico esperado ou a marca de recusa.</p>
+
+        <h4>Sessões seguintes</h4>
+        <ol start="2">
+          <li><b>Busca.</b> Suba o PostgreSQL com pgvector, gere os embeddings e busque. Meça em quantas das 20 perguntas o tópico certo aparece entre os cinco primeiros. Leia antes: <a href="../trilhas/ia.html#t4-chunks">chunks</a> e <a href="../trilhas/ia.html#t4-rag">RAG com pgvector</a>.</li>
+          <li><b>Olhar os erros.</b> Para cada pergunta em que a busca falhou, leia o que veio no lugar. Decida se o problema é o tamanho do trecho, a pergunta ou a falta de busca por palavra exata.</li>
+          <li><b>Resposta com citação.</b> Gere a resposta só com os trechos recuperados, com o link do tópico. Teste as 4 perguntas de recusa. Leia antes: <a href="../trilhas/ia.html#t2-alucinacao">alucinação e ancoragem</a>.</li>
+          <li><b>Melhorar e medir de novo.</b> Teste uma mudança por vez (trechos menores, busca híbrida) e compare com a medida anterior. Leia antes: <a href="../trilhas/ia.html#lab-ragas">Lab 10 · Ragas</a>.</li>
+          <li><b>Perguntas de revisão.</b> Dado um tópico, o assistente gera três perguntas com gabarito. Confira à mão se as respostas estão no texto.</li>
+        </ol>
+
+        <h4>Pronto quando o projeto termina</h4>
+        <ul>
+          <li>O README mostra a taxa de recuperação e a taxa de respostas corretas em pelo menos 40 perguntas, antes e depois de cada melhoria.</li>
+          <li>Toda resposta traz o link do tópico de origem.</li>
+          <li>As perguntas fora do acervo são recusadas.</li>
+          <li>Nenhum conteúdo privado foi indexado.</li>
+        </ul>
+        <p><b>Em Java:</b> o Spring AI faz a mesma coisa com <code>VectorStore</code> sobre pgvector e o <code>QuestionAnswerAdvisor</code>. O passo a passo está no <a href="../trilhas/ia.html#of-rag">OrderFlow AI · Etapa 1</a>.</p>
+        <label class="marco-feito pia-feito"><input type="checkbox" data-k="ia-assistente"> projeto concluído</label>
+      </article>
+      <article class="piloto" id="agente">
+        <span class="pia-f">Roteiro completo · projeto 4</span>
+        <h3>Agente que reage a eventos do Kafka</h3>
+        <p>Quando um pedido atrasa, um evento chega pelo Kafka e um agente decide o que fazer: avisar o cliente, oferecer um cupom, passar o caso para uma pessoa ou não fazer nada. Este projeto é em Java, com Spring Boot, Spring Kafka e Spring AI, para juntar as três coisas que você mais quer mostrar.</p>
+
+        <h4>Quando um agente se justifica aqui</h4>
+        <ul>
+          <li><b>Se a decisão coubesse numa tabela, um <code>if</code> resolveria.</b> O agente só faz sentido porque o evento traz um texto livre: a observação da transportadora ("destinatário ausente", "carga extraviada", "endereço não localizado"). Interpretar esse texto é o trabalho do modelo.</li>
+          <li><b>O modelo decide, o código limita.</b> O valor máximo do cupom, a regra de uma ação por pedido e a exigência de aprovação humana ficam em código, não no prompt.</li>
+          <li><b>Eventos se repetem.</b> O Kafka entrega pelo menos uma vez. Um agente que age duas vezes manda dois cupons.</li>
+        </ul>
+
+        <h4>Cuidados</h4>
+        <ul>
+          <li>No laboratório, as ferramentas só gravam o que fariam. Nenhum e-mail ou cupom real é enviado.</li>
+          <li>Nunca deixe o modelo escolher um valor sem limite conferido no código.</li>
+          <li>Uma ação com custo alto fica pendente de aprovação de uma pessoa.</li>
+        </ul>
+
+        <h4>Os cinco passos do projeto</h4>
+        <ol>
+          <li><b>Cenários e ferramentas.</b> A tabela de decisão escrita à mão, e as ferramentas com as guardas em código.</li>
+          <li><b>Decisão.</b> O agente recebe o evento, usa as ferramentas e decide. Você mede contra os cenários.</li>
+          <li><b>Kafka.</b> O agente passa a ser acionado pelo evento, com tópico de erro e consumo idempotente.</li>
+          <li><b>Limites.</b> Número máximo de passos, teto de valor e aprovação humana para o caso caro.</li>
+          <li><b>Operação.</b> Rastro de cada decisão, custo por evento e reprocessamento sem repetir ação.</li>
+        </ol>
+
+        <h4>Primeira sessão (90 minutos): os cenários e as guardas, sem IA</h4>
+        <p>Nesta sessão você define o que é a decisão certa e constrói as ferramentas com as proteções. O modelo ainda não entra.</p>
+        <ol>
+          <li>Crie o projeto <code>agente-atrasos</code> com Spring Boot, Spring Kafka, JDBC e PostgreSQL no Docker Compose.</li>
+          <li>Escreva o evento e as ações possíveis como tipos Java (abaixo).</li>
+          <li>Escreva 15 cenários em <code>cenarios.json</code>: o evento e a ação esperada. Inclua casos em que a observação da transportadora muda a decisão.</li>
+          <li>Crie a tabela <code>acao_pedido</code> com restrição única no pedido e o registro de ações (abaixo).</li>
+          <li>Implemente as ferramentas como métodos que só registram a ação, com o teto do cupom conferido em código.</li>
+          <li>Escreva dois testes: registrar duas ações para o mesmo pedido (a segunda é recusada) e pedir um cupom acima do teto (é recusado).</li>
+        </ol>
+        <pre><code>// os tipos do problema
+record PedidoAtrasado(String eventoId, String pedidoId, int diasAtraso, BigDecimal valor,
+                      boolean clienteVip, String observacaoTransportadora) {}
+
+enum Acao { AVISAR, CUPOM, ESCALAR, NADA }
+
+record Cenario(String nome, PedidoAtrasado evento, Acao esperada) {}
+
+// a guarda que o modelo não consegue contornar: no máximo uma ação por pedido
+// CREATE TABLE acao_pedido (pedido_id TEXT PRIMARY KEY, acao TEXT NOT NULL,
+//                           evento_id TEXT NOT NULL, criada_em TIMESTAMPTZ DEFAULT now());
+@Service
+class RegistroDeAcoes {
+    private final JdbcTemplate jdbc;
+    RegistroDeAcoes(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+
+    boolean registrar(String pedidoId, Acao acao, String eventoId) {
+        int linhas = jdbc.update("""
+            INSERT INTO acao_pedido (pedido_id, acao, evento_id) VALUES (?, ?, ?)
+            ON CONFLICT (pedido_id) DO NOTHING""", pedidoId, acao.name(), eventoId);
+        return linhas == 1;        // false: esse pedido já teve uma ação
+    }
+}
+
+// a ferramenta: o teto é conferido aqui, não no prompt
+@Component
+class Ferramentas {
+    private static final BigDecimal TETO = new BigDecimal("0.10");   // 10% do pedido
+    private final RegistroDeAcoes registro;
+    private final PedidoRepository pedidos;
+    Ferramentas(RegistroDeAcoes registro, PedidoRepository pedidos) {
+        this.registro = registro; this.pedidos = pedidos;
+    }
+
+    String emitirCupom(String pedidoId, BigDecimal valor, String eventoId) {
+        BigDecimal maximo = pedidos.valorDe(pedidoId).multiply(TETO);
+        if (valor.compareTo(maximo) &gt; 0) return "recusado: valor acima do teto de " + maximo;
+        return registro.registrar(pedidoId, Acao.CUPOM, eventoId)
+            ? "cupom registrado" : "recusado: pedido já teve uma ação";
+    }
+}</code></pre>
+        <p class="ok"><b>Pronto quando:</b> você tem 15 cenários com a ação esperada, e os dois testes das guardas passam.</p>
+
+        <h4>Sessões seguintes</h4>
+        <ol start="2">
+          <li><b>Primeira decisão.</b> Exponha as ferramentas ao modelo com o Spring AI e rode os 15 cenários. Conte quantas decisões batem. Leia antes: <a href="../trilhas/ia.html#t4-toolcalling">tool calling</a> e <a href="../trilhas/ia.html#t5-react">o loop agêntico</a>.</li>
+          <li><b>Olhar a trajetória.</b> Nos cenários errados, veja quais ferramentas foram chamadas e com quais argumentos. Leia antes: <a href="../trilhas/ia.html#t6-avaliar-agentes">como avaliar um agente</a>.</li>
+          <li><b>Ligar ao Kafka.</b> Consuma o tópico de pedidos atrasados, com tópico de erro. Publique o mesmo evento duas vezes e confira que só uma ação é registrada. Leia antes: <a href="../trilhas/mensageria.html#kf5">Spring Kafka e DLT</a>.</li>
+          <li><b>Limites.</b> Ponha um máximo de passos por evento e deixe o cupom acima de um valor pendente de aprovação.</li>
+          <li><b>Operação.</b> Registre o rastro e o custo de cada decisão e reprocesse um dia de eventos sem repetir nenhuma ação. Leia antes: <a href="../trilhas/mensageria.html#kf11">reprocessamento</a> e <a href="../trilhas/ia.html#of-kafka">OrderFlow AI · Etapa 8</a>.</li>
+        </ol>
+
+        <h4>Pronto quando o projeto termina</h4>
+        <ul>
+          <li>O README mostra, em pelo menos 30 cenários, quantas decisões batem com a esperada, e o custo médio por evento.</li>
+          <li>O mesmo evento entregue duas vezes gera uma ação só.</li>
+          <li>Um pedido de cupom acima do teto é recusado pelo código, mesmo que o modelo insista.</li>
+          <li>O reprocessamento de um dia de eventos não repete nenhuma ação.</li>
+        </ul>
+        <p><b>Em Python:</b> o mesmo agente pode ser escrito com um framework de agentes consumindo o Kafka. Fazer só o passo 2 em Python, com os mesmos cenários, é uma boa comparação entre as duas stacks.</p>
+        <label class="marco-feito pia-feito"><input type="checkbox" data-k="ia-agente"> projeto concluído</label>
       </article>
     </section>
 

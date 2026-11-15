@@ -1,6 +1,24 @@
 # Context.md — o que existe no site e em que ponto estamos
 
-Última atualização: 2026-10-18. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
+Última atualização: 2026-11-15. Atualize ao fechar um marco (regra em `Agent.md`). Se algo aqui parecer antigo, confira no disco antes de agir.
+
+## Plano de prática, tópicos de especialista e revisões (2026-10-30 a 2026-11-15)
+
+Tudo abaixo está commitado e publicado no `main` (último commit: `a06d74e`). Motivo do trabalho: o Thallys comparou o acervo com vagas de engenharia e arquitetura de IA e de backend sênior e pediu para fechar as lacunas.
+
+- **Plano de prática (2026-11-15, commit `35f1261`):** página nova `lab/plano-de-pratica.html` + `assets/js/plano-pratica.inline.js`. É o **caminho principal de prática**: o OrderFlow em 3 fases e 12 marcos (`#m01` a `#m12`), ligados a 10 habilidades. Cada marco tem "O que construir", "Pronto quando" e "Leia antes". Progresso em `localStorage` `plano-pratica-v1`. O `<head>` e o CSS base vêm de `lab/projetos.html`. Registrada em `DOCUMENTOS_ESPERADOS`, `DOCS` (n 20; o Pomodoro passou a 21) e `PALETTE_DATA` do acervo, `PALETTE_DATA` do índice, README, barra `.island` do `index.html` e da bancada. O resto da prática ganhou papel declarado na própria página: aquecimentos, laboratórios de IA, OrderFlow AI guiado e "Projeto do conceito" são apoio; as 22 missões e os projetos em escada são opcionais; o carro-chefe vem depois. `#t7-escada` da trilha de IA aponta para o plano. Decisão em aberto: trocar o domínio do projeto para fiscal ou financeiro depois da fase 2.
+- **Tópicos de especialista (2026-11-15, commits `c9a8ac9` e `a06d74e`):** 18 tópicos no chassi "pilar", cada um com exercício, flashcard, nó na trilha e um bloco `.cs` "Laboratório no OrderFlow" (3 passos, "Pronto quando" e o marco do plano), inserido antes do `topico-fechamento`.
+  - Mensageria `kf7` a `kf13`: contratos de eventos (Schema Registry e Avro), CDC com Debezium, Kafka Streams, event sourcing, reprocessamento, SNS/SQS/EventBridge e Kafka 4 (KRaft, novo rebalanceamento, share groups).
+  - Java `a6` (Java 25) e `i7` (structured concurrency e scoped values).
+  - Spring `b7` (Boot 4 e Framework 7), `g7` (Gateway e Config), `g8` (WebFlux), `h8` (imagem nativa, com comparação com Quarkus), `h9` (Modulith).
+  - Arquitetura `f6` (OpenAPI e AsyncAPI), `f7` (testes de contrato), `g7` (multi-tenancy), `j6` (RFC).
+- **Trilha de IA, parte 6 (2026-11-15, commit `0e51d63`):** `t6-gateway` (6.7 gateway de LLM), `t6-golden` (6.8 golden set e regressão), `t6-governanca` (6.9 governança e LGPD), `t6-nuvem` (6.10 Azure e Bedrock), no chassi "direto", com "Projeto do conceito". Limpeza de 21 trechos com linguagem exagerada ou número sem fonte. Os percentuais do gráfico `#vagas` foram mantidos (são do levantamento do Thallys).
+- **Não verificado em documentação oficial nesta rodada** (os tópicos avisam para conferir): atributos de `@Retryable` e a propriedade de versionamento de API do Framework 7; forma do `StructuredTaskScope` (preview); sintaxe do LiteLLM; propriedades do Azure no Spring AI; aposentadoria da AI-102 e a AI-103 (fonte: blogs de preparação).
+- **Micro Frontends (2026-10-31):** `cadernos/micro-frontends.html` reconstruído no chassi padrão e ampliado de 4 para 10 tópicos (`mfe-01` a `mfe-10` + `mfe-aprender`), 5 partes; chaves `micro-frontends-CL-*`. Card em "Cadernos complementares" do `index.html`, cuja grade passou de 3 para 2 colunas.
+- **Revisões de conteúdo (2026-10-30 e 31):** Keycloak (`conceitos-backend` `g4`/`g5`) e conteúdo de IA gerado pelo agente Atuador do Orquestra corrigidos (transporte do MCP, nomes de parâmetros de raciocínio, exageros, 67 emojis decorativos). Removidos 1.242 prefixos duplicados ("Correto.", "Exato.") dos `data-rationale` em todos os documentos: o motor de quiz já escreve o veredito, então **um rationale nunca começa com Correto, Exato ou Incorreto**.
+- **Estado de verificação (2026-11-15):** contratos 11/11, links sem quebra, tags balanceadas, `diff-snapshot` sem perdas. Resposta certa mais longa: IA 50%, demais trilhas editadas entre 26% e 36% (limite 60%).
+- **Não verificado:** renderização no navegador dos tópicos novos e das caixas de laboratório; caixas de marcar e versão de celular do plano de prática. O servidor local não pôde ser iniciado e `file://` só abriu a página do plano.
+- **Backups:** `Arquivados/2026-10-30-antes-revisao-ia-atuador/`, `2026-10-31-antes-rationale-prefixos/`, `2026-10-31-antes-mfe-expansao/`, `2026-11-15-antes-kafka-contratos/`, `2026-11-15-antes-topicos-especialista/`, `2026-11-15-antes-ia-gateway/`, `2026-11-15-antes-plano-pratica/`, `2026-11-15-antes-labs-kafka4/`.
 
 ## Caderno de finanças e investimentos (2026-10-18)
 
@@ -155,6 +173,8 @@ Documentos:
 - `trilhas/`: java, spring, arquitetura, docker-kubernetes, nuvem, mensageria, system-design, ia.
 - `cadernos/`: conceitos-backend (o caderno de dúvidas), biblioteca, linux, git, ingles, oratoria.
 - `cadernos/governanca-seguranca.html`: fundamentos, governança, risco, controles, IAM, privacidade/LGPD, desenvolvimento seguro, incidentes e continuidade; sidebar no padrão System Design e mapa mental principal em `assets/img/governanca_ti_mapa_mental.png` com visualizador compartilhado. Em 2026-10-12, a trilha em grade foi substituída por marcos conectados no chassi vertical de System Design; largura, ritmo do cabeçalho e espaçamento das partes também foram alinhados. Verificação dos links locais passou.
+- `cadernos/`: também financas-investimentos, python-para-java e micro-frontends.
+- `lab/plano-de-pratica.html`: o caminho principal de prática (OrderFlow em 12 marcos).
 - `lab/projetos.html`: a bancada (projetos com falhas injetadas e aquecimentos).
 - `ferramentas/`: prompt-studio, refinador, tutorial-api.
 
@@ -200,6 +220,10 @@ O auditor atual quantifica lacunas por peça em `audit-chassi.mjs --resumo`; os 
 - **`trilhas/ia.html` não tem âncora `ex-ai-…`**: isso é `data-exercise-id` do motor de quiz. As âncoras são `t4-rag`, `t5-mcp` e afins, sem prefixo.
 - **Reordenar parte é trabalho em dois lugares**: a `section.part` no corpo e o objeto no array `T` da trilha, que usa formatos diferentes no mesmo arquivo (uma linha nos marcos antigos, identado nos novos) — grep de uma linha só não acha todos.
 - **Chrome não reduz a janela** quando está maximizada: `resize_window` responde sucesso e `innerWidth` continua o mesmo. Para testar 375px de verdade, carregue a página num iframe de 375px e meça lá dentro (as media queries avaliam pela viewport do iframe).
+- **Quebras de linha misturadas (CRLF e LF)** nos `.inline.js` e em alguns HTML: busca por texto com `\n` fixo falha. Em script de edição, case com `\r?\n` e reaproveite a quebra do trecho vizinho.
+- **Contagens `nos`/`top` do acervo** não seguem uma regra única (algumas excluem a parte "Como aprender"). Ao inserir tópicos, some a diferença ao valor atual em vez de recontar.
+- **Documento novo falha o contrato 11** até entrar em `DOCS` e `PALETTE_DATA` do acervo, `PALETTE_DATA` do índice e README, além de `DOCUMENTOS_ESPERADOS`.
+- **Geradores de tópico** usados em 2026-11-15 ficaram no diretório temporário da sessão e não estão no repositório. Para tópico novo, copie a estrutura de um tópico vizinho da mesma trilha: o chassi "pilar" (Java, Spring, Arquitetura, Mensageria) e o chassi "direto" da IA são diferentes, e a Mensageria não usa emoji nos rótulos.
 - Bugs já corrigidos na cópia de teste: selos de seção, LaTeX cru, tags sobrando e caixa "Para ir além" no celular.
 
 ## Manutenção deste arquivo

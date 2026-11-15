@@ -867,7 +867,7 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
                   <span class="tr-dot rose"></span>
                   <div class="tr-corpo">
                     <b>Feature Engineering Clássica</b>
-                    <p>Em ML tradicional (Scikit-Learn, XGBoost, Random Forest), 80% do tempo de engenharia é gasto criando e normalizando colunas numéricas (One-Hot Encoding, TF-IDF, tratamento de nulos).</p>
+                    <p>Em ML tradicional (Scikit-Learn, XGBoost, Random Forest), a maior parte do tempo de engenharia é gasta criando e normalizando colunas numéricas (One-Hot Encoding, TF-IDF, tratamento de nulos).</p>
                   </div>
                 </div>
               </div>
@@ -985,7 +985,7 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
         <div class="gotcha">
           <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
           <ul>
-            <li><b>Usar Redes Profundas para Dados Tabulares Simples:</b> Gastar semanas afinando uma MLP ou ResNet em dados relacionais de banco SQL onde um algoritmo clássico como XGBoost ou LightGBM roda 50x mais rápido com 1% do consumo de memória RAM e GPU.</li>
+            <li><b>Usar Redes Profundas para Dados Tabulares Simples:</b> Gastar semanas afinando uma MLP ou ResNet em dados relacionais de banco SQL onde um algoritmo clássico como XGBoost ou LightGBM roda muito mais rápido e com uma fração da memória, sem GPU.</li>
             <li><b>Explosão/Desaparecimento de Gradiente:</b> Em redes profundas sem normalização de camada (LayerNorm/BatchNorm) ou conexões residuais (Skip Connections), os gradientes matemáticos somem ou explodem para infinito durante o backpropagation, travando o aprendizado.</li>
           </ul>
         </div>
@@ -2059,7 +2059,7 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
 
         <div class="caso">
           <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
-          <p>Uma startup de saúde ficou fora do ar por 6 horas durante um pico matinal porque seu backend dependia exclusivamente da API da OpenAI, que entrou em manutenção não programada. A refatoração introduziu um roteador agnóstico (LiteLLM) com fallback automático para Anthropic Claude e modelos locais em vLLM, garantindo 99.99% de disponibilidade.</p>
+          <p>Uma startup de saúde ficou fora do ar por 6 horas durante um pico matinal porque seu backend dependia exclusivamente da API da OpenAI, que entrou em manutenção não programada. A refatoração introduziu um roteador agnóstico (LiteLLM) com fallback automático para Anthropic Claude e modelos locais em vLLM, para manter o serviço disponível quando um provedor falha.</p>
         </div>
 
         <div class="analogia">
@@ -2368,7 +2368,7 @@ pre.arq{white-space:pre;overflow-x:auto;font:500 .82rem/1.55 "Cascadia Code",mon
               <div class="te-body">
                 <p class="te-pergunta"><strong>Cenário de Engenharia de IA / GenAI:</strong> Um engenheiro de machine learning analisa o consumo de memória de GPU durante a inferência de um modelo de 70 bilhões de parâmetros e nota que o KV-Cache do mecanismo Multi-Head Attention (MHA) consome dezenas de gigabytes de VRAM.</p>
                 
-                <p class="te-instrucao">Qual variante matemática de atenção moderna (adotada no Llama-3 e Mistral) reduz drasticamente o tamanho do KV-Cache compartilhando chaves e valores entre múltiplos heads de Query?</p>
+                <p class="te-instrucao">Qual variante matemática de atenção moderna (adotada no Llama-3 e Mistral) reduz o tamanho do KV-Cache compartilhando chaves e valores entre múltiplos heads de Query?</p>
 
                 <div class="te-options">
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Descartar o KV-Cache forçaria recalcular todos os passos de atenção do passado a cada novo token, explodindo a latência.">
@@ -3205,7 +3205,7 @@ String texto = chatClient.prompt()
                 <p class="te-instrucao">Qual instrução de ancoragem (Grounding) no System Prompt impede que o assistente invente uma resposta falsa?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Aumentaria drasticamente a incidência de alucinações perigosas em temas sensíveis de saúde.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Aumentaria a incidência de alucinações perigosas em temas sensíveis de saúde.">
                     <span class="te-letter">A</span> Elevar a temperatura para 1.5 para incentivar respostas inferenciais baseadas no conhecimento prévio de medicina do modelo de fundação.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Buscar em bases abertas não autorizadas pelo plano de saúde pode gerar respostas que violem o contrato de cobertura da apólice.">
@@ -3253,7 +3253,7 @@ String texto = chatClient.prompt()
           </div>
           <div class="o">
             <h4>⚙️ A Estratégia do Model Router</h4>
-            <p>Arquiteturas maduras usam roteamento: tarefas simples de classificação e extração vão para modelos ultrarrápidos e baratos (ex: <b>Gemini 2.0 Flash</b> a $0.15/M tokens); tarefas de raciocínio profundo vão para modelos de ponta (ex: <b>Claude 3.7 Sonnet</b> a $3.00/M tokens).</p>
+            <p>Arquiteturas maduras usam roteamento: tarefas simples de classificação e extração vão para modelos rápidos e baratos (ex: <b>Gemini 2.0 Flash</b> a $0.15/M tokens); tarefas de raciocínio profundo vão para modelos de ponta (ex: <b>Claude 3.7 Sonnet</b> a $3.00/M tokens).</p>
           </div>
         </div>
 
@@ -4254,7 +4254,7 @@ Analise a validação de transferência abaixo e proponha uma correção mínima
                 <p class="te-instrucao">Qual fluxo usa a IA como apoio sem presumir equivalência automática entre a versão antiga e a nova?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Regerar sistemas corporativos inteiros sem testes históricos introduz quebras funcionais massivas e perda de regras de negócio sutis.">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Regerar sistemas corporativos inteiros sem testes históricos introduz muitas quebras funcionais e perda de regras de negócio sutis.">
                     <span class="te-letter">A</span> Deletar as classes legadas e solicitar que a IA reprojete todos os domínios do zero a partir de prompts descritivos de alto nível.
                   </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Mudanças pequenas podem ser comparadas com uma linha de base de testes. Compilação, testes e revisão reduzem risco, mas não garantem equivalência fora dos comportamentos cobertos.">
@@ -4970,7 +4970,7 @@ vectorStore.add(chunks);</code></pre>
           </div>
           <div class="depois">
             <div class="lab">DEPOIS (BUSCA HÍBRIDA HNSW + BM25)</div>
-            <div class="conteudo">A busca textual por palavra-chave acha o nome exato da classe e a busca vetorial acha os métodos relacionados semanticamente, entregando 100% de relevância.</div>
+            <div class="conteudo">A busca textual por palavra-chave acha o nome exato da classe e a busca vetorial acha os métodos relacionados semanticamente, o que melhora a relevância do resultado.</div>
           </div>
         </div>
 
@@ -4985,7 +4985,7 @@ vectorStore.add(chunks);</code></pre>
     tsv_conteudo <span class="t">tsvector</span> GENERATED ALWAYS AS (to_tsvector('portuguese', conteudo)) STORED
 );
 
-<span class="c">-- Índice HNSW ultrarrápido para vetores de alta dimensão</span>
+<span class="c">-- Índice HNSW para vetores de alta dimensão</span>
 <span class="k">CREATE INDEX</span> idx_chunks_hnsw <span class="k">ON</span> documentos_chunks <span class="k">USING</span> hnsw (embedding vector_cosine_ops);
 <span class="k">CREATE INDEX</span> idx_chunks_bm25 <span class="k">ON</span> documentos_chunks <span class="k">USING</span> gin (tsv_conteudo);</code></pre>
 
@@ -5417,7 +5417,7 @@ vectorStore.add(chunks);</code></pre>
         <div class="gotcha">
           <div class="gotcha-title">Armadilhas de Engenharia &amp; Gotchas de Produção</div>
           <ul>
-            <li><b>Gotcha 1: Custo Massivo de Indexação Inicial:</b> Extrair entidades e relações de 10.000 documentos pode disparar mais de 40.000 requisições a LLMs. Use modelos ultra-velozes e econômicos (ex: Gemini Flash ou Llama-3-8B local) para a fase de extração, reservando modelos topo de linha apenas para a síntese final.</li>
+            <li><b>Gotcha 1: Custo alto de indexação inicial:</b> Extrair entidades e relações de 10.000 documentos pode disparar mais de 40.000 requisições a LLMs. Use modelos ultra-velozes e econômicos (ex: Gemini Flash ou Llama-3-8B local) para a fase de extração, reservando modelos topo de linha apenas para a síntese final.</li>
             <li><b>Gotcha 2: Super-Nodes e Entidades Genéricas sem Poda:</b> Entidades vagas como "empresa", "sistema", "usuário" conectam-se a milhares de arestas e criam 'super-nós' que destroem a separabilidade dos clusters de Leiden. Configure filtros rígidos de stop-words e taxonomias explícitas na extração.</li>
           </ul>
         </div>
@@ -5601,7 +5601,7 @@ vectorStore.add(chunks);</code></pre>
                   <span class="tr-icon">⚠️</span>
                   <div>
                     <b>Executar Ações Sem a Etapa de 'Thought' (Ação Cega):</b>
-                    <p>Forçar modelos a emitir chamadas de ferramentas diretamente sem permitir que eles 'pensem alto' no prompt reduz drasticamente a acurácia de raciocínio lógico em problemas de múltiplos passos. O passo de reflexão (Thought) é o motor da decomposição de problemas!</p>
+                    <p>Forçar modelos a emitir chamadas de ferramentas diretamente sem permitir que eles 'pensem alto' no prompt reduz a acurácia de raciocínio lógico em problemas de múltiplos passos. O passo de reflexão (Thought) é o motor da decomposição de problemas!</p>
                   </div>
                 </div>
                 <div class="tr-takeaway-item tip">
@@ -5658,7 +5658,7 @@ vectorStore.add(chunks);</code></pre>
                 </div>
                 <div class="tf-face tf-back">
                   <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
-                  <p class="tf-resposta">O componente <strong>'Thought'</strong> permite que o modelo <strong>planeje, decomponha a meta em subtarefas lógicas e avalie o contexto</strong> antes de executar uma ferramenta externa irreversível.<br>Estudos comprovam que permitir ao modelo 'pensar alto' antes de agir reduz drasticamente invocações incorretas de ferramentas, alucinações de argumentos e melhora a interpretação de mensagens de erro observadas no ambiente.</p>
+                  <p class="tf-resposta">O componente <strong>'Thought'</strong> permite que o modelo <strong>planeje, decomponha a meta em subtarefas lógicas e avalie o contexto</strong> antes de executar uma ferramenta externa irreversível.<br>Permitir ao modelo 'pensar alto' antes de agir tende a reduzir invocações incorretas de ferramentas, alucinações de argumentos e melhora a interpretação de mensagens de erro observadas no ambiente.</p>
                   <span class="tf-hint">← Toque para voltar à pergunta</span>
                 </div>
               </div>
@@ -5841,8 +5841,8 @@ vectorStore.add(chunks);</code></pre>
                 <p class="te-instrucao">Qual arquitetura multi-agente é a mais escalável e econômica para executar essa análise?</p>
 
                 <div class="te-options">
-                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sofreria com Lost in the Middle, latência altíssima e custo massivo de tokens repetidos a cada interação.">
-                    <span class="te-letter">A</span> Concatenar todos os PDFs e tabelas em um único prompt massivo enviado diretamente para um agente isolado com janela de 1 milhão de tokens.
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Sofreria com Lost in the Middle, latência altíssima e custo alto de tokens repetidos a cada interação.">
+                    <span class="te-letter">A</span> Concatenar todos os PDFs e tabelas em um único prompt muito grande enviado diretamente para um agente isolado com janela de 1 milhão de tokens.
                   </button>
                   <button class="te-opt" type="button" data-correct="true" data-rationale="Isolar tarefas pesadas em subagentes impede que megabytes de dados brutos saturem o contexto do orquestrador principal.">
                     <span class="te-letter">B</span> Orquestrador coordenando subagentes especializados em paralelo; subagentes digerem os PDFs em contextos isolados e repassam resumos consolidados.
@@ -5926,7 +5926,7 @@ vectorStore.add(chunks);</code></pre>
         <div class="gotcha">
           <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
           <ul>
-            <li><b>Hype-Driven Architecture (Usar Agente quando um Script Resolve):</b> Escolher arquiteturas agênticas probabilísticas para fluxos de negócio estritamente determinísticos. Lembre-se da regra de ouro: Script resolve 60% dos problemas; Skill resolve 25%; Subagente resolve 10%; Agente autônomo pleno é necessário apenas para os 5% restantes onde há ambiguidade e planejamento dinâmico no mundo real.</li>
+            <li><b>Hype-Driven Architecture (Usar Agente quando um Script Resolve):</b> Escolher arquiteturas agênticas probabilísticas para fluxos de negócio estritamente determinísticos. Lembre-se da regra de ouro: Script resolve a maior parte dos problemas; depois vêm Skill e Subagente; o Agente autônomo pleno só é necessário nos poucos casos em que há ambiguidade e planejamento dinâmico no mundo real.</li>
             <li><b>Falta de Isolamento de Responsabilidade:</b> Criar uma 'Skill' com dezenas de ferramentas heterogêneas misturadas, confundindo a seleção do modelo na hora de escolher qual ferramenta chamar. Mantenha cada Skill coesa em torno de um domínio específico.</li>
           </ul>
         </div>
@@ -7126,7 +7126,7 @@ agente.print_response("Onde está o pedido 4521?")</code></pre>
                   <span class="tr-dot teal"></span>
                   <div class="tr-corpo">
                     <b>O Desperdício de Chamar o LLM para Dúvidas Repetidas</b>
-                    <p>Em centrais de atendimento, até 50% das perguntas dos clientes são semanticamente idênticas com redação diferente (ex: 'Como cancelar minha assinatura?' vs 'Quero encerrar meu plano').</p>
+                    <p>Em centrais de atendimento, boa parte das perguntas dos clientes tem o mesmo sentido com redação diferente (ex: 'Como cancelar minha assinatura?' vs 'Quero encerrar meu plano').</p>
                   </div>
                 </div>
                 <div class="tr-item">
@@ -7185,7 +7185,7 @@ agente.print_response("Onde está o pedido 4521?")</code></pre>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Hashes sintáticos exatos falham com qualquer mínima variação na redação ou pontuação da mesma pergunta do cliente.">
                     <span class="te-letter">A</span> Configurar cache tradicional de chave-valor indexado pelo hash MD5 exato da string da mensagem enviada pelo usuário na requisição HTTP.
                   </button>
-                  <button class="te-opt" type="button" data-correct="true" data-rationale="O Caching Semântico reconhece a equivalência de intenção semântica, gerando economia massiva de custos e redução radical de latência para consultas recorrentes.">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O Caching Semântico reconhece a equivalência de intenção semântica, o que reduz custo e latência nas consultas recorrentes.">
                     <span class="te-letter">B</span> Caching semântico com embeddings vetoriais para entregar respostas cacheadas a perguntas com a mesma intenção.
                   </button>
                   <button class="te-opt" type="button" data-correct="false" data-rationale="Compactações de texto não impedem a cobrança recorrente de inferência para requisições de mesma intenção semântica.">
@@ -7765,6 +7765,851 @@ void reembolsoEmiteUmaUnicaVez() {
           </div>
 
         <button class="done" type="button" data-k="t6-avaliar-agentes">marcar dominado</button>
+      </article>
+      <article class="topic" id="t6-gateway">
+        <div class="th"><h3>6.7 Gateway de LLM: um ponto único de acesso aos modelos</h3><div class="badges"><span class="badge b-prof">plataforma</span><span class="badge b-caso">custo e governança</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Um serviço que fica entre as aplicações e os provedores de modelos. Todas as chamadas a LLM da empresa passam por ele, e é nele que ficam as chaves dos provedores, as regras de roteamento, os limites e o registro de consumo.</div>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Dar a cada aplicação uma <b>credencial virtual</b> própria, em vez de espalhar a chave do provedor; trocar de modelo ou de provedor sem alterar as aplicações; aplicar limite e orçamento por sistema; e saber quanto cada sistema e cada centro de custo gastou.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Lógica</h4>
+            <p>O gateway expõe uma API compatível com a dos provedores. A aplicação envia a requisição com a credencial virtual e um <b>nome lógico</b> de modelo. O gateway valida a credencial, confere limite e orçamento, escolhe o provedor real, repassa a chamada com a chave verdadeira, registra tokens, custo e latência com as etiquetas daquela credencial e devolve a resposta. Se o provedor falhar ou limitar, tenta o modelo reserva.</p>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como usar</h4>
+            <ul>
+              <li>Crie uma credencial virtual por aplicação e por ambiente, com orçamento e limite de requisições.</li>
+              <li>Nas aplicações, use nomes lógicos (<code>chat-padrao</code>, <code>embedding-padrao</code>), nunca o nome do modelo do provedor.</li>
+              <li>Configure um modelo reserva para cada nome lógico e teste a troca de propósito.</li>
+              <li>Etiquete cada credencial com sistema e centro de custo, e publique o gasto por etiqueta.</li>
+              <li>Bloqueie a saída de rede direta para os provedores: o gateway só governa o que passa por ele.</li>
+            </ul>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>Sem um ponto único, cada time guarda uma chave, ninguém sabe o gasto por sistema, uma chave vazada compromete a conta inteira e trocar de modelo exige alterar todas as aplicações. É o mesmo problema que o gateway de API resolveu para chamadas HTTP, agora com um recurso que é cobrado por token. Em plataformas de IA de empresas grandes, esse é o primeiro componente a ser construído.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (CADA APLICAÇÃO FALA DIRETO COM O PROVEDOR)</div>
+            <div class="conteudo">Doze serviços usam a mesma chave do provedor, copiada em doze cofres. A fatura chega com um valor só. Quando o provedor limita a conta, todos os serviços param juntos. Trocar de modelo significa doze deploys.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (TODAS AS CHAMADAS PASSAM PELO GATEWAY)</div>
+            <div class="conteudo">Cada serviço tem a sua credencial, com orçamento e limite. O gasto aparece por sistema e por centro de custo. Um serviço que exagera esgota só a própria cota. A troca de modelo é uma mudança de configuração no gateway.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-yaml"># gateway (LiteLLM Proxy): config.yaml
+# a aplicação pede "chat-padrao"; o gateway decide qual provedor atende
+model_list:
+  - model_name: chat-padrao
+    litellm_params:
+      model: azure/&lt;seu-deployment&gt;
+      api_base: os.environ/AZURE_API_BASE
+      api_key: os.environ/AZURE_API_KEY
+  - model_name: chat-reserva
+    litellm_params:
+      model: bedrock/&lt;id-do-modelo&gt;
+
+litellm_settings:
+  fallbacks: [{"chat-padrao": ["chat-reserva"]}]   # se o principal falhar, tenta o reserva
+
+# criar a credencial virtual do OrderFlow, com orçamento e limite próprios
+# POST /key/generate
+# { "models": ["chat-padrao"], "max_budget": 50, "budget_duration": "30d",
+#   "rpm_limit": 60, "metadata": { "sistema": "orderflow", "centro_custo": "atendimento" } }
+
+# aplicação Spring AI: application.yml
+# a chave do provedor nunca chega à aplicação; ela só conhece a credencial virtual
+spring:
+  ai:
+    openai:
+      base-url: http://llm-gateway:4000
+      api-key: ${ORDERFLOW_LLM_KEY}
+      chat:
+        options:
+          model: chat-padrao</code></pre>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Exemplo hipotético: um agente em teste entrou em laço numa madrugada e fez milhares de chamadas com a chave compartilhada da empresa. O limite da conta no provedor foi atingido, e o assistente de atendimento em produção, que usava a mesma chave, parou de responder. Com o gateway, o agente em teste teria uma credencial com orçamento baixo: ao atingi-lo, só ele receberia erro, e o alerta de orçamento avisaria o time.</p>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia física:</b> o cartão corporativo. A empresa não entrega o cartão principal a cada funcionário. Cada um recebe um cartão adicional, com limite próprio e fatura detalhada por pessoa. Se um cartão é perdido, cancela-se só aquele, e o financeiro sabe quem gastou o quê.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
+          <ul>
+            <li><b>Ponto único de falha:</b> se o gateway cai, toda a IA da empresa para. Rode várias instâncias, sem estado local, e monitore como um componente crítico.</li>
+            <li><b>Modelo reserva que não foi avaliado:</b> a troca automática para outro modelo muda a qualidade das respostas. Rode a mesma bateria de avaliação no reserva antes de ativá-lo.</li>
+            <li><b>Registrar prompts e respostas sem cuidado:</b> o registro do gateway passa a guardar dados pessoais de todos os sistemas. Mascare dados sensíveis e defina prazo de retenção.</li>
+            <li><b>Cache compartilhado entre sistemas ou clientes:</b> uma resposta guardada para um tenant pode ser entregue a outro. A chave do cache precisa incluir o escopo.</li>
+            <li><b>Caminho direto ainda aberto:</b> se um time consegue chamar o provedor por fora, o orçamento e a auditoria deixam de valer.</li>
+            <li><b>Latência adicionada:</b> o gateway é mais um salto de rede. Meça o acréscimo e repasse o streaming sem acumular a resposta.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>🔗 Conexões &amp; Pontes Didáticas</b>
+          <span>Veja também: <a href="spring.html#g7">Spring · Gateway e Config</a>, que explica rota, filtro e limite por balde de fichas; <a href="#t6-caching">6.3 Cache semântico</a>; <a href="#t6-observabilidade">6.4 Observabilidade</a>; e <a href="arquitetura.html#g7">Arquitetura · Multi-tenancy</a> para o isolamento entre clientes.</span>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="#t7-escada">Projeto 4 · carro-chefe</a></span></div>
+          <p>Suba um gateway de LLM com Docker na frente do seu carro-chefe. Crie duas credenciais virtuais (produção e teste) com orçamentos diferentes, aponte a aplicação para um nome lógico e configure um modelo reserva, que pode ser um modelo local no Ollama.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> você mostra o gasto separado por credencial, a credencial de teste é bloqueada ao estourar o orçamento sem afetar a de produção, e, ao derrubar o modelo principal, a aplicação continua respondendo pelo reserva.</p>
+          <p class="pj-java"><b>Em Java:</b> o Spring AI aponta para o gateway com <code>spring.ai.openai.base-url</code>; a aplicação não guarda nenhuma chave de provedor.</p>
+        </div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Gateway de LLM</h4>
+              </div>
+
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Credencial virtual por aplicação</b>
+                    <p>A chave do provedor fica só no gateway. Cada sistema recebe uma credencial própria, que pode ser limitada e revogada sozinha.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Nome lógico, roteamento e reserva</b>
+                    <p>A aplicação pede um nome lógico. O gateway escolhe o provedor e troca para o reserva em caso de falha.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Consumo atribuído</b>
+                    <p>Tokens, custo e latência são registrados por credencial e por etiqueta, o que permite orçamento e cobrança por sistema.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: a troca automática de modelo é transparente?</b>
+                    <p>Para a disponibilidade, sim. Para a qualidade, não. Outro modelo responde de outro jeito ao mesmo prompt; sem avaliar o reserva, a troca pode degradar as respostas sem ninguém perceber.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>Um gateway de LLM é um gateway de API em que o recurso limitado é o token. As mesmas perguntas valem: quem está chamando, quanto pode gastar, para onde vai e o que fica registrado.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t6-gateway">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t6-gateway</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de Engenharia de IA / GenAI:</strong> Uma empresa tem nove sistemas usando LLM com a mesma chave do provedor. A diretoria quer saber quanto cada área gasta, e na semana passada um experimento consumiu a cota da conta e derrubou o atendimento em produção.</p>
+
+                <p class="te-instrucao">Qual desenho resolve os dois problemas?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Chaves separadas ajudam a isolar, mas continuam espalhadas pelos sistemas, sem orçamento, sem troca de modelo central e com a medição dependendo de cada time.">
+                    <span class="te-letter">A</span> Criar nove chaves diferentes no provedor, entregar uma a cada time e pedir que cada um registre o próprio consumo numa planilha mensal.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Aumentar a cota adia o problema: o experimento continua podendo consumir tudo, e o gasto por área segue desconhecido.">
+                    <span class="te-letter">B</span> Pedir ao provedor um aumento da cota da conta e criar um alerta quando o consumo total passar de 80% do limite contratado.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A credencial com orçamento isola o experimento da produção, e as etiquetas dão o gasto por área sem depender de cada time.">
+                    <span class="te-letter">C</span> Um gateway com credencial virtual, orçamento e etiqueta de centro de custo por sistema.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é uma credencial virtual num gateway de LLM e o que ela permite?</p>
+                  <span class="tf-hint">Dica: Pense no cartão adicional com limite próprio →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">É uma chave emitida pelo gateway para uma aplicação, no lugar da chave real do provedor. Ela permite definir orçamento, limite de requisições e modelos permitidos por sistema, atribuir o consumo e revogar o acesso de um sistema sem afetar os outros.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="t6-gateway">marcar dominado</button>
+      </article>
+      <article class="topic" id="t6-golden">
+        <div class="th"><h3>6.8 Golden set e regressão: avaliação como processo de engenharia</h3><div class="badges"><span class="badge b-prof">qualidade</span><span class="badge b-caso">evals no CI</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> Um <b>golden set</b> é um conjunto versionado de casos de teste do seu sistema de IA: a entrada, o que se espera da resposta e por quê. O <b>teste de regressão</b> roda esse conjunto a cada mudança (de prompt, de modelo, de dados ou de código) e compara o resultado com o da versão em produção. Os dois juntos transformam a avaliação, de um experimento feito uma vez, numa etapa obrigatória do pipeline.</div>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Responder com número à pergunta "a versão nova é melhor ou pior que a atual?", impedir que uma melhoria num caso quebre outros dez, e dar segurança para trocar de modelo ou de provedor.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Lógica</h4>
+            <p>Cada caso tem uma entrada e um <b>critério</b>. Onde dá, o critério é <b>determinístico</b>: a resposta contém um valor, segue um formato, cita a fonte certa, chamou a ferramenta certa. Onde não dá, usa-se um modelo juiz com rubrica. O pipeline roda o conjunto na versão candidata, calcula a taxa de acerto por categoria e compara com a <b>linha de base</b> gravada da versão em produção. Se a queda passa da tolerância, o pipeline falha. Como a saída do modelo varia, os casos são rodados com temperatura baixa e, nos mais instáveis, mais de uma vez.</p>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como usar</h4>
+            <ul>
+              <li>Comece com 30 a 50 casos tirados de uso real, sem dados pessoais: perguntas comuns, casos difíceis, casos em que a resposta certa é recusar.</li>
+              <li>Classifique cada caso (tipo de pergunta, dificuldade) para ver onde a versão piorou, não só a média.</li>
+              <li>Prefira validação determinística; use modelo juiz só no que é subjetivo, e confira o juiz contra notas humanas.</li>
+              <li>Todo defeito encontrado em produção vira um caso novo antes de ser corrigido.</li>
+              <li>Guarde uma parte dos casos fora do ajuste de prompts, para medir sem viés.</li>
+              <li>Depois do pipeline, compare versões em produção com teste A/B e uma métrica de negócio.</li>
+            </ul>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>Um prompt é código sem compilador: qualquer alteração pode mudar o comportamento em casos que você não olhou. Sem um conjunto fixo e uma comparação automática, o time avalia de memória, e cada troca de modelo vira uma aposta. É a prática que as vagas descrevem como golden sets, análise de regressão e validação automatizada em CI/CD.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (AVALIAÇÃO DE OLHO)</div>
+            <div class="conteudo">O desenvolvedor muda o prompt, testa três perguntas que lembra, acha que melhorou e publica. Dias depois, descobre que um tipo de pergunta que funcionava passou a falhar.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (GOLDEN SET NO PIPELINE)</div>
+            <div class="conteudo">A mudança roda contra 200 casos. O relatório mostra que a categoria "prazo" subiu e a categoria "reembolso" caiu 8 pontos. O pipeline bloqueia, e o defeito é corrigido antes de chegar ao usuário.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-java">// evals/golden.jsonl  (uma linha por caso; versionado junto com o código)
+// {"id":"prazo-01","categoria":"prazo","pergunta":"Qual o prazo de troca?","deve_conter":["30 dias"],"fonte":"politica-trocas.md"}
+// {"id":"fora-01","categoria":"recusa","pergunta":"Qual o saldo da conta do João?","deve_recusar":true}
+
+@SpringBootTest
+class GoldenSetTest {
+
+    @Autowired AssistenteService assistente;
+
+    @Test
+    void naoRegrideEmNenhumaCategoria() throws Exception {
+        List&lt;Caso&gt; casos = Golden.carregar("evals/golden.jsonl");
+        Map&lt;String, Double&gt; base = Baseline.carregar("evals/baseline.json");   // taxas da versão em produção
+
+        Map&lt;String, Double&gt; taxa = casos.stream().collect(Collectors.groupingBy(
+            Caso::categoria,
+            Collectors.averagingDouble(c -&gt; Avaliador.passa(c, assistente.responder(c.pergunta())) ? 1 : 0)));
+
+        taxa.forEach((categoria, valor) -&gt; {
+            double minimo = base.getOrDefault(categoria, 0.0) - 0.03;          // tolerância de 3 pontos
+            assertTrue(valor &gt;= minimo,
+                "categoria %s caiu para %.2f (base %.2f)".formatted(categoria, valor, base.get(categoria)));
+        });
+    }
+}
+
+// Avaliador.passa: primeiro o determinístico (contém, formato, fonte citada, recusa);
+// o modelo juiz entra só para os casos marcados como subjetivos.</code></pre>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Exemplo hipotético: uma equipe trocou o modelo do assistente por um mais barato depois de testar dez perguntas à mão. A economia foi real, mas o modelo novo deixou de recusar perguntas sobre dados de outros clientes, comportamento que ninguém tinha testado. Com um golden set que incluísse casos de recusa, a troca teria sido bloqueada no pipeline.</p>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia física:</b> a prova do Detran. O examinador não avalia cada candidato pela impressão geral; ele segue a mesma lista de itens para todos. É a lista fixa que permite comparar um candidato com outro e o mesmo candidato antes e depois das aulas.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
+          <ul>
+            <li><b>Conjunto pequeno ou fácil demais:</b> com dez casos óbvios, tudo passa e nada é medido. Inclua os casos difíceis e os de recusa.</li>
+            <li><b>Ajustar o prompt até passar no conjunto:</b> o sistema decora os casos e piora fora deles. Mantenha uma parte dos casos separada.</li>
+            <li><b>Olhar só a média:</b> uma categoria pode despencar enquanto outra sobe. Compare por categoria.</li>
+            <li><b>Modelo juiz sem conferência:</b> o juiz também erra. Compare as notas dele com as de uma pessoa numa amostra antes de confiar.</li>
+            <li><b>Variação tratada como regressão:</b> uma diferença de um ou dois casos pode ser ruído. Use tolerância e repita os casos instáveis.</li>
+            <li><b>Dados pessoais no conjunto:</b> casos copiados de produção levam dados de clientes para o repositório. Anonimize antes.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>🔗 Conexões &amp; Pontes Didáticas</b>
+          <span>Veja também: <a href="#t6-evals">6.2 Evals e LLM-as-a-Judge</a> para a rubrica do juiz; <a href="#t6-avaliar-agentes">6.6 Como avaliar um agente</a> para trajetória; <a href="#of-evals">OrderFlow · Etapa 2</a>, que põe a avaliação no CI.</span>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="#t7-escada">Projeto 4 · carro-chefe</a></span></div>
+          <p>Monte o golden set do seu carro-chefe: 40 casos em arquivo, com categoria e critério, e uma linha de base gravada. Adicione o teste ao pipeline.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> você muda o prompt de propósito para piorar uma categoria e o pipeline falha apontando qual categoria caiu e quanto.</p>
+          <p class="pj-java"><b>Em Java:</b> um teste JUnit que lê o arquivo de casos e compara a taxa por categoria com a linha de base.</p>
+        </div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Golden Set e Regressão</h4>
+              </div>
+
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Casos versionados</b>
+                    <p>Entrada, critério e categoria, guardados junto com o código.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Comparar com a linha de base</b>
+                    <p>A versão candidata é medida contra a que está em produção, por categoria.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Bloquear no pipeline</b>
+                    <p>Queda além da tolerância impede a publicação.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: passar em 100% do golden set prova que o sistema está certo?</b>
+                    <p>Não. Prova que ele acerta os casos que você escreveu. O conjunto precisa crescer com cada defeito encontrado, e uma parte deve ficar fora do ajuste.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>Trate prompt, modelo e dados como código: nenhuma mudança é publicada sem rodar a mesma bateria e comparar com a versão anterior.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t6-golden">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t6-golden</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de Engenharia de IA / GenAI:</strong> Um time quer trocar o modelo do assistente por um mais barato. O gerente pergunta se a qualidade vai cair. Hoje a avaliação é feita testando algumas perguntas à mão antes de cada publicação.</p>
+
+                <p class="te-instrucao">Como responder a essa pergunta com segurança?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A mesma bateria nos dois modelos dá uma comparação objetiva e mostra em quais tipos de pergunta há perda.">
+                    <span class="te-letter">A</span> Rodar o golden set nos dois modelos e comparar a taxa de acerto por categoria.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="A queda só seria percebida depois de afetar os usuários, e parte dos erros não gera reclamação.">
+                    <span class="te-letter">B</span> Publicar o modelo novo para todos os usuários e acompanhar as reclamações no suporte durante duas semanas.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Benchmarks públicos medem tarefas genéricas, não o comportamento do modelo nos seus dados e nas suas regras.">
+                    <span class="te-letter">C</span> Comparar as notas dos dois modelos nos rankings públicos de benchmarks e escolher o de maior pontuação geral.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é a linha de base num teste de regressão de IA?</p>
+                  <span class="tf-hint">Dica: pense no que a versão nova é comparada →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">É o resultado da versão em produção no golden set, gravado por categoria. A versão candidata só é publicada se não ficar abaixo dela além da tolerância definida.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="t6-golden">marcar dominado</button>
+      </article>
+      <article class="topic" id="t6-governanca">
+        <div class="th"><h3>6.9 Governança de IA e LGPD: dados pessoais, auditoria e risco</h3><div class="badges"><span class="badge b-prof">governança</span><span class="badge b-caso">LGPD</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> <b>Governança de IA</b> é o conjunto de regras e controles que define quem pode usar IA para quê, com quais dados, e como isso é registrado e revisto. No Brasil, a base legal é a <b>LGPD</b> (Lei 13.709/2018), que vale sempre que o sistema trata dados pessoais: no prompt, nos documentos indexados, nos registros e nas respostas.</div>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Permitir que a empresa use IA em processos reais sem expor dados de clientes, responder a auditorias e ao titular dos dados, e decidir de forma consistente quais casos de uso são aceitáveis.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Lógica</h4>
+            <p>Cada caso de uso é registrado num <b>inventário</b> e classificado por risco: o que decide, sobre quem, com quais dados. Sobre isso se aplicam controles técnicos. Na entrada, os dados pessoais desnecessários são <b>mascarados</b> antes de chegar ao modelo. No contrato com o provedor, ficam definidos a retenção, o uso para treino e a região de processamento. Cada chamada gera um <b>registro de auditoria</b>: quem pediu, qual modelo e qual versão do prompt, quais fontes foram usadas. Decisões de alto impacto passam por uma pessoa. E há um processo para excluir os dados de um titular de todos os lugares, incluindo o índice vetorial.</p>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como usar</h4>
+            <ul>
+              <li>Aplique a <b>necessidade</b>: envie ao modelo só os dados de que a tarefa precisa.</li>
+              <li>Mascare identificadores (CPF, e-mail, telefone) antes da chamada e antes de gravar registros.</li>
+              <li>Confira no contrato do provedor: retenção, uso dos dados para treino e país de processamento.</li>
+              <li>Registre modelo, versão do prompt e fontes de cada resposta, com prazo de retenção definido.</li>
+              <li>Em decisões que afetam a pessoa (crédito, contratação, preço), mantenha revisão humana e explique os critérios.</li>
+              <li>Inclua o índice vetorial e os caches no processo de exclusão de dados do titular.</li>
+            </ul>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>A LGPD prevê, no artigo 20, o direito de pedir revisão de decisões tomadas só por tratamento automatizado, e no artigo 18, o de pedir a eliminação dos dados. Um sistema de IA que não sabe quais dados usou nem consegue apagá-los não cumpre nenhum dos dois. Além disso, o registro do gateway e o banco vetorial viram, sem controle, os maiores depósitos de dados pessoais da empresa.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (IA SEM GOVERNANÇA)</div>
+            <div class="conteudo">O atendente cola a conversa inteira do cliente, com CPF e endereço, num assistente externo. Ninguém sabe para onde o dado foi, por quanto tempo fica guardado nem como apagá-lo quando o cliente pedir.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (CONTROLES NO CAMINHO)</div>
+            <div class="conteudo">O assistente interno mascara os identificadores antes da chamada, usa um provedor com contrato de retenção zero, registra a consulta e tem um procedimento testado para excluir os dados do titular.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-java">// mascarar ANTES de enviar ao modelo e ANTES de gravar em log
+@Component
+class Mascarador {
+    private static final Pattern CPF   = Pattern.compile("\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b");
+    private static final Pattern EMAIL = Pattern.compile("[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+");
+
+    String mascarar(String texto) {
+        String semCpf = CPF.matcher(texto).replaceAll("[CPF]");
+        return EMAIL.matcher(semCpf).replaceAll("[EMAIL]");
+    }
+}
+
+// registro de auditoria: o que é preciso para explicar uma resposta depois
+record RegistroAuditoria(
+    Instant quando, String usuarioId, String casoDeUso,
+    String modelo, String versaoPrompt,
+    List&lt;String&gt; fontesUsadas,          // ids dos documentos recuperados
+    boolean revisaoHumana) {}
+
+@Service
+class AssistenteGovernado {
+    String responder(String usuarioId, String pergunta) {
+        String limpa = mascarador.mascarar(pergunta);
+        Resposta r = assistente.responder(limpa);
+        auditoria.gravar(new RegistroAuditoria(Instant.now(), usuarioId, "atendimento",
+            r.modelo(), "atendimento-v7", r.fontes(), false));
+        return r.texto();
+    }
+}
+// Expressão regular cobre formatos fixos. Nomes e endereços exigem um detector de entidades.</code></pre>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Exemplo hipotético: um cliente pediu a exclusão dos seus dados. A empresa apagou o cadastro no banco principal, mas os documentos dele continuaram no índice vetorial do assistente, que seguiu citando trechos do contrato em respostas. O processo de exclusão passou a incluir a remoção dos trechos indexados e a limpeza do cache.</p>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia física:</b> o prontuário de um hospital. Só quem está tratando o paciente pode ver; cada acesso fica registrado; o paciente pode pedir uma cópia e a correção; e o médico continua responsável pela decisão, mesmo com o exame feito por uma máquina.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
+          <ul>
+            <li><b>Achar que anonimizou porque tirou o nome:</b> a combinação de data, cidade e cargo pode identificar a pessoa. Isso é pseudonimização, e a LGPD continua valendo.</li>
+            <li><b>Registrar prompts completos por padrão:</b> o log passa a guardar dados pessoais de todos os usuários, sem prazo. Mascare e defina retenção.</li>
+            <li><b>Esquecer o índice vetorial na exclusão:</b> o dado apagado do banco continua sendo recuperado pelo RAG.</li>
+            <li><b>Enviar dados ao provedor sem checar o contrato:</b> retenção, treino e país de processamento variam por plano. A transferência internacional tem regras próprias na LGPD.</li>
+            <li><b>Decisão automática sem revisão possível:</b> se o sistema nega algo à pessoa, ela pode pedir revisão e os critérios usados.</li>
+            <li><b>Governança só no papel:</b> uma política que não vira controle no código não impede nada.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>🔗 Conexões &amp; Pontes Didáticas</b>
+          <span>Veja também: <a href="../cadernos/governanca-seguranca.html">Governança e segurança de TI</a> para risco, privacidade e LGPD em geral; <a href="#t6-gateway">6.7 Gateway de LLM</a>, onde o mascaramento e o registro costumam ficar; <a href="#lab-injecao">Lab 9 · Prompt injection</a>.</span>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="#t7-escada">Projeto 4 · carro-chefe</a></span></div>
+          <p>No carro-chefe, adicione o mascaramento na entrada, o registro de auditoria por resposta e um comando que exclui os dados de um titular do banco, do índice vetorial e do cache.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> você roda a exclusão de um titular e mostra que nenhuma resposta nem registro novo traz dados dele, e que cada resposta antiga tem modelo, prompt e fontes registrados.</p>
+          <p class="pj-java"><b>Em Java:</b> um componente de mascaramento chamado antes do <code>ChatClient</code> e um registro gravado em tabela própria.</p>
+        </div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Governança de IA e LGPD</h4>
+              </div>
+
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>Inventário e risco</b>
+                    <p>Cada caso de uso é registrado e classificado pelo que decide e pelos dados que usa.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Controles no caminho</b>
+                    <p>Mascarar na entrada, registrar cada resposta e manter revisão humana no alto impacto.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Direitos do titular</b>
+                    <p>Explicar a decisão e excluir os dados, inclusive do índice vetorial.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: usar um provedor que não treina com os seus dados resolve a LGPD?</b>
+                    <p>Não. Isso trata um risco. Continuam valendo a base legal, a necessidade, a transferência internacional, o registro e os direitos do titular.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>Para cada dado pessoal, pergunte: precisa mesmo ir ao modelo, onde vai ficar guardado, por quanto tempo, e como se apaga.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t6-governanca">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t6-governanca</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de Engenharia de IA / GenAI:</strong> Um assistente de atendimento usa RAG sobre contratos de clientes e grava todos os prompts e respostas completos para depuração. Um cliente exerce o direito de eliminação dos dados previsto na LGPD.</p>
+
+                <p class="te-instrucao">O que precisa acontecer para atender ao pedido?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Os trechos do contrato continuam no índice vetorial e nos registros, e o assistente ainda pode citá-los.">
+                    <span class="te-letter">A</span> Apagar o cadastro do cliente no banco principal, que é a fonte da verdade, e confirmar a exclusão ao cliente no mesmo dia.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Enviar um prompt não incorpora o dado ao modelo; e a empresa continua responsável pelos dados que guarda.">
+                    <span class="te-letter">B</span> Informar que a exclusão não é possível porque os dados já foram enviados ao provedor do modelo e incorporados a ele.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="O dado pessoal está em todos esses lugares; a eliminação só é real quando alcança cada cópia.">
+                    <span class="te-letter">C</span> Apagar do banco, do índice vetorial, do cache e dos registros de prompts.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que o artigo 20 da LGPD garante em relação a sistemas automatizados?</p>
+                  <span class="tf-hint">Dica: pense em decisões que afetam a pessoa →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">O direito de pedir a revisão de decisões tomadas unicamente com base em tratamento automatizado de dados pessoais que afetem os interesses do titular, e de receber informações sobre os critérios usados.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="t6-governanca">marcar dominado</button>
+      </article>
+      <article class="topic" id="t6-nuvem">
+        <div class="th"><h3>6.10 Plataformas de nuvem para IA: Azure e AWS</h3><div class="badges"><span class="badge b-prof">nuvem</span><span class="badge b-caso">Azure e Bedrock</span></div></div>
+        <div class="direto">🎯 <b>O que é:</b> São os serviços das nuvens que entregam modelos de linguagem, busca, filtros de segurança e ferramentas de agente dentro da conta da empresa. Na Microsoft, o centro é o <b>Microsoft Foundry</b> (antes Azure AI Foundry), que inclui os modelos da OpenAI, com o <b>Azure AI Search</b> para busca. Na AWS, é o <b>Amazon Bedrock</b>, que dá acesso a modelos de vários fornecedores por uma API única, com bases de conhecimento e guardrails gerenciados.</div>
+
+        <div class="duo">
+          <div>
+            <h4>🚀 Para que serve</h4>
+            <p>Usar modelos de ponta com os controles que a empresa já tem na nuvem: identidade corporativa no lugar de chave solta, rede privada, região de processamento definida, fatura única e contrato já aprovado pelo jurídico.</p>
+          </div>
+          <div class="o">
+            <h4>⚙️ Como funciona a Lógica</h4>
+            <p>No Azure, você cria um recurso numa região e faz um <b>deployment</b> de um modelo, com um nome escolhido por você. A aplicação chama o deployment, não o modelo, e a cota é contada em tokens por minuto por deployment e região. Na AWS, você habilita o acesso ao modelo na região e chama a <b>API Converse</b> informando o identificador do modelo; a autenticação é a do IAM, sem chave própria do serviço. Nos dois casos há duas formas de pagar: por token consumido, ou por capacidade reservada, que garante vazão e latência. A busca gerenciada (AI Search, Knowledge Bases) faz a ingestão, o chunking, os embeddings e a busca híbrida que você faria à mão com pgvector.</p>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div>
+            <h4>Como usar</h4>
+            <ul>
+              <li>Escolha a região pelo requisito de dados e pela disponibilidade do modelo, que varia por região.</li>
+              <li>Autentique com identidade gerenciada (Entra ID no Azure, papel do IAM na AWS), não com chave em arquivo.</li>
+              <li>Dimensione a cota de tokens por minuto antes de ir a produção e peça aumento com antecedência.</li>
+              <li>Compare a busca gerenciada com o seu RAG em pgvector usando o mesmo golden set antes de decidir.</li>
+              <li>Mantenha a aplicação atrás de uma abstração (Spring AI) ou de um gateway, para não prender o código a um provedor.</li>
+            </ul>
+          </div>
+          <div class="o">
+            <h4>Por que é importante</h4>
+            <p>A maioria das empresas grandes só usa IA pelo provedor de nuvem que já contratou. Por isso as vagas pedem Azure ou AWS pelo nome, e várias citam Foundry, Azure AI Search e Bedrock. Conhecer os conceitos (deployment, cota, identidade, região) permite trocar de uma nuvem para a outra; saber só o SDK de um fornecedor não.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="antes">
+            <div class="lab">ANTES (API DIRETA DO FORNECEDOR)</div>
+            <div class="conteudo">A aplicação usa uma chave de API criada com o cartão de um gerente. Os dados saem para um endpoint público, a fatura é separada e o jurídico nunca viu o contrato.</div>
+          </div>
+          <div class="depois">
+            <div class="lab">DEPOIS (MODELO NA NUVEM DA EMPRESA)</div>
+            <div class="conteudo">A aplicação chama o modelo com a identidade do próprio serviço, por rede privada, numa região aprovada. O gasto aparece na fatura da nuvem, com as mesmas etiquetas de custo dos outros recursos.</div>
+          </div>
+        </div>
+
+        <pre><code class="language-yaml"># O código Java com ChatClient é o mesmo nos dois casos; muda a dependência e a configuração.
+# Os nomes de propriedades variam entre versões do Spring AI: confira a documentação da sua.
+
+# --- Azure (dependência: spring-ai-starter-model-azure-openai) ---
+spring:
+  ai:
+    azure:
+      openai:
+        endpoint: https://orderflow-ia.openai.azure.com/
+        api-key: ${AZURE_OPENAI_KEY}          # em produção, prefira identidade gerenciada
+        chat:
+          options:
+            deployment-name: chat-padrao       # o nome do SEU deployment, não o do modelo
+
+# --- AWS (dependência: spring-ai-starter-model-bedrock-converse) ---
+spring:
+  ai:
+    bedrock:
+      aws:
+        region: us-east-1                      # credenciais vêm do papel do IAM do serviço
+      converse:
+        chat:
+          options:
+            model: &lt;id-do-modelo-no-bedrock&gt;
+
+// a aplicação não muda
+@Service
+class Assistente {
+    private final ChatClient chat;
+    Assistente(ChatClient.Builder builder) { this.chat = builder.build(); }
+
+    String responder(String pergunta) {
+        return chat.prompt().user(pergunta).call().content();
+    }
+}</code></pre>
+
+        <div class="caso">
+          <b>💻 EXEMPLO REAL DE ENGENHARIA</b>
+          <p>Exemplo hipotético: um assistente passou em todos os testes e foi lançado numa campanha. No primeiro pico, metade das chamadas voltou com erro 429: o deployment tinha a cota padrão de tokens por minuto, muito abaixo do tráfego real. O pedido de aumento de cota levou dias. Desde então, o time estima os tokens por minuto antes de cada lançamento e mantém um segundo deployment em outra região como reserva.</p>
+        </div>
+
+        <div class="analogia">
+          <i class="ic">≈</i>
+          <p><b>Analogia física:</b> alugar uma sala num centro empresarial em vez de num prédio qualquer. A sala é a mesma, mas a portaria, o crachá, a segurança e o boleto já são os do condomínio que a sua empresa usa.</p>
+        </div>
+
+        <div class="gotcha">
+          <b>⚠️ Armadilhas de Produção &amp; Onde Quebra</b>
+          <ul>
+            <li><b>Cota de tokens por minuto subestimada:</b> o erro 429 aparece só sob carga. Estime o consumo e peça a cota antes.</li>
+            <li><b>Modelo indisponível na região exigida:</b> nem todo modelo existe em toda região. Confira antes de prometer o requisito de localização de dados.</li>
+            <li><b>Chave de API em variável de ambiente para sempre:</b> a identidade gerenciada elimina o segredo. Use a chave só no começo.</li>
+            <li><b>Versão do modelo trocada pelo provedor:</b> modelos são descontinuados e atualizados. Fixe a versão e rode o golden set antes de aceitar a nova.</li>
+            <li><b>Prender o código ao SDK de uma nuvem:</b> trocar de provedor vira reescrita. Use uma abstração ou um gateway.</li>
+            <li><b>Estudar pela certificação errada:</b> a prova AI-102, ainda citada em vagas, foi aposentada em junho de 2026; a atual é a AI-103. Confira no site da Microsoft antes de se inscrever.</li>
+          </ul>
+        </div>
+
+        <div class="ver">
+          <b>🔗 Conexões &amp; Pontes Didáticas</b>
+          <span>Veja também: <a href="nuvem.html">Trilha de Nuvem</a> para identidade, rede e custo; <a href="#t6-gateway">6.7 Gateway de LLM</a> para rotear entre provedores; <a href="#t4-rag">4.4 RAG</a>, que é o que a busca gerenciada automatiza.</span>
+        </div>
+        <div class="projeto">
+          <div class="pj-h"><span class="pj-tag">Projeto do conceito</span><span class="pj-onde">entra no <a href="#t7-escada">Projeto 4 · carro-chefe</a></span></div>
+          <p>Aponte o seu carro-chefe para um modelo numa nuvem (uma conta gratuita ou de estudante basta), sem mudar o código da aplicação: só a dependência e a configuração. Depois troque para a outra nuvem ou para um modelo local.</p>
+          <p class="pj-ok"><b>Pronto quando:</b> a mesma bateria de avaliação roda nos dois provedores, e você tem uma tabela com acerto, latência e custo de cada um.</p>
+          <p class="pj-java"><b>Em Java:</b> o Spring AI troca de provedor pela dependência e pelo <code>application.yml</code>; o <code>ChatClient</code> continua igual.</p>
+        </div>
+
+        <!-- ==================== 8. FECHAMENTO & FIXAÇÃO DO TÓPICO ==================== -->
+          <div class="topico-fechamento">
+
+            <div class="topico-revisao">
+              <div class="tr-header">
+                <span class="tr-badge">🧠 RECAPITULANDO O ASSUNTO</span>
+                <h4 class="tr-title">Síntese de Fixação: Plataformas de Nuvem para IA</h4>
+              </div>
+
+              <div class="tr-grid">
+                <div class="tr-item">
+                  <span class="tr-dot teal"></span>
+                  <div class="tr-corpo">
+                    <b>O modelo dentro da conta</b>
+                    <p>Identidade, rede, região e fatura são os da nuvem que a empresa já usa.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot purple"></span>
+                  <div class="tr-corpo">
+                    <b>Deployment e cota</b>
+                    <p>A aplicação chama um deployment ou um identificador de modelo, limitado em tokens por minuto.</p>
+                  </div>
+                </div>
+                <div class="tr-item">
+                  <span class="tr-dot rose"></span>
+                  <div class="tr-corpo">
+                    <b>Não se prender</b>
+                    <p>Abstração ou gateway permitem trocar de provedor sem reescrever.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tr-takeaway">
+                <div class="tr-takeaway-item alert">
+                  <span class="tr-icon">⚠️</span>
+                  <div>
+                    <b>Pegadinha: no Azure, a aplicação informa o nome do modelo na chamada?</b>
+                    <p>Não. Ela informa o nome do deployment, que você criou e que aponta para um modelo e uma versão. Por isso dá para trocar a versão do modelo sem alterar a aplicação.</p>
+                  </div>
+                </div>
+                <div class="tr-takeaway-item tip">
+                  <span class="tr-icon">💡</span>
+                  <div>
+                    <b>Modelo Mental de Decisão Técnica:</b>
+                    <p>Aprenda os conceitos que existem em toda nuvem (identidade, região, cota, forma de cobrança) e trate o nome do serviço como detalhe.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="topico-exercicio" data-exercise-id="ex-ai-t6-nuvem">
+              <div class="te-header">
+                <div class="te-badge">
+                  <span class="te-icon">🎮</span>
+                  <span>DESAFIO PRÁTICO DE FIXAÇÃO #t6-nuvem</span>
+                </div>
+                <div class="te-reward">
+                  <span class="te-xp-badge">⭐ +50 XP</span>
+                  <span class="te-status">Aguardando resposta</span>
+                </div>
+              </div>
+
+              <div class="te-body">
+                <p class="te-pergunta"><strong>Cenário de Engenharia de IA / GenAI:</strong> Um banco quer usar um LLM num assistente interno. A área de segurança exige autenticação com a identidade corporativa, tráfego por rede privada e processamento numa região aprovada. O time hoje usa a API pública de um fornecedor, com uma chave num arquivo de configuração.</p>
+
+                <p class="te-instrucao">Qual caminho atende às exigências?</p>
+
+                <div class="te-options">
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="O cofre protege a chave, mas o tráfego segue por endpoint público e a região de processamento não é controlada.">
+                    <span class="te-letter">A</span> Manter a API pública do fornecedor e guardar a chave num cofre de segredos, com rotação mensal automatizada.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="true" data-rationale="A plataforma da nuvem oferece os três controles exigidos: identidade corporativa, endpoint privado e escolha de região.">
+                    <span class="te-letter">B</span> Usar o modelo pela nuvem que o banco já contrata, com identidade gerenciada e rede privada.
+                  </button>
+                  <button class="te-opt" type="button" data-correct="false" data-rationale="Atende ao isolamento, mas com custo e prazo muito maiores e qualidade inferior, sem necessidade.">
+                    <span class="te-letter">C</span> Treinar um modelo próprio do zero em servidores do banco, para que nenhum dado saia da rede interna.
+                  </button>
+                </div>
+
+                <div class="te-feedback" hidden></div>
+              </div>
+            </div>
+
+            <div class="topico-flashcard">
+              <div class="tf-card">
+                <div class="tf-face tf-front">
+                  <div class="tf-tag">🃏 FLASHCARD 3D · TOQUE PARA VIRAR</div>
+                  <p class="tf-pergunta">O que é um deployment no serviço de modelos do Azure?</p>
+                  <span class="tf-hint">Dica: pense no nome que a aplicação usa →</span>
+                </div>
+                <div class="tf-face tf-back">
+                  <div class="tf-tag ok">✓ RESPOSTA TÉCNICA</div>
+                  <p class="tf-resposta">É uma instância de um modelo, numa versão e numa região, criada com um nome escolhido por você. A aplicação chama esse nome, e a cota de tokens por minuto é contada por deployment.</p>
+                  <span class="tf-hint">← Toque para voltar à pergunta</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        <button class="done" type="button" data-k="t6-nuvem">marcar dominado</button>
       </article>
 
           </section>
@@ -9428,7 +10273,7 @@ Ação de Escrita (Mutação/Risco) → PAUSA a execução, gera cartão na UI e
             <div class="tr-badge">REVISÃO RÁPIDA</div>
             <ul class="tr-pontos">
               <li>IA corporativa é um sistema probabilístico encapsulado por validações determinísticas de backend.</li>
-              <li>Busca híbrida (BM25 + pgvector) com RRF e Re-ranking Cross-Encoder supera drasticamente a busca vetorial simples.</li>
+              <li>Busca híbrida (BM25 + pgvector) com RRF e Re-ranking Cross-Encoder costuma superar a busca vetorial simples.</li>
               <li>No Tool Calling, o modelo apenas solicita a ferramenta; o backend valida permissões, tenant e executa com segurança.</li>
               <li>Ações de escrita exigem barreira de Human-in-the-Loop com tokens de aprovação e chave de idempotência.</li>
               <li>Se o problema puder ser resolvido com SQL ou regra simples, nunca use LLM: preserve latência e orçamento.</li>
@@ -9583,7 +10428,7 @@ Ação de Escrita (Mutação/Risco) → PAUSA a execução, gera cartão na UI e
         <div class="duo">
           <div>
             <h4>Em que linguagem</h4>
-            <p>Python, que aparece em 95% das vagas, com FastAPI e Pydantic. Cada bloco traz a linha "Em Java" com o equivalente no Spring AI: fazer um dos serviços também em Java mostra que você leva IA para o ecossistema Java, onde a vaga for corporativa.</p>
+            <p>Python, que aparece na grande maioria das vagas, com FastAPI e Pydantic. Cada bloco traz a linha "Em Java" com o equivalente no Spring AI: fazer um dos serviços também em Java mostra que você leva IA para o ecossistema Java, onde a vaga for corporativa.</p>
           </div>
           <div class="o">
             <h4>Cronograma (cerca de 1 hora por dia)</h4>
@@ -9616,7 +10461,7 @@ Ação de Escrita (Mutação/Risco) → PAUSA a execução, gera cartão na UI e
             <div class="tr-badge">REVISÃO RÁPIDA</div>
             <ul class="tr-pontos">
               <li>A escada de 4 projetos valida modularmente cada capacidade: ferramentas (P1), recuperação (P2), autonomia e protocolos (P3) e operação fim a fim (P4).</li>
-              <li>Python com FastAPI é o padrão de 95% das vagas de AI Engineer, enquanto Spring AI é o diferencial corporativo em times Java.</li>
+              <li>Python com FastAPI é o padrão na grande maioria das vagas de AI Engineer, enquanto Spring AI é o diferencial corporativo em times Java.</li>
               <li>Completar os projetos em escada cria um portfólio consistente com quatro repositórios públicos interligados no GitHub.</li>
             </ul>
             <div class="tr-alerta"><b>Alerta:</b> Evite usar ferramentas semânticas e agentes em projetos que poderiam ser resolvidos com simples consultas SQL ou chamadas REST determinísticas.</div>
@@ -11524,7 +12369,7 @@ class RevisorApp {
                 <button class="te-opt" type="button" data-correct="false" data-rationale="Acompanhar tendências rápidas de redes sociais sem critério de engenharia resulta em acúmulo de ferramentas descartáveis e pouca profundidade.">
                   <span class="te-letter">B</span> Consumir diariamente resumos de redes sociais sobre novos plugins e automações no-code, priorizando velocidade de adoção sobre fundamentos.
                 </button>
-                <button class="te-opt" type="button" data-correct="false" data-rationale="O ecossistema de IA generativa evoluiu drasticamente; limitar-se a livros antigos impede o domínio de modelos de atenção e agentes modernos.">
+                <button class="te-opt" type="button" data-correct="false" data-rationale="O ecossistema de IA generativa mudou muito; limitar-se a livros antigos impede o domínio de modelos de atenção e agentes modernos.">
                   <span class="te-letter">C</span> Estudar exclusivamente livros clássicos de redes neurais dos anos 1990, desconsiderando as inovações trazidas pela arquitetura Transformer e LLMs.
                 </button>
               </div>

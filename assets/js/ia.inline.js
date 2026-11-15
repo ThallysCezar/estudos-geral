@@ -476,6 +476,50 @@ var DATA = [
         pq: "Grava o trace de execução, valida asserções determinísticas de passos e calcula métricas como Tool Call Accuracy e Goal Accuracy.",
         ex: "assertThat(trace.chamadas('emitirReembolso')).hasSize(1) garantindo idempotência operacional do agente.",
         alem: "Todo incidente de produção deve ser imediatamente convertido em um caso de teste na suíte permanente de avaliação."
+      },
+      {
+        id: "t6-gateway",
+        t: "Gateway de LLM",
+        x: "credencial virtual, roteamento e custo",
+        oq: "Serviço entre as aplicações e os provedores de modelos, por onde passam todas as chamadas a LLM.",
+        ps: "Dar credencial e orçamento por sistema, trocar de modelo sem alterar as aplicações e medir o gasto por centro de custo.",
+        sub: "Substituiu a chave do provedor copiada em cada serviço e a fatura com um valor só.",
+        pq: "A aplicação envia a credencial virtual e um nome lógico; o gateway valida, escolhe o provedor, registra o consumo e troca para o reserva se houver falha.",
+        ex: "Spring AI com base-url apontando para o gateway e o modelo chat-padrao.",
+        alem: "Avalie o modelo reserva com a mesma bateria de evals antes de ativar a troca automática."
+      },
+      {
+        id: "t6-golden",
+        t: "Golden set e regressão",
+        x: "avaliação no pipeline",
+        oq: "Conjunto versionado de casos de teste rodado a cada mudança e comparado com a versão em produção.",
+        ps: "Saber com número se a versão nova é melhor ou pior, e bloquear a que piora.",
+        sub: "Substituiu o teste de algumas perguntas à mão antes de publicar.",
+        pq: "Critério determinístico onde dá e modelo juiz no resto; taxa por categoria comparada com a linha de base e tolerância.",
+        ex: "Teste JUnit que lê evals/golden.jsonl e falha se uma categoria cair mais de 3 pontos.",
+        alem: "Depois do pipeline, compare versões em produção com teste A/B e métrica de negócio."
+      },
+      {
+        id: "t6-governanca",
+        t: "Governança de IA e LGPD",
+        x: "dados pessoais, auditoria e risco",
+        oq: "Regras e controles sobre quem usa IA para quê, com quais dados, e como isso é registrado.",
+        ps: "Usar IA em processos reais sem expor dados de clientes e responder a auditorias e titulares.",
+        sub: "Substituiu o uso informal de assistentes externos com dados de clientes colados no prompt.",
+        pq: "Inventário por risco, mascaramento na entrada, registro de modelo, prompt e fontes, revisão humana e exclusão que alcança o índice vetorial.",
+        ex: "Componente de mascaramento antes do ChatClient e registro de auditoria por resposta.",
+        alem: "Tirar o nome não anonimiza: a combinação de outros dados ainda pode identificar a pessoa."
+      },
+      {
+        id: "t6-nuvem",
+        t: "Plataformas de nuvem para IA",
+        x: "Azure e AWS Bedrock",
+        oq: "Serviços das nuvens que entregam modelos, busca e guardrails dentro da conta da empresa.",
+        ps: "Usar modelos com identidade corporativa, rede privada, região definida e fatura única.",
+        sub: "Substituiu a chave de API do fornecedor criada fora dos controles da empresa.",
+        pq: "No Azure, a aplicação chama um deployment com cota em tokens por minuto; na AWS, a API Converse com identidade do IAM.",
+        ex: "Spring AI trocando de provedor só pela dependência e pelo application.yml.",
+        alem: "Estime os tokens por minuto antes do lançamento e mantenha um deployment reserva em outra região."
       }
     ]
   },

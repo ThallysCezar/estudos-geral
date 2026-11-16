@@ -13,7 +13,7 @@
       aws:{label:"Spring + AWS",accent:"#ffb86c",glow:"#ffb86c"},
       cloud:{label:"Spring + Cloud agnóstica",accent:"#bd93f9",glow:"#bd93f9"},
       ai:{label:"Spring + IA",accent:"#f1fa8c",glow:"#f1fa8c"},
-      rabbit:{label:"Spring + RabbitMQ",accent:"#ff79c6",glow:"#ff79c6"}
+      rabbit:{label:"Spring + Mensageria",accent:"#ff79c6",glow:"#ff79c6"}
     };
 
     /* Os documentos do acervo. Cada projeto aponta para os que explicam
@@ -50,11 +50,12 @@
       I03:[["ia","Eval, LLM-as-a-judge, métricas de qualidade e mitigação de alucinação"],["bib","Como decidir sob incerteza — e por que uma métrica só esconde risco"],["back","Medição, percentis e detecção de regressão"]],
       I04:[["ia","Agentes, tool calling, limites e aprovação humana"],["spring","Spring AI: ChatClient, ferramentas e integração com o backend"],["back","Autorização, tenant e trilha de auditoria no backend"]],
       I05:[["ia","Do zero ao deploy: o ciclo de um projeto"],["k8s","Probes, requests/limits, rolling update e graceful shutdown"],["nuvem","Telemetria, OpenTelemetry, segredos e FinOps"]],
-      I06:[["ia","Agentes, MCP e orquestração multiagentes"],["spring","Spring AI: ChatClient, ferramentas e gateway MCP"],["back","Trilha de auditoria, autorização e human-in-the-loop"]],
-      I07:[["ia","GraphRAG, RAG híbrido, Reciprocal Rank Fusion e re-ranking"],["java","NIO, executores, virtual threads e o custo de cada modelo de concorrência"],["back","Consistência de dados, latência e avaliação de groundedness"]],
       R01:[["msg","Exchange, binding, routing key e a mensagem que some sem rota"],["arq","Coreografia: quem publica não conhece quem consome"]],
-      R02:[["msg","Ack, prefetch, retry, DLX e o ciclo de dead letter"],["k8s","Por que o pool de conexões limita o HPA"]],
-      R03:[["msg","Outbox, confirms, inbox e por que exactly-once não existe sem escopo"],["arq","OrderFlow: o mesmo sistema atravessando os seis documentos"],["k8s","Operar o capstone em cluster local"],["back","Reconciliação: a consulta que prova consistência"],["ia","Agente ou classificador opcional sem quebrar a transação central"]]
+      R02:[["msg","Kafka na prática: partição, tópico de erro, contratos e reprocessamento"],["arq","Idempotência e entrega garantida"]],
+      R03:[["msg","Transactional outbox e CDC com Debezium"],["arq","Fonte da verdade e consistência entre serviços"],["back","Transações e a consulta que prova a consistência"]],
+      S04:[["arq","Testes de contrato e falha parcial entre serviços"],["spring","Timeout, retry e circuit breaker no cliente HTTP"],["msg","Consumir um evento e reagir com uma chamada síncrona"]],
+      S05:[["arq","Multi-tenancy: silo, bridge e pool"],["spring","Resource server, JWT e autorização por operação"],["back","Isolamento de dados e auditoria no backend"]],
+      I08:[["ia","Gateway de LLM, golden set e custo por sistema"],["spring","Spring Cloud Gateway: rota, filtro e limite por cliente"],["nuvem","Custo no fluxo de engenharia e marcação por centro de custo"]]
     };
 
     /* Aquecimentos: menores que um projeto de propósito. Cada um isola uma
@@ -143,8 +144,8 @@
       why:"Dinheiro expõe rápido os vícios de modelagem: arredondamento implícito, estado mutável, datas ambíguas e regra espalhada. Este projeto fortalece Java antes de qualquer abstração do Spring.",
       learns:["BigDecimal, escala, arredondamento e comparação por valor","records e value objects para Money, Category e TransactionId","imutabilidade, invariantes e exceções de domínio","coleções, Comparator, streams com uso criterioso","Clock injetável para testes determinísticos","separação entre CLI, aplicação, domínio e persistência"],
       architecture:["Terminal","Command Parser","Use Cases","Domain","JSON/CSV"],
-      prerequisites:["Java 21 instalado","Maven Wrapper ou Maven local","JUnit e Git básicos"],
-      stack:["Java 21","Maven","JUnit 5","java.time","java.math","NIO"],
+      prerequisites:["Java 25 instalado","Maven Wrapper ou Maven local","JUnit e Git básicos"],
+      stack:["Java 25","Maven","JUnit 5","java.time","java.math","NIO"],
       steps:["Escreva cinco exemplos de entrada e a saída esperada antes do código.","Modele Money com currency, scale definida e operações que rejeitam moedas diferentes.","Modele Transaction e BudgetMonth sem setters; invalide valor zero, data futura não permitida e categoria vazia.","Crie casos de uso RegisterIncome, RegisterExpense, ReserveMoney e MonthlySummary.","Implemente comandos add, reserve, list e summary; mensagens de erro devem orientar correção.","Persista arquivo de dados por escrita atômica: temporário, fsync quando aplicável e move.","Adicione Clock e IdGenerator como dependências explícitas para controlar testes.","Empacote com Maven Wrapper e escreva um roteiro de demonstração de três minutos."],
       acceptance:["Nenhum cálculo monetário usa double ou float","Reexecutar summary produz exatamente os mesmos totais","Arquivo parcialmente escrito não substitui o último estado válido","Comando inválido retorna ajuda e código de saída diferente de zero","Testes cobrem arredondamento, moeda incompatível e virada de mês"],
       tests:["Property test simples: soma de lançamentos independe da ordem","Teste de unidade de cada invariante de Money","Teste de integração da CLI com diretório temporário","Golden file para relatório mensal"],
@@ -162,7 +163,7 @@
       learns:["Files, Path, buffered I/O, Charset e atomic move","pipeline producer/consumer com executor limitado","virtual threads versus pool fixo para tarefas bloqueantes","deduplicação por fingerprint e idempotência de importação","medição de throughput, heap e latência por etapa","resultado parcial, quarantine e relatório de erros"],
       architecture:["Files","Reader","Normalizer","Deduplicator","Writer","Report"],
       prerequisites:["Projeto J01 concluído","Noções de threads, futures e filas limitadas","saber gerar um CSV de teste"],
-      stack:["Java 21","NIO.2","Executors","Virtual Threads","JFR","JUnit 5"],
+      stack:["Java 25","NIO.2","Executors","Virtual Threads","JFR","JUnit 5"],
       steps:["Defina um contrato BankStatementParser e dois formatos de extrato incompatíveis.","Crie gerador determinístico de 1 milhão de linhas, incluindo duplicatas e linhas ruins.","Implemente versão sequencial streaming e registre tempo, pico de heap e linhas por segundo.","Separe leitura, parsing e escrita com capacidade limitada; nunca use fila infinita.","Implemente uma variante com virtual threads e explique onde ela ajuda ou não ajuda.","Crie fingerprint estável com campos normalizados e uma estratégia de collision handling.","Envie linhas inválidas para quarantine com número, motivo e conteúdo sanitizado.","Capture um JFR de cada variante e documente o gargalo observado."],
       acceptance:["Processa 1 milhão de linhas com heap máximo definido por você","Resultado é determinístico apesar do paralelismo","Rodar o mesmo arquivo duas vezes não duplica lançamentos","Uma linha inválida não cancela todo o lote","Relatório mostra lidas, válidas, duplicadas, inválidas e duração"],
       tests:["Teste com chunk cortado no meio de caractere multibyte","Teste de concorrência repetido 100 vezes com checksum final","Teste de propriedade da normalização de datas e valores","Benchmark comparativo sequencial, pool e virtual threads"],
@@ -180,7 +181,7 @@
       learns:["JDBC, PreparedStatement, ResultSet e batch","DataSource e pool de conexões","transações ACID e níveis de isolamento","constraints como última linha de defesa","optimistic e pessimistic locking","ledger append-only, saldo derivado e reconciliação"],
       architecture:["CLI/API Test","Service","JDBC Repositories","PostgreSQL","Audit Query"],
       prerequisites:["J01 e noções de SQL","Docker ou PostgreSQL local","transações e índices básicos"],
-      stack:["Java 21","JDBC","PostgreSQL","HikariCP","Flyway","Testcontainers","JUnit 5"],
+      stack:["Java 25","JDBC","PostgreSQL","HikariCP","Flyway","Testcontainers","JUnit 5"],
       steps:["Modele accounts, ledger_entries, transfers e idempotency_keys em SQL; registre invariantes.","Crie migrations versionadas e constraints para valor positivo, moeda e unicidade.","Implemente repositórios JDBC manualmente com mapeamento explícito e close seguro.","Implemente transferência em uma transação com lançamentos débito/crédito balanceados.","Compare SELECT FOR UPDATE com version column em testes concorrentes.","Configure pool pequeno de propósito e meça espera e saturação.","Crie consulta de reconciliação que detecta ledger desequilibrado.","Suba PostgreSQL real em Testcontainers para a suíte de integração.","Gere thread dump quando o pool satura e explique as threads bloqueadas."],
       acceptance:["Cada transferência válida cria dois lançamentos cuja soma é zero","Idempotency key repetida retorna o primeiro resultado","Concorrência não permite saldo negativo se essa for a regra","Rollback remove todos os efeitos da transferência incompleta","Migrations criam um banco vazio sem passos manuais"],
       tests:["Dois saques simultâneos contra o mesmo saldo","Queda simulada entre débito e crédito","Constraint violation e tradução para erro de domínio","Saturação do pool com mais tarefas do que conexões","Teste de reconciliação com corrupção criada apenas no fixture"],
@@ -191,14 +192,14 @@
       cost:"R$ 0 com PostgreSQL/Testcontainers local.",command:"mkdir ledger-jdbc && cd ledger-jdbc && git init && docker run --rm -d --name ledger-db -e POSTGRES_PASSWORD=local -p 5432:5432 postgres"
     });
     P({
-      id:"S01",area:"spring",difficulty:"Intermediário",sessions:7,title:"API de orçamento com SQL visível",
+      id:"S01",marco:1,hab:["01 Backend","10 Decisão"],adapt:"O domínio é o de pedidos do OrderFlow: onde a missão fala em lançamentos e orçamento, use pedidos. Escreva o openapi.yaml antes do código e registre a escolha da stack no ADR-001.",first:["Escreva o openapi.yaml com POST /pedidos e GET /pedidos/{id} e revise antes de codar.","Gere o projeto com o comando inicial e suba o PostgreSQL no Docker Compose.","Crie a migração da tabela de pedidos.","Implemente POST /pedidos com validação e erro no formato Problem Details.","Escreva um teste de integração com Testcontainers que cria e busca um pedido.","Rode docker compose up e chame os dois endpoints com curl."],firstDone:"os dois endpoints respondem conforme o contrato e o teste de integração passa num banco real.",area:"spring",difficulty:"Intermediário",sessions:7,title:"API de orçamento com SQL visível",
       summary:"Exponha o domínio anterior por HTTP com Spring MVC, validação, JdbcTemplate e erros previsíveis.",
       problem:"Um cliente precisa registrar lançamentos e consultar orçamento sem conhecer arquivos ou SQL. A API deve oferecer contrato estável, paginação correta e erro útil.",
       why:"O objetivo não é criar CRUD; é acompanhar o request de socket a controller, application service, transação e banco, sabendo onde cada preocupação vive.",
       learns:["DispatcherServlet, filtros, argument resolvers e Jackson","DTOs distintos do domínio e validação em fronteiras","JdbcTemplate, RowMapper e SQL explícito","Problem Details e exception handling","paginação keyset e limites de consulta","testes de slice, integração e contrato"],
       architecture:["HTTP Client","Filter Chain","Controller","Use Case","JdbcTemplate","PostgreSQL"],
       prerequisites:["J03 ou domínio equivalente","HTTP, JSON e SQL básico","Spring Initializr/CLI"],
-      stack:["Java 21","Spring Boot estável","Spring MVC","Validation","JdbcTemplate","PostgreSQL","Testcontainers"],
+      stack:["Java 25","Spring Boot 4","Spring MVC","Validation","JdbcTemplate","PostgreSQL","Testcontainers"],
       steps:["Gere projeto com web, validation, jdbc e actuator; mantenha domínio sem anotações Spring.","Desenhe contratos POST /transactions e GET /transactions?after=&limit=.","Mapeie DTO → command → domain; rejeite campos desconhecidos se essa for sua decisão.","Implemente JdbcTemplate com SQL nomeado e paginação keyset por created_at + id.","Padronize erros com type, title, status, detail, instance e correlationId.","Adicione filtro que propaga correlationId sem registrar dados sensíveis.","Teste controller isolado e fluxo real com PostgreSQL em container.","Publique OpenAPI gerada ou contrato escrito e exemplos curl."],
       acceptance:["Controller não acessa repositório diretamente","Listagem nunca retorna mais que o limite máximo","Próxima página não duplica nem pula item em inserções concorrentes previstas","Erros 400, 404, 409 e 500 têm formato consistente","Teste de integração parte de banco vazio e aplica migrations"],
       tests:["MockMvc para validação e status","integração repository com Testcontainers","teste de keyset com chaves empatadas","contrato de erro serializado","SQL injection por filtros manipulados"],
@@ -206,7 +207,7 @@
       questions:["Onde exatamente Bean Validation executa?","Por que entidade do banco não deve vazar como resposta?","Offset ou keyset: qual comportamento sob mutação?","Quais erros são culpa do cliente e quais são incidentes?"],
       ladder:["dois endpoints, SQL e validação","paginação keyset, Problem Details e Testcontainers","rate limit, contrato versionado, SLO e observabilidade"],
       evidence:["README com curls e decisões do contrato","diagrama do request até o banco","ADR sobre keyset pagination","relatório da suíte real com container"],
-      cost:"R$ 0 em execução local.",command:"spring init --java-version=21 --build=maven --dependencies=web,validation,jdbc,actuator budget-api"
+      cost:"R$ 0 em execução local.",command:"spring init --java-version=25 --build=maven --dependencies=web,validation,jdbc,actuator budget-api"
     });
     P({
       id:"S02",area:"spring",difficulty:"Avançado",sessions:9,title:"Transferência sob corrida",
@@ -216,7 +217,7 @@
       learns:["proxy AOP, self-invocation e limites de @Transactional","propagation, isolation, rollback rules e timeout","optimistic/pessimistic lock com SQL","idempotency key, estado em andamento e resposta reaproveitada","ordenação de locks e prevenção de deadlock","teste concorrente com barreiras controladas"],
       architecture:["Clients × N","Idempotency Filter","Transfer Service Proxy","JDBC Tx","PostgreSQL Locks"],
       prerequisites:["S01 e J03","conceitos ACID e pool","saber ler logs SQL"],
-      stack:["Java 21","Spring Boot","Spring Transactions","JdbcTemplate","PostgreSQL","Testcontainers"],
+      stack:["Java 25","Spring Boot","Spring Transactions","JdbcTemplate","PostgreSQL","Testcontainers"],
       steps:["Escreva a invariante financeira e o diagrama de estados da idempotency key.","Crie teste que alinha duas threads com CyclicBarrier antes de corrigir a corrida.","Implemente a versão ingênua read-check-write e capture a falha.","Aplique SELECT FOR UPDATE ou versão otimista e documente a contenção.","Coloque @Transactional no boundary de aplicação e prove o problema de self-invocation.","Persista idempotency key, hash da requisição, status e resposta na mesma transação.","Defina timeout e tradução de deadlock para retry limitado com jitter.","Teste 50 chamadas concorrentes e exponha métricas de conflito/latência.","Escreva runbook: sintomas de pool saturado, lock wait e deadlock."],
       acceptance:["Saldo e ledger permanecem consistentes em 100 execuções concorrentes","Mesma chave + mesmo payload reaproveita resultado","Mesma chave + payload diferente retorna conflito","Timeout ou deadlock não deixa idempotência travada para sempre","Métrica diferencia sucesso, duplicata, conflito e retry"],
       tests:["CyclicBarrier para corrida determinística","self-invocation demonstrada em teste","deadlock provocado com ordem inversa","cliente perde resposta e repete","timeout de lock e recuperação"],
@@ -224,7 +225,7 @@
       questions:["Por que proxy não intercepta self-invocation?","O commit ocorreu se o cliente não recebeu 200?","Retry é seguro em qual boundary?","Qual lock maximiza correção sem destruir throughput?"],
       ladder:["corrida reproduzida e transação correta","idempotência persistida, retries e métricas","teste de carga, runbook, SLO e estratégia de degradação"],
       evidence:["timeline da corrida antes/depois","ADR de lock e isolamento","consulta para diagnosticar locks ativos","gráfico ou tabela p50/p95 sob concorrência"],
-      cost:"R$ 0 em PostgreSQL/Testcontainers local.",command:"spring init --java-version=21 --build=maven --dependencies=web,jdbc,actuator transfer-lab"
+      cost:"R$ 0 em PostgreSQL/Testcontainers local.",command:"spring init --java-version=25 --build=maven --dependencies=web,jdbc,actuator transfer-lab"
     });
     P({
       id:"S03",area:"spring",difficulty:"Avançado",sessions:8,title:"Sala de incidente Spring",
@@ -234,7 +235,7 @@
       learns:["Actuator, Micrometer e observações","logs estruturados e correlation/trace IDs","RED, USE, percentis e cardinalidade","thread dump, heap/JFR e pool metrics","timeouts, bulkheads e graceful shutdown","runbook e postmortem sem culpados"],
       architecture:["Load Generator","Spring API","Metrics/Logs/Traces","Slow Dependency","Operator"],
       prerequisites:["S01","Docker Compose","noções de HTTP e threads"],
-      stack:["Java 21","Spring Boot","Actuator","Micrometer","OpenTelemetry","Prometheus/Grafana local","Toxiproxy"],
+      stack:["Java 25","Spring Boot","Actuator","Micrometer","OpenTelemetry","Prometheus/Grafana local","Toxiproxy"],
       steps:["Defina SLI de disponibilidade e latência para dois endpoints.","Instrumente métricas RED e logs JSON sem cardinalidade por userId.","Propague correlationId e trace context entre chamadas.","Suba Prometheus e Grafana localmente; crie painel mínimo orientado à pergunta.","Use Toxiproxy para adicionar latência, timeout e reset na dependência.","Crie endpoint que satura pool e capture thread dump durante o sintoma.","Ajuste timeouts e limites; valide graceful shutdown com tráfego em andamento.","Execute game day de 20 minutos e registre timeline, hipótese e evidência."],
       acceptance:["Painel responde taxa, erro e duração sem abrir logs","Um request pode ser seguido por logs e trace","Alerta usa sintoma do usuário, não CPU isolada","Runbook leva outra pessoa à causa em até 15 minutos","Correção reduz o p95 no mesmo cenário reproduzível"],
       tests:["teste do endpoint Actuator customizado","integração de propagação de correlationId","carga curta antes/depois","shutdown com requisições ativas","teste de cardinalidade limitada"],
@@ -242,7 +243,7 @@
       questions:["Qual sinal prova fila, lock ou dependência lenta?","Por que média esconde cauda?","Quais labels explodem cardinalidade?","Liveness deve falhar quando o banco cai?"],
       ladder:["Actuator, logs e painel RED","traces, faults e runbook","SLO, alertas, game day e postmortem"],
       evidence:["dashboard exportado e cenário de carga","thread dump anotado","runbook executável","postmortem com timeline, causa e ações"],
-      cost:"R$ 0 com stack observável local.",command:"spring init --java-version=21 --build=maven --dependencies=web,actuator incident-room"
+      cost:"R$ 0 com stack observável local.",command:"spring init --java-version=25 --build=maven --dependencies=web,actuator incident-room"
     });
     P({
       id:"A01",area:"aws",difficulty:"Intermediário",sessions:7,title:"Upload direto com S3 presigned",
@@ -252,7 +253,7 @@
       learns:["S3 object key, metadata, checksum e lifecycle","presigned PUT/GET e expiração","IAM least privilege e credenciais por ambiente","validação antes/depois do upload","LocalStack como substituto local, diferenças do serviço real","ameaças: overwrite, content-type falso e URL vazada"],
       architecture:["Client","Spring Authorizer","Presigned URL","S3/LocalStack","Metadata DB"],
       prerequisites:["S01","Docker","HTTP PUT e noção de IAM"],
-      stack:["Java 21","Spring Boot","AWS SDK for Java 2.x","LocalStack","PostgreSQL","Testcontainers"],
+      stack:["Java 25","Spring Boot","AWS SDK for Java 2.x","LocalStack","PostgreSQL","Testcontainers"],
       steps:["Modele UploadIntent com owner, key gerada no servidor, tamanho máximo e expiração.","Crie port ObjectStorage e adapter LocalStack/AWS usando SDK v2.","Gere presigned PUT com prazo curto e checksum quando suportado no fluxo.","Faça cliente de teste enviar bytes diretamente ao endpoint S3 local.","Registre intent pendente e confirme por HEAD antes de marcar disponível.","Negue key fornecida livremente pelo cliente e sanitize nome original.","Teste política IAM mínima em conta real apenas como extensão opcional.","Adicione lifecycle/rotina local para intents expirados e objetos órfãos."],
       acceptance:["Backend não recebe bytes do arquivo","URL expira e não autoriza outro object key","Objeto acima do limite não vira documento disponível","Checksum ou HEAD confirma integridade/metadados","Adapter local e AWS passam pelo mesmo contrato"],
       tests:["presigned URL expirada","tentativa de substituir key existente","content-type declarado diferente do detectado","falha após upload antes da confirmação","teste de contrato do adapter com LocalStack"],
@@ -260,7 +261,7 @@
       questions:["Quem assina e quais permissões a URL herda?","Por que URL é credencial temporária?","Como evitar overwrite de chave?","O que o emulador não prova sobre AWS real?"],
       ladder:["presign local e upload direto","intents, checksum, expiração e limpeza","IAM mínimo, auditoria, malware pipeline e lifecycle"],
       evidence:["sequence diagram do upload","policy IAM explicada linha a linha","threat model curto","script create/test/teardown local"],
-      cost:"Local: R$ 0. AWS real é opcional; confira elegibilidade e preço, crie Budget/alerta antes e apague bucket, objetos e políticas ao terminar.",command:"spring init --java-version=21 --build=maven --dependencies=web,jdbc,actuator s3-upload-lab"
+      cost:"Local: R$ 0. AWS real é opcional; confira elegibilidade e preço, crie Budget/alerta antes e apague bucket, objetos e políticas ao terminar.",command:"spring init --java-version=25 --build=maven --dependencies=web,jdbc,actuator s3-upload-lab"
     });
     P({
       id:"A02",area:"aws",difficulty:"Avançado",sessions:9,title:"Extrato orientado a eventos AWS",
@@ -270,7 +271,7 @@
       learns:["S3 Event Notifications e EventBridge rules","SQS buffer, visibility timeout e DLQ","event envelope, schema version e correlation","idempotência por event id + object version/checksum","backoff e tratamento de poison message","infraestrutura como código e teardown"],
       architecture:["S3/LocalStack","EventBridge","SQS","Spring Consumer","Ledger DB","DLQ"],
       prerequisites:["A01 e J02","mensageria básica","Docker Compose"],
-      stack:["Java 21","Spring Boot","AWS SDK v2","LocalStack","S3","EventBridge","SQS","PostgreSQL"],
+      stack:["Java 25","Spring Boot","AWS SDK v2","LocalStack","S3","EventBridge","SQS","PostgreSQL"],
       steps:["Defina evento StatementUploaded v1 independente do payload nativo da AWS.","Suba S3, EventBridge e SQS no LocalStack e automatize o bootstrap.","Configure regra Object Created → fila de processamento.","Implemente consumer Spring que busca objeto e chama o importador J02.","Persista inbox com event id e status antes de produzir efeitos.","Ajuste visibility timeout acima do processamento e renove se necessário.","Faça retry limitado e mova falha permanente para DLQ com contexto sanitizado.","Crie replay explícito da DLQ que não ignora idempotência.","Opcionalmente execute uma única passagem em AWS, observando logs e desmontando tudo."],
       acceptance:["Upload gera processamento sem chamada direta à API","Evento duplicado não duplica ledger","Falha transitória volta; permanente chega à DLQ","Replay da DLQ é auditável e seguro","Todo recurso possui comando de teardown"],
       tests:["evento duplicado e fora de ordem","objeto removido antes do consumo","consumer morre antes e depois do commit","visibility timeout menor que processamento","contrato v1 recebido por consumer futuro"],
@@ -278,17 +279,17 @@
       questions:["Qual componente segura o pico?","Quando visibility timeout causa concorrência duplicada?","Evento AWS é contrato de domínio ou detalhe de adapter?","Como provar replay seguro?"],
       ladder:["evento local e consumer funcional","inbox, retry, DLQ e métricas","IaC, schema evolution, replay governado e teste AWS opcional"],
       evidence:["mapa do fluxo feliz e cinco falhas","evento v1 com exemplos","dashboard de backlog/age/DLQ","script teardown e captura de custo zero/local"],
-      cost:"LocalStack local: R$ 0. AWS opcional e potencialmente tarifada; use Budget/alerta, região única, execução curta e teardown verificado.",command:"spring init --java-version=21 --build=maven --dependencies=web,jdbc,actuator aws-statement-events"
+      cost:"LocalStack local: R$ 0. AWS opcional e potencialmente tarifada; use Budget/alerta, região única, execução curta e teardown verificado.",command:"spring init --java-version=25 --build=maven --dependencies=web,jdbc,actuator aws-statement-events"
     });
     P({
-      id:"A03",area:"aws",difficulty:"Avançado",sessions:10,title:"Operação efêmera na AWS",
+      id:"A03",marco:12,hab:["09 Nuvem e Kubernetes","10 Decisão"],adapt:"Esta missão cobre a parte de nuvem do marco 12. Descreva o ambiente em Terraform, sirva o modelo pela plataforma da nuvem e feche com a RFC e os ADRs.",first:["Crie o alerta de custo da conta antes de qualquer recurso.","Escreva o Terraform mínimo: rede, registro de imagens e um serviço.","Rode terraform plan e leia cada recurso que seria criado.","Aplique, publique a imagem e chame o endpoint.","Rode terraform destroy e confira no painel que nada sobrou.","Anote quanto o teste custou."],firstDone:"o ambiente sobe e some por comando, e você sabe quanto o teste custou.",area:"aws",difficulty:"Avançado",sessions:10,title:"Operação efêmera na AWS",
       summary:"Empacote, entregue, observe e remova um serviço Spring sem tratar deploy como clique irreproduzível.",
       problem:"Uma API funciona localmente, mas precisa receber configuração segura, health check, logs, rollback e limites na Cloud. O laboratório deve desaparecer sem deixar cobrança.",
       why:"Cloud madura é operação repetível: identidade, rede, imagem, rollout, observação, custo e recuperação. O código é apenas um dos artefatos.",
       learns:["container image, registry e immutable tag/digest","compute gerenciado e task/service model","IAM role da workload versus credencial humana","configuração/segredo fora da imagem","health checks, logs, métricas e deployment rollback","IaC, tagging, Budget e teardown auditável"],
       architecture:["CI Local","Container Registry","Managed Compute","Spring App","Logs/Metrics","Operator"],
       prerequisites:["A01/A02","Docker","rede, IAM e logs básicos"],
-      stack:["Java 21","Spring Boot","Docker","AWS CLI","Terraform/OpenTofu","ECR + compute escolhido","CloudWatch"],
+      stack:["Java 25","Spring Boot","Docker","AWS CLI","Terraform/OpenTofu","ECR + compute escolhido","CloudWatch"],
       steps:["Crie imagem multi-stage, non-root, com limite de memória e tag imutável.","Prove a mesma imagem em Docker local com config externa.","Modele infraestrutura mínima em OpenTofu/Terraform e aplique tags owner, expiresAt e project.","Separe role de execução e role da aplicação com permissões mínimas.","Configure endpoint de readiness e health check coerente com dependências.","Envie logs estruturados e uma métrica de negócio; evite segredo em log.","Faça rollout de versão defeituosa, detecte e volte à anterior.","Registre custo/uso antes e depois; destrua pelo IaC e confira console/CLI.","Escreva runbook de deploy, rollback, incidente e teardown."],
       acceptance:["Imagem roda sem root e sem segredo embutido","Infra nasce e morre por comando versionado","Falha de readiness impede tráfego","Rollback restaura versão saudável","Auditoria final não encontra recurso do laboratório"],
       tests:["scan básico da imagem e SBOM","SIGTERM/graceful shutdown","variável obrigatória ausente","health check apontado para endpoint errado","deploy com imagem inexistente"],
@@ -296,7 +297,7 @@
       questions:["Qual identidade o código usa e como a obtém?","O que readiness deve testar?","Como distinguir rollback de correção forward?","Quais recursos podem sobreviver ao destroy?"],
       ladder:["imagem segura e execução local","IaC, deploy curto e observabilidade","rollback testado, runbook, tags TTL e auditoria"],
       evidence:["Dockerfile anotado e SBOM","diagrama identidade/rede/runtime","plano e destroy do IaC","evidência do rollback e lista vazia de recursos"],
-      cost:"Conta real opcional. Free Tier e créditos podem mudar. Antes: Budget/alerta e limite pessoal. Depois: destroy, conferir recursos/volumes/logs e Billing. Não mantenha serviço ocioso.",command:"spring init --java-version=21 --build=maven --dependencies=web,actuator cloud-run-lab && cd cloud-run-lab && git init"
+      cost:"Conta real opcional. Free Tier e créditos podem mudar. Antes: Budget/alerta e limite pessoal. Depois: destroy, conferir recursos/volumes/logs e Billing. Não mantenha serviço ocioso.",command:"spring init --java-version=25 --build=maven --dependencies=web,actuator cloud-run-lab && cd cloud-run-lab && git init"
     });
     P({
       id:"C01",area:"cloud",difficulty:"Intermediário",sessions:8,title:"Storage trocável por porta",
@@ -306,7 +307,7 @@
       learns:["ports & adapters e dependency inversion","capability matrix de object stores","streaming, metadata, ETag/checksum e conditional write","configuração por profile sem if(provider) espalhado","contract tests reutilizados por adapter","custo da portabilidade e escape hatch consciente"],
       architecture:["Use Case","ObjectStorage Port","File Adapter","MinIO Adapter","Cloud Adapters"],
       prerequisites:["S01 e A01","interfaces Java","Docker/MinIO"],
-      stack:["Java 21","Spring Boot","MinIO","AWS SDK/Azure/GCP SDK opcionais","Testcontainers"],
+      stack:["Java 25","Spring Boot","MinIO","AWS SDK/Azure/GCP SDK opcionais","Testcontainers"],
       steps:["Liste capacidades necessárias: put stream, head, get, delete e URL temporária.","Desenhe ObjectStorage sem tipos de SDK no contrato.","Implemente adapter filesystem atômico e adapter MinIO local.","Crie contract test que roda igual contra ambos.","Mapeie diferenças de ETag, overwrite, metadata e URL temporária em uma matriz.","Selecione adapter por configuração tipada e valide startup.","Crie escape hatch isolado para capacidade exclusiva, sem contaminar domínio.","Faça stub/documentação dos adapters AWS, Azure e GCP; implementação real é opcional."],
       acceptance:["Use case compila sem SDK de Cloud","Troca de adapter não altera controller","Contract tests provam semântica mínima","Capacidade não suportada falha explicitamente","Matriz registra o que não é portável"],
       tests:["mesmo object key duas vezes","stream interrompido","metadata ausente","conditional write concorrente","adapter indisponível no startup"],
@@ -314,7 +315,7 @@
       questions:["Interface representa negócio ou interseção de fornecedores?","Quando abstração perde uma capacidade valiosa?","Qual comportamento deve ser idêntico?","Como testar adapter sem mockar o SDK?"],
       ladder:["filesystem + port","MinIO + contract tests + capabilities","adapters reais opcionais, observabilidade e escape hatch"],
       evidence:["capability matrix","ADR da fronteira da porta","resultado dos contract tests por adapter","diagrama de dependências sem SDK vazando"],
-      cost:"R$ 0 com filesystem/MinIO. Provedores reais são extensões opcionais e exigem consulta de preço e teardown.",command:"spring init --java-version=21 --build=maven --dependencies=web,validation,actuator portable-storage"
+      cost:"R$ 0 com filesystem/MinIO. Provedores reais são extensões opcionais e exigem consulta de preço e teardown.",command:"spring init --java-version=25 --build=maven --dependencies=web,validation,actuator portable-storage"
     });
     P({
       id:"C02",area:"cloud",difficulty:"Avançado",sessions:9,title:"Runtime portátil: eventos e segredos",
@@ -324,7 +325,7 @@
       learns:["EventPublisher/SecretResolver ports","12-factor config e workload identity","adapter RabbitMQ e adapter in-memory/local","schema de evento independente do broker","retry ownership e semantic mismatch","composition root e startup validation"],
       architecture:["Domain Event","Publisher Port","Rabbit Adapter","Cloud Adapter","Secret Port","Runtime Identity"],
       prerequisites:["C01","mensageria básica","configuração Spring"],
-      stack:["Java 21","Spring Boot","RabbitMQ","Testcontainers","Kubernetes Secrets local","SDKs apenas nos adapters"],
+      stack:["Java 25","Spring Boot","RabbitMQ","Testcontainers","Kubernetes Secrets local","SDKs apenas nos adapters"],
       steps:["Defina evento de domínio sem header ou classe do broker.","Crie EventPublisher e uma matriz: at-least-once, ordering, delay, DLQ e tamanho.","Implemente adapter in-memory para teste e RabbitMQ para ambiente local.","Crie SecretResolver com env/file e cache de curta duração explícito.","Faça composition root escolher adapters por propriedades validadas.","Impeça segredo de aparecer em actuator, exception ou log.","Simule rotação de segredo sem recompilar e defina política de reload.","Documente como AWS/Azure/GCP/OCI/VMware encaixariam sem prometer equivalência."],
       acceptance:["Domínio não importa SDK/broker","Evento serializado possui version e eventId","Adapter declara semântica que oferece","Segredo muda sem rebuild","Startup falha cedo quando composição é impossível"],
       tests:["contract tests do publisher","evento duplicado e reordenado","segredo ausente/rotacionado","configuração de adapters incompatíveis","serialização compatível v1"],
@@ -332,17 +333,17 @@
       questions:["Quem possui retry: adapter ou caso de uso?","Como não esconder entrega diferente atrás da mesma interface?","Portabilidade vale o custo neste contexto?","Workload identity elimina qual segredo?"],
       ladder:["ports e adapters locais","matriz semântica, rotação e validação","adapter de uma Cloud, identity real e teste de failover"],
       evidence:["matriz provider/capability/semantics","ADR do composition root","teste de rotação gravado","dependency rule automatizada"],
-      cost:"R$ 0 com RabbitMQ e secrets locais. Adapters reais são opcionais.",command:"spring init --java-version=21 --build=maven --dependencies=web,amqp,actuator portable-runtime"
+      cost:"R$ 0 com RabbitMQ e secrets locais. Adapters reais são opcionais.",command:"spring init --java-version=25 --build=maven --dependencies=web,amqp,actuator portable-runtime"
     });
     P({
-      id:"C03",area:"cloud",difficulty:"Avançado",sessions:10,title:"12-factor até Kubernetes local",
+      id:"C03",marco:12,hab:["09 Nuvem e Kubernetes"],adapt:"A aplicação é o OrderFlow. Esta missão cobre a parte de Kubernetes local do marco 12; a nuvem fica com a missão A03.",first:["Instale o kind e crie um cluster local.","Gere a imagem do serviço de pedidos e carregue no cluster.","Escreva o Deployment e o Service e aplique.","Adicione probes de liveness e readiness ligadas ao Actuator.","Mova a configuração para um ConfigMap e a senha do banco para um Secret.","Derrube um pod e veja o cluster repor."],firstDone:"o serviço responde dentro do cluster e volta sozinho depois de um pod ser derrubado.",area:"cloud",difficulty:"Avançado",sessions:10,title:"12-factor até Kubernetes local",
       summary:"Leve a mesma imagem ao kind, com config, probes, recursos, rollout e falhas operacionais reproduzíveis.",
       problem:"Uma aplicação containerizada não é automaticamente operável. Precisa iniciar, ficar pronta, terminar, receber configuração e sobreviver a atualização sem perder requisições.",
       why:"Kubernetes é uma API de estado desejado. Este projeto conecta comportamento do Spring a probes, resources, rollout e eventos do cluster.",
       learns:["imagem imutável, config externa e logs em stdout","Pod, Deployment, Service e reconciliation","startup/readiness/liveness com propósitos distintos","requests, limits, OOMKilled e throttling","rolling update, terminationGracePeriod e preStop","kubectl describe/logs/events/top como fluxo de diagnóstico"],
       architecture:["Git/Image","Kubernetes API","Deployment","Service","Spring Pods","Operator"],
       prerequisites:["Docker básico","S03","kubectl e kind/minikube"],
-      stack:["Java 21","Spring Boot","Docker","kind","Kubernetes","Kustomize opcional"],
+      stack:["Java 25","Spring Boot","Docker","kind","Kubernetes","Kustomize opcional"],
       steps:["Construa imagem non-root e reproduzível; exponha Actuator em porta/paths decididos.","Crie kind cluster e manifests Deployment + ClusterIP Service.","Passe config não sensível por ConfigMap e sensível por Secret local.","Configure startup, readiness e liveness com semânticas diferentes.","Defina requests/limits a partir de medição local, não chute silencioso.","Faça rolling update com uma versão lenta e observe eventos/endpoints.","Implemente graceful shutdown e teste SIGTERM sob carga.","Provoque CrashLoopBackOff, ImagePullBackOff, OOMKilled e probe failure.","Escreva árvore de troubleshooting começando por sintomas."],
       acceptance:["Um comando cria cluster e outro remove","Readiness tira pod do tráfego sem reiniciá-lo","SIGTERM permite concluir request dentro do grace period","Rollout mantém disponibilidade no cenário definido","Runbook identifica quatro falhas por evidências do cluster"],
       tests:["smoke test pós-deploy","carga durante rolling update","config ausente","limite de memória intencionalmente baixo","readiness de dependência degradada"],
@@ -353,14 +354,14 @@
       cost:"R$ 0 em kind/minikube local. Cluster gerenciado não é necessário.",command:"kind create cluster --name lab-projetos && kubectl cluster-info --context kind-lab-projetos"
     });
     P({
-      id:"I01",area:"ai",difficulty:"Avançado",sessions:10,title:"RAG local com fonte citável",
+      id:"I01",marco:5,hab:["03 RAG"],adapt:"Os documentos são as políticas da loja (troca, entrega, pagamento), e o assistente faz parte do OrderFlow.",first:["Escreva três documentos curtos de política da loja em Markdown.","Escreva 20 perguntas com o documento onde está a resposta, e 4 que os documentos não respondem.","Suba o PostgreSQL com pgvector no Docker Compose.","Divida os documentos em trechos por seção e imprima os trechos para ler.","Gere os embeddings com o modelo local e grave no banco.","Faça a busca por similaridade para 5 perguntas e confira à mão se o trecho certo veio."],firstDone:"você tem as 24 perguntas com gabarito e viu, para 5 delas, quais trechos a busca devolve.",extra:["Busca híbrida: junte a busca textual (BM25) com a vetorial usando reciprocal rank fusion e meça a diferença na recuperação.","Reordenação: aplique um cross-encoder nos 20 primeiros resultados e compare com a ordem original.","GraphRAG: extraia entidades e relações para responder perguntas sobre o conjunto dos documentos, e meça o custo de indexação.","Adote cada técnica só se a medida de recuperação melhorar no seu conjunto de perguntas."],area:"ai",difficulty:"Avançado",sessions:10,title:"RAG local com fonte citável",
       summary:"Responda perguntas sobre seus próprios documentos com Ollama, embeddings e pgvector — sem enviar dados para API paga.",
       problem:"Um assistente responde sobre manuais internos, mas precisa recuperar trechos relevantes, apontar fontes e admitir quando o material não sustenta a resposta.",
       why:"RAG não é “colar PDF no prompt”. É ingestão, chunking, embedding, retrieval, contexto, resposta e avaliação como pipeline observável.",
       learns:["Spring AI ChatClient, EmbeddingModel e VectorStore","ETL de documentos, chunk size/overlap e metadata","pgvector e similaridade","QuestionAnswerAdvisor/RAG modular","citações, abstention e filtro por metadata","latência, contexto, tracing e avaliação de relevância"],
       architecture:["Docs","ETL/Chunks","Ollama Embeddings","pgvector","Retriever","Chat Model","Answer+Citations"],
       prerequisites:["Spring básico","Docker com memória disponível","conceitos de HTTP e SQL"],
-      stack:["Java 21","Spring Boot","Spring AI","Ollama","PostgreSQL + pgvector","Testcontainers"],
+      stack:["Java 25","Spring Boot","Spring AI","Ollama","PostgreSQL + pgvector","Testcontainers"],
       steps:["Escolha dez documentos próprios não sensíveis e crie cinco perguntas respondíveis/não respondíveis.","Suba Ollama e pgvector localmente; registre modelo e requisitos de máquina.","Implemente ingestão idempotente com document id, checksum e metadata.","Compare dois tamanhos de chunk em um conjunto fixo de perguntas.","Configure VectorStore e retrieval top-k com filtro por coleção.","Monte ChatClient com advisor de RAG e prompt de abstention/citação.","Retorne answer, source ids e trechos usados; nunca invente URL.","Instrumente duração de embedding, retrieval e geração.","Crie dataset de avaliação e execute antes de alterar prompt/chunking."],
       acceptance:["Reingestão não duplica chunks","Resposta cita somente source ids recuperados","Pergunta sem evidência retorna não sei","Dataset mede retrieval hit e groundedness definidos por você","Tudo funciona sem chave paga"],
       tests:["documento atualizado muda checksum/chunks","prompt injection dentro do documento","consulta vazia e enorme","pgvector indisponível","modelo Ollama indisponível"],
@@ -368,17 +369,17 @@
       questions:["Falha veio do retrieval ou da geração?","Chunk ideal é propriedade fixa?","Citação prova veracidade?","Qual metadata evita vazamento entre coleções?"],
       ladder:["ingestão + busca + resposta local","citações, abstention, filtros e dataset","evals no CI, observabilidade, ACL e threat model"],
       evidence:["dataset versionado com expected sources","diagrama do pipeline RAG","comparativo chunk/top-k","README com comandos Ollama e teardown"],
-      cost:"R$ 0 local; custo é CPU/RAM/energia da máquina. API externa não é necessária.",command:"spring init --java-version=21 --build=maven --dependencies=web,jdbc,actuator rag-local"
+      cost:"R$ 0 local; custo é CPU/RAM/energia da máquina. API externa não é necessária.",command:"spring init --java-version=25 --build=maven --dependencies=web,jdbc,actuator rag-local"
     });
     P({
-      id:"I02",area:"ai",difficulty:"Avançado",sessions:8,title:"Classificador com saída estruturada",
+      id:"I02",apoio:["Projeto 1 · Extrator de notas fiscais","extrator"],hab:["Extração com saída estruturada"],adapt:"Onde a missão fala em classificar lançamentos, pense em extrair os campos de uma nota fiscal. O contrato, a validação e a medida são os mesmos. A primeira sessão está no roteiro do projeto, no plano.",area:"ai",difficulty:"Avançado",sessions:8,title:"Classificador com saída estruturada",
       summary:"Converta texto de lançamento em categoria e confiança, validando schema em vez de confiar em JSON aparente.",
       problem:"Descrições bancárias precisam virar categorias tipadas. O modelo pode responder texto inválido, categoria inexistente ou confiança incoerente.",
       why:"Integração de IA precisa de contrato, validação, fallback e auditoria. Structured output reduz parsing improvisado, mas continua sujeito a limites do provedor/modelo.",
       learns:["record de resposta e JSON Schema","structured output e validação","prompt versionado e few-shot examples","temperature/determinismo e confidence calibration","fallback humano/regra e audit trail","PII minimization e redaction"],
       architecture:["Transaction Text","Redactor","ChatClient","Schema Validator","Policy","Category Result"],
       prerequisites:["I01 ou Spring AI básico","records e Bean Validation","noção de classificação"],
-      stack:["Java 21","Spring Boot","Spring AI","Ollama","JSON Schema","JUnit"],
+      stack:["Java 25","Spring Boot","Spring AI","Ollama","JSON Schema","JUnit"],
       steps:["Defina enum de categorias, confidence e reason curta em record imutável.","Crie dataset de 100 exemplos anonimizados com rótulo humano.","Implemente redaction antes do prompt e logue somente hash/metadata.","Use ChatClient entity mapping; valide categoria, confidence e campos extras.","Implemente retry limitado para schema inválido e fallback UNKNOWN.","Versione prompt/model config junto ao resultado para auditoria.","Compare baseline por palavras-chave com modelo local.","Calcule accuracy por classe, confusion matrix e taxa de UNKNOWN."],
       acceptance:["Resposta inválida nunca entra como objeto confiável","UNKNOWN é caminho explícito, não exception genérica","PII original não aparece em logs/prompts persistidos","Métrica por classe evita esconder categoria ruim","Troca de prompt produz relatório comparável"],
       tests:["modelo retorna texto em vez de JSON","categoria fora do enum","confidence NaN/fora do intervalo","prompt injection na descrição","timeout e retry esgotado"],
@@ -386,17 +387,17 @@
       questions:["Structured output é garantia em qual camada?","Confidence do modelo é probabilidade calibrada?","Quando regra simples vence LLM?","Qual dado pode sair do boundary?"],
       ladder:["record, prompt e 20 exemplos","schema validation, fallback e 100 exemplos","calibração, human review, drift e auditoria"],
       evidence:["dataset anonimizado e confusion matrix","ADR IA versus regras","prompt/version manifest","exemplos de falha e política de fallback"],
-      cost:"R$ 0 com Ollama local. Nenhum dado precisa sair da máquina.",command:"spring init --java-version=21 --build=maven --dependencies=web,validation,actuator classifier-ai"
+      cost:"R$ 0 com Ollama local. Nenhum dado precisa sair da máquina.",command:"spring init --java-version=25 --build=maven --dependencies=web,validation,actuator classifier-ai"
     });
     P({
-      id:"I03",area:"ai",difficulty:"Avançado",sessions:10,title:"Bancada de evals e guardrails",
+      id:"I03",marco:[7,8],hab:["05 Evals","06 Segurança"],adapt:"Esta missão cobre dois marcos. A parte de avaliação é o marco 7; a parte de ataques e guardrails é o marco 8. Faça nessa ordem.",first:["Escreva 20 casos em evals/golden.jsonl, cada um com categoria e critério.","Inclua 4 casos em que a resposta certa é recusar.","Escreva o avaliador determinístico: contém o valor, segue o formato, cita a fonte.","Rode os casos na versão atual e grave a taxa de acerto por categoria como linha de base.","Escreva o teste que compara a versão atual com a linha de base.","Piore o prompt de propósito e veja o teste falhar."],firstDone:"o teste falha quando você piora o prompt e aponta qual categoria caiu.",area:"ai",difficulty:"Avançado",sessions:10,title:"Bancada de evals e guardrails",
       summary:"Ataque seu RAG/classificador, meça regressões e bloqueie respostas perigosas antes de chamar isso de feature.",
       problem:"Uma alteração de prompt melhora dois exemplos e piora vinte. Documentos podem conter prompt injection, resposta pode vazar dado e uma métrica única pode mascarar risco.",
       why:"IA em produção é sistema probabilístico sob políticas determinísticas. Evals repetíveis e guardrails em camadas substituem confiança por evidência.",
       learns:["golden dataset e test matrix","relevance, groundedness, refusal e format validity","prompt injection e data exfiltration threat model","advisors/interceptors e políticas antes/depois do modelo","rate/size limits, timeout e circuit breaker","human review, feedback e regressão"],
       architecture:["Attack Dataset","Input Guard","RAG/Model","Output Guard","Evaluator","Report"],
       prerequisites:["I01 e I02","testes parametrizados","segurança básica"],
-      stack:["Java 21","Spring Boot","Spring AI Evaluator/Advisors","Ollama","JUnit","Micrometer"],
+      stack:["Java 25","Spring Boot","Spring AI Evaluator/Advisors","Ollama","JUnit","Micrometer"],
       steps:["Crie catálogo de riscos: hallucination, injection, PII, toxicidade, indisponibilidade e custo.","Monte dataset com casos normais, limite, adversariais e não respondíveis.","Defina métricas e limiares por risco; não reduza tudo a uma nota.","Implemente input guard para tamanho, formato, tenant e padrões proibidos.","Implemente output guard para schema, citação, PII e policy.","Separe evaluator heurístico de evaluator por modelo e registre limitações.","Gere relatório diff entre duas versões de prompt/modelo.","Adicione timeout, concorrência limitada e fallback sem IA.","Crie aprovação manual para ação de alto impacto.","Execute red-team session e converta achados em testes."],
       acceptance:["Toda alteração de prompt executa dataset","Relatório mostra caso, expectativa, resposta e métrica","Injection conhecida não altera política do sistema","Falha de modelo usa fallback definido","Ação de alto impacto nunca ocorre só por texto do modelo"],
       tests:["instrução maliciosa no documento e na pergunta","PII na resposta","resposta sem citação","modelo lento/fora do ar","mudança de idioma e texto muito longo"],
@@ -407,32 +408,32 @@
       cost:"R$ 0 com modelos locais; monitore apenas recurso da máquina.",command:"mkdir ai-eval-bench && cd ai-eval-bench && git init && mvn -N wrapper:wrapper"
     });
     P({
-      id:"I04",area:"ai",difficulty:"Avançado",sessions:9,title:"Agente de suporte com ferramentas seguras",
-      summary:"Construa um agente Spring que consulta pedidos por ferramentas explícitas, respeita o tenant e interrompe ações fora da política.",
+      id:"I04",extra:["Vários agentes: separe pesquisador, executor e auditor, cada um com as próprias ferramentas e o próprio contexto.","Gateway MCP: ponha um ponto único entre os agentes e os servidores MCP, com autenticação e registro.","Aprovação humana: ações que alteram estado ficam pendentes até uma pessoa aprovar, com chave de idempotência.","Antes de manter a divisão em vários agentes, meça se ela melhora o resultado em relação ao agente único."],marco:6,hab:["04 Agentes e MCP","10 Python"],first:["Crie o projeto com o comando inicial e suba o PostgreSQL no Docker Compose.","Cadastre pedidos fictícios de dois clientes diferentes.","Implemente GET /pedidos/{numero} autenticado, sem nenhum modelo.","Escreva o teste: o cliente A recebe 404 ao pedir um pedido do cliente B.","Isole a consulta num método consultarPedido(numero) de um serviço. É ele que vai virar ferramenta.","Anote três perguntas que o agente deve responder e uma que ele deve recusar."],firstDone:"o teste de isolamento passa sem nenhum modelo envolvido, e a consulta está num método pronto para virar ferramenta.",area:"ai",difficulty:"Avançado",sessions:9,title:"Agente de suporte com ferramentas seguras",
+      summary:"Guia do marco 6 do plano: ferramentas de pedido com a permissão validada no backend, expostas por um servidor MCP e usadas por um agente em Python.",
       problem:"Um assistente precisa responder sobre pedidos usando dados atuais. O modelo pode propor ferramenta inexistente, argumento inválido, pedido de outro cliente ou ação que altera o estado; nenhuma dessas decisões pode ser confiada ao prompt.",
       why:"Tool calling conecta linguagem a sistemas reais, mas cria uma fronteira de segurança e confiabilidade. O modelo escolhe uma ferramenta dentre as descritas; o backend continua responsável por autenticação, autorização, validação, execução, limites e registro do resultado.",
       learns:["Spring AI ChatClient e ciclo de tool calling","contratos de ferramenta pequenos e tipados","autorização por usuário e tenant no serviço","separação entre consulta e ação com efeito","limite de iterações, timeout e orçamento","idempotência, confirmação humana e auditoria","testes determinísticos sem depender da resposta exata do modelo"],
       architecture:["Usuário autenticado","API Spring","ChatClient","Policy + Tool Registry","OrderQuery Service","Resposta com evidência"],
-      prerequisites:["I02 ou saída estruturada básica","Spring Security e injeção de dependência","HTTP, DTOs e testes com JUnit","Docker e noção de Testcontainers"],
-      stack:["Java 21","Spring Boot","Spring AI","Ollama local","PostgreSQL","Spring Security","JUnit + Testcontainers"],
-      steps:["Modele pedidos fictícios para dois usuários/tenants e defina quais campos cada um pode consultar.","Implemente primeiro um endpoint comum de consulta autenticada sem LLM; prove isolamento entre tenants com testes.","Confirme na documentação da versão usada se o provider e o modelo local suportam tool calling. Se não suportarem, use um modelo falso para validar a orquestração; não trate texto livre como chamada executável.","Defina ferramentas pequenas, como consultarPedido(numero), sem aceitar SQL, URL ou nome de método arbitrário.","Registre ferramentas no ChatClient e faça o backend validar argumentos e contexto antes de chamar o serviço de domínio.","Retorne ao modelo apenas os dados mínimos necessários; não exponha tokens, dados de outro tenant ou campos internos.","Limite chamadas, iterações e tempo total; trate ferramenta indisponível e argumentos inválidos com resultado explícito.","Mantenha a primeira versão somente de leitura. Para uma ação simulada, exija confirmação humana e use chave de idempotência.","Registre trace id, ferramenta, duração, resultado permitido/negado e versão do modelo sem guardar prompt sensível por padrão.","Escreva testes de política com modelo falso e testes de integração com o modelo local; compare também resposta sem evidência e tentativa de injection."],
-      acceptance:["Usuário A nunca lê pedido do tenant B, mesmo se o modelo solicitar","nenhuma ferramenta permite SQL livre ou operação não registrada","argumentos são validados no backend antes da execução","limite interrompe loop e registra motivo","resposta distingue dado consultado de inferência e informa ausência de evidência","ação que altera estado não executa sem confirmação explícita","testes centrais rodam sem modelo e sem chave paga"],
+      prerequisites:["Marco 5 do plano (assistente com RAG) ou saída estruturada básica","Spring Security e injeção de dependência","HTTP, DTOs e testes com JUnit","Python básico, no nível do caderno Python para quem vem de Java"],
+      stack:["Java 25","Spring Boot 4","Spring AI","Servidor MCP","Python (agente)","PostgreSQL","Ollama local","JUnit + Testcontainers"],
+      steps:["Modele pedidos fictícios de dois clientes do OrderFlow e defina quais campos cada um pode consultar.","Implemente primeiro um endpoint comum de consulta autenticada, sem LLM, e prove o isolamento entre clientes com testes.","Defina ferramentas pequenas, como consultarPedido(numero) e proporTroca(numero, motivo), sem aceitar SQL, URL ou nome de método arbitrário.","Registre as ferramentas no ChatClient e faça o backend validar argumentos e o usuário autenticado antes de chamar o serviço de domínio.","Devolva ao modelo só os dados mínimos necessários; não exponha tokens, dados de outro cliente ou campos internos.","Limite chamadas, turnos e tempo total; trate ferramenta indisponível e argumento inválido com um resultado explícito.","Exponha as mesmas ferramentas num servidor MCP, com a mesma validação de permissão.","Escreva em Python um agente que usa o servidor MCP para responder sobre pedidos, com limite de turnos.","Mantenha a consulta somente de leitura. Para a troca, exija confirmação humana e use chave de idempotência.","Registre trace id, ferramenta, duração e resultado permitido ou negado, e escreva testes de política com um modelo falso."],
+      acceptance:["O cliente A nunca lê o pedido do cliente B, mesmo se o modelo pedir","nenhuma ferramenta permite SQL livre ou operação não registrada","os argumentos são validados no backend antes da execução","o limite de turnos interrompe o laço e registra o motivo","o agente em Python só alcança os dados pelo servidor MCP","a troca não é executada sem confirmação explícita","os testes centrais rodam sem modelo e sem chave paga"],
       tests:["modelo solicita pedido de outro tenant","argumento ausente, malformado ou excessivamente longo","modelo repete a mesma ferramenta até o limite","ferramenta retorna vazio, timeout ou erro","texto do pedido contém instrução de prompt injection","usuário não autenticado tenta chamar a API","confirmação de ação é repetida com a mesma chave idempotente"],
       failures:["remova a verificação de tenant e veja o teste falhar","desligue o limite de iterações em teste com relógio/contador controlado","simule timeout do modelo e da ferramenta separadamente","retorne dado pessoal extra e confira se o minimizador o descarta"],
       questions:["Quem realmente executa a chamada pedida pelo modelo?","Por que schema válido não significa permissão válida?","Qual dado deve voltar ao modelo e qual deve permanecer no serviço?","Como provar que uma ação não foi executada duas vezes?","O que o usuário vê quando a consulta não encontra evidência?"],
       ladder:["consulta autenticada + ferramenta read-only","limites, auditoria, isolamento e testes adversariais","aprovação de ações, observabilidade e evals de trajetória"],
       evidence:["diagrama do fluxo de tool calling e da fronteira de autorização","testes automatizados de isolamento entre tenants","registro de uma chamada permitida, negada e interrompida","threat model curto e ADR sobre ações read-only","README com execução local e teardown"],
-      cost:"R$ 0 com Ollama, PostgreSQL e Docker locais; o custo é CPU/RAM/energia. Não use dados reais.",command:"spring init --java-version=21 --build=maven --dependencies=web,security,jdbc,actuator agent-support"
+      cost:"R$ 0 com Ollama, PostgreSQL e Docker locais; o custo é CPU/RAM/energia. Não use dados reais.",command:"spring init --java-version=25 --build=maven --dependencies=web,security,jdbc,actuator orderflow-agente"
     });
     P({
-      id:"I05",area:"ai",difficulty:"Avançado",sessions:10,title:"Do zero ao deploy: agente com observabilidade e CI/CD",
+      id:"I05",marco:9,hab:["07 Observabilidade"],adapt:"O foco aqui é o rastreio e o custo por resposta. A parte de empacotar e publicar fica para o marco 12.",first:["Suba um coletor OpenTelemetry e uma interface de rastros no Docker Compose.","Ative a instrumentação do Spring Boot e confira o rastro de uma requisição HTTP.","Adicione um span em volta da chamada ao modelo, com os tokens de entrada e de saída.","Calcule o custo de cada chamada e registre num contador.","Faça 20 perguntas e anote o custo médio e a latência p50 e p95.","Escreva a tabela no README."],firstDone:"num único rastro você vê o tempo e os tokens da chamada ao modelo, e o README tem a primeira tabela de custo e latência.",area:"ai",difficulty:"Avançado",sessions:10,title:"Do zero ao deploy: agente com observabilidade e CI/CD",
       summary:"Empacote um agente Spring AI / FastAPI com healthchecks, circuit breaker de LLM, métricas de tokens/latência no OpenTelemetry e deploy via container.",
       problem:"Um agente autônomo funciona no terminal local, mas em produção sofre com latência imprevisível, ausência de tracing de tokens, falta de probes de saúde para o orquestrador e risco de regressão silenciosa após alteração de prompts.",
       why:"IA em produção não é script; é serviço resiliente. O mercado exige empacotamento OCI, probes desacopladas de inferência pesada, circuit breakers com fallback heurístico, telemetria OpenTelemetry (Langfuse/Prometheus) e pipeline de CI/CD com evals automatizados.",
       learns:["Dockerfile multi-stage e runtime enxuto com usuário não-root","liveness e readiness probes resilientes a LLM","circuit breaker e timeout com Resilience4j","OpenTelemetry, traces distribuídos e custo FinOps","GitHub Actions com suíte de evals automatizada","deploy em container com segredos seguros"],
       architecture:["Client","API Gateway","Agent Service (Docker)","OpenTelemetry / Traces","Circuit Breaker / Fallback","Cloud Container"],
       prerequisites:["I04 ou tool calling básico","Docker e containers","noções de CI/CD e métricas"],
-      stack:["Java 21","Spring Boot 3","Spring AI","Docker","OpenTelemetry","Prometheus","GitHub Actions"],
+      stack:["Java 25","Spring Boot 3","Spring AI","Docker","OpenTelemetry","Prometheus","GitHub Actions"],
       steps:["Construa a API do agente com endpoint de chat e tool calling.","Implemente circuit breaker e fallback com resposta determinística quando o modelo falhar.","Desacople healthcheck: probe de liveness verifica o socket HTTP; readiness valida dependências sem disparar inferência cara.","Instrumente métricas de prompt tokens, completion tokens e latência via OpenTelemetry/Actuator.","Crie Dockerfile multi-stage com usuário não-root e imagem base Alpine/Distroless.","Configure Docker Compose local com o agente, Prometheus e coletor de traces.","Escreva pipeline no GitHub Actions que roda testes unitários e a suíte de evals antes do build da imagem.","Valide deploy local simulando queda e reinício automático do container."],
       acceptance:["Probe de liveness nunca chama inferência de LLM","Queda da API de IA dispara fallback limpo em menos de 1s sem derrubar o container","Traces registram tokens de entrada/saída e latência de cada etapa","Pipeline de CI bloqueia merge se a suíte de evals detectar regressão","Imagem Docker roda sem privilégios de root e com imagem base mínima"],
       tests:["timeout forçado na API do modelo","chamada de probe sob saturação de CPU","falha de autenticação com provedor de LLM","prompt injection no payload de entrada","execução da suíte de evals com assertion de regressão"],
@@ -440,44 +441,10 @@
       questions:["Por que readiness probe não deve fazer chamada a LLMs?","Como calcular o custo financeiro exato de cada requisição em tempo real?","Qual o impacto de latência de cold start em containers de IA?"],
       ladder:["container Docker local com probes","observabilidade com OpenTelemetry e traces","pipeline de CI/CD com gate de evals e deploy"],
       evidence:["Dockerfile multi-stage e docker-compose.yml","dashboard de métricas de tokens e latência","workflow do GitHub Actions com log de execução dos evals","ADR sobre política de circuit breaker e fallback"],
-      cost:"R$ 0 local com Docker e Ollama.",command:"spring init --java-version=21 --build=maven --dependencies=web,actuator,prometheus,validation agent-deploy-lab"
+      cost:"R$ 0 local com Docker e Ollama.",command:"spring init --java-version=25 --build=maven --dependencies=web,actuator,prometheus,validation agent-deploy-lab"
     });
-    P({
-      id:"I06",area:"ai",difficulty:"Avançado",sessions:12,title:"Multiagentes e Gateway MCP com aprovação humana",
-      summary:"Orquestre um time de agentes especialistas (Pesquisador, Executor e Auditor) integrados por um servidor MCP padronizado com aprovação humana para ações críticas.",
-      problem:"Tarefas complexas de engenharia (como conciliação contábil, refatoração de código ou auditoria) falham quando centralizadas em um único agente sobrecarregado. Além disso, agentes com permissão de escrita irrestrita geram risco grave de corrupção de dados.",
-      why:"Arquiteturas multiagentes decompõem problemas em papéis estritos: um especialista pesquisa contexto, outro planeja, outro executa ferramentas via MCP e um auditor valida. Ações que alteram estado exigem barreira obrigatória de Human-in-the-Loop.",
-      learns:["padrão Supervisor/Workers em agentes","Model Context Protocol (MCP) com Tools e Resources","comunicação estruturada inter-agentes","Human-in-the-Loop com tokens de aprovação e idempotência","limite de turnos, orçamento e detecção de loops","auditoria e rastreamento de trajetórias agênticas"],
-      architecture:["Supervisor / Orquestrador","Pesquisador (MCP Tool)","Executor (Ações)","Fila Human-in-the-Loop","Auditor / Juiz","Resultado Auditado"],
-      prerequisites:["I04 ou tool calling avançado","Spring Security ou autorização por token","arquitetura orientada a mensagens"],
-      stack:["Java 21 / Spring Boot 3","Spring AI MCP / FastMCP","PostgreSQL","OpenCode / Claude CLI Harness","JUnit"],
-      steps:["Implemente um Servidor MCP que expõe ferramentas de leitura segura (consultar saldo, listar notas) e ferramentas sensíveis de mutação (estornar lançamento, aplicar patch).","Configure um agente Orquestrador/Supervisor que recebe o objetivo do usuário e decompõe em subtarefas.","Crie o agente Pesquisador conectado ao MCP para coletar evidências documentais.","Crie o agente Executor que monta a proposta de mutação.","Implemente a barreira de Human-in-the-Loop: ferramentas sensíveis pausam a execução, geram um cartão de aprovação com chave de idempotência e aguardam confirmação do usuário.","Adicione um agente Auditor que verifica se o resultado atende às regras de conformidade antes de liberar a resposta final.","Teste o fluxo ponta a ponta com o OpenCode ou Claude Code conectado ao seu servidor MCP."],
-      acceptance:["Nenhuma ação mutável executa sem confirmação explícita do usuário","Agentes comunicam-se via contratos JSON tipados sem vazar prompts internos","O orquestrador aborta a execução se atingir 10 turnos sem convergência","Servidor MCP responde a requisições STDIO ou SSE em conformidade com o protocolo oficial","A chave de idempotência impede execução duplicada de ações aprovadas"],
-      tests:["rejeição humana da ação proposta","tentativa de execução de ferramenta não autorizada","loop infinito induzido por ferramenta retornando erro contínuo","aprovação duplicada da mesma ação (idempotência)","queda do servidor MCP durante a execução de um subagente"],
-      failures:["remova o token de aprovação humana e comprove que o backend bloqueia a execução","provoque falha de rede entre o supervisor e o pesquisador","simule um argumento malformado vindo do modelo"],
-      questions:["Qual a vantagem do protocolo MCP sobre APIs REST convencionais para agentes?","Por que um único agente com prompt longo é inferior a agentes especializados?","Como garantir que a aprovação humana não sofra com fadiga de alerta?"],
-      ladder:["servidor MCP local com ferramentas de leitura","orquestração supervisor + 2 especialistas","human-in-the-loop, auditoria e harness completo"],
-      evidence:["servidor MCP compatível com especificação oficial","diagrama de sequência da orquestração multiagentes","trilha de auditoria em banco de dados contendo as decisões e aprovações","ADR sobre fronteira de segurança do Human-in-the-Loop"],
-      cost:"R$ 0 com modelos locais ou APIs gratuitas com rate limit.",command:"spring init --java-version=21 --build=maven --dependencies=web,security,jdbc,actuator multiagent-mcp-lab"
-    });
-    P({
-      id:"I07",area:"ai",difficulty:"Avançado",sessions:11,title:"RAG Enterprise: busca híbrida, RRF, Re-ranking e GraphRAG",
-      summary:"Elimine alucinações em bases documentais complexas unindo busca textual exata (BM25), similaridade vetorial (pgvector), re-ranqueamento por Cross-Encoder e conexões em grafo.",
-      problem:"A busca vetorial ingênua falha em dois extremos: quando a consulta exige correspondência exata de identificadores (CPFs, códigos de erro, SKUs) e quando a resposta exige sintetizar informações espalhadas por múltiplos documentos corporativos diferentes.",
-      why:"Sistemas corporativos maduros utilizam RAG Híbrido: combinam busca léxica (BM25) e semântica (vetores) com Reciprocal Rank Fusion (RRF), re-ranqueiam com Cross-Encoder e estruturam entidades em grafo de conhecimento (GraphRAG), alcançando precisão superior a 95%.",
-      learns:["busca híbrida: Full-Text Search (BM25) + pgvector","algoritmo Reciprocal Rank Fusion (RRF) em SQL/código","Cross-Encoder Re-ranker (FlashRank / Cohere)","extração de entidades e relacionamentos para GraphRAG","avaliação de groundedness, citação estrita e abstention","estratégias de chunking hierárquico e metadados de acesso"],
-      architecture:["Documentos Corporativos","Extrator Entidades / Chunks","PostgreSQL (BM25 + pgvector)","Fusão RRF","Cross-Encoder Rerank","Contexto Híbrido + Grafo","Resposta com Citações"],
-      prerequisites:["I01 ou RAG básico","SQL avançado no PostgreSQL","noções de álgebra linear e teoria dos grafos"],
-      stack:["Java 21 / Python","PostgreSQL (pgvector + FTS)","FlashRank / Cross-Encoder","Spring AI / LangChain","Testcontainers"],
-      steps:["Configure tabela PostgreSQL com colunas tsvector (BM25 léxico) e vector (embeddings semânticos).","Implemente pipeline de ingestão com chunking hierárquico e metadados de tenant, documento e versão.","Escreva query SQL que calcula o rank de busca textual e o rank de busca vetorial, combinando ambos via Reciprocal Rank Fusion (RRF).","Adicione um modelo de Re-ranking Cross-Encoder leve (ex: FlashRank) para reavaliar os top-20 candidatos e selecionar os 5 mais relevantes.","Implemente extrator de entidades simples para mapear conexões entre documentos relacionados (mini GraphRAG).","Monte o prompt de geração exigindo citações diretas dos fragmentos recuperados e instrução explícita de abstention ('Não encontrei').","Crie dataset de 30 perguntas (incluindo termos exatos, sinônimos e perguntas sem resposta no corpus) e meça a taxa de acerto."],
-      acceptance:["Termos exatos (códigos, IDs) são recuperados com 100% de precisão via BM25","Perguntas conceituais encontram documentos correspondentes via pgvector","RRF unifica os resultados sem necessidade de normalização de scores discrepantes","Cross-Encoder descarta falsos positivos semânticos antes da chamada ao LLM","O modelo recusa perguntas não fundamentadas sem alucinar fontes"],
-      tests:["pergunta com código alfanumérico exato","pergunta com sinônimos sem palavras coincidentes","pergunta com documento inexistente no corpus","documento contendo prompt injection disfarçado","benchmark de latência: BM25 vs Vetorial vs Híbrido vs Rerank"],
-      failures:["desligue a busca BM25 e teste uma busca por código específico","desligue o Cross-Encoder e observe a presença de ruído no contexto","reduza o parâmetro k do RRF e avalie o impacto na precisão"],
-      questions:["Por que scores vetoriais de cosseno e scores BM25 não podem ser simplesmente somados?","Qual o custo de latência de adicionar um Cross-Encoder no pipeline?","Quando um grafo de conhecimento supera a simples busca por proximidade vetorial?"],
-      ladder:["Postgres com FTS + pgvector e RRF em SQL","Cross-Encoder re-ranking local","GraphRAG e suíte de avaliação comparativa"],
-      evidence:["script SQL completo com FTS, pgvector e função RRF","tabela comparativa de acurácia: Lexical vs Vetorial vs Híbrido + Rerank","dataset de teste com 30 casos documentados","README com instruções de reprodução local no Testcontainers"],
-      cost:"R$ 0 local usando PostgreSQL e modelos de embeddings locais.",command:"spring init --java-version=21 --build=maven --dependencies=web,jdbc,actuator rag-enterprise-lab"
-    });
+    
+    
     P({
       id:"R01",area:"rabbit",difficulty:"Intermediário",sessions:7,title:"Ateliê de topologias RabbitMQ",
       summary:"Modele direct, topic, fanout, bindings e mensagens não roteáveis antes de escrever consumer de negócio.",
@@ -486,7 +453,7 @@
       learns:["connection, channel, virtual host e topology","direct, topic, fanout e default exchange","queue/exchange durability, exclusive e auto-delete","routing key, binding e wildcard","mandatory, returns e alternate exchange","declaração idempotente com Spring AMQP"],
       architecture:["Spring Publisher","Exchange","Bindings","Queues A/B","Unroutable Sink"],
       prerequisites:["Docker","Spring básico","JSON e eventos"],
-      stack:["Java 21","Spring Boot","Spring AMQP","RabbitMQ","Testcontainers"],
+      stack:["Java 25","Spring Boot","Spring AMQP","RabbitMQ","Testcontainers"],
       steps:["Suba RabbitMQ Management local e desenhe a topologia antes de declarar.","Implemente três eventos e uma exchange direct; preveja a rota no papel.","Troque para topic e teste * versus # com tabela de casos.","Crie fanout separado para auditoria e explique cópias.","Ative mandatory e capture publisher return para mensagem sem rota.","Adicione alternate exchange e compare responsabilidades.","Declare tudo por beans Spring AMQP e prove reinício idempotente.","Crie contract test em RabbitMQ real com Testcontainers."],
       acceptance:["Produtor publica em exchange, não conhece fila de consumer","Tabela de routing keys prevê todos os destinos","Mensagem sem rota é observável","Restart não quebra por declaração divergente","Teste usa broker real efêmero"],
       tests:["routing key exata e wildcard","nenhum binding","declaração com argumento incompatível","exchange inexistente","mensagem maior que limite definido"],
@@ -494,43 +461,142 @@
       questions:["Exchange guarda mensagem?","Durable resolve perda sozinho?","Return e confirm respondem a perguntas diferentes?","Quem é dono da fila e binding?"],
       ladder:["direct/topic e consumers","returns, alternate exchange e contract tests","ownership, versionamento, métricas e políticas"],
       evidence:["diagrama de cada topologia","tabela routing key → queues","captura de return/unroutable","README com docker compose e smoke test"],
-      cost:"R$ 0 com RabbitMQ local.",command:"spring init --java-version=21 --build=maven --dependencies=amqp,actuator rabbit-topology-lab"
+      cost:"R$ 0 com RabbitMQ local.",command:"spring init --java-version=25 --build=maven --dependencies=amqp,actuator rabbit-topology-lab"
     });
     P({
-      id:"R02",area:"rabbit",difficulty:"Avançado",sessions:9,title:"Consumer sob pressão",
-      summary:"Controle ack, prefetch, concorrência, retry e DLQ enquanto mensagens lentas, duplicadas e venenosas chegam.",
-      problem:"Um consumidor rápido sobrecarrega memória; um consumidor lento prende backlog; uma mensagem inválida cria loop infinito. Reinício pode redeliver mensagem já vista.",
-      why:"Consumer ack e publisher confirm são mecanismos ortogonais. Confiabilidade exige tratar cada fronteira e aceitar redelivery com idempotência.",
-      learns:["manual ack/nack/reject e redelivery","prefetch como janela de mensagens em voo","consumer concurrency versus ordering","retry com backoff e poison message","DLX/DLQ, TTL e risco de ciclo","quorum queue e limites de garantia"],
-      architecture:["Publisher","Exchange","Work Queue","Consumers × N","Retry/DLX","DLQ"],
-      prerequisites:["R01","threads e transações básicas","métricas"],
-      stack:["Java 21","Spring Boot","Spring AMQP","RabbitMQ","Micrometer","Testcontainers"],
-      steps:["Crie worker com tempo variável e idempotency key persistida.","Configure manual ack somente depois do efeito confirmado.","Meça throughput/heap com prefetch 1, 10, 100 e concorrência controlada.","Mate consumer antes/depois do efeito para observar redelivery.","Separe falha transitória de permanente; aplique retry com atraso limitado.","Configure DLX/DLQ por policy quando possível e inclua reason/context.","Crie ferramenta de inspeção e replay, nunca auto-replay infinito.","Compare classic e quorum queue no que o laboratório consegue provar.","Alerte por age do backlog e crescimento da DLQ."],
-      acceptance:["Consumer reiniciado não perde efeito nem duplica efeito de negócio","Prefetch escolhido tem evidência","Poison message termina na DLQ","Replay conserva idempotência","Dashboard mostra throughput, unacked, backlog age e failures"],
-      tests:["crash antes e depois do commit","mensagem duplicada","processing maior que timeout relevante","payload inválido","DLQ indisponível/ciclo de dead letter"],
-      failures:["prefetch ilimitado","ack automático antes do efeito","requeue infinito","dez consumers para uma ordem estrita","pare nó/broker local"],
-      questions:["Ack confirma processamento para quem?","Confirm garante consumo?","Como prefetch afeta RAM e fairness?","DLQ padrão garante zero perda em todo cenário?"],
-      ladder:["manual ack e worker","prefetch medido, retry e DLQ","quorum, replay governado, alertas e game day"],
-      evidence:["gráfico prefetch versus throughput/memória","timeline de redelivery","policy DLX e fluxo de replay","ADR de queue type e ordering"],
-      cost:"R$ 0 local. RabbitMQ oficial alerta que dead-lettering padrão pode falhar no republish; quorum queues oferecem opção at-least-once em condições documentadas.",command:"spring init --java-version=21 --build=maven --dependencies=amqp,jdbc,actuator reliable-consumer"
+      id:"R02",
+      area:"rabbit",
+      difficulty:"Avançado",
+      sessions:9,
+      marco:3,
+      hab:["02 Eventos"],
+      first:["Crie o projeto e um tópico pedidos.eventos com 3 partições.","Escreva o listener que grava a baixa de estoque com chave única pelo id do evento.","Publique 10 eventos com a chave do pedido e confira em qual partição cada um caiu.","Publique o mesmo evento duas vezes e confira que o efeito acontece uma vez só.","Publique um JSON inválido e observe a partição parar.","Configure o tratador de erro com tópico de erro e veja a partição voltar a andar."],
+      firstDone:"o evento duplicado não repete o efeito, e a mensagem inválida vai para o tópico de erro sem parar a partição.",
+      title:"Consumidor Kafka sob pressão",
+      summary:"Guia do marco 3 do plano: contrato de evento, tópico de erro, idempotência, lag e reprocessamento, com mensagens lentas, duplicadas e inválidas chegando.",
+      problem:"Uma mensagem inválida trava a partição inteira; um consumidor lento acumula atraso; um reinício entrega de novo o que já foi processado; uma mudança no formato do evento quebra quem lê.",
+      why:"No Kafka, a ordem dentro da partição faz uma mensagem ruim parar tudo o que vem depois. Confiabilidade exige tirar a mensagem do caminho, aceitar a reentrega com idempotência e controlar a evolução do contrato.",
+      learns:["partição, chave e ordem por entidade","commit do offset depois do efeito","tentativas com intervalo e tópico de erro (DLT)","consumidor idempotente","contrato em Avro com Schema Registry","consumer lag e reprocessamento com grupo novo"],
+      architecture:["Produtor","Schema Registry","Tópico","Consumidores × N","Tentativas","Tópico de erro"],
+      prerequisites:["Marco 2 do plano (outbox com CDC)","threads e transações básicas","métricas"],
+      stack:["Java 25","Spring Boot 4","Spring Kafka","Kafka","Schema Registry","Micrometer","Testcontainers"],
+      steps:["Publique PedidoCriado em Avro, com Schema Registry e compatibilidade BACKWARD.","Crie o consumidor de estoque com chave única por evento.","Configure o DefaultErrorHandler com poucas tentativas e envio ao tópico de erro.","Marque erro de dado como não repetível e use o ErrorHandlingDeserializer.","Mate o consumidor antes e depois do efeito e observe a reentrega.","Meça o lag com 1, 3 e 6 consumidores num tópico de 3 partições.","Separe o consumidor que calcula do consumidor que notifica.","Reprocesse um dia de eventos com um grupo novo, gravando numa tabela nova.","Ponha a checagem de compatibilidade do schema no pipeline e crie alertas de lag e de crescimento do tópico de erro."],
+      acceptance:["Mensagem inválida vai para o tópico de erro e a partição segue","Consumidor reiniciado não perde nem duplica efeito","Mudança incompatível de schema é recusada no pipeline","O reprocessamento não repete notificação","O painel mostra lag, tentativas e tamanho do tópico de erro"],
+      tests:["queda antes e depois do commit do offset","mensagem duplicada","payload que não desserializa","campo novo sem valor padrão no schema","mais consumidores que partições"],
+      failures:["remova o tópico de erro e envie uma mensagem inválida","ligue o commit automático","publique sem chave e observe a ordem","suba 6 consumidores para 3 partições","volte o offset do grupo que notifica"],
+      questions:["Por que uma mensagem ruim trava a partição?","O que o commit do offset confirma, e para quem?","Por que mais consumidores que partições não ajudam?","Quem atualiza primeiro com compatibilidade BACKWARD?"],
+      ladder:["consumidor com chave única e tópico de erro","contrato verificado, lag medido e reentrega testada","reprocessamento governado, alertas e ensaio de falha"],
+      evidence:["tabela de lag por número de consumidores","linha do tempo de uma reentrega","schema versionado e saída da checagem de compatibilidade","ADR de particionamento e ordem"],
+      cost:"R$ 0 local.",
+      command:"spring init --java-version=25 --build=maven --dependencies=kafka,jdbc,actuator orderflow-estoque"
     });
     P({
-      id:"R03",area:"rabbit",difficulty:"Avançado",sessions:12,title:"OrderFlow: outbox até produção",
-      summary:"Capstone: transação no banco, publicação confiável, consumidor idempotente, IA opcional e operação em Kubernetes local.",
-      problem:"Ao confirmar uma transferência, banco pode commitar e publish falhar — ou publish ocorrer e resposta sumir. Serviços downstream precisam processar duplicatas sem repetir efeito.",
-      why:"O capstone integra Java, Spring, SQL, RabbitMQ, observabilidade, containers e um adapter opcional de IA/Cloud. O objetivo é explicar garantias de ponta a ponta, não prometer exactly-once.",
-      learns:["transactional outbox e relay","publisher confirms/returns versus consumer acknowledgements","inbox/idempotent consumer","event versioning e choreography","backpressure, observability e recovery","deploy local em Kubernetes e runbook integrado"],
-      architecture:["Transfer API + DB/Outbox","Relay","RabbitMQ","Ledger Consumer + Inbox","Notifier/AI","Observability"],
-      prerequisites:["S02, S03, R01 e R02","Docker/Kubernetes local","SQL transacional"],
-      stack:["Java 21","Spring Boot","JdbcTemplate","PostgreSQL","RabbitMQ","Testcontainers","Docker","kind","Spring AI opcional"],
-      steps:["Defina o boundary: transferência e outbox são gravadas na mesma transação.","Crie schema versionado TransferCompleted v1 sem classe interna vazada.","Implemente relay concorrente com claim/lock, batch e retry.","Use publisher confirms; marque outbox enviada somente após confirmação adequada.","Implemente consumer com inbox unique(event_id) e efeito na mesma transação.","Adicione notifier; IA classifica descrição apenas como enrichment opcional e falível.","Instrumente outbox lag, publish failure, redelivery, inbox duplicate e DLQ age.","Teste crash em cada janela entre commit, publish, ack e resposta.","Empacote componentes e Rabbit/Postgres local; depois leve apps ao kind.","Execute game day e recupere backlog/DLQ com runbook.","Registre garantias reais e lacunas em ADR, sem usar palavra exactly-once sem escopo."],
-      acceptance:["Commit de negócio sempre deixa evento recuperável","Publish duplicado não duplica efeito downstream","Falha de IA não bloqueia transferência","Backlog recupera após broker voltar","Game day conclui com dados reconciliados e métricas normais"],
-      tests:["crash depois do commit antes do relay","confirm atrasado e relay reiniciado","consumer crash depois do efeito antes do ack","evento v1 desconhecido","10 mil eventos com consumidor lento"],
-      failures:["broker fora por cinco minutos","DB do consumer indisponível","evento venenoso no meio do lote","pod relay morto durante claim","modelo Ollama fora do ar"],
-      questions:["Qual transação cobre cada fronteira?","Onde duplicata ainda pode nascer?","Por que outbox não cria exactly-once global?","Como medir tempo do commit até efeito final?"],
-      ladder:["outbox + relay + consumer","confirms, inbox, DLQ e métricas","kind, game day, schema governance, runbook e SLO"],
-      evidence:["diagrama de todas as janelas de falha","ADR das garantias e trade-offs","dashboard com lag/redelivery/DLQ","relatório do game day e consulta de reconciliação","demo de cinco minutos reproduzível"],
-      cost:"R$ 0 com PostgreSQL, RabbitMQ, Ollama e kind locais. Adapter Cloud permanece opcional.",command:"mkdir orderflow-capstone && cd orderflow-capstone && git init && printf \"# OrderFlow Capstone\\n\" > README.md"
+      id:"R03",
+      area:"rabbit",
+      difficulty:"Avançado",
+      sessions:9,
+      marco:2,
+      hab:["02 Eventos"],
+      first:["Crie a tabela outbox com id, aggregatetype, aggregateid, type e payload.","Altere o serviço de criar pedido para inserir na outbox na mesma transação.","Escreva o teste: se a criação do pedido falha, a outbox fica vazia.","Escreva o teste inverso: pedido criado, uma linha na outbox.","Adicione Kafka e Kafka Connect ao Docker Compose e confirme que sobem.","Configure wal_level=logical no PostgreSQL e crie o usuário de replicação."],
+      firstDone:"os dois testes de transação passam e o Compose sobe com Kafka e Kafka Connect, ainda sem conector.",
+      title:"OrderFlow: outbox com CDC",
+      summary:"Guia do marco 2 do plano: o pedido e o evento são gravados na mesma transação, e o Debezium publica no Kafka o que foi confirmado.",
+      problem:"Ao confirmar um pedido, o banco pode confirmar e a publicação falhar, ou a publicação acontecer e a resposta se perder. Os outros serviços precisam receber todo evento de pedido confirmado, sem depender de sorte.",
+      why:"A escrita dupla falha em silêncio. Gravar o evento na mesma transação e publicar a partir do log do banco troca uma garantia frágil por uma que você consegue testar derrubando a aplicação.",
+      learns:["transactional outbox na mesma transação do pedido","CDC com Debezium e Kafka Connect","slot de replicação e o risco de disco cheio","roteamento da outbox para tópicos","entrega pelo menos uma vez e consumidor idempotente","medir o atraso entre o commit e a publicação"],
+      architecture:["API de pedidos","PostgreSQL + outbox","Debezium","Kafka","Consumidor","Métricas"],
+      prerequisites:["Marco 1 do plano (API de pedidos)","SQL transacional","Docker Compose"],
+      stack:["Java 25","Spring Boot 4","JdbcTemplate","PostgreSQL","Kafka","Kafka Connect + Debezium","Testcontainers","Docker Compose"],
+      steps:["Crie a tabela de outbox e grave nela dentro da transação de criar pedido.","Teste que o pedido e a linha da outbox são gravados juntos, ou nenhum dos dois.","Suba Kafka e Kafka Connect com Debezium, e configure wal_level=logical.","Registre o conector só para a tabela de outbox, com o roteador de eventos.","Escreva um consumidor simples que registra o evento recebido pela chave do evento.","Mate a aplicação logo depois do commit e confira que o evento chega.","Pare o conector, crie pedidos, observe o slot crescer e religue.","Meça o atraso entre o commit e a publicação e crie o alerta pelo tamanho do slot.","Registre no ADR a garantia real (pelo menos uma vez) e o que fica de fora."],
+      acceptance:["Pedido confirmado sempre tem evento publicado","Aplicação morta depois do commit não perde evento","Com o conector parado, os eventos chegam ao religar, na ordem","Evento repetido não duplica efeito no consumidor","Há alerta para slot de replicação parado"],
+      tests:["transação desfeita não deixa linha na outbox","queda da aplicação depois do commit","conector parado por 5 minutos","1.000 pedidos: a contagem de pedidos é igual à de eventos","o mesmo evento entregue duas vezes"],
+      failures:["mate a aplicação entre o commit e a resposta","pare o Kafka Connect","pare o Kafka por alguns minutos","encha a outbox sem consumir e observe o slot","remova a chave única do consumidor"],
+      questions:["Por que gravar no banco e publicar no broker em duas operações não é seguro?","O que o slot de replicação guarda, e o que acontece se ninguém consome?","Onde uma duplicata ainda pode nascer?","Como medir o tempo do commit até o evento publicado?"],
+      ladder:["outbox na transação e conector publicando","testes de queda, slot monitorado e consumidor idempotente","atraso medido, alerta, roteiro de recuperação e ADR das garantias"],
+      evidence:["script do teste que mata a aplicação","consulta que compara pedidos e eventos","registro do tamanho do slot antes e depois","ADR das garantias","README com a execução local"],
+      cost:"R$ 0 com PostgreSQL, Kafka e Kafka Connect locais.",
+      command:"mkdir orderflow && cd orderflow && git init"
+    });
+    P({
+      id:"S04",
+      area:"spring",
+      difficulty:"Avançado",
+      sessions:6,
+      marco:4,
+      hab:["01 Backend","02 Eventos"],
+      first:["Crie o projeto de faturamento com o comando inicial.","Consuma PedidoCriado e registre o evento em log.","Escreva o cliente HTTP da API de pedidos com timeout de 2 segundos.","Escreva o teste de contrato do consumidor para GET /pedidos/{id}, declarando só id e valor.","Rode o teste e abra o arquivo de contrato gerado.","Deixe a API de pedidos lenta e confira que o cliente desiste no tempo definido."],
+      firstDone:"o arquivo de contrato existe com os dois campos, e a chamada lenta falha no timeout em vez de travar.",
+      title:"Segundo serviço e teste de contrato",
+      summary:"Guia do marco 4 do plano: o faturamento consome o evento e chama a API de pedidos, com teste de contrato e proteção contra a falha do outro serviço.",
+      problem:"Com dois serviços, uma mudança no serviço de pedidos pode quebrar o faturamento sem que nenhum teste do serviço de pedidos perceba. E quando o serviço de pedidos fica lento, o faturamento trava junto.",
+      why:"Deploy independente só é seguro se quem muda descobre no próprio pipeline que quebrou o vizinho. E toda chamada entre serviços precisa de limite de tempo e de um plano para a falha.",
+      learns:["teste de contrato guiado pelo consumidor","verificação do contrato no provedor","timeout, novas tentativas e circuit breaker","falha parcial e degradação","evento consumido junto com chamada síncrona"],
+      architecture:["Kafka","Faturamento","Cliente HTTP","API de pedidos","Contrato","Pipeline"],
+      prerequisites:["Marcos 1 a 3 do plano","HTTP e JSON","JUnit"],
+      stack:["Java 25","Spring Boot 4","Spring Kafka","RestClient","Resilience4j","Pact","Testcontainers"],
+      steps:["Crie o serviço de faturamento, que consome PedidoCriado.","Ao receber o evento, consulte a API de pedidos para completar os dados.","Defina timeout de conexão e de leitura no cliente HTTP.","Adicione novas tentativas com intervalo, só para erros transitórios, e um circuit breaker.","Escreva o teste de contrato do consumidor declarando só os campos usados.","Publique o contrato e rode a verificação no pipeline do serviço de pedidos.","Remova do provedor um campo usado e veja o pipeline falhar.","Derrube o serviço de pedidos e confira que o faturamento não trava."],
+      acceptance:["Remover um campo usado pelo faturamento quebra o pipeline do serviço de pedidos","Toda chamada entre serviços tem timeout","Com o serviço de pedidos fora do ar, o faturamento degrada sem travar","Erro permanente não é tentado de novo","O contrato declara só os campos de fato usados"],
+      tests:["contrato do consumidor","verificação no provedor","resposta mais lenta que o timeout","erro 500 intermitente","erro 404, que não se repete"],
+      failures:["remova um campo da resposta do provedor","tire o timeout e deixe o provedor lento","derrube o provedor","faça o provedor responder 500 em metade das chamadas"],
+      questions:["Quem escreve o contrato e quem o verifica?","Por que não repetir a chamada num erro 404?","O que o circuit breaker protege?","O que o teste de contrato não cobre?"],
+      ladder:["serviço consumindo o evento e chamando a API","timeout, tentativas e teste de contrato do consumidor","verificação no pipeline do provedor e ensaio de falha"],
+      evidence:["arquivo de contrato gerado","saída do pipeline falhando na quebra","log do circuit breaker abrindo","README com o fluxo entre os serviços"],
+      cost:"R$ 0 local.",
+      command:"spring init --java-version=25 --build=maven --dependencies=web,kafka,actuator orderflow-faturamento"
+    });
+    P({
+      id:"S05",
+      area:"spring",
+      difficulty:"Avançado",
+      sessions:7,
+      marco:11,
+      hab:["08 Plataforma"],
+      first:["Adicione tenant_id à tabela de pedidos e cadastre pedidos de duas lojas.","Ative a segurança em nível de linha com FORCE e crie a política por tenant.","Crie um usuário de banco para a aplicação que não seja o dono da tabela.","No psql, defina a variável do tenant numa transação e rode um SELECT sem filtro.","Troque o tenant e repita.","Escreva o teste de integração que faz o mesmo para as duas lojas."],
+      firstDone:"um SELECT sem filtro devolve só os pedidos da loja definida na transação, e o teste comprova isso para as duas lojas.",
+      title:"Duas lojas no mesmo sistema",
+      summary:"Guia do marco 11 do plano: isolamento entre clientes com segurança em nível de linha, e o tenant levado ao Kafka, ao cache e ao índice vetorial.",
+      problem:"O OrderFlow passa a atender duas lojas na mesma instalação. Uma consulta sem filtro, uma chave de cache sem a loja ou um trecho indexado sem dono bastam para uma loja ver os dados da outra.",
+      why:"Isolamento que depende de cada consulta lembrar do filtro falha no primeiro esquecimento. O banco precisa aplicar a regra, e o tenant precisa acompanhar o dado em todos os caminhos.",
+      learns:["modelos silo, bridge e pool","tenant resolvido a partir do token","segurança em nível de linha no PostgreSQL","variável de sessão limitada à transação","tenant em mensagens, cache e índice vetorial","limite por tenant contra o vizinho barulhento"],
+      architecture:["Token","API","Contexto do tenant","PostgreSQL + RLS","Kafka e cache","Índice vetorial"],
+      prerequisites:["Marcos 1 a 9 do plano","Spring Security com JWT","SQL"],
+      stack:["Java 25","Spring Boot 4","Spring Security","PostgreSQL","Kafka","Redis","pgvector","Testcontainers"],
+      steps:["Adicione tenant_id às tabelas e migre os dados existentes.","Resolva o tenant a partir do token e guarde no contexto da requisição.","Ative a segurança em nível de linha, com FORCE, e crie a política por tenant.","Defina a variável de sessão no início de cada transação, limitada à transação.","Use na aplicação um usuário de banco que não seja o dono das tabelas.","Inclua o tenant na chave do cache e no cabeçalho da mensagem do Kafka.","Filtre o índice vetorial pelo tenant na busca do assistente.","Escreva os testes que tentam ler a outra loja pela API, pelo assistente e pelo cache.","Adicione um limite de requisições por tenant."],
+      acceptance:["Consulta sem filtro retorna só os dados do tenant atual","A loja A não lê a loja B pela API, pelo assistente nem pelo cache","A variável do tenant não vaza entre requisições no pool de conexões","Consumidores e tarefas em segundo plano carregam o tenant","Há limite por tenant"],
+      tests:["consulta sem WHERE de tenant","token de uma loja pedindo recurso da outra","duas requisições seguidas, de lojas diferentes, na mesma conexão","pergunta ao assistente sobre dado da outra loja","evento sem tenant"],
+      failures:["remova a política e rode os testes","defina a variável fora da transação","tire o tenant da chave do cache","use o dono da tabela como usuário da aplicação"],
+      questions:["Por que a coluna tenant_id sozinha não garante isolamento?","O que o FORCE muda na segurança em nível de linha?","Como o tenant chega a um consumidor de fila?","Quando o modelo silo é obrigatório?"],
+      ladder:["tenant no token e política no banco","cache, Kafka e índice vetorial com tenant, e testes de vazamento","limite por tenant, custo por tenant e ADR do modelo de isolamento"],
+      evidence:["migração com a política","suíte de testes de vazamento","ADR do modelo de isolamento escolhido","README com os dois tenants de exemplo"],
+      cost:"R$ 0 local.",
+      command:"git checkout -b multi-tenancy"
+    });
+    P({
+      id:"I08",
+      area:"ai",
+      difficulty:"Avançado",
+      sessions:6,
+      marco:10,
+      hab:["08 Plataforma"],
+      first:["Adicione o gateway e o Ollama ao Docker Compose.","Configure o nome lógico chat-padrao apontando para o modelo local.","Chame o gateway com curl e confira a resposta.","Crie uma credencial virtual e repita a chamada com ela.","Aponte o Spring AI para o gateway, com base-url e a credencial.","Rode 5 perguntas do assistente e confira o consumo registrado."],
+      firstDone:"o assistente responde passando pelo gateway, sem chave de provedor na aplicação, e o consumo aparece na credencial.",
+      title:"Gateway de LLM com credencial e orçamento",
+      summary:"Guia do marco 10 do plano: um ponto único de acesso aos modelos, com credencial e orçamento por sistema e um modelo reserva.",
+      problem:"Vários sistemas usam a mesma chave do provedor. Ninguém sabe quanto cada um gasta, um experimento pode consumir a cota de todos, e trocar de modelo exige alterar cada aplicação.",
+      why:"É o primeiro componente de uma plataforma de IA. Ele transforma acesso, custo e troca de modelo em configuração central, em vez de código espalhado pelas aplicações.",
+      learns:["credencial virtual por aplicação","nome lógico de modelo e roteamento","orçamento e limite de requisições por credencial","modelo reserva e avaliação do reserva","atribuição de custo por sistema","registro com mascaramento de dados"],
+      architecture:["Aplicação","Credencial virtual","Gateway","Modelo principal","Modelo reserva","Registro de consumo"],
+      prerequisites:["Marcos 5 a 9 do plano","Docker Compose","golden set do marco 7"],
+      stack:["Gateway de LLM (LiteLLM Proxy ou equivalente)","Spring AI","Ollama local","PostgreSQL","Docker Compose"],
+      steps:["Suba o gateway no Compose com um modelo principal e um reserva local.","Defina o nome lógico chat-padrao e aponte a aplicação para o gateway.","Remova a chave do provedor da aplicação.","Crie credenciais de produção e de teste, com orçamentos diferentes.","Estoure o orçamento da credencial de teste e confira o bloqueio.","Derrube o modelo principal e confira a resposta pelo reserva.","Rode o golden set no modelo reserva e compare com o principal.","Publique o gasto por credencial e bloqueie a saída direta para o provedor."],
+      acceptance:["A aplicação não guarda chave de provedor","A credencial de teste bloqueada não afeta a de produção","Com o principal fora do ar, o reserva responde","O golden set foi rodado no reserva","O gasto aparece separado por credencial"],
+      tests:["credencial inválida","orçamento estourado","limite de requisições por minuto","modelo principal indisponível","resposta em streaming pelo gateway"],
+      failures:["derrube o modelo principal","derrube o próprio gateway","use a credencial de teste em laço","chame o provedor por fora do gateway"],
+      questions:["O que uma credencial virtual permite que a chave do provedor não permite?","Por que a troca automática de modelo não é transparente para a qualidade?","O que acontece com a IA da empresa se o gateway cai?","O que não deve ser gravado no registro do gateway?"],
+      ladder:["gateway com nome lógico e uma credencial","orçamentos, modelo reserva e gasto por credencial","reserva avaliado, mais de uma instância e saída direta bloqueada"],
+      evidence:["arquivo de configuração do gateway","tabela de gasto por credencial","registro do bloqueio por orçamento","comparação do golden set entre principal e reserva"],
+      cost:"R$ 0 com modelos locais. Com provedor pago, defina um orçamento baixo antes de testar.",
+      command:"mkdir orderflow-gateway && cd orderflow-gateway && git init"
     });
     /* A rota prioriza fundamentos e fronteiras antes de provedores e IA:
        Java → Spring → Cloud agnóstica → AWS → mensageria → IA. */
@@ -571,13 +637,26 @@
       var refs=TEORIA[id]||[];
       return refs.length?'<span class="chip tc">teoria: '+esc(D[refs[0][0]][2])+'</span>':"";
     }
+    /* Ligação com o plano de prática: guias de marco aparecem primeiro; o resto fica recolhido. */
+    function doisDig(n){return String(n).padStart(2,"0");}
+    function marcosDe(p){return p.marco?[].concat(p.marco):[];}
+    function ehGuia(p){return !!(p.marco||p.apoio);}
+    function ordemGuia(p){return p.marco?Math.min.apply(null,marcosDe(p)):99;}
+    function guiaHtml(p){
+      var ms=marcosDe(p),h="";
+      if(ms.length)h+="<p>Esta missão é o passo a passo do "+ms.map(function(m){return '<a href="plano-de-pratica.html#m'+doisDig(m)+'">marco '+doisDig(m)+"</a>";}).join(" e do ")+" do plano de prática.</p>";
+      else if(p.apoio)h+='<p>Esta missão é o apoio do <a href="plano-de-pratica.html#'+p.apoio[1]+'">'+esc(p.apoio[0])+"</a>, no plano de prática.</p>";
+      if(p.hab)h+="<p><b>Habilidades treinadas:</b> "+esc(p.hab.join(" · "))+".</p>";
+      if(p.adapt)h+="<p><b>No plano:</b> "+esc(p.adapt)+"</p>";
+      return h;
+    }
     function renderRoute(){
       route.innerHTML=projects.map(function(p,i){return '<button type="button" data-open="'+p.id+'" class="'+(stored.done.indexOf(p.id)>-1?"done ":"")+'" aria-label="Abrir '+esc(p.id+" "+p.title)+'">'+String(i+1).padStart(2,"0")+"</button>";}).join("");
     }
     function card(p){
       var a=areas[p.area],done=stored.done.indexOf(p.id)>-1;
       var flow=p.architecture.map(function(n,i){return (i?'<i aria-hidden="true">›</i>':"")+"<span>"+esc(n)+"</span>";}).join("");
-      return '<article class="project-wrap bezel '+(done?"done ":"")+'" data-id="'+p.id+'" data-area="'+p.area+'" data-difficulty="'+p.difficulty+'" style="--accent:'+a.accent+';--glow:'+a.glow+'"><button class="project core" type="button" data-open="'+p.id+'" aria-label="Abrir ficha do projeto '+esc(p.title)+'"><div class="project-top"><span class="project-number">'+p.id+" / "+String(projects.indexOf(p)+1).padStart(2,"0")+'</span><span class="complete-dot" aria-label="'+(done?"Concluído":"Pendente")+'">✓</span></div><span class="area-tag">'+esc(a.label)+'</span><h3>'+esc(p.title)+'</h3><p class="project-desc">'+esc(p.summary)+'</p><div class="mini-flow">'+flow+'</div><div class="project-foot"><div class="meta"><span class="chip">'+esc(p.difficulty)+'</span><span class="chip">'+p.sessions+' sessões</span>'+teoriaChip(p.id)+'</div><span class="open-icon" aria-hidden="true">↗</span></div></button></article>';
+      return '<article class="project-wrap bezel '+(done?"done ":"")+'" data-id="'+p.id+'" data-area="'+p.area+'" data-difficulty="'+p.difficulty+'" style="--accent:'+a.accent+';--glow:'+a.glow+'"><button class="project core" type="button" data-open="'+p.id+'" aria-label="Abrir ficha do projeto '+esc(p.title)+'"><div class="project-top"><span class="project-number">'+p.id+" / "+String(projects.indexOf(p)+1).padStart(2,"0")+'</span><span class="complete-dot" aria-label="'+(done?"Concluído":"Pendente")+'">✓</span></div><span class="area-tag">'+esc(a.label)+'</span><h3>'+esc(p.title)+'</h3><p class="project-desc">'+esc(p.summary)+'</p><div class="mini-flow">'+flow+'</div><div class="project-foot"><div class="meta"><span class="chip">'+esc(p.difficulty)+'</span><span class="chip">'+p.sessions+' sessões</span>'+(p.marco?'<span class="chip tc">marco '+marcosDe(p).map(doisDig).join(" e ")+' do plano</span>':(p.apoio?'<span class="chip tc">apoio do plano</span>':""))+teoriaChip(p.id)+'</div><span class="open-icon" aria-hidden="true">↗</span></div></button></article>';
     }
     function filtered(){
       var q=document.getElementById("search").value.trim().toLocaleLowerCase("pt-BR");
@@ -595,7 +674,16 @@
     }
     function render(){
       var result=filtered();
-      grid.innerHTML=result.length?result.map(card).join(""):'<div class="empty">Nenhum projeto corresponde aos filtros. Limpe a busca ou escolha outra oficina.</div>';
+      var guias=result.filter(ehGuia),opcionais=result.filter(function(p){return !ehGuia(p);});
+      if(document.getElementById("sort").value==="order")guias.sort(function(a,b){return ordemGuia(a)-ordemGuia(b);});
+      grid.innerHTML=guias.length?guias.map(card).join(""):'<div class="empty">Nenhum guia corresponde aos filtros. Limpe a busca ou veja as missões opcionais abaixo.</div>';
+      var mais=document.getElementById("maisMissoes");
+      if(mais){
+        document.getElementById("optGrid").innerHTML=opcionais.map(card).join("");
+        document.getElementById("maisN").textContent=opcionais.length;
+        mais.hidden=!opcionais.length;
+        if(document.getElementById("search").value.trim())mais.open=true;
+      }
       observeReveals();
     }
     /* Aquecimentos: mesma ordem de oficinas dos projetos. */
@@ -624,11 +712,14 @@
       document.getElementById("dialogTitle").textContent=p.title;
       var body="";
       body+='<div class="dialog-summary">'+info("Problema real",'<p>'+esc(p.problem)+'</p><p><b>Por que construir:</b> '+esc(p.why)+"</p>")+info("Arquitetura desenhada",'<div class="architecture">'+architectureSvg(p.architecture)+"</div>")+"</div>";
+      if(ehGuia(p))body+=info("Guia do plano de prática",guiaHtml(p),true);
+      if(p.first)body+=info("Primeira sessão (90 minutos)",list(p.first,"steps")+'<p style="margin-top:15px"><b>Pronto quando:</b> '+esc(p.firstDone)+"</p>",true);
       body+=info("Onde está a teoria",teoriaHtml(p.id),true);
       body+='<div class="detail-grid">';
       body+=info("O que você aprende",list(p.learns));
       body+=info("Pré-requisitos + stack",'<p><b>Antes:</b></p>'+list(p.prerequisites)+'<p style="margin-top:17px"><b>Ferramentas:</b></p>'+list(p.stack));
       body+=info("Etapas executáveis",list(p.steps,"steps"),true);
+      if(p.extra)body+=info("Para ir além (opcional)",list(p.extra),true);
       body+=info("Critérios de aceite",list(p.acceptance));
       body+=info("Testes obrigatórios",list(p.tests));
       body+=info("Falhas para injetar",list(p.failures));

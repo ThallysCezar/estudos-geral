@@ -10,7 +10,7 @@ var SEM=[
   slot:"seg",passado:"na segunda passada",
   opcoes:[
     {f:"trilhas/java.html",nome:"Java (7 Pilares)",tag:"Teoria & Runtime",nota:"Java 21 Moderno: JMM, JIT C1/C2, Virtual Threads, HikariCP, GC e simulador interativo de concorrência."},
-    {f:"lab/projetos.html",nome:"Laboratório de Projetos",tag:"Prática & Bancada",nota:"Prática com a mão na massa: 22 projetos em seis oficinas e 18 aquecimentos locais de código (R$ 0 obrigatório)."}
+    {f:"lab/projetos.html",nome:"Laboratório de Projetos",tag:"Prática & Bancada",nota:"Prática com a mão na massa: 23 missões (as que são guia do plano de prática vêm primeiro) e 18 aquecimentos locais de código (R$ 0 obrigatório)."}
   ],
   n1:"Plataforma e runtime: valores, referências, generics, coleções, falhas, JDBC sem ORM, concorrência e JVM.",
   n2:"Bancada prática de projetos: 22 projetos em seis oficinas e 18 aquecimentos de código.",
@@ -499,7 +499,7 @@ var PALETTE_DATA = [
   {t:"Python para quem vem de Java",sub:"Ambiente, tipagem, Pydantic, FastAPI, pytest e ponte para IA",cat:"CADERNO",url:"cadernos/python-para-java.html",cor:"var(--orange)"},
   {t:"Micro Frontends & Native Federation",sub:"Composição, Native Federation, shell resiliente, login no shell, eventos, CSS, performance e deploy",cat:"CADERNO",url:"cadernos/micro-frontends.html",cor:"var(--cyan)"},
   {t:"Plano de prática",sub:"Um projeto principal, o OrderFlow, em três fases e doze marcos",cat:"LAB",url:"lab/plano-de-pratica.html",cor:"var(--lime)"},
-  {t:"Laboratório de projetos",sub:"Bancada de 18 projetos práticos e OrderFlow",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Laboratório de projetos",sub:"Guias dos marcos do plano de prática e missões opcionais",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Transactional Outbox & Relay",sub:"Garantia de publicação sem dual-write e at-least-once",cat:"TEMA",url:"trilhas/mensageria.html#g2",cor:"var(--pink)"},
   {t:"Connection Starvation no HikariCP",sub:"HTTP síncrono lento dentro de @Transactional",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j2",cor:"var(--rose)"},
   {t:"OOMKilled Fantasma (Exit 137)",sub:"Limite do container cgroup vs memória Off-Heap JVM",cat:"WAR ROOM",url:"cadernos/conceitos-backend.html#j1",cor:"var(--rose)"},
@@ -516,7 +516,7 @@ var PALETTE_DATA = [
   {t:"Test Harness & Evals para Agentes",sub:"Benchmarking determinístico e suites de regressão em CI/CD",cat:"IA",url:"trilhas/ia.html#t6-harness",cor:"var(--teal)"},
   {t:"SDD (Spec-Driven Development) & Prompts",sub:"As 4 camadas de steering e redução drástica de tokens",cat:"IA",url:"trilhas/ia.html#t3-sdd",cor:"var(--teal)"},
   {t:"Agentes Autônomos & Loop ReAct",sub:"Ciclo Pensamento-Ação-Observação e padrão Orchestrator-Workers",cat:"IA",url:"trilhas/ia.html#t5-react",cor:"var(--teal)"},
-  {t:"Projeto R03 · OrderFlow Capstone",sub:"Microsserviços com Saga, Outbox, RabbitMQ e K8s",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
+  {t:"Missão R03 · OrderFlow: outbox com CDC",sub:"Outbox na mesma transação e CDC com Debezium e Kafka",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Projeto P01 · CLI de Conciliação Financeira",sub:"Java puro, streaming e tratamento de arquivos",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Projeto P02 · Motor de Pagamentos com JDBC",sub:"Transações manuais e contenção de pool HikariCP",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},
   {t:"Projeto P05 · Checkout com Idempotência e Outbox",sub:"Spring Boot, PostgreSQL e RabbitMQ",cat:"PROJETO",url:"lab/projetos.html",cor:"var(--lime)"},

@@ -2162,8 +2162,8 @@
               <ul><li>Uma <b>SCP</b> com Allow não dá permissão a ninguém: o usuário ainda precisa de uma política de identidade que permita.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Escreva uma política que permite ler só um prefixo de um bucket e teste com o simulador de políticas do IAM.</li><li>Crie um papel assumível por outra conta (ou pelo seu usuário) e assuma com <code>aws sts assume-role</code>.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma política permite <code>s3:*</code> e outra nega <code>s3:DeleteObject</code> para o mesmo usuário. Ele pode apagar objetos?</summary><p>Não. O Deny explícito vence o Allow.</p></details><details class="top-q"><summary>Qual é a forma recomendada de uma aplicação na conta A acessar uma tabela DynamoDB na conta B?</summary><p>Assumir, pelo STS, um papel na conta B que confia na conta A.</p></details><details class="top-q"><summary>Como impedir que qualquer conta da organização use regiões fora da América do Sul, mesmo administradores?</summary><p>Com uma SCP no AWS Organizations negando as outras regiões.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-01"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-01"> tópico estudado</label>
             </div>
           </details>
@@ -2184,8 +2184,8 @@
               <ul><li><b>Gateway endpoint</b> só existe para S3 e DynamoDB e é gratuito. Para os outros serviços, <b>interface endpoint</b>.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Monte uma VPC com sub-rede pública e privada, uma instância em cada, e faça o banco aceitar só o grupo da aplicação.</li><li>Crie um gateway endpoint para o S3 e acesse um bucket da instância privada sem NAT.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Como bloquear um endereço IP específico de alcançar uma sub-rede?</summary><p>Com uma regra de negação na NACL da sub-rede.</p></details><details class="top-q"><summary>Instâncias privadas precisam acessar o S3 sem passar pela internet e sem custo de NAT. O que usar?</summary><p>Um gateway endpoint da VPC para o S3.</p></details><details class="top-q"><summary>Como permitir que só as instâncias da aplicação acessem o banco?</summary><p>No grupo de segurança do banco, permitir a porta do banco tendo como origem o grupo de segurança da aplicação.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-02"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-02"> tópico estudado</label>
             </div>
           </details>
@@ -2206,8 +2206,8 @@
               <ul><li><b>Secrets Manager</b> troca segredos sozinho e custa por segredo. <b>Parameter Store</b> é mais barato e não tem rotação nativa. Se o cenário pede rotação automática, é Secrets Manager.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma chave no KMS, criptografe e descriptografe um texto pela CLI.</li><li>Crie um bucket com política que nega envio sem criptografia e sem HTTPS.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>A senha do banco deve ser trocada automaticamente a cada 30 dias. Que serviço?</summary><p>AWS Secrets Manager.</p></details><details class="top-q"><summary>Uma regra exige auditar cada uso da chave que criptografa os objetos do S3. Que opção de criptografia?</summary><p>SSE-KMS, com o uso da chave registrado no CloudTrail.</p></details><details class="top-q"><summary>Que serviço emite e renova automaticamente certificados TLS para o balanceador?</summary><p>AWS Certificate Manager (ACM).</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-03"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-03"> tópico estudado</label>
             </div>
           </details>
@@ -2231,8 +2231,8 @@
               <ul><li><b>Multi-AZ</b> do RDS é para disponibilidade (a réplica em espera não atende leituras na configuração clássica). <b>Réplica de leitura</b> é para desempenho de leitura.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um ALB com um grupo de Auto Scaling de duas instâncias em duas zonas. Encerre uma instância e veja a reposição.</li><li>Configure uma regra do ALB por caminho para dois grupos de destino.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação precisa rotear /api para um serviço e /imagens para outro. Que balanceador?</summary><p>Application Load Balancer.</p></details><details class="top-q"><summary>Um jogo usa UDP e precisa de latência mínima e IP fixo. Que balanceador?</summary><p>Network Load Balancer.</p></details><details class="top-q"><summary>O banco RDS deve sobreviver à falha de uma zona com failover automático. O que ativar?</summary><p>RDS Multi-AZ.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-04"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-04"> tópico estudado</label>
             </div>
           </details>
@@ -2253,8 +2253,8 @@
               <ul><li><b>SQS</b> é puxado pelo consumidor e cada mensagem vai a um consumidor. <b>SNS</b> empurra a mesma mensagem para todos os assinantes.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um tópico SNS com duas filas SQS assinando e publique uma mensagem.</li><li>Configure uma DLQ e force falhas no consumidor.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Pedidos precisam ser processados exatamente na ordem e sem duplicata. Que fila?</summary><p>SQS FIFO.</p></details><details class="top-q"><summary>O mesmo evento de pedido deve chegar a três sistemas independentes. Que padrão?</summary><p>Fan-out: tópico SNS com uma fila SQS por sistema.</p></details><details class="top-q"><summary>Uma mensagem que falha sempre fica voltando para a fila. O que configurar?</summary><p>Uma fila de mensagens mortas (DLQ) com número máximo de recebimentos.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-05"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-05"> tópico estudado</label>
             </div>
           </details>
@@ -2275,8 +2275,8 @@
               <ul><li><b>RTO</b> é tempo fora do ar. <b>RPO</b> é dado perdido. Backup a cada hora dá RPO de até uma hora, qualquer que seja o RTO.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Configure a replicação entre regiões de um bucket do S3 e confira a cópia.</li><li>Para três sistemas que você conhece, defina RTO e RPO e escolha a estratégia.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>A empresa aceita ficar algumas horas fora e quer o menor custo. Qual estratégia?</summary><p>Backup e restauração.</p></details><details class="top-q"><summary>O que mede o RPO?</summary><p>Quanto dado pode ser perdido, em tempo desde a última cópia.</p></details><details class="top-q"><summary>Que estratégia mantém o banco replicado na outra região e cria o resto só no desastre?</summary><p>Pilot light.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-06"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-06"> tópico estudado</label>
             </div>
           </details>
@@ -2300,8 +2300,8 @@
               <ul><li><b>Cluster</b> junta as instâncias para desempenho, e elas podem falhar juntas. <b>Spread</b> separa para disponibilidade.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Compare na calculadora o preço de uma instância x86 e uma Graviton do mesmo tamanho.</li><li>Crie uma Lambda e meça a partida a frio; leia sobre a concorrência provisionada.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Instâncias de um cálculo distribuído precisam da menor latência de rede entre si. O que usar?</summary><p>Grupo de posicionamento cluster.</p></details><details class="top-q"><summary>Uma função Lambda tem picos de latência na primeira chamada. Como evitar?</summary><p>Concorrência provisionada.</p></details><details class="top-q"><summary>Que família de instâncias escolher para um cache em memória muito grande?</summary><p>Otimizada para memória, como R ou X.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-07"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-07"> tópico estudado</label>
             </div>
           </details>
@@ -2322,8 +2322,8 @@
               <ul><li><b>DAX</b> é cache só para DynamoDB. <b>ElastiCache</b> serve para qualquer origem.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma réplica de leitura de um RDS e conecte-se a ela.</li><li>Crie uma tabela DynamoDB em modo sob demanda e escreva itens com a CLI.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Consultas de relatório estão deixando o banco de produção lento. O que fazer?</summary><p>Criar uma réplica de leitura e direcionar os relatórios para ela.</p></details><details class="top-q"><summary>Muitas Lambdas abrem conexões e esgotam o limite do RDS. O que usar?</summary><p>RDS Proxy.</p></details><details class="top-q"><summary>Leituras do DynamoDB precisam cair de milissegundos para microssegundos. O que usar?</summary><p>DynamoDB Accelerator (DAX).</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-08"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-08"> tópico estudado</label>
             </div>
           </details>
@@ -2344,8 +2344,8 @@
               <ul><li><b>CloudFront</b> faz cache de conteúdo HTTP. <b>Global Accelerator</b> acelera qualquer tráfego TCP/UDP sem cache.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Publique um site estático no S3 com CloudFront e Origin Access Control.</li><li>Envie um arquivo grande com a CLI e observe o multipart.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um banco precisa de 50 mil IOPS garantidas no EBS. Que volume?</summary><p>io2.</p></details><details class="top-q"><summary>Como impedir que usuários acessem o bucket diretamente, só pelo CloudFront?</summary><p>Com Origin Access Control e política do bucket que só aceita o CloudFront.</p></details><details class="top-q"><summary>Uma aplicação TCP global precisa de IPs fixos e failover rápido entre regiões. O que usar?</summary><p>AWS Global Accelerator.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-09"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-09"> tópico estudado</label>
             </div>
           </details>
@@ -2369,8 +2369,8 @@
               <ul><li><b>Compute Savings Plans</b> é o mais flexível (vale para Fargate e Lambda). <b>EC2 Instance Savings Plans</b> dá mais desconto e é preso a uma família numa região.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Na calculadora, compare o custo anual de 10 instâncias sob demanda e com Savings Plan.</li><li>Abra o Compute Optimizer na sua conta e veja se há recomendações.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>A empresa quer desconto por compromisso que valha também para Fargate e Lambda. Que opção?</summary><p>Compute Savings Plans.</p></details><details class="top-q"><summary>Um processamento de vídeos pode ser interrompido e retomado. Qual é a opção mais barata?</summary><p>Instâncias Spot.</p></details><details class="top-q"><summary>Que serviço recomenda o tamanho certo das instâncias com base no uso?</summary><p>AWS Compute Optimizer.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-10"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-10"> tópico estudado</label>
             </div>
           </details>
@@ -2391,8 +2391,8 @@
               <ul><li><b>Standard-IA</b> é mais barato para guardar, mas cobra por recuperação e tem tempo mínimo de armazenamento. Para dados lidos todo dia, sai mais caro que o Standard.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma regra de ciclo de vida com duas transições e uma expiração.</li><li>Ative o versionamento num bucket, sobrescreva um arquivo e veja as duas versões cobradas.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>O padrão de acesso aos dados é imprevisível. Que classe reduz o custo sem análise manual?</summary><p>S3 Intelligent-Tiering.</p></details><details class="top-q"><summary>Dados que podem ser recriados e são raramente acessados, ao menor custo com leitura imediata. Que classe?</summary><p>S3 One Zone-IA.</p></details><details class="top-q"><summary>Como mover objetos automaticamente para o Glacier depois de 90 dias?</summary><p>Com uma regra de ciclo de vida do S3.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-11"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-11"> tópico estudado</label>
             </div>
           </details>
@@ -2413,8 +2413,8 @@
               <ul><li>Pôr tudo numa só zona economiza transferência, mas perde a alta disponibilidade. A prova pede o equilíbrio que o cenário exige.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Na página de preços da VPC, calcule o custo de 1 TB por mês passando pelo NAT gateway.</li><li>Desenhe o caminho dos dados de uma aplicação sua e marque cada trecho cobrado.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Instâncias privadas leem muitos dados do S3 e o custo do NAT gateway está alto. O que fazer?</summary><p>Criar um gateway endpoint da VPC para o S3.</p></details><details class="top-q"><summary>Transferir dados da internet para dentro da AWS é cobrado?</summary><p>Em geral, não. O que é cobrado é a saída.</p></details><details class="top-q"><summary>Como reduzir o custo de saída de um site com muitas imagens servidas do S3?</summary><p>Servir pelo CloudFront, que faz cache e reduz a saída da origem.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="saa-c03" data-t="sa-12"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="sa-12"> tópico estudado</label>
             </div>
           </details>
@@ -2746,6 +2746,8 @@
   <script defer src="../assets/js/simulados-ai103-c.js"></script>
   <script defer src="../assets/js/simulados-clf-a.js"></script>
   <script defer src="../assets/js/simulados-clf-b.js"></script>
+  <script defer src="../assets/js/simulados-saa-a.js"></script>
+  <script defer src="../assets/js/simulados-saa-b.js"></script>
   <script defer src="../assets/js/simulados-dados.js"></script>
   <script defer src="../assets/js/quiz-topico.js"></script>
   <script defer src="../assets/js/certificacoes.inline.js"></script>

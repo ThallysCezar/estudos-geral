@@ -36,3 +36,11 @@ window.SIMULADOS["clf-c02"] = {
   topicos: {"cp-01":"Benefícios da nuvem AWS","cp-02":"Well-Architected Framework","cp-03":"Adoção e migração para a nuvem","cp-04":"Modelo de responsabilidade compartilhada da AWS","cp-05":"IAM e a conta raiz","cp-06":"Serviços de segurança","cp-07":"Conformidade, auditoria e governança","cp-08":"Infraestrutura global","cp-09":"Computação: EC2, Lambda e contêineres","cp-10":"Armazenamento: S3, EBS e EFS","cp-11":"Bancos de dados","cp-12":"Rede e entrega de conteúdo","cp-13":"Serviços de IA, análise e integração","cp-14":"Modelos de compra e preços","cp-15":"Ferramentas de custo e planos de suporte"},
   qs: (function(){var T=window.SIM_CLF||{},out=[];Object.keys(T).sort().forEach(function(t){var n=+t.slice(3),d=n<=3?0:n<=7?1:n<=13?2:3;T[t].forEach(function(x,j){out.push({id:"clf-"+t+"-"+String(j+1).padStart(2,"0"),t:t,d:d,q:x[0],o:x[1],c:x[2],e:x[3]});});});return out;})()
 };
+window.SIMULADOS["saa-c03"] = {
+  nome: "SAA-C03 · AWS Certified Solutions Architect Associate",
+  corte: 72,
+  oficial: { rotulo: "Preparação oficial no AWS Skill Builder", url: "https://skillbuilder.aws/category/exam-prep/solutions-architect-associate-SAA-C03" },
+  dominios: ["Arquiteturas seguras","Arquiteturas resilientes","Arquiteturas de alto desempenho","Arquiteturas de custo otimizado"],
+  topicos: {"sa-01":"IAM avançado: papéis, políticas e várias contas","sa-02":"Segurança de rede na VPC","sa-03":"Criptografia e segredos","sa-04":"Alta disponibilidade e escala","sa-05":"Desacoplamento com filas e eventos","sa-06":"Recuperação de desastre: RTO, RPO e estratégias","sa-07":"Escolher a computação","sa-08":"Escolher e acelerar o banco","sa-09":"Armazenamento e entrega de conteúdo","sa-10":"Custo de computação","sa-11":"Custo de armazenamento","sa-12":"Custo de rede e transferência de dados"},
+  qs: (function(){var T=window.SIM_SAA||{},out=[];Object.keys(T).sort().forEach(function(t){var n=+t.slice(3),d=n<=3?0:n<=6?1:n<=9?2:3;T[t].forEach(function(x,j){out.push({id:"saa-"+t+"-"+String(j+1).padStart(2,"0"),t:t,d:d,q:x[0],o:x[1],c:x[2],e:x[3]});});});return out;})()
+};

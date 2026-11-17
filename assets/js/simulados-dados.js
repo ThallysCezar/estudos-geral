@@ -28,3 +28,11 @@ window.SIMULADOS["ai-103"] = {
   topicos: {"a3-01":"Microsoft Foundry: recurso, projeto e deployment","a3-02":"Escolher o modelo e o tipo de deployment","a3-03":"Segurança e acesso","a3-04":"Custo, cota e monitoramento","a3-05":"IA responsável e filtros de conteúdo","a3-06":"Prompts, parâmetros e saída estruturada","a3-07":"RAG com Azure AI Search","a3-08":"Agentes no Foundry Agent Service","a3-09":"Vários agentes e orquestração","a3-10":"Avaliação de aplicações e agentes","a3-11":"Ajuste fino: quando compensa","a3-12":"Análise de imagem e leitura de texto","a3-13":"Modelos personalizados de visão","a3-14":"Azure AI Language","a3-15":"Fala e tradução","a3-16":"Extração de documentos: Document Intelligence e Content Understanding","a3-17":"Mineração de conhecimento"},
   qs: (function(){var T=window.SIM_AI103||{},out=[];Object.keys(T).sort().forEach(function(t){var n=+t.slice(3),d=n<=5?0:n<=11?1:n<=13?2:n<=15?3:4;T[t].forEach(function(x,j){out.push({id:"ai103-"+t+"-"+String(j+1).padStart(2,"0"),t:t,d:d,q:x[0],o:x[1],c:x[2],e:x[3]});});});return out;})()
 };
+window.SIMULADOS["clf-c02"] = {
+  nome: "CLF-C02 · AWS Certified Cloud Practitioner",
+  corte: 70,
+  oficial: { rotulo: "Preparação oficial no AWS Skill Builder", url: "https://skillbuilder.aws/category/exam-prep/cloud-practitioner-foundational-CLF-C02" },
+  dominios: ["Conceitos de nuvem","Segurança e conformidade","Tecnologia e serviços de nuvem","Cobrança, preços e suporte"],
+  topicos: {"cp-01":"Benefícios da nuvem AWS","cp-02":"Well-Architected Framework","cp-03":"Adoção e migração para a nuvem","cp-04":"Modelo de responsabilidade compartilhada da AWS","cp-05":"IAM e a conta raiz","cp-06":"Serviços de segurança","cp-07":"Conformidade, auditoria e governança","cp-08":"Infraestrutura global","cp-09":"Computação: EC2, Lambda e contêineres","cp-10":"Armazenamento: S3, EBS e EFS","cp-11":"Bancos de dados","cp-12":"Rede e entrega de conteúdo","cp-13":"Serviços de IA, análise e integração","cp-14":"Modelos de compra e preços","cp-15":"Ferramentas de custo e planos de suporte"},
+  qs: (function(){var T=window.SIM_CLF||{},out=[];Object.keys(T).sort().forEach(function(t){var n=+t.slice(3),d=n<=3?0:n<=7?1:n<=13?2:3;T[t].forEach(function(x,j){out.push({id:"clf-"+t+"-"+String(j+1).padStart(2,"0"),t:t,d:d,q:x[0],o:x[1],c:x[2],e:x[3]});});});return out;})()
+};

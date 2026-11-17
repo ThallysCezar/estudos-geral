@@ -85,5 +85,5 @@
   $("smZerar").addEventListener("click",function(){if(!confirm("Apagar o histórico e o caderno de erros desta prova?"))return;prova().qs.forEach(function(q){delete st.erros[q.id];});st.hist=st.hist.filter(function(x){return x.p!==selProva.value;});salvar();preencherDominios();});
   var alvo=location.hash.replace("#","");if(BANCO[alvo])selProva.value=alvo;
   preencherDominios();
-  var qt=new URLSearchParams(location.search).get("t");if(qt&&selDom.querySelector("option[value="t:"+qt+""]"))selDom.value="t:"+qt;
+  var qt=new URLSearchParams(location.search).get("t");if(qt&&selDom.querySelector('option[value="t:'+qt+'"]'))selDom.value="t:"+qt;
 })();

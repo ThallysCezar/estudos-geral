@@ -498,6 +498,7 @@ var PALETTE_DATA = [
   {t:"Finanças e investimentos",sub:"Orçamento, reserva, risco, renda fixa e variável, plano por fases, aportes e fontes oficiais",cat:"CADERNO",url:"cadernos/financas-investimentos.html",cor:"var(--teal)"},
   {t:"Python para quem vem de Java",sub:"Ambiente, tipagem, Pydantic, FastAPI, pytest e ponte para IA",cat:"CADERNO",url:"cadernos/python-para-java.html",cor:"var(--orange)"},
   {t:"Micro Frontends & Native Federation",sub:"Composição, Native Federation, shell resiliente, login no shell, eventos, CSS, performance e deploy",cat:"CADERNO",url:"cadernos/micro-frontends.html",cor:"var(--cyan)"},
+  {t:"Simulados",sub:"Banco de questões das certificações: treino, simulado cronometrado e caderno de erros",cat:"LAB",url:"lab/simulados.html",cor:"var(--lime)"},
   {t:"Certificações",sub:"A ordem das provas, trilha de 12 semanas (AZ-900 e AI-200), método e diferenciais",cat:"LAB",url:"lab/certificacoes.html",cor:"var(--lime)"},
   {t:"Plano de prática",sub:"Um projeto principal, o OrderFlow, em três fases e doze marcos",cat:"LAB",url:"lab/plano-de-pratica.html",cor:"var(--lime)"},
   {t:"Laboratório de projetos",sub:"Guias dos marcos do plano de prática e missões opcionais",cat:"LAB",url:"lab/projetos.html",cor:"var(--lime)"},

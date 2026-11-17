@@ -368,9 +368,30 @@
     .top-bt a{font:700 .78rem/1 var(--body);padding:9px 13px;border-radius:999px;border:1px solid var(--acid);color:var(--acid);text-decoration:none}
     .top-bt a:hover{background:var(--panel-3)}
     .top-tab{width:100%;border-collapse:collapse;margin:16px 0 0;font-size:.88rem}
+    @media(max-width:620px){.top-tab{display:block;overflow-x:auto}}
     .top-tab th{text-align:left;padding:9px 11px;font:700 .64rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-strong)}
     .top-tab td{padding:9px 11px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top}
     .top-corpo a{color:var(--mint)}
+    .top-quiz{margin-top:8px;padding:16px;border:1px solid var(--line-strong);border-radius:14px;background:var(--panel-2)}
+    .tq-txt{margin:0 0 10px!important}
+    .tq-bts{display:flex;flex-wrap:wrap;gap:8px}
+    .tq-bt{font:700 .82rem/1 var(--body);padding:10px 14px;border-radius:999px;border:1px solid var(--acid);background:transparent;color:var(--acid);cursor:pointer}
+    .tq-bt.leve{border-color:var(--line-strong);color:var(--muted)}
+    .tq-bt:hover,.tq-bt:focus-visible{background:var(--panel-3)}
+    .tq-top{display:flex;justify-content:space-between;font:600 .72rem/1 var(--mono);color:var(--muted)}
+    .tq-enun{color:var(--paper)!important;font-size:1rem!important}
+    .tq-ops{display:grid;gap:8px;margin-top:12px}
+    .tq-op{text-align:left;font:500 .92rem/1.5 var(--body);padding:11px 13px;border-radius:12px;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink2);cursor:pointer}
+    .tq-op b{color:var(--acid);margin-right:6px}
+    .tq-op:hover:not(:disabled),.tq-op:focus-visible{border-color:var(--acid)}
+    .tq-op:disabled{cursor:default}
+    .tq-op.certa{border-color:var(--lime);color:var(--paper)}
+    .tq-op.errada{border-color:var(--coral);color:var(--coral)}
+    .tq-fb p{margin:12px 0!important}
+    .tq-fb .ok b{color:var(--lime)} .tq-fb .no b{color:var(--coral)}
+    .tq-nota{margin:0 0 6px!important;color:var(--muted)!important}
+    .tq-nota b{font:800 2rem/1 var(--body);margin-right:8px}
+    .tq-nota.top b{color:var(--lime)} .tq-nota.ok b{color:var(--amber)} .tq-nota.no b{color:var(--coral)}
 
   </style>
 </head>
@@ -383,6 +404,7 @@
       <a class="nav-link" href="#provas">As provas</a>
       <a class="nav-link" href="#topicos">Tópicos</a>
       <a class="nav-link" href="#trilha">Calendário</a>
+      <a class="nav-link" href="simulados.html">Simulados</a>
       <a class="nav-link" href="#metodo">Método</a>
       <a class="nav-link" href="#diferenciais">Diferenciais</a>
     </div>
@@ -564,7 +586,7 @@
     <section class="section shell" id="topicos">
       <div class="section-head">
         <div><span class="eyebrow">Trilha de estudos</span><h2>Os tópicos de cada prova.</h2></div>
-        <p>O conteúdo para estudar, dividido pelos assuntos que cada prova cobra. Abra um tópico, leia, faça o laboratório, responda às questões, teste-se no simulado oficial e marque como estudado. As cinco provas têm o conteúdo completo, cada tópico com o link do simulado e do material oficial.</p>
+        <p>O conteúdo para estudar, dividido pelos assuntos que cada prova cobra. Abra um tópico, leia, faça o laboratório, responda às questões, teste-se no simulado oficial e marque como estudado. Para treinar com questões, use os <a href="simulados.html">simulados</a>. As cinco provas têm o conteúdo completo, cada tópico com o link do simulado e do material oficial.</p>
       </div>
 
       <div class="ordem">
@@ -598,8 +620,8 @@
               <ul><li><b>Responsabilidade pelos dados</b> nunca passa ao provedor, nem em SaaS. Ele guarda; você decide quem acessa e o que é guardado.</li><li><b>Sistema operacional em PaaS</b> é do provedor. Em IaaS, é seu, incluindo as atualizações.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Desenhe a tabela acima de memória, sem olhar.</li><li>Para três serviços que você usa (por exemplo, um e-mail na nuvem, um banco gerenciado e uma máquina virtual), escreva de quem é a responsabilidade por atualizar o sistema operacional.</li><li>Crie a conta gratuita do Azure e configure um alerta de custo antes de criar qualquer recurso.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa usa máquinas virtuais no Azure. Quem aplica as atualizações de segurança do sistema operacional?</summary><p>A empresa. Máquina virtual é IaaS, e nesse modelo o sistema operacional é responsabilidade do cliente.</p></details><details class="top-q"><summary>Em qual modelo de serviço o cliente continua responsável pelos próprios dados?</summary><p>Em todos. Dados, contas e dispositivos são responsabilidade do cliente em IaaS, PaaS e SaaS.</p></details><details class="top-q"><summary>Quem é responsável pela segurança física do datacenter onde rodam os serviços de uma empresa no Azure?</summary><p>A Microsoft. A infraestrutura física é sempre responsabilidade do provedor.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t01"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t01"> tópico estudado</label>
             </div>
           </details>
@@ -620,8 +642,8 @@
               <ul><li><b>Híbrida</b> é nuvem pública com ambiente privado. <b>Multicloud</b> é mais de um provedor público. São coisas diferentes e podem ocorrer juntas.</li><li><b>Nuvem privada</b> não significa "no meu prédio": pode ser hospedada por terceiro, desde que seja dedicada a uma organização.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Liste cinco sistemas de uma empresa que você conhece e escreva em qual modelo cada um deveria rodar, com o motivo.</li><li>Leia a página de visão geral do Azure Arc e escreva em uma frase o que ele faz.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um banco precisa manter os dados de clientes no próprio datacenter por regulação, mas quer usar a nuvem para picos de processamento. Qual modelo?</summary><p>Nuvem híbrida: os dados regulados ficam no ambiente privado e a capacidade extra vem da nuvem pública.</p></details><details class="top-q"><summary>Qual modelo de nuvem não exige gasto de capital para começar?</summary><p>A nuvem pública: os recursos são do provedor e você paga pelo uso.</p></details><details class="top-q"><summary>Uma empresa usa Azure e outro provedor de nuvem pública ao mesmo tempo. Como se chama esse cenário?</summary><p>Multicloud.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t02"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t02"> tópico estudado</label>
             </div>
           </details>
@@ -642,8 +664,8 @@
               <ul><li><b>Reservar capacidade</b> no Azure por um ou três anos dá desconto, mas continua sendo um serviço pago pelo uso, não a compra de um equipamento.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Classifique: comprar um switch de rede; assinatura mensal de e-mail; construir uma sala de servidores; pagar por gigabyte armazenado; licença perpétua de software.</li><li>Na calculadora de preços do Azure, estime o custo de uma máquina virtual ligada 24 horas e ligada só 8 horas por dia útil. Compare.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa paga mensalmente pelas máquinas virtuais que usou no mês. Que tipo de gasto é esse?</summary><p>Gasto operacional (OpEx), no modelo baseado em consumo.</p></details><details class="top-q"><summary>Comprar servidores físicos para um datacenter próprio é exemplo de quê?</summary><p>Gasto de capital (CapEx): um investimento inicial em um bem da empresa.</p></details><details class="top-q"><summary>Qual é uma vantagem do modelo baseado em consumo?</summary><p>Não há custo inicial, e a empresa para de pagar pelos recursos quando deixa de usá-los.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t03"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t03"> tópico estudado</label>
             </div>
           </details>
@@ -664,8 +686,8 @@
               <ul><li><b>Escalabilidade</b> é poder crescer. <b>Elasticidade</b> é crescer e encolher sozinho, acompanhando a demanda.</li><li><b>Alta disponibilidade</b> evita a parada. <b>Confiabilidade</b> é voltar a funcionar depois de uma falha. A prova usa os dois em cenários parecidos.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Calcule, para 99%, 99,9% e 99,99%, quantas horas por ano o serviço poderia ficar fora do ar.</li><li>No portal, crie um conjunto de escala de máquinas virtuais e abra as regras de escala automática, sem salvar.</li><li>Para uma loja, uma escola e um banco, escreva qual benefício seria o mais importante e por quê.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um site precisa de mais servidores só durante algumas horas do dia, e a quantidade deve se ajustar sozinha. Qual benefício descreve isso?</summary><p>Elasticidade: a capacidade aumenta e diminui automaticamente conforme a demanda.</p></details><details class="top-q"><summary>Uma empresa troca uma máquina virtual por outra com mais memória e mais CPUs. Que tipo de escala é essa?</summary><p>Escala vertical.</p></details><details class="top-q"><summary>Qual o significado de um SLA de 99,99%?</summary><p>O provedor se compromete a manter o serviço disponível 99,99% do tempo, o que permite pouco mais de 52 minutos de indisponibilidade por ano.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t04"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t04"> tópico estudado</label>
             </div>
           </details>
@@ -686,8 +708,8 @@
               <ul><li>Um banco de dados instalado por você numa máquina virtual é <b>IaaS</b>. O mesmo banco como serviço gerenciado (Azure SQL Database) é <b>PaaS</b>.</li><li><b>Serverless</b> não significa que não há servidor, e sim que você não o administra.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Classifique dez serviços que você usa (Gmail, GitHub, uma VPS, o Heroku, o Figma, um banco gerenciado, o Docker Hub) em IaaS, PaaS ou SaaS.</li><li>No portal, crie um App Service (PaaS) e uma máquina virtual (IaaS) e compare o que cada tela pede para você configurar. Apague depois.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um time quer publicar uma API sem administrar sistema operacional nem servidor web. Qual tipo de serviço?</summary><p>PaaS, por exemplo o Azure App Service.</p></details><details class="top-q"><summary>Uma empresa quer migrar um servidor para a nuvem sem alterar nada nele. Qual tipo de serviço atende?</summary><p>IaaS: uma máquina virtual, que preserva o sistema como está.</p></details><details class="top-q"><summary>Qual é o exemplo de SaaS entre as opções: máquina virtual, Azure SQL Database ou Microsoft 365?</summary><p>Microsoft 365.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t05"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t05"> tópico estudado</label>
             </div>
           </details>
@@ -711,8 +733,8 @@
               <ul><li><b>Zona</b> fica dentro da região. <b>Par de regiões</b> são duas regiões diferentes. A prova troca os dois de propósito.</li><li><b>Região</b> não é um datacenter único: é um conjunto deles numa área.</li></ul>
               <h4>Pratique</h4>
               <ul><li>No portal, abra a criação de uma máquina virtual e veja quais regiões oferecem zonas de disponibilidade (sem criar).</li><li>Procure o par da região em que você mora e anote o nome.</li><li>Escreva em duas frases quando você usaria zonas e quando usaria um par de regiões.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação precisa continuar no ar se um datacenter inteiro falhar, sem sair da região. O que usar?</summary><p>Zonas de disponibilidade: distribuir os recursos em mais de uma zona da mesma região.</p></details><details class="top-q"><summary>O que protege uma empresa contra a perda de uma região inteira?</summary><p>Replicar os recursos para a região par (par de regiões).</p></details><details class="top-q"><summary>Quantas zonas de disponibilidade, no mínimo, existem numa região que oferece esse recurso?</summary><p>Três.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t06"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t06"> tópico estudado</label>
             </div>
           </details>
@@ -733,8 +755,8 @@
               <ul><li>O grupo de recursos organiza e <b>não tem relação com a rede</b> nem com a região: seus recursos podem estar em regiões diferentes.</li><li>A assinatura não é um recurso: é o contêiner de cobrança onde os recursos são criados.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um grupo de recursos, ponha dois recursos baratos dentro dele e apague o grupo. Confira que os dois sumiram.</li><li>Desenhe a hierarquia de uma empresa fictícia com três assinaturas e dois grupos de gerenciamento.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer aplicar a mesma política de segurança a doze assinaturas de uma vez. Onde aplicar?</summary><p>Num grupo de gerenciamento que contenha as doze assinaturas; a política é herdada por todas.</p></details><details class="top-q"><summary>O que acontece com os recursos quando o grupo de recursos que os contém é apagado?</summary><p>São apagados junto com ele.</p></details><details class="top-q"><summary>Qual nível da hierarquia é a unidade de cobrança?</summary><p>A assinatura.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t07"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t07"> tópico estudado</label>
             </div>
           </details>
@@ -755,8 +777,8 @@
               <ul><li><b>Conjunto de escala</b> trata de quantidade (escala automática). <b>Conjunto de disponibilidade</b> trata de onde as máquinas ficam (para não caírem juntas).</li><li>Parar uma máquina pelo sistema operacional <b>não para a cobrança</b> da computação: é preciso desalocá-la pelo Azure.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma máquina virtual pequena, conecte-se a ela, desaloque e apague. Depois confira quais outros recursos foram criados junto (disco, rede, IP) e apague todos.</li><li>Abra a criação de um conjunto de escala e leia as opções de escala automática, sem salvar.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação roda em máquinas virtuais idênticas e precisa acrescentar máquinas quando a CPU passa de 70%. O que usar?</summary><p>Um conjunto de escala de máquinas virtuais, com regra de escala automática.</p></details><details class="top-q"><summary>Como evitar que uma manutenção do Azure reinicie todas as máquinas virtuais de uma aplicação ao mesmo tempo?</summary><p>Colocá-las num conjunto de disponibilidade, que as distribui em domínios de atualização.</p></details><details class="top-q"><summary>Qual serviço entrega áreas de trabalho Windows pela nuvem?</summary><p>Azure Virtual Desktop.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t08"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t08"> tópico estudado</label>
             </div>
           </details>
@@ -777,8 +799,8 @@
               <ul><li><b>Functions</b> é para código curto disparado por evento. <b>App Service</b> é para uma aplicação que fica no ar o tempo todo.</li><li><b>AKS</b> exige conhecer Kubernetes. O <b>Container Apps</b> dispensa isso.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Publique uma página simples no App Service e anote a URL. Depois apague o recurso.</li><li>Crie uma função com gatilho HTTP e chame pelo navegador.</li><li>Escreva quando você escolheria Functions em vez de App Service para um sistema seu.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um código deve rodar só quando um arquivo é enviado ao armazenamento, e a empresa quer pagar apenas pelas execuções. Qual serviço?</summary><p>Azure Functions, no plano de consumo.</p></details><details class="top-q"><summary>Qual serviço executa contêineres com escala automática sem exigir administração de Kubernetes?</summary><p>Azure Container Apps.</p></details><details class="top-q"><summary>Qual serviço PaaS hospeda aplicações web e APIs sem administrar servidor?</summary><p>Azure App Service.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t09"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t09"> tópico estudado</label>
             </div>
           </details>
@@ -799,8 +821,8 @@
               <ul><li><b>VPN Gateway</b> passa pela internet, com criptografia. <b>ExpressRoute</b> é um circuito privado, mais caro e com desempenho mais previsível.</li><li><b>Sub-rede</b> divide uma rede virtual. <b>Peering</b> liga duas redes virtuais.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma rede virtual com duas sub-redes e uma máquina virtual em cada uma. Veja os endereços atribuídos e apague tudo.</li><li>Abra um grupo de segurança de rede e leia as regras padrão de entrada e de saída.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa precisa de conexão privada com o Azure, que não passe pela internet pública. O que usar?</summary><p>ExpressRoute.</p></details><details class="top-q"><summary>Como ligar duas redes virtuais do Azure com baixa latência, pelo backbone da Microsoft?</summary><p>Com o emparelhamento de redes virtuais (peering).</p></details><details class="top-q"><summary>Qual recurso filtra o tráfego de entrada e de saída de uma sub-rede por porta e protocolo?</summary><p>Grupo de segurança de rede (NSG).</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t10"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t10"> tópico estudado</label>
             </div>
           </details>
@@ -821,8 +843,8 @@
               <ul><li><b>Camada de arquivo</b> é a mais barata para guardar e a mais cara e lenta para ler.</li><li><b>ZRS</b> protege contra a perda de uma zona; só <b>GRS</b> e <b>GZRS</b> copiam para outra região.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma conta de armazenamento, envie um arquivo, mude a camada dele e leia as opções de redundância apresentadas na criação.</li><li>Para três tipos de dado (fotos de clientes, logs antigos, backup de um banco), escolha serviço, camada e redundância e justifique.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa guarda registros que quase nunca são lidos, mas precisam ser mantidos por sete anos ao menor custo. Qual camada?</summary><p>Camada de arquivo (archive).</p></details><details class="top-q"><summary>Qual opção de redundância mantém três cópias em um único datacenter?</summary><p>LRS.</p></details><details class="top-q"><summary>Qual serviço de armazenamento fornece um compartilhamento de arquivos acessível por SMB?</summary><p>Azure Files.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t11"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t11"> tópico estudado</label>
             </div>
           </details>
@@ -843,8 +865,8 @@
               <ul><li><b>Azure Migrate</b> é para mover cargas de trabalho. <b>Data Box</b> é para mover dados quando a rede seria lenta demais.</li><li><b>Azure File Sync</b> sincroniza continuamente; não é uma ferramenta de cópia única.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Instale o Storage Explorer, conecte à sua conta e copie um arquivo. Repita com o AzCopy e compare os dois.</li><li>Escreva a ferramenta adequada para: 80 TB com rede lenta; 500 arquivos para copiar hoje; migrar 30 servidores; manter um servidor de arquivos local espelhado.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa precisa transferir 80 terabytes para o Azure e tem uma conexão de internet lenta. O que usar?</summary><p>Azure Data Box.</p></details><details class="top-q"><summary>Qual serviço avalia servidores locais e ajuda a migrá-los para o Azure?</summary><p>Azure Migrate.</p></details><details class="top-q"><summary>Qual ferramenta copia dados para o armazenamento por linha de comando?</summary><p>AzCopy.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t12"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t12"> tópico estudado</label>
             </div>
           </details>
@@ -865,8 +887,8 @@
               <ul><li><b>Entra ID</b> e <b>Active Directory local</b> são serviços diferentes, que podem ser sincronizados.</li><li><b>MFA</b> exige mais de um fator. <b>Acesso condicional</b> decide quando exigir.</li></ul>
               <h4>Pratique</h4>
               <ul><li>No portal, abra o Entra ID, crie um usuário de teste e veja onde se configuram MFA e acesso condicional.</li><li>Para um banco e para um blog pessoal, escreva quais proteções de identidade você exigiria e por quê.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer exigir MFA só quando o usuário entra de fora da rede corporativa. Qual recurso?</summary><p>Acesso condicional do Microsoft Entra.</p></details><details class="top-q"><summary>Qual conceito permite entrar uma vez e acessar várias aplicações?</summary><p>Logon único (SSO).</p></details><details class="top-q"><summary>Qual é a diferença entre autenticação e autorização?</summary><p>Autenticação confirma quem é o usuário; autorização define o que ele pode fazer.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t13"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t13"> tópico estudado</label>
             </div>
           </details>
@@ -887,8 +909,8 @@
               <ul><li><b>RBAC</b> controla o que as <b>pessoas</b> podem fazer. <b>Azure Policy</b> controla como os <b>recursos</b> devem ser configurados.</li><li><b>Colaborador</b> não pode conceder acesso a outros; só o <b>Proprietário</b> pode.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Dê a função Leitor a um usuário de teste num grupo de recursos e confira que ele vê os recursos, mas não consegue apagar.</li><li>Liste cinco camadas de proteção de um site e uma medida para cada uma.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um usuário precisa visualizar os recursos de um grupo de recursos, sem alterar nada. O que fazer?</summary><p>Atribuir a função Leitor a esse usuário no escopo do grupo de recursos.</p></details><details class="top-q"><summary>Qual princípio do Zero Trust diz para dar apenas o acesso necessário?</summary><p>O uso do menor privilégio.</p></details><details class="top-q"><summary>Qual serviço avalia a postura de segurança dos recursos do Azure e protege as cargas de trabalho?</summary><p>Microsoft Defender for Cloud.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t14"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t14"> tópico estudado</label>
             </div>
           </details>
@@ -912,8 +934,8 @@
               <ul><li><b>Calculadora de preços</b> é antes de criar (estimativa). <b>Cost Management</b> é depois (gasto real e orçamento).</li><li><b>Calculadora de preços</b> estima recursos do Azure. <b>Calculadora de TCO</b> compara com o ambiente local.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Estime uma máquina virtual na calculadora de preços ligada 24 horas e ligada 8 horas por dia útil.</li><li>Crie um orçamento com alerta no Cost Management e aplique uma tag de projeto a um recurso.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer ser avisada quando o gasto do mês passar de um valor. O que usar?</summary><p>Um orçamento com alerta no Cost Management.</p></details><details class="top-q"><summary>Qual ferramenta compara o custo do ambiente local com o do Azure?</summary><p>A calculadora de TCO.</p></details><details class="top-q"><summary>Qual recurso permite separar os custos por projeto?</summary><p>Tags aplicadas aos recursos.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t15"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t15"> tópico estudado</label>
             </div>
           </details>
@@ -934,8 +956,8 @@
               <ul><li><b>Policy</b> controla a configuração dos recursos. <b>RBAC</b> controla o que as pessoas podem fazer.</li><li><b>Bloqueio</b> protege um recurso específico. <b>Policy</b> aplica uma regra a todos os recursos num escopo.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma política que só permite uma região e tente criar um recurso em outra.</li><li>Ponha um bloqueio de exclusão num grupo de recursos e tente apagá-lo. Depois remova o bloqueio.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer impedir que qualquer pessoa crie recursos fora do Brasil. O que usar?</summary><p>Azure Policy, com a regra de locais permitidos.</p></details><details class="top-q"><summary>Como proteger um grupo de recursos contra exclusão acidental, mesmo por um Proprietário?</summary><p>Aplicar um bloqueio do tipo CanNotDelete.</p></details><details class="top-q"><summary>Qual serviço ajuda a descobrir e classificar dados em ambientes locais e na nuvem?</summary><p>Microsoft Purview.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t16"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t16"> tópico estudado</label>
             </div>
           </details>
@@ -956,8 +978,8 @@
               <ul><li><b>Azure Arc</b> gerencia recursos que estão fora do Azure. Ele não migra nada.</li><li><b>Cloud Shell</b> não exige instalar nada: roda no navegador.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Abra o Cloud Shell, crie um grupo de recursos com a CLI e apague pelo portal.</li><li>Leia um exemplo de arquivo Bicep que cria uma conta de armazenamento e descreva cada bloco.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa tem servidores no próprio datacenter e quer aplicar a eles as mesmas políticas dos recursos do Azure. O que usar?</summary><p>Azure Arc.</p></details><details class="top-q"><summary>Qual serviço é a camada de gerenciamento por onde passam todas as ações no Azure?</summary><p>Azure Resource Manager.</p></details><details class="top-q"><summary>Qual formato descreve a infraestrutura em arquivos e é nativo do Azure?</summary><p>Modelos ARM ou Bicep.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t17"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t17"> tópico estudado</label>
             </div>
           </details>
@@ -978,8 +1000,8 @@
               <ul><li><b>Advisor</b> recomenda melhorias. <b>Service Health</b> avisa de problemas do Azure. <b>Monitor</b> mostra o que acontece nos seus recursos.</li><li>O <b>Service Health</b> não mostra problemas da <i>sua</i> aplicação, e sim da plataforma.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Abra o Advisor e leia uma recomendação. Veja o Service Health da sua região.</li><li>Crie um alerta de CPU no Azure Monitor para uma máquina virtual e defina a ação de aviso por e-mail.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer saber se há uma indisponibilidade do Azure afetando os recursos dela numa região. O que consultar?</summary><p>Azure Service Health.</p></details><details class="top-q"><summary>Qual serviço recomenda como reduzir custo e melhorar a segurança com base nos recursos existentes?</summary><p>Azure Advisor.</p></details><details class="top-q"><summary>Qual serviço permite criar um alerta quando a CPU de uma máquina passa de 80%?</summary><p>Azure Monitor.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="az-900" data-t="t18"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="t18"> tópico estudado</label>
             </div>
           </details>
@@ -2713,6 +2735,11 @@
     </section>
   </main>
 
+  <script defer src="../assets/js/simulados-az900-a.js"></script>
+  <script defer src="../assets/js/simulados-az900-b.js"></script>
+  <script defer src="../assets/js/simulados-az900-c.js"></script>
+  <script defer src="../assets/js/simulados-dados.js"></script>
+  <script defer src="../assets/js/quiz-topico.js"></script>
   <script defer src="../assets/js/certificacoes.inline.js"></script>
   <script defer src="../assets/js/instant-nav.js"></script>
 </body>

@@ -54,6 +54,7 @@ const DOCUMENTOS_ESPERADOS = [
   'lab/projetos.html',
   'lab/plano-de-pratica.html',
   'lab/certificacoes.html',
+  'lab/simulados.html',
   'ferramentas/pomodoro.html'
 ];
 

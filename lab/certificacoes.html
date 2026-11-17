@@ -1030,8 +1030,8 @@
               <ul><li><b>ACR</b> guarda imagens. <b>Container Apps</b> e <b>AKS</b> rodam as imagens. A prova mistura "onde fica" com "onde roda".</li><li><b>Tag</b> não garante a mesma imagem amanhã. <b>Digest</b> garante.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um ACR Basic, escreva um Dockerfile para uma API pequena em Python e construa com <code>az acr build</code>.</li><li>Liste as tags e os digests da imagem com <code>az acr repository show-tags</code> e <code>show-manifests</code>.</li><li>Apague o registro no fim.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer que o mesmo registro de imagens esteja disponível em duas regiões, com baixa latência para os contêineres de cada uma. Qual camada do ACR?</summary><p>Premium, que é a camada com replicação geográfica.</p></details><details class="top-q"><summary>Um Container App precisa baixar imagens do ACR sem guardar senha. O que configurar?</summary><p>Uma identidade gerenciada no Container App com a função AcrPull no registro.</p></details><details class="top-q"><summary>O time não tem Docker instalado nas máquinas de build. Como gerar a imagem?</summary><p>Com <code>az acr build</code>, que envia o contexto e constrói a imagem no próprio ACR.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-01"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-01"> tópico estudado</label>
             </div>
           </details>
@@ -1052,8 +1052,8 @@
               <ul><li><b>Container Apps</b> esconde o Kubernetes. <b>AKS</b> entrega o Kubernetes para você administrar. Se o cenário pede "sem gerenciar cluster", a resposta é Container Apps.</li><li><b>Revisão</b> é a versão da aplicação. <b>Réplica</b> é uma cópia em execução de uma revisão.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Publique uma API em Python no Container Apps com <code>az containerapp up</code>.</li><li>Mude para o modo de várias revisões, publique uma segunda versão e divida o tráfego 80/20.</li><li>Volte 100% para a primeira revisão e apague o ambiente.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma empresa quer liberar uma versão nova para 5% dos usuários antes de liberar para todos. O que configurar no Container Apps?</summary><p>Modo de várias revisões, com divisão de tráfego de 95% para a atual e 5% para a nova.</p></details><details class="top-q"><summary>Uma API só deve ser chamada por outras aplicações do mesmo ambiente. Que tipo de ingress?</summary><p>Ingress interno.</p></details><details class="top-q"><summary>Um processamento roda uma vez por noite e termina. Qual recurso do Container Apps é o mais adequado?</summary><p>Um Container Apps Job agendado.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-02"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-02"> tópico estudado</label>
             </div>
           </details>
@@ -1074,8 +1074,8 @@
               <ul><li><b>Escala vertical</b> (mais CPU e memória por réplica) se muda na configuração do contêiner. <b>Escala horizontal</b> (mais réplicas) vem das regras.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Configure uma regra de escala HTTP com mínimo 0 e máximo 3 e gere carga com um laço de requisições. Observe as réplicas.</li><li>Crie um segredo e exponha como variável de ambiente; leia a variável na API.</li><li>Publique de propósito com a porta errada e encontre o erro nos logs.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação processa mensagens de uma fila e deve ficar sem custo de computação quando a fila está vazia. O que configurar?</summary><p>Regra de escala pela fila, com mínimo de réplicas igual a zero.</p></details><details class="top-q"><summary>O contêiner não inicia e o erro diz que não foi possível baixar a imagem do ACR. Qual é a causa mais provável?</summary><p>A identidade do Container App não tem a função AcrPull no registro, ou o nome da imagem está errado.</p></details><details class="top-q"><summary>Onde ver as mensagens que a aplicação escreve na saída padrão?</summary><p>Nos logs do console, no Log Analytics ou com <code>az containerapp logs show</code>.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-03"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-03"> tópico estudado</label>
             </div>
           </details>
@@ -1096,8 +1096,8 @@
               <ul><li><b>HPA</b> não cria máquinas: se faltam nós, quem resolve é o <b>cluster autoscaler</b>.</li><li>Escolher AKS quando o cenário pede "menor esforço de administração" é a resposta errada: nesse caso é Container Apps.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um AKS com um nó, publique um Deployment com <code>kubectl apply</code> e exponha com um Service.</li><li>Configure um HPA por CPU e gere carga.</li><li>Apague o grupo de recursos do cluster (ele cria um segundo grupo para os nós: confira que sumiu também).</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Os pods de uma aplicação ficam pendentes porque não há capacidade nos nós. O que resolve automaticamente?</summary><p>O cluster autoscaler, que acrescenta nós ao pool.</p></details><details class="top-q"><summary>Um time quer rodar contêineres com o menor esforço de administração possível e sem acesso à API do Kubernetes. AKS ou Container Apps?</summary><p>Container Apps.</p></details><details class="top-q"><summary>Como um pod do AKS acessa o Key Vault sem guardar segredo?</summary><p>Com workload identity, ligando o service account do pod a uma identidade do Entra ID com permissão no cofre.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-04"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-04"> tópico estudado</label>
             </div>
           </details>
@@ -1121,8 +1121,8 @@
               <ul><li><b>Busca vetorial</b> encontra por significado. <b>Busca de texto completo</b> encontra por palavra. A <b>híbrida</b> combina as duas e costuma ser a melhor para RAG.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Gere embeddings de 20 frases com o SDK e calcule a similaridade de cosseno entre elas em Python.</li><li>Confira que frases com o mesmo sentido e palavras diferentes ficam próximas.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um time trocou o modelo de embedding, e a busca passou a retornar resultados sem sentido. Por quê?</summary><p>Os vetores guardados vieram do modelo antigo. É preciso gerar de novo os embeddings de todos os documentos com o modelo novo.</p></details><details class="top-q"><summary>Por que bancos vetoriais usam índices aproximados?</summary><p>Porque comparar com todos os vetores fica lento em grandes volumes; o índice aproximado é muito mais rápido com perda pequena de precisão.</p></details><details class="top-q"><summary>Qual função de distância é a mais comum para comparar embeddings de texto?</summary><p>A similaridade de cosseno.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-05"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-05"> tópico estudado</label>
             </div>
           </details>
@@ -1143,8 +1143,8 @@
               <ul><li><b>Cosmos DB for NoSQL</b> e <b>Cosmos DB for MongoDB vCore</b> são APIs diferentes, com sintaxes de busca vetorial diferentes. A prova de IA cobra a NoSQL.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma conta do Cosmos DB (há camada gratuita), um contêiner com política de embedding e índice diskANN.</li><li>Insira 50 trechos com embeddings pelo SDK de Python e faça a consulta com <code>VectorDistance</code>.</li><li>Repita a consulta com um filtro e compare as RUs gastas.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Que função se usa numa consulta SQL do Cosmos DB para ordenar documentos pela proximidade de um vetor?</summary><p><code>VectorDistance</code>.</p></details><details class="top-q"><summary>Um contêiner terá dezenas de milhões de vetores e precisa de baixa latência. Qual índice?</summary><p>diskANN.</p></details><details class="top-q"><summary>Onde se declaram as dimensões e a função de distância dos vetores no Cosmos DB?</summary><p>Na política de embedding do contêiner.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-06"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-06"> tópico estudado</label>
             </div>
           </details>
@@ -1165,8 +1165,8 @@
               <ul><li>Sem índice vetorial a consulta funciona, mas faz busca exata varrendo a tabela. Fica lenta com volume.</li><li><b>pgvector</b> é a extensão de vetores. <b>azure_ai</b> é a extensão que chama os serviços de IA.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um servidor flexível pequeno, libere e crie a extensão vector.</li><li>Crie uma tabela com <code>vector(1536)</code>, insira 50 linhas com embeddings e consulte com <code>&lt;=&gt;</code>.</li><li>Crie um índice HNSW e compare o plano com <code>EXPLAIN</code>.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>O comando <code>CREATE EXTENSION vector</code> falha num servidor flexível novo. O que falta?</summary><p>Incluir vector no parâmetro <code>azure.extensions</code> do servidor.</p></details><details class="top-q"><summary>Qual operador do pgvector calcula a distância de cosseno?</summary><p><code>&lt;=&gt;</code>.</p></details><details class="top-q"><summary>Uma empresa quer gerar embeddings no próprio banco, ao inserir as linhas, sem código na aplicação. O que usar?</summary><p>A extensão azure_ai, chamando o Azure OpenAI a partir do SQL.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-07"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-07"> tópico estudado</label>
             </div>
           </details>
@@ -1187,8 +1187,8 @@
               <ul><li><b>Cache semântico</b> não substitui o <b>RAG</b>: um reaproveita respostas prontas, o outro busca contexto para gerar uma resposta nova.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Implemente cache-aside com TTL de 60 segundos numa rota que chama o modelo e meça a diferença de latência.</li><li>Implemente um cache semântico simples: guarde embedding e resposta, e teste limites de similaridade de 0,80 e 0,95.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação recebe muitas perguntas com o mesmo sentido e palavras diferentes. Como reduzir chamadas ao modelo?</summary><p>Com cache semântico: guardar o embedding das perguntas e reaproveitar a resposta quando a similaridade passar do limite.</p></details><details class="top-q"><summary>Qual padrão de cache a aplicação consulta primeiro e só busca na origem quando não encontra?</summary><p>Cache-aside.</p></details><details class="top-q"><summary>O que evita que o cache sirva um dado desatualizado indefinidamente?</summary><p>O tempo de expiração (TTL) das chaves.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-08"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-08"> tópico estudado</label>
             </div>
           </details>
@@ -1209,8 +1209,8 @@
               <ul><li><b>Blob Storage</b> guarda os documentos originais, mas não faz busca vetorial. Ele é a origem, não o índice.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Para três aplicações que você conhece, escreva qual armazenamento usaria para o RAG e por quê.</li><li>Desenhe o fluxo de atualização: documento muda, embedding é gerado de novo, índice é atualizado.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação usa Cosmos DB for NoSQL para os pedidos e quer busca vetorial sobre as descrições sem outro banco. O que usar?</summary><p>A busca vetorial do próprio Cosmos DB for NoSQL, com o vetor no documento.</p></details><details class="top-q"><summary>Qual serviço oferece busca híbrida com reclassificação semântica e indexadores que leem várias fontes?</summary><p>Azure AI Search.</p></details><details class="top-q"><summary>Por que não usar o Blob Storage como banco vetorial?</summary><p>Porque ele guarda arquivos, mas não indexa nem busca por similaridade.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-09"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-09"> tópico estudado</label>
             </div>
           </details>
@@ -1234,8 +1234,8 @@
               <ul><li><b>DefaultAzureCredential</b> não é uma identidade: é uma forma de encontrar uma. Sem função atribuída à identidade encontrada, a chamada dá 403.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Escreva um script que lista blobs com DefaultAzureCredential usando o login do CLI.</li><li>Provoque um 403 com um usuário sem função e um 404 com um contêiner inexistente; trate cada erro.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Que classe permite usar o mesmo código com o login do desenvolvedor na máquina e com identidade gerenciada em produção?</summary><p><code>DefaultAzureCredential</code>, da biblioteca azure-identity.</p></details><details class="top-q"><summary>Uma chamada retorna 429. O que a aplicação deve fazer?</summary><p>Esperar o tempo indicado no cabeçalho Retry-After e tentar de novo.</p></details><details class="top-q"><summary>Uma chamada retorna 403. Repetir resolve?</summary><p>Não. Falta permissão: é preciso atribuir a função certa à identidade.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-10"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-10"> tópico estudado</label>
             </div>
           </details>
@@ -1256,8 +1256,8 @@
               <ul><li><b>Event Grid</b> avisa que algo aconteceu. <b>Service Bus</b> carrega um pedido que alguém tem de cumprir. Se a perda de uma mensagem é inaceitável e há ordem, é Service Bus.</li><li><b>Event Hubs</b> não é fila: vários grupos leem o mesmo fluxo, cada um na sua posição.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie uma fila do Service Bus, envie e consuma mensagens em Python; force falhas e veja a mensagem ir para a dead-letter.</li><li>Crie uma assinatura do Event Grid para a criação de blobs e mande para uma Function ou um webhook de teste.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma aplicação precisa processar pedidos em ordem por cliente, sem perder nenhum. Qual serviço e recurso?</summary><p>Service Bus com sessões, usando o id do cliente como id da sessão.</p></details><details class="top-q"><summary>Milhares de sensores enviam leituras por segundo para análise em tempo real. Qual serviço?</summary><p>Event Hubs.</p></details><details class="top-q"><summary>Uma Function deve rodar sempre que um arquivo é enviado a uma conta de armazenamento. Qual serviço liga os dois?</summary><p>Event Grid.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-11"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-11"> tópico estudado</label>
             </div>
           </details>
@@ -1278,8 +1278,8 @@
               <ul><li><b>Nome do modelo</b> (por exemplo gpt-4o-mini) e <b>nome do deployment</b> são coisas diferentes. A chamada usa o do deployment.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Implante um modelo pequeno e chame com o SDK usando Entra ID em vez de chave.</li><li>Peça uma resposta em JSON com um esquema e valide o resultado.</li><li>Ative o streaming e imprima os pedaços.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>A aplicação recebe 429 do modelo em horários de pico. Qual é a causa e duas ações possíveis?</summary><p>A cota de tokens por minuto foi excedida. Ações: novas tentativas com espera e aumento da cota ou distribuição entre deployments.</p></details><details class="top-q"><summary>Que função atribuir à identidade gerenciada para ela chamar o modelo sem chave?</summary><p>Cognitive Services OpenAI User.</p></details><details class="top-q"><summary>Como garantir que o modelo responda num formato que o código consiga ler?</summary><p>Com saída estruturada, passando um esquema JSON.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-12"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-12"> tópico estudado</label>
             </div>
           </details>
@@ -1300,8 +1300,8 @@
               <ul><li><b>Limite de requisições</b> conta chamadas. <b>Limite de tokens</b> conta o consumo do modelo, que é o que gera custo. Para modelos, o segundo é o certo.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um APIM na camada de consumo ou de desenvolvimento, importe uma API e aplique um limite de requisições.</li><li>Leia na documentação as políticas de limite e de métrica de tokens e escreva onde aplicaria cada uma no seu projeto.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Vários times compartilham um modelo e cada um deve ter um teto de consumo. O que configurar?</summary><p>APIM com uma assinatura por time e a política de limite de tokens por assinatura.</p></details><details class="top-q"><summary>Um deployment fica sem cota em picos. Como o APIM ajuda?</summary><p>Distribuindo as chamadas entre vários deployments num pool de backends.</p></details><details class="top-q"><summary>Onde se configura a validação de token JWT antes de a requisição chegar à API?</summary><p>Numa política de entrada do APIM.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-13"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-13"> tópico estudado</label>
             </div>
           </details>
@@ -1325,8 +1325,8 @@
               <ul><li>Funções de <b>plano de controle</b> (Contributor, Owner) gerenciam o recurso. Funções de <b>plano de dados</b> (Storage Blob Data Reader) dão acesso ao conteúdo. Contributor numa conta de armazenamento não lê blobs pelo Entra ID.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Ative a identidade atribuída pelo sistema num Container App, dê Storage Blob Data Reader numa conta e leia um blob sem chave.</li><li>Remova a função e veja o 403.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Uma identidade precisa ser criada antes do recurso e usada por três aplicações. Qual tipo?</summary><p>Atribuída pelo usuário.</p></details><details class="top-q"><summary>A aplicação tem identidade gerenciada, mas recebe 403 ao ler um blob. O que falta?</summary><p>Atribuir uma função de dados, como Storage Blob Data Reader, à identidade no escopo da conta ou do contêiner.</p></details><details class="top-q"><summary>O que acontece com a identidade atribuída pelo sistema quando o recurso é apagado?</summary><p>Ela é apagada junto.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-14"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-14"> tópico estudado</label>
             </div>
           </details>
@@ -1347,8 +1347,8 @@
               <ul><li><b>App Configuration</b> não é cofre: segredo vai no Key Vault, e o App Configuration só guarda a referência.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Crie um Key Vault com RBAC, um segredo e leia em Python com DefaultAzureCredential.</li><li>Configure uma referência ao Key Vault num Container App e leia a variável.</li><li>Crie uma feature flag no App Configuration e leia na aplicação.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Um segredo foi apagado por engano ontem. O que permite recuperá-lo?</summary><p>A exclusão reversível (soft delete) do Key Vault.</p></details><details class="top-q"><summary>O time quer ligar uma funcionalidade nova sem fazer deploy. O que usar?</summary><p>Uma feature flag no App Configuration.</p></details><details class="top-q"><summary>Como entregar um segredo do Key Vault a um Container App sem que ele apareça na configuração?</summary><p>Com uma referência ao Key Vault, lida pela identidade gerenciada do Container App.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-15"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-15"> tópico estudado</label>
             </div>
           </details>
@@ -1369,8 +1369,8 @@
               <ul><li><b>Azure Monitor</b> é a plataforma inteira. <b>Application Insights</b> é a parte dele voltada a aplicações. <b>Log Analytics</b> é onde os logs ficam e são consultados.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Instrumente uma API em Python com <code>configure_azure_monitor()</code> e veja as requisições no portal.</li><li>Escreva uma consulta KQL que mostra a latência p95 por rota na última hora.</li><li>Crie um alerta para taxa de erro acima de 5%.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Como seguir uma requisição que passa por uma API, uma fila e um worker?</summary><p>Pelo rastreamento distribuído do Application Insights, com o id de operação propagado entre os serviços.</p></details><details class="top-q"><summary>Qual linguagem se usa para consultar os logs no Log Analytics?</summary><p>KQL (Kusto Query Language).</p></details><details class="top-q"><summary>O custo de telemetria está alto numa API com muito tráfego. O que reduzir sem perder a visão geral?</summary><p>Ativar amostragem.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-16"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-16"> tópico estudado</label>
             </div>
           </details>
@@ -1391,8 +1391,8 @@
               <ul><li><b>Funciona local e falha em produção</b> raramente é bug de código: costuma ser identidade diferente (o CLI do desenvolvedor tem permissão, a identidade gerenciada não) ou rede.</li></ul>
               <h4>Pratique</h4>
               <ul><li>Provoque e corrija um 403, um reinício em loop por variável faltando e um 429 com muitas chamadas paralelas.</li><li>Para cada um, anote o sintoma, onde o encontrou e a correção.</li></ul>
-              <h4>Questões no estilo da prova</h4>
-              <details class="top-q"><summary>Funciona na máquina do desenvolvedor e dá 403 em produção. Causa mais provável?</summary><p>A identidade gerenciada de produção não tem a função que a conta do desenvolvedor tem.</p></details><details class="top-q"><summary>Um serviço com ponto de extremidade privado não é encontrado pela aplicação. O que verificar?</summary><p>Se a aplicação está numa rede virtual com acesso ao ponto de extremidade e se a zona de DNS privado resolve o nome para o IP privado.</p></details><details class="top-q"><summary>Qual é a diferença entre 401 e 403?</summary><p>401: não autenticado. 403: autenticado, mas sem permissão.</p></details>
+              <h4>Teste este tópico</h4>
+              <div class="top-quiz" data-prova="ai-200" data-t="a2-17"><p class="tq-txt">Carregando as questões...</p></div>
               <label class="marco-feito"><input type="checkbox" data-k="a2-17"> tópico estudado</label>
             </div>
           </details>
@@ -2738,6 +2738,9 @@
   <script defer src="../assets/js/simulados-az900-a.js"></script>
   <script defer src="../assets/js/simulados-az900-b.js"></script>
   <script defer src="../assets/js/simulados-az900-c.js"></script>
+  <script defer src="../assets/js/simulados-ai200-a.js"></script>
+  <script defer src="../assets/js/simulados-ai200-b.js"></script>
+  <script defer src="../assets/js/simulados-ai200-c.js"></script>
   <script defer src="../assets/js/simulados-dados.js"></script>
   <script defer src="../assets/js/quiz-topico.js"></script>
   <script defer src="../assets/js/certificacoes.inline.js"></script>

@@ -38,6 +38,7 @@ Documentos de estudo e bancada prática organizados em trilhas especializadas, c
 | # | Documento | Foco |
 |---|---|---|
 | — | [Plano de prática](lab/plano-de-pratica.html) | O caminho principal: OrderFlow em três fases e doze marcos, cada um ligado a uma habilidade |
+| — | [Certificações](lab/certificacoes.html) | A ordem das provas de nuvem e IA, trilha de 12 semanas, método de estudo e certificações fora de AWS e Azure |
 | — | [Laboratório de Projetos](lab/projetos.html) | Missões e aquecimentos: OrderFlow, Saga, Outbox, Toxiproxy e K8s |
 
 ### 🧰 Ferramentas de Produtividade & IA (`ferramentas/`)
